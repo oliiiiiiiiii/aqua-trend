@@ -1,0 +1,47 @@
+{
+  "frac_ocean_sig_pos": 0.48458683412580356,
+  "frac_ocean_sig_neg": 0.12340061833356543,
+  "NE Pacific (Blob)": {
+    "median_r": 0.3636323354050986,
+    "median_slope_W_per_K": 3.9911913855234915,
+    "frac_sig": 0.9351608162002175,
+    "box_r": 0.5544165050630109,
+    "box_r_detrended": 0.40905957172014723
+  },
+  "California stratocumulus": {
+    "median_r": 0.38019114954723865,
+    "median_slope_W_per_K": 6.685386071389624,
+    "frac_sig": 0.9773012158238079,
+    "box_r": 0.5167270655942402,
+    "box_r_detrended": 0.4974314355497913
+  },
+  "Peru stratocumulus": {
+    "median_r": 0.3333801927716616,
+    "median_slope_W_per_K": 6.521749003691428,
+    "frac_sig": 0.7697330505615495,
+    "box_r": 0.4094172020529952,
+    "box_r_detrended": 0.41157284984591264
+  },
+  "Namibia stratocumulus": {
+    "median_r": 0.31087640429343155,
+    "median_slope_W_per_K": 6.73416451979585,
+    "frac_sig": 0.9448451030489189,
+    "box_r": 0.5202936325181919,
+    "box_r_detrended": 0.4902562742419943
+  },
+  "Central equatorial Pacific": {
+    "median_r": -0.4789102231294913,
+    "median_slope_W_per_K": -16.86345364331298,
+    "frac_sig": 0.8521792452659032,
+    "box_r": -0.5471229292158538,
+    "box_r_detrended": -0.6150995519798339
+  },
+  "blob_2014_2015": {
+    "sst_anom": 0.9240506933855372,
+    "cloud_anom": 2.465273131123493
+  },
+  "blob_2019_2020": {
+    "sst_anom": 0.9666265655120767,
+    "cloud_anom": 4.862679097110965
+  }
+}

@@ -425,6 +425,13 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - The warmer planet radiates +0.42 more, offsetting only part of the gain.
 - Visual: `results/64_energy_imbalance/energy_imbalance.png`.
 
+## N17. When the sea warms, the clouds thin: the low-cloud feedback mapped from space. **Robust (CERES + OISST)**
+- Month to month (detrended), warmer seas let in more sunlight through thinner low clouds on 48% of the ocean (FDR).
+- Strength: +6.5 to +6.7 W m⁻² per K over the California, Peru and Namibia stratocumulus decks.
+- It amplifies heatwaves: in the NE Pacific "Blob" of 2014–15 the sea ran +0.9 K warm and clouds let in +2.5 W m⁻² extra (+4.9 in 2019–20).
+- The sign flips in the central equatorial Pacific (−17 W m⁻² per K: deep convection).
+- Visual: `results/66_cloud_sst_feedback/cloud_sst_feedback.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

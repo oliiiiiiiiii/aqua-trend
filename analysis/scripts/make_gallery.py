@@ -76,6 +76,7 @@ HERO = [
     ("N26_asia_brightening", "results/63_asia_brightening/asia_brightening.png", "Clearing skies over East Asia: CERES reflection tracks haze (r = 0.96)"),
     ("N27_energy_imbalance", "results/64_energy_imbalance/energy_imbalance.png", "Earth's energy imbalance more than doubled: 0.67 → 1.65 W/m² (CERES)"),
     ("W43_arctic_darkening", "results/65_arctic_darkening/arctic_darkening.png", "Arctic darkening: +15.5 W/m² of sunlight absorbed per million km² of summer ice lost"),
+    ("N28_cloud_sst_feedback", "results/66_cloud_sst_feedback/cloud_sst_feedback.png", "When the sea warms, the clouds thin: low-cloud feedback +7 W/m² per K (CERES + OISST)"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

@@ -46,6 +46,7 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N14 | Asia's haze changes grain: fine combustion particles −43%/decade in East Asia, +21% in South Asia; dust falls in both. | Robust |
 | N15 | Clearing skies over East Asia: CERES clear-sky reflection −2.2 W/m²/decade, tracking haze (r = 0.96); ground sunshine +5–6 W/m²/decade. | Robust |
 | N16 | Earth's energy imbalance more than doubled: 0.67 → 1.65 W/m² (CERES); the planet absorbs +0.88 W/m² more sunlight per decade. | Robust |
+| N17 | When the sea warms, the clouds thin: +7 W/m² per K over stratocumulus decks (CERES + OISST), amplifying heatwaves like the NE Pacific Blob. | Robust |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
