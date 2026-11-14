@@ -189,6 +189,31 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - New dams being filled (Laos, China) show the largest rises.
 - Visual: `results/55_world_lakes/world_lakes_trends.png`.
 
+## W22. The Mekong's heartbeat is weakening: Tonle Sap's flood peak is ~1 m lower per decade for the same rain — **Robust (altimetry + GRACE, rain-controlled)**
+- GWM altimetry of Tonle Sap: the yearly flood rise averaged 8.4 m in 1993–2001 and 6.7 m since 2009, with the same lower-Mekong rain (9.0 vs 8.9 mm/day).
+- 2009–2026 with rain held constant: the peak falls −1.04 m/decade (p = 0.012). The dry-season low is flat (p = 0.38), so this is not a satellite bias.
+- GRACE independently shows the autumn water mass over Cambodia falling for the same rain (p = 0.001; r = 0.86 with the lake peak).
+- The timing follows the giant Xiaowan (2010) and Nuozhadu (2014) dams upstream. The attribution is plausible, not tested.
+- Visual: `results/57_tonle_sap_pulse/tonle_sap_flood_pulse.png`.
+
+## W23. How long must we watch? Time of emergence of trends — **Teaching result**
+- Weatherhead (1998) years-to-detect, per cell. Share of area where the trend has already emerged:
+
+  | variable | already emerged |
+  |---|---|
+  | sea-surface warming | 68% of ocean |
+  | water storage | 58% of land |
+  | greenness | 31% of land |
+  | rainfall | **18% of land**, despite 47 years of data |
+
+- Rainfall would need more than a century on 37% of land.
+- Years needed (record length in brackets):
+  - NW India groundwater: 7 (24 observed).
+  - Kuroshio SST: 21 (45).
+  - Taiwan rain: **72** (47), so not yet detectable.
+- Lesson: "not significant" usually means "not yet detectable", not "no change".
+- Visual: `results/56_time_of_emergence/time_of_emergence.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.
@@ -334,6 +359,12 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Since 2022, monthly water anomalies anticorrelate with temperature (r = −0.63, vs −0.06 before) and with ozone (r = −0.56).
 - The ozone dip fades over two years (−1.0%, 2.2 σ).
 - Visual: `results/53_hunga_aftermath/hunga_aftermath_temperature_ozone.png`.
+
+## N14. Asia's haze is changing grain: combustion particles collapse in East Asia and grow in South Asia, while dust falls in both. **Robust (AERONET SDA)**
+- AERONET fine (combustion) vs coarse (dust) aerosol, 25 stations, 2005–2025.
+- East Asia: fine mode median −43%/decade (11 of 14 significant); Taiwan EPA-NCU −52%, Taipei −41%. Coarse mode −21%.
+- South Asia: fine mode +21%/decade (6 of 7 significant), coarse mode −23%. Haze there is becoming more combustion-dominated as dust declines.
+- Visual: `results/58_haze_fine_coarse/haze_fine_vs_coarse.png`.
 
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**

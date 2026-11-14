@@ -1,7 +1,9 @@
 """Download NASA AERONET Version 3 Level 2.0 daily-average aerosol optical depth for selected Asian sites (2002-2026).
 
 Output: data/processed/aeronet/<site>.csv with date, AOD_500nm, AOD_440nm, AE_440_870 and AOD_550 (= AOD_500 * (550/500)^-AE).
-usage: python -I fetch_aeronet.py
+With argument 'sda': Level 2.0 Spectral Deconvolution (O'Neill) fine/coarse split at 500 nm -> data/processed/aeronet_sda/<site>.csv
+(date, tau_a total, tau_f fine, tau_c coarse, eta fine-mode fraction).
+usage: python -I fetch_aeronet.py [sda]
 """
 import os
 import io
@@ -23,12 +25,14 @@ SITES = ["Taipei_CWB", "NCU_Taiwan", "EPA-NCU", "Chiayi", "Kaohsiung", "Lulin", 
          "Solar_Village", "Kuwait_University", "Mezaira"]
 UA = {"User-Agent": "aqua-trend-analysis/1.0"}
 URL = "https://aeronet.gsfc.nasa.gov/cgi-bin/print_web_data_v3"
-outd = f"{ROOT}/data/processed/aeronet"; os.makedirs(outd, exist_ok=True)
+SDA = len(sys.argv) > 1 and sys.argv[1] == "sda"
+outd = f"{ROOT}/data/processed/aeronet{'_sda' if SDA else ''}"; os.makedirs(outd, exist_ok=True)
 for s in SITES:
     fn = f"{outd}/{s}.csv"
     if os.path.exists(fn):
         continue
-    params = dict(site=s, year=2002, month=1, day=1, year2=2026, month2=12, day2=31, AOD20=1, AVG=20, if_no_html=1)
+    params = dict(site=s, year=2002, month=1, day=1, year2=2026, month2=12, day2=31, AVG=20, if_no_html=1)
+    params["SDA20" if SDA else "AOD20"] = 1
     for k in range(4):
         try:
             r = requests.get(URL, params=params, headers=UA, timeout=300)
@@ -39,6 +43,18 @@ for s in SITES:
     else:
         continue
     lines = [ln for ln in r.text.splitlines() if ln.startswith("AERONET_Site,") or ln.startswith(s + ",")]
+    if SDA:
+        if len(lines) < 2:
+            print(f"{s}: no SDA Level 2.0", flush=True)
+            pd.DataFrame(columns=["date", "tau_a", "tau_f", "tau_c", "eta"]).to_csv(fn, index=False)
+            continue
+        df = pd.read_csv(io.StringIO("\n".join(lines)), na_values=[-999.0, "-999."], index_col=False)
+        o = pd.DataFrame({"date": pd.to_datetime(df["Date_(dd:mm:yyyy)"], format="%d:%m:%Y"), "tau_a": df["Total_AOD_500nm[tau_a]"],
+                          "tau_f": df["Fine_Mode_AOD_500nm[tau_f]"], "tau_c": df["Coarse_Mode_AOD_500nm[tau_c]"], "eta": df["FineModeFraction_500nm[eta]"]})
+        o.to_csv(fn, index=False)
+        print(f"{s}: {len(o)} SDA days {o.date.min().date()}..{o.date.max().date()}", flush=True)
+        time.sleep(2)
+        continue
     if len(lines) < 2:
         print(f"{s}: no Level 2.0 data", flush=True)
         pd.DataFrame(columns=["date", "AOD_500", "AOD_440", "AE_440_870", "AOD_550"]).to_csv(fn, index=False)

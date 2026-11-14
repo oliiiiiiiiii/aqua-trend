@@ -111,3 +111,12 @@
 | 2026-11-15 00:20 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |
 | 2026-11-15 00:21 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |
 | 2026-11-15 00:23 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |
+| 2026-11-15 00:35 | 56_time_of_emergence | done | emerged: tws 58%, p_gpcp 18%, sst 68%, ndvi 31% |
+| 2026-11-15 00:40 | 57_tonle_sap_pulse | done | rain-adjusted peak -1.04 m/dec (p=0.012); amp 8.4 -> 6.7 m |
+| 2026-11-15 00:41 | 57_tonle_sap_pulse | done | rain-adjusted peak -1.04 m/dec (p=0.012); amp 8.4 -> 6.7 m |
+| 2026-11-15 00:42 | 57_tonle_sap_pulse | done | rain-adjusted peak -1.04 m/dec (p=0.012); amp 8.4 -> 6.7 m |
+| 2026-11-15 00:45 | 56_time_of_emergence | done | emerged: tws 58%, p_gpcp 18%, sst 68%, ndvi 31% |
+| 2026-11-15 00:49 | 58_haze_fine_coarse | done | median fine/coarse %/dec: EA -43/-21, SA +21/-23, ME +9/-10 |
+| 2026-11-15 00:50 | 58_haze_fine_coarse | done | median fine/coarse %/dec: EA -43/-21, SA +21/-23, ME +9/-10 |
+| 2026-11-15 00:50 | 58_haze_fine_coarse | done | median fine/coarse %/dec: EA -43/-21, SA +21/-23, ME +9/-10 |
+| 2026-11-15 00:53 | 56_time_of_emergence | done | emerged: tws 58%, p_gpcp 18%, sst 68%, ndvi 31% |

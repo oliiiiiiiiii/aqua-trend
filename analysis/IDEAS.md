@@ -35,7 +35,7 @@
 | I31 | Is rain getting more convective (more intense)? Convective fraction PRECCU/(PRECCU+PRECLS) trend | MERRA-2 (model physics — caveat) | trend map | low | done in task 34: mixed (+13 % / −10 % of land), not a finding |
 | I32 | Surface water that appeared / vanished 2000–2025 (Tibetan lakes, Aral, Urmia, GERD) from MODIS NDVI water signature, paired with GRACE | MODIS NDVI 0.05° + GRACE | appear/vanish map | med | todo (NDVI water mask noisy; Caspian masked) |
 | I33 | (redundant with GRACE trend map) Storage-drought frequency: months with GRACE storage below the 10th percentile, 2002–13 vs 2014–26 | GRACE | change map | low | todo (fold into task 33) |
-| I34 | Time of emergence for water-storage trends: where GRACE trends are already detectable, and where 10+ more years are needed | GRACE + trendlib.years_to_detect | years-to-detect map | low | todo |
+| I34 | Time of emergence for water-storage trends: where GRACE trends are already detectable, and where 10+ more years are needed | GRACE + trendlib.years_to_detect | years-to-detect map | low | done (task 56: SST 68%, TWS 58%, NDVI 31%, rain 18% emerged) |
 | I35 | Independent check of rain→snow shift: MODIS snow-cover duration (MOD10CM, LP DAAC/NSIDC) trend 2001–2025 vs MERRA-2 snow share | MODIS snow cover | snow-days trend map | med | done (task 34b: aggregate −1.3 pp/dec p=0.02; Alps/E Europe/Japan confirmed; HMA/Rockies not) |
 | I36 | Amazon: link dry-season drying to moisture inflow (task 22 boundary fluxes, JAS) and to MODIS NDVI/fire along the arc | MERRA-2 INT + MODIS | inflow vs rain series | low | done (task 36: TNA warming predicts −0.18 vs observed −0.18 mm/day/dec; MERRA-2 budget non-closing) |
 | I37 | Global “record map”: for each pixel, which year of 2002–2025 had the lowest GRACE storage — where are we at record lows *now*? | GRACE | year-of-minimum map | low | done (task 35: 32 % of land at record low, 23 % record high) |
@@ -45,6 +45,8 @@
 | I41 | Lake Victoria & East African lakes record high: GRACE + IMERG + moisture convergence + MODIS shoreline (NDVI water) | GRACE, IMERG, GWM altimetry | multi-panel | low | done (task 54: Turkana +6.7 m, Victoria gain~short rains r=0.82; top-3 rises = 1997/2019/2023 IOD years on 6/8 lakes) |
 | I42 | World lakes from altimetry: rising/falling map, Caspian vs GRACE | NASA GWM | map + series | low | done (task 55: 53 falling / 46 rising; Caspian −1.16 m/dec, r=0.999 with GRACE) |
 | I43 | Reservoir drought fingerprint: do reservoir level anomalies track GRACE/SPI drought across basins (Kariba, Mead, Brazil hydropower)? | GWM + GRACE + GPCP | per-reservoir lag correlation | med | todo |
+| I44 | Mekong flood pulse (Tonle Sap) vs upstream dams, rain-controlled | GWM + GPCP + GRACE | multi-panel | low | done (task 57: −1.04 m/dec rain-adjusted, GRACE confirms) |
+| I45 | Other dammed rivers' downstream lakes/wetlands: Inner Niger Delta, Sudd, Okavango, Pantanal — flood-pulse amplitude from GRACE + altimetry | GWM, GRACE, GPCP | pulse amplitude series | med | todo |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |
@@ -64,5 +66,5 @@
 | N13 | East Asia "brightening": sulfate AOD drop (MERRA-2) vs surface sunshine (CERES) | M2TMNXAER SUEXTTAU, CERES EBAF | trend maps + China series | med | todo |
 | N14 | SO₂/NO₂ ratio as a coal-vs-traffic fingerprint per city | MSAQSO2L4 + OMNO2d | scatter by city/year | low | todo |
 | N15 | Taiwan & SE Asia air: Vietnam's SO₂ ×4.6 vs Taiwan −78% — does it reach Taiwan? (MERRA-2 sulfate AOD, back-trajectory proxy via winds) | M2TMNXAER, AERONET | regional series | med | done (task 52: 27 AERONET sites, Taipei −39%/dec, sulfate tracks China SO₂ r=0.89) |
-| N16 | AERONET Ångström exponent: is Asia's haze getting coarser (dust) or finer (combustion)? Fine/coarse split trends | AERONET SDA | site trends | low | todo |
+| N16 | AERONET Ångström exponent: is Asia's haze getting coarser (dust) or finer (combustion)? Fine/coarse split trends | AERONET SDA | site trends | low | done (task 58: EA fine −43%/dec, SA fine +21%/dec, dust down in both) |
 | N17 | Mount Pinatubo-style check for smaller eruptions: MLS/OMPS volcanic SO₂ and stratospheric aerosol since 2004 (Raikoke 2019, Ruang 2024) | MLS SO2, OMPS LP | event series | med | todo |

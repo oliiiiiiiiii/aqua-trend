@@ -1,0 +1,86 @@
+{
+  "tws": {
+    "label": "Water storage (GRACE)",
+    "domain": "land",
+    "record_years": 24.418891170431213,
+    "start": 2002,
+    "end": 2026,
+    "frac_emerged": 0.5763270312643815,
+    "median_nstar": 20.25141664836008,
+    "frac_need_over_50": 0.1686528101329767,
+    "frac_need_over_100": 0.06821556117166384,
+    "median_phi": 0.7710573318394863
+  },
+  "p_gpcp": {
+    "label": "Rainfall (GPCP)",
+    "domain": "land",
+    "record_years": 46.91581108829569,
+    "start": 1979,
+    "end": 2025,
+    "frac_emerged": 0.1761094829354213,
+    "median_nstar": 76.2532304999913,
+    "frac_need_over_50": 0.7849210260776107,
+    "frac_need_over_100": 0.36689902132342855,
+    "median_phi": 0.08830061424329669
+  },
+  "sst": {
+    "label": "Sea-surface temperature (OISST)",
+    "domain": "ocean",
+    "record_years": 44.747433264887064,
+    "start": 1982,
+    "end": 2026,
+    "frac_emerged": 0.681571693622439,
+    "median_nstar": 35.39748695998668,
+    "frac_need_over_50": 0.2653054838342331,
+    "frac_need_over_100": 0.11079240758165669,
+    "median_phi": 0.6484296114549906
+  },
+  "ndvi": {
+    "label": "Vegetation greenness (MODIS NDVI)",
+    "domain": "land",
+    "record_years": 26.663928815879533,
+    "start": 2000,
+    "end": 2026,
+    "frac_emerged": 0.31311714793580897,
+    "median_nstar": 36.09661516084935,
+    "frac_need_over_50": 0.3188895875969172,
+    "frac_need_over_100": 0.11331014316049566,
+    "median_phi": 0.5273708739249795
+  },
+  "hotspot: NW India groundwater (GRACE)": {
+    "years_needed": 7.087472743674129,
+    "record": 24.418891170431213,
+    "p_ols_ar1": 1.2495094297025282e-16,
+    "slope_per_decade": -38.51749254285532
+  },
+  "hotspot: Caspian (GRACE)": {
+    "years_needed": 11.468907800622326,
+    "record": 24.418891170431213,
+    "p_ols_ar1": 5.29783080982778e-05,
+    "slope_per_decade": -48.306432117988564
+  },
+  "hotspot: Taiwan rain (GPCP)": {
+    "years_needed": 71.94155360358846,
+    "record": 46.91581108829569,
+    "p_ols_ar1": 0.0824982177895392,
+    "slope_per_decade": -0.16009041645418154
+  },
+  "hotspot: Sahel rain (GPCP)": {
+    "years_needed": 37.06816565740815,
+    "record": 46.91581108829569,
+    "p_ols_ar1": 4.692344699007517e-06,
+    "slope_per_decade": 0.09166392476187576
+  },
+  "hotspot: Kuroshio / Taiwan Strait SST": {
+    "years_needed": 21.057367357303683,
+    "record": 44.747433264887064,
+    "p_ols_ar1": 2.816272994933857e-19,
+    "slope_per_decade": 0.2617416855363206
+  },
+  "hotspot: India greening (NDVI)": {
+    "years_needed": 11.136379212604178,
+    "record": 26.663928815879533,
+    "p_ols_ar1": 6.823655960546784e-20,
+    "slope_per_decade": 0.0374355818883008
+  }
+}

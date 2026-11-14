@@ -27,6 +27,8 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | W19 | Turning points: on 45% of land the storage trend changed course after 2014. The North China Plain reversed to gain; Central Europe and the Caspian got worse. | Significant |
 | W20 | East Africa's lakes ratchet upward in Indian Ocean Dipole years: Turkana +6.7 m, Rukwa +5.7 m, Naivasha +4.3 m (altimetry + GRACE). | Robust |
 | W21 | The world's lakes from space: Caspian −1.2 m/decade (altimetry and GRACE agree, r = 0.999); 53 lakes falling, 46 rising. | Robust |
+| W22 | The Mekong's heartbeat weakens: Tonle Sap's flood peak −1 m/decade for the same rain (altimetry + GRACE). | Robust |
+| W23 | Time of emergence: ocean warming emerged on 68% of the ocean, rainfall trends on only 18% of land (Taiwan rain needs 72 years). | Teaching |
 | N1 | Earthquakes are not increasing. Small-quake counts rise +22%/decade from better detection. Large quakes (M≥6, M≥7, GCMT Mw≥6) show no trend since 1983. Starting in 1973 shows a false +5%/decade, created by a magnitude-scale switch. | Robust null + artefact |
 | N2 | Human-made earthquakes: wastewater injection raised Oklahoma ×779 (887 M≥3 quakes in 2015) and the Permian Basin ×325. Regulation halved the rate every 1.2 years. The natural New Madrid zone is flat. | Robust |
 | N3 | Water and ice steer the North Pole: GRACE mass change predicts the post-2000 drift change (5.0 vs 5.1 mas/yr, 10° apart). Groundwater pumping pushes the pole toward India. Record short day: −1.65 ms on 5 Jul 2024. | Robust (2 independent systems) |
@@ -37,6 +39,7 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N10 | Less dust over the Sahel (−9%/dec) and Iraq–Syria (−17%/dec); greener years are cleaner years. | Robust |
 | N12 | Asia's haze redrawn: 27 AERONET ground stations — Taipei −39%/dec, Beijing −68%/dec, Seoul −48%; India's Ganges plain +19%. | Robust |
 | N13 | Hunga Tonga's wet stratosphere cooled 2 K and lost 3% ozone in year 1 (cooling robust; ozone dip fades). | Robust / Significant |
+| N14 | Asia's haze changes grain: fine combustion particles −43%/decade in East Asia, +21% in South Asia; dust falls in both. | Robust |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
