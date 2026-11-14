@@ -32,3 +32,5 @@
 | 2026-11-14 01:26 | 28_land_to_ocean | done | land -703 Gt/yr vs ocean +731 Gt/yr; steric 1.45 mm/yr |
 | 2026-11-14 01:37 | 29_water_memory | done | lag histogram 0:3%, 1:67%, 2:13%, 3:5%, 4:3%, 5:3%, 6:2%, 7:2%, 8:1%, 9:0% |
 | 2026-11-14 01:41 | 20c_merra2_crosscheck | done | ELI pattern r=+0.59; MERRA-2 shift -0.012 CI [-0.025023961681607927, 0.0014542971890242657] |
+| 2026-11-14 09:34 | 30_ocean_land_seesaw | done | land-ocean r=+0.67; 2011 dip -5.0 mm; ENSO lag 5 r=+0.41 |
+| 2026-11-14 09:36 | 30_ocean_land_seesaw | done | land-ocean r=+0.67; 2011 dip -5.0 mm; ENSO lag 5 r=+0.41 |

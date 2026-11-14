@@ -25,6 +25,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W19](#w19) | Ocean evaporation vs Taiwan rain (null result) | `results/22_moisture_transport/ocean_source_Taiwan.png` |
 | [W20](#w20) | Where the water in sea-level rise comes from (GRACE mass budget) | `results/28_land_to_ocean/sources_to_ocean_bars.png` |
 | [W21](#w21) | Water leaving the land, arriving in the ocean | `results/28_land_to_ocean/cumulative_mass.png` |
+| [W24](#w24) | Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm) | `results/30_ocean_land_seesaw/seesaw_timeseries.png` |
+| [W25](#w25) | Where the ocean's borrowed water sits (Amazon = biggest sponge) | `results/30_ocean_land_seesaw/map_where_land_water_swings.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -169,6 +171,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/28_land_to_ocean/cumulative_mass.png`</sub>
 
 ![Water leaving the land, arriving in the ocean](figures/W21_land_to_ocean_series.png)
+
+### W24
+**Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm)**  
+<sub>source: `results/30_ocean_land_seesaw/seesaw_timeseries.png`</sub>
+
+![Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm)](figures/W24_ocean_land_seesaw.png)
+
+### W25
+**Where the ocean's borrowed water sits (Amazon = biggest sponge)**  
+<sub>source: `results/30_ocean_land_seesaw/map_where_land_water_swings.png`</sub>
+
+![Where the ocean's borrowed water sits (Amazon = biggest sponge)](figures/W25_where_land_water_swings.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

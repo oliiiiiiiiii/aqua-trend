@@ -28,6 +28,8 @@ HERO = [
     ("W19_ocean_source_taiwan", "results/22_moisture_transport/ocean_source_Taiwan.png", "Ocean evaporation vs Taiwan rain (null result)"),
     ("W20_sea_level_sources", "results/28_land_to_ocean/sources_to_ocean_bars.png", "Where the water in sea-level rise comes from (GRACE mass budget)"),
     ("W21_land_to_ocean_series", "results/28_land_to_ocean/cumulative_mass.png", "Water leaving the land, arriving in the ocean"),
+    ("W24_ocean_land_seesaw", "results/30_ocean_land_seesaw/seesaw_timeseries.png", "Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm)"),
+    ("W25_where_land_water_swings", "results/30_ocean_land_seesaw/map_where_land_water_swings.png", "Where the ocean's borrowed water sits (Amazon = biggest sponge)"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

@@ -73,6 +73,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - GRACE: Greenland −258, Antarctica −126, glaciers −212, **aquifers/lakes/soil −107 Gt/yr (+0.29 mm/yr of sea level ≈ Antarctica)**; ocean +731 Gt/yr (2.02 mm/yr). Altimetry 3.47 mm/yr − ocean mass 2.02 = thermal expansion 1.45 mm/yr (Argo ≈ 1.3 ✔).
 - Visual: `results/28_land_to_ocean/sources_to_ocean_bars.png`, `cumulative_mass.png`.
 
+## W13. The ocean–land seesaw: when the continents soak up rain, global sea level drops — **Robust (GRACE land, GRACE ocean, altimetry agree)**
+- Year-to-year swings (seasons and quadratic trend removed): GRACE ocean mass mirrors water stored on non-glaciated land, **r = +0.67**; altimetry sea level follows the same wiggles (r = +0.65 with ocean mass).
+- **2011 La Niña:** ≈ 1622 Gt of extra rain parked on the continents → ocean mass **−5.0 mm** (altimetry −7.7 mm) — about 1.5 years of the long-term rise undone, temporarily. **2016 El Niño** did the opposite: land released ≈ 1816 Gt, ocean +6.2 mm.
+- ENSO leads ocean mass by **5 months** (r = +0.41, p = 0.0001, AR(1)-adjusted).
+- **Where the borrowed water sits** (share of the global land swing): Brazil 30%, Russia 13%, India 9%, Australia 7%; by continent South America 32%, Africa 26%, Europe & N Asia 18%. The Amazon basin is the planet's biggest "sponge"; the La Plata basin swings the opposite way (dry when the Amazon is wet).
+- Why it matters: a sea-level record of a few years can show a fake "acceleration" or "pause" just from where rain falls — detecting the climate trend needs the land water removed (source → destination accounting).
+- Visual: `results/30_ocean_land_seesaw/seesaw_timeseries.png`, `map_where_land_water_swings.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - India's greening vs groundwater: spatial r = +0.09, p = 0.58 after spatial-autocorrelation correction (naive p = 5e-4) → not supported (task 26).
 - Ocean evaporation upwind does not predict downstream monthly rain (task 22b).
