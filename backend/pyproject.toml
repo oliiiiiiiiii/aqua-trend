@@ -20,6 +20,8 @@ include = ["aqua_trend*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-m 'not slow'"
 markers = [
   "realdata: uses the prepared NASA series in web/public/data",
   "slow: simulation / calibration tests",

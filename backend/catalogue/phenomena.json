@@ -1,0 +1,1304 @@
+{
+  "version": "phenomena-1.0.0",
+  "note": "Offline context for the selector: which catalogue variables can speak to a phenomenon, in which role, with which limits, and what cannot be answered. This is context, NOT a whitelist: any phenomenon text is accepted, and a phenomenon that is not listed is judged against concepts.json. Roles describe curated relevance, not causality shown by the data.",
+  "roles": {
+    "core_indicator": "the variable in which the phenomenon itself is defined or measured",
+    "related_condition": "an environmental condition that drives or modulates the phenomenon",
+    "response": "a variable that is expected to respond to the phenomenon"
+  },
+  "phenomena": [
+    {
+      "phenomenon_id": "drought",
+      "label": "Drought",
+      "label_zh": "乾旱",
+      "aliases": {
+        "zh": [
+          "乾旱",
+          "旱災",
+          "旱象",
+          "缺水",
+          "少雨",
+          "氣象乾旱",
+          "農業乾旱",
+          "水文乾旱"
+        ],
+        "en": [
+          "drought",
+          "dry spell",
+          "water shortage",
+          "rainfall deficit",
+          "meteorological drought",
+          "agricultural drought",
+          "hydrological drought"
+        ]
+      },
+      "description": "A prolonged shortage of water relative to normal conditions. Meteorological drought is a precipitation deficit; agricultural drought a soil moisture deficit; hydrological drought a deficit in runoff and storage. The types develop on different time scales and are not interchangeable.",
+      "variable_links": [
+        {
+          "variable_id": "precip",
+          "role": "core_indicator",
+          "statement": "A precipitation deficit relative to the local climatology defines meteorological drought and is the input of the SPI.",
+          "limits": "Monthly regional means; says nothing about water demand, storage or impacts.",
+          "ref_ids": [
+            "wilhite_glantz1985",
+            "wmo_1090_spi",
+            "mckee1993"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "core_indicator",
+          "statement": "A root-zone soil moisture deficit is what agricultural drought refers to.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "wilhite_glantz1985",
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "pet",
+          "role": "related_condition",
+          "statement": "Higher atmospheric evaporative demand increases drought severity for a given precipitation deficit.",
+          "limits": "Model diagnostic with a known trend drift in GLDAS-2.1.",
+          "ref_ids": [
+            "vicente_serrano2010"
+          ]
+        },
+        {
+          "variable_id": "vpd",
+          "role": "related_condition",
+          "statement": "Vapour pressure deficit is the atmospheric dryness that plants experience during drought.",
+          "limits": "Derived from forcing fields.",
+          "ref_ids": [
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Temperature raises evaporative demand and therefore affects drought severity.",
+          "limits": "A monthly mean; temperature alone does not indicate drought.",
+          "ref_ids": [
+            "vicente_serrano2010"
+          ]
+        },
+        {
+          "variable_id": "runoff",
+          "role": "response",
+          "statement": "Reduced runoff and streamflow characterise hydrological drought.",
+          "limits": "Modelled runoff generation, not gauged river discharge.",
+          "ref_ids": [
+            "wilhite_glantz1985",
+            "ipcc_ar6_wg1_ch11"
+          ]
+        },
+        {
+          "variable_id": "tws_anomaly",
+          "role": "response",
+          "statement": "Terrestrial water storage integrates multi-year deficits in groundwater, soil and surface water.",
+          "limits": "About 300 km resolution; includes human withdrawals and ice changes, not only drought.",
+          "ref_ids": [
+            "rodell2018"
+          ]
+        },
+        {
+          "variable_id": "et",
+          "role": "response",
+          "statement": "Evapotranspiration falls when soil moisture becomes limiting.",
+          "limits": "Model estimate; can also rise early in a drought when demand is high and water is still available.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "ndvi",
+          "role": "response",
+          "statement": "Vegetation greenness declines under high vapour pressure deficit and water stress.",
+          "limits": "Greenness also responds to land use, irrigation and temperature.",
+          "ref_ids": [
+            "yuan2019"
+          ]
+        }
+      ],
+      "indicator_ids": [
+        "spi3",
+        "spi6",
+        "spi12"
+      ],
+      "unanswerable_notes": [
+        "Recorded drought events or official declarations: no event catalogue has been delivered.",
+        "The SPI is a derived meteorological drought index; it does not show that agricultural, hydrological or socio-economic drought occurred.",
+        "Streamflow, reservoir and groundwater-level drought: no gauge or well data are prepared.",
+        "No evapotranspiration-based drought index (e.g. SPEI) is registered as a recipe."
+      ]
+    },
+    {
+      "phenomenon_id": "flood",
+      "label": "Flood",
+      "label_zh": "淹水／洪水",
+      "aliases": {
+        "zh": [
+          "淹水",
+          "洪水",
+          "水災",
+          "洪災",
+          "氾濫",
+          "積水",
+          "洪患"
+        ],
+        "en": [
+          "flood",
+          "flooding",
+          "inundation",
+          "river flood",
+          "flash flood"
+        ]
+      },
+      "description": "Water covering land that is normally dry. Floods are events of hours to weeks that depend on rainfall intensity, antecedent wetness, snowmelt, river routing, tides and human infrastructure.",
+      "variable_links": [
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Heavy precipitation is a main driver of floods, but floods also depend on antecedent conditions and catchment properties.",
+          "limits": "A monthly regional mean cannot resolve the rainfall intensity or duration of a flood; it must not be read as flood frequency.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "related_condition",
+          "statement": "Wet antecedent soil increases the share of rainfall that becomes runoff.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters. Monthly means only.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11",
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "runoff",
+          "role": "related_condition",
+          "statement": "Runoff generation describes how much water the land sheds in wet months.",
+          "limits": "Modelled monthly runoff generation, not river discharge or water level; no routing or flood extent.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        },
+        {
+          "variable_id": "swe",
+          "role": "related_condition",
+          "statement": "Snowmelt contributes to floods in snow-affected catchments.",
+          "limits": "Modelled snowpack; monthly means do not resolve melt events.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Flood frequency, duration and severity need a recorded flood event catalogue with coverage information; none has been delivered (data_required).",
+        "No approved recipe derives flood events from monthly data: monthly precipitation, runoff or storage anomalies are not flood counts.",
+        "Flood extent, river discharge and water level are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "heavy_precipitation",
+      "label": "Heavy precipitation",
+      "label_zh": "強降雨／極端降雨",
+      "aliases": {
+        "zh": [
+          "強降雨",
+          "豪雨",
+          "暴雨",
+          "極端降雨",
+          "大雨",
+          "梅雨"
+        ],
+        "en": [
+          "heavy rain",
+          "extreme rainfall",
+          "extreme precipitation",
+          "downpour",
+          "rainstorm"
+        ]
+      },
+      "description": "Precipitation events of high intensity. They are defined from daily or sub-daily amounts.",
+      "variable_links": [
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Monthly precipitation shows whether months have become wetter or drier overall.",
+          "limits": "Heavy precipitation is defined on daily or sub-daily data; a monthly mean cannot show a change in intensity or in the number of heavy-rain days.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Frequency and intensity of heavy precipitation need daily or sub-daily precipitation, which is not prepared.",
+        "No approved recipe for extreme-precipitation indices is registered."
+      ]
+    },
+    {
+      "phenomenon_id": "warming",
+      "label": "Warming / temperature rise",
+      "label_zh": "暖化／升溫",
+      "aliases": {
+        "zh": [
+          "暖化",
+          "升溫",
+          "氣溫上升",
+          "全球暖化",
+          "變熱",
+          "高溫"
+        ],
+        "en": [
+          "warming",
+          "temperature rise",
+          "global warming",
+          "hotter",
+          "temperature increase"
+        ]
+      },
+      "description": "A long-term increase in temperature of the air, the land surface or the sea surface.",
+      "variable_links": [
+        {
+          "variable_id": "tair",
+          "role": "core_indicator",
+          "statement": "Near-surface air temperature is the standard variable for describing warming over land.",
+          "limits": "Analysis-based forcing field starting in 2000; a 25-year record is short for climate trends.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11",
+            "gldas_rodell2004"
+          ]
+        },
+        {
+          "variable_id": "sst",
+          "role": "core_indicator",
+          "statement": "Sea surface temperature describes warming of the ocean surface.",
+          "limits": "Ocean regions only.",
+          "ref_ids": [
+            "oisst_huang2021"
+          ]
+        },
+        {
+          "variable_id": "tsurf",
+          "role": "related_condition",
+          "statement": "Land surface skin temperature follows the surface energy balance and usually warms with the air.",
+          "limits": "Model skin temperature; differs from air temperature over dry land.",
+          "ref_ids": [
+            "merra2_gelaro2017"
+          ]
+        },
+        {
+          "variable_id": "lst_day",
+          "role": "related_condition",
+          "statement": "Satellite daytime land surface temperature is an independent observation of surface heating.",
+          "limits": "Clear-sky daytime only; spurious cooling after 2020 from Terra orbit drift.",
+          "ref_ids": [
+            "modis_mod11c3"
+          ]
+        },
+        {
+          "variable_id": "vpd",
+          "role": "response",
+          "statement": "Vapour pressure deficit rises with temperature when humidity does not keep pace.",
+          "limits": "Derived from forcing fields.",
+          "ref_ids": [
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "swe",
+          "role": "response",
+          "statement": "Warming reduces snow accumulation and advances melt.",
+          "limits": "Modelled snowpack; not valid over glaciers and ice sheets.",
+          "ref_ids": [
+            "mote2018"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Hot days, warm nights and other threshold-based temperature indices need daily data, which is not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "heatwave",
+      "label": "Heatwave",
+      "label_zh": "熱浪",
+      "aliases": {
+        "zh": [
+          "熱浪",
+          "極端高溫",
+          "酷熱",
+          "熱傷害",
+          "高溫事件"
+        ],
+        "en": [
+          "heatwave",
+          "heat wave",
+          "extreme heat",
+          "hot spell"
+        ]
+      },
+      "description": "A period of consecutive days with temperature above a high threshold for the place and season.",
+      "variable_links": [
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Monthly mean air temperature shows whether the background temperature has risen.",
+          "limits": "Heatwaves are defined from daily temperature exceeding percentile thresholds on consecutive days; a monthly mean cannot identify or count them.",
+          "ref_ids": [
+            "perkins_alexander2013"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "related_condition",
+          "statement": "Dry soil reduces evaporative cooling and can amplify hot extremes.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "lst_day",
+          "role": "related_condition",
+          "statement": "Daytime land surface temperature describes surface heating under clear sky.",
+          "limits": "Skin temperature, not air temperature; clear-sky only; Terra orbit drift after 2020.",
+          "ref_ids": [
+            "modis_mod11c3"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Heatwave number, duration and intensity need daily maximum or minimum temperature; only monthly means are prepared.",
+        "No recorded heatwave event catalogue has been delivered and no heatwave recipe is registered."
+      ]
+    },
+    {
+      "phenomenon_id": "vegetation_change",
+      "label": "Vegetation greening or browning",
+      "label_zh": "植被變綠／褐化",
+      "aliases": {
+        "zh": [
+          "植被",
+          "綠化",
+          "褐化",
+          "植生",
+          "森林退化",
+          "沙漠化",
+          "荒漠化",
+          "變綠",
+          "作物生長"
+        ],
+        "en": [
+          "greening",
+          "browning",
+          "vegetation change",
+          "vegetation decline",
+          "desertification",
+          "land degradation",
+          "forest dieback"
+        ]
+      },
+      "description": "A long-term change in how green the land surface is, from changes in leaf cover, growing season or land use.",
+      "variable_links": [
+        {
+          "variable_id": "ndvi",
+          "role": "core_indicator",
+          "statement": "Satellite vegetation indices are the standard record of greening and browning.",
+          "limits": "Greenness is not biomass or ecosystem health; saturates in dense canopies; missing in polar winter.",
+          "ref_ids": [
+            "zhu2016",
+            "modis_mod13c2"
+          ]
+        },
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Water supply is one of the climate drivers of vegetation change, especially in dry regions.",
+          "limits": "Attribution of greening to drivers needs models; a parallel trend is not proof of cause.",
+          "ref_ids": [
+            "zhu2016"
+          ]
+        },
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Temperature is one of the climate drivers of vegetation change, especially in cold regions.",
+          "limits": "Attribution needs models; a parallel trend is not proof of cause.",
+          "ref_ids": [
+            "zhu2016"
+          ]
+        },
+        {
+          "variable_id": "vpd",
+          "role": "related_condition",
+          "statement": "Rising vapour pressure deficit is associated with reduced vegetation growth.",
+          "limits": "Derived from forcing fields.",
+          "ref_ids": [
+            "yuan2019",
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "related_condition",
+          "statement": "Root-zone water availability limits transpiration and growth in water-limited regions.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Land-cover change, deforestation area, crop yield and biomass are not prepared.",
+        "CO2 fertilisation and land management, major drivers of greening, are not in the catalogue."
+      ]
+    },
+    {
+      "phenomenon_id": "snow_decline",
+      "label": "Snowpack decline",
+      "label_zh": "積雪減少",
+      "aliases": {
+        "zh": [
+          "積雪減少",
+          "融雪",
+          "雪量",
+          "雪線",
+          "少雪",
+          "雪旱"
+        ],
+        "en": [
+          "snow decline",
+          "snowpack loss",
+          "snow drought",
+          "less snow",
+          "snowmelt"
+        ]
+      },
+      "description": "A long-term decrease in the water stored as seasonal snow.",
+      "variable_links": [
+        {
+          "variable_id": "swe",
+          "role": "core_indicator",
+          "statement": "Snow water equivalent is the direct measure of water stored in the snowpack.",
+          "limits": "Land surface model estimate; unreliable over glaciers, ice sheets and permanent snow; zero outside the snow season.",
+          "ref_ids": [
+            "mote2018",
+            "gldas_rodell2004"
+          ]
+        },
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Warmer winters and springs turn snowfall into rain and advance melt.",
+          "limits": "Monthly mean of a forcing field.",
+          "ref_ids": [
+            "mote2018"
+          ]
+        },
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Snow accumulation depends on cold-season precipitation.",
+          "limits": "Total precipitation; the snowfall fraction is not prepared.",
+          "ref_ids": [
+            "mote2018"
+          ]
+        },
+        {
+          "variable_id": "runoff",
+          "role": "response",
+          "statement": "Changes in snow storage shift the timing of runoff.",
+          "limits": "Fixed-baseline monthly anomalies describe overall change; a shift in seasonal timing needs a seasonal analysis that is not a registered recipe.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Snow cover extent, snow depth observations and snowfall are not prepared.",
+        "Glacier and ice-sheet mass change is a different phenomenon (see ice_mass_loss)."
+      ]
+    },
+    {
+      "phenomenon_id": "water_storage_depletion",
+      "label": "Terrestrial water storage / groundwater depletion",
+      "label_zh": "陸地儲水／地下水流失",
+      "aliases": {
+        "zh": [
+          "地下水",
+          "地下水超抽",
+          "地下水枯竭",
+          "儲水量",
+          "水資源流失",
+          "地層下陷",
+          "含水層"
+        ],
+        "en": [
+          "groundwater depletion",
+          "water storage loss",
+          "aquifer depletion",
+          "terrestrial water storage",
+          "freshwater loss"
+        ]
+      },
+      "description": "A long-term decline in the total water stored on and below the land surface, including aquifers.",
+      "variable_links": [
+        {
+          "variable_id": "tws_anomaly",
+          "role": "core_indicator",
+          "statement": "GRACE terrestrial water storage is the observation used to detect regional water storage loss.",
+          "limits": "About 300 km resolution; the anomaly sums groundwater, soil moisture, snow, ice and surface water and cannot name the component.",
+          "ref_ids": [
+            "rodell2018",
+            "grace_mascon_wiese2016"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_column",
+          "role": "related_condition",
+          "statement": "Modelled soil moisture is one of the components removed from terrestrial water storage to estimate groundwater change.",
+          "limits": "The subtraction itself is not a registered recipe here; the model has no irrigation or groundwater.",
+          "ref_ids": [
+            "rodell2009"
+          ]
+        },
+        {
+          "variable_id": "swe",
+          "role": "related_condition",
+          "statement": "Snow is one of the storage components included in the terrestrial water storage anomaly.",
+          "limits": "Modelled; not valid over glaciers.",
+          "ref_ids": [
+            "rodell2018"
+          ]
+        },
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Storage changes follow the balance of precipitation, evapotranspiration and runoff; natural variability explains part of the observed trends.",
+          "limits": "A water-balance closure is not computed.",
+          "ref_ids": [
+            "rodell2018"
+          ]
+        },
+        {
+          "variable_id": "et",
+          "role": "related_condition",
+          "statement": "Evapotranspiration is the main loss term of the land water balance.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Groundwater storage itself is not delivered: separating it from terrestrial water storage needs an approved recipe and surface-water data, neither of which is registered.",
+        "Well levels, pumping volumes and land subsidence are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "ice_mass_loss",
+      "label": "Ice sheet and glacier mass loss",
+      "label_zh": "冰蓋／冰川質量流失",
+      "aliases": {
+        "zh": [
+          "冰川",
+          "冰蓋",
+          "冰河融化",
+          "融冰",
+          "格陵蘭",
+          "南極"
+        ],
+        "en": [
+          "ice loss",
+          "glacier melt",
+          "ice sheet mass loss",
+          "glacier retreat",
+          "melting ice"
+        ]
+      },
+      "description": "A long-term loss of mass from ice sheets and glaciers.",
+      "variable_links": [
+        {
+          "variable_id": "tws_anomaly",
+          "role": "core_indicator",
+          "statement": "Satellite gravimetry measures mass change, which over ice sheets and glaciated regions is dominated by ice.",
+          "limits": "About 300 km resolution; includes the glacial isostatic adjustment correction error; hydrology gain factors must not be applied to ice.",
+          "ref_ids": [
+            "grace_mascon_watkins2015",
+            "grace_jpl_mascon_page",
+            "rodell2018"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Glacier area, length, elevation change and ice velocity are not prepared.",
+        "The modelled snow water equivalent (swe) is not valid over ice and must not be used here."
+      ]
+    },
+    {
+      "phenomenon_id": "atmospheric_dryness",
+      "label": "Atmospheric dryness / evaporative demand",
+      "label_zh": "大氣乾燥／蒸發需求",
+      "aliases": {
+        "zh": [
+          "乾燥",
+          "蒸發需求",
+          "空氣乾燥",
+          "水氣壓差",
+          "蒸散",
+          "乾燥化",
+          "蒸發量"
+        ],
+        "en": [
+          "aridity",
+          "evaporative demand",
+          "atmospheric drying",
+          "drying",
+          "vapour pressure deficit",
+          "evaporation"
+        ]
+      },
+      "description": "An increase in how much water the atmosphere can take up from soil, plants and open water.",
+      "variable_links": [
+        {
+          "variable_id": "vpd",
+          "role": "core_indicator",
+          "statement": "Vapour pressure deficit is the direct measure of atmospheric dryness.",
+          "limits": "Derived from forcing fields.",
+          "ref_ids": [
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "pet",
+          "role": "core_indicator",
+          "statement": "Potential evapotranspiration expresses evaporative demand as a water flux.",
+          "limits": "Model diagnostic with a known trend drift in GLDAS-2.1.",
+          "ref_ids": [
+            "vicente_serrano2010",
+            "mcvicar2012"
+          ]
+        },
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Temperature raises the saturation vapour pressure and so the demand.",
+          "limits": "Forcing field.",
+          "ref_ids": [
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "wind",
+          "role": "related_condition",
+          "statement": "Wind speed is one of the four drivers of evaporative demand.",
+          "limits": "Forcing field; speed only.",
+          "ref_ids": [
+            "mcvicar2012"
+          ]
+        },
+        {
+          "variable_id": "sw_down",
+          "role": "related_condition",
+          "statement": "Solar radiation supplies the energy for evaporation.",
+          "limits": "Forcing field.",
+          "ref_ids": [
+            "mcvicar2012",
+            "wild2009"
+          ]
+        },
+        {
+          "variable_id": "net_radiation",
+          "role": "related_condition",
+          "statement": "Net radiation is the energy available for evaporation.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "wild2009"
+          ]
+        },
+        {
+          "variable_id": "et",
+          "role": "response",
+          "statement": "Actual evapotranspiration responds to demand only where water is available.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "No aridity index (precipitation ÷ potential evapotranspiration) or climate classification is registered as a recipe.",
+        "Pan evaporation and humidity observations are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "soil_moisture_drying",
+      "label": "Soil moisture drying or wetting",
+      "label_zh": "土壤變乾／變濕",
+      "aliases": {
+        "zh": [
+          "土壤水分",
+          "土壤乾燥",
+          "土壤濕度",
+          "墒情",
+          "土壤含水量"
+        ],
+        "en": [
+          "soil drying",
+          "soil moisture decline",
+          "soil wetness",
+          "dry soil",
+          "soil moisture"
+        ]
+      },
+      "description": "A long-term change in the water held in the soil.",
+      "variable_links": [
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "core_indicator",
+          "statement": "Root-zone soil moisture is the storage that plants and evapotranspiration depend on.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_top",
+          "role": "core_indicator",
+          "statement": "Surface soil moisture shows the fast response of the top soil layer.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters. 1° product.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_column",
+          "role": "core_indicator",
+          "statement": "Soil moisture of the whole column shows the slower, deeper response.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "soil_wetness_root",
+          "role": "core_indicator",
+          "statement": "Root-zone degree of saturation from an independent reanalysis land model.",
+          "limits": "A different quantity (0–1) from storage in millimetres; reported separately, never merged.",
+          "ref_ids": [
+            "merra2_gelaro2017",
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Precipitation is the supply of soil moisture.",
+          "limits": "Monthly regional mean.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "et",
+          "role": "related_condition",
+          "statement": "Evapotranspiration is the main loss of soil moisture and is itself limited by it.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "vpd",
+          "role": "related_condition",
+          "statement": "Atmospheric demand increases the loss of soil water.",
+          "limits": "Derived from forcing fields.",
+          "ref_ids": [
+            "grossiord2020"
+          ]
+        },
+        {
+          "variable_id": "ndvi",
+          "role": "response",
+          "statement": "Vegetation growth is reduced under water stress.",
+          "limits": "Greenness also responds to land use and irrigation.",
+          "ref_ids": [
+            "yuan2019"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Satellite soil moisture retrievals (e.g. SMAP) and in situ soil moisture are not prepared; all soil moisture here is modelled."
+      ]
+    },
+    {
+      "phenomenon_id": "water_cycle_change",
+      "label": "Water cycle change",
+      "label_zh": "水循環變化",
+      "aliases": {
+        "zh": [
+          "水循環",
+          "水文變化",
+          "水資源",
+          "水平衡",
+          "逕流變化",
+          "河川流量"
+        ],
+        "en": [
+          "water cycle",
+          "hydrological change",
+          "water availability",
+          "water balance",
+          "runoff change",
+          "streamflow"
+        ]
+      },
+      "description": "A long-term change in the fluxes and stores of water on land: precipitation, evapotranspiration, runoff and storage.",
+      "variable_links": [
+        {
+          "variable_id": "precip",
+          "role": "core_indicator",
+          "statement": "Precipitation is the input of the land water balance.",
+          "limits": "Monthly regional mean.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        },
+        {
+          "variable_id": "et",
+          "role": "core_indicator",
+          "statement": "Evapotranspiration is the main return flux to the atmosphere.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        },
+        {
+          "variable_id": "runoff",
+          "role": "core_indicator",
+          "statement": "Runoff is the water the land supplies to rivers.",
+          "limits": "Modelled runoff generation, not gauged discharge.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        },
+        {
+          "variable_id": "tws_anomaly",
+          "role": "response",
+          "statement": "Terrestrial water storage integrates the imbalance of the fluxes.",
+          "limits": "About 300 km resolution; includes human withdrawals.",
+          "ref_ids": [
+            "rodell2018"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "response",
+          "statement": "Soil moisture responds to the balance of precipitation and evapotranspiration.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "swe",
+          "role": "response",
+          "statement": "Snow storage changes the seasonal timing of water availability.",
+          "limits": "Modelled; not valid over glaciers.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Gauged river discharge, reservoir storage and water use are not prepared.",
+        "The water balance is not closed by the system: products come from different sources and are analysed one by one."
+      ]
+    },
+    {
+      "phenomenon_id": "ocean_warming",
+      "label": "Ocean warming / marine heatwave",
+      "label_zh": "海洋暖化／海洋熱浪",
+      "aliases": {
+        "zh": [
+          "海溫",
+          "海洋熱浪",
+          "海水升溫",
+          "海洋暖化",
+          "珊瑚白化",
+          "海水溫度"
+        ],
+        "en": [
+          "marine heatwave",
+          "ocean warming",
+          "sea surface temperature",
+          "warm ocean",
+          "coral bleaching"
+        ]
+      },
+      "description": "A long-term rise of sea surface temperature, and discrete periods of anomalously warm water (marine heatwaves).",
+      "variable_links": [
+        {
+          "variable_id": "sst",
+          "role": "core_indicator",
+          "statement": "Sea surface temperature is the variable in which ocean surface warming and marine heatwaves are defined.",
+          "limits": "Monthly means describe warming; a marine heatwave is defined on daily data against a 90th-percentile threshold for at least five days and cannot be counted from monthly means.",
+          "ref_ids": [
+            "hobday2016",
+            "oisst_huang2021"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Marine heatwave frequency, duration and intensity need daily sea surface temperature; only monthly means are prepared and no recipe is registered.",
+        "Subsurface temperature, ocean heat content and coral bleaching records are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "wildfire_conditions",
+      "label": "Wildfire-prone conditions",
+      "label_zh": "野火風險條件",
+      "aliases": {
+        "zh": [
+          "野火",
+          "森林火災",
+          "山火",
+          "火災",
+          "林火"
+        ],
+        "en": [
+          "wildfire",
+          "forest fire",
+          "bushfire",
+          "fire weather",
+          "fire risk"
+        ]
+      },
+      "description": "Weather and fuel conditions that favour the ignition and spread of vegetation fires. Fire itself is not observed by any prepared variable.",
+      "variable_links": [
+        {
+          "variable_id": "vpd",
+          "role": "related_condition",
+          "statement": "Vapour pressure deficit is a measure of fuel aridity that is related to burned area in forests.",
+          "limits": "Shown for western US forests; the relation differs by region and fuel type.",
+          "ref_ids": [
+            "abatzoglou_williams2016"
+          ]
+        },
+        {
+          "variable_id": "tair",
+          "role": "related_condition",
+          "statement": "Temperature contributes to fuel aridity.",
+          "limits": "Monthly mean of a forcing field.",
+          "ref_ids": [
+            "abatzoglou_williams2016"
+          ]
+        },
+        {
+          "variable_id": "precip",
+          "role": "related_condition",
+          "statement": "Low precipitation dries fuels.",
+          "limits": "Monthly regional mean.",
+          "ref_ids": [
+            "abatzoglou_williams2016"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Burned area, active fire counts and fire emissions are not prepared: fire occurrence, frequency and severity cannot be answered.",
+        "No fire-weather index is registered as a recipe; such indices need daily weather.",
+        "Ignition sources and fuel load are not in the catalogue."
+      ]
+    },
+    {
+      "phenomenon_id": "monsoon_variability",
+      "label": "Monsoon and rainy-season variability",
+      "label_zh": "季風／雨季變化",
+      "aliases": {
+        "zh": [
+          "季風",
+          "雨季",
+          "梅雨",
+          "西南季風",
+          "乾季",
+          "雨量變化"
+        ],
+        "en": [
+          "monsoon",
+          "rainy season",
+          "wet season",
+          "dry season",
+          "seasonal rainfall"
+        ]
+      },
+      "description": "Year-to-year and long-term changes in the seasonal rains of monsoon regions.",
+      "variable_links": [
+        {
+          "variable_id": "precip",
+          "role": "core_indicator",
+          "statement": "Monsoon regions and monsoon strength are characterised by the seasonal contrast of precipitation.",
+          "limits": "The main analysis removes the fixed seasonal cycle, so its trend describes overall wetting or drying, not a change in onset, withdrawal or seasonal contrast.",
+          "ref_ids": [
+            "wang_ding2008",
+            "ipcc_ar6_wg1_ch8"
+          ]
+        },
+        {
+          "variable_id": "soil_moisture_root",
+          "role": "response",
+          "statement": "Soil moisture follows the seasonal rains.",
+          "limits": "Land surface model estimate without irrigation or groundwater; levels depend on model soil parameters.",
+          "ref_ids": [
+            "seneviratne2010"
+          ]
+        },
+        {
+          "variable_id": "runoff",
+          "role": "response",
+          "statement": "Runoff follows the seasonal rains.",
+          "limits": "Modelled runoff generation.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch8"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Monsoon onset and withdrawal dates need daily or pentad data, which is not prepared.",
+        "Circulation-based monsoon indices need wind direction and upper-air fields; only near-surface wind speed is prepared.",
+        "No recipe for seasonal totals or seasonality change is registered."
+      ]
+    },
+    {
+      "phenomenon_id": "solar_radiation_change",
+      "label": "Surface solar radiation change (dimming / brightening)",
+      "label_zh": "地表日射變化",
+      "aliases": {
+        "zh": [
+          "日照",
+          "日射",
+          "太陽輻射",
+          "輻射",
+          "變暗",
+          "變亮"
+        ],
+        "en": [
+          "dimming",
+          "brightening",
+          "solar radiation",
+          "sunshine",
+          "surface radiation"
+        ]
+      },
+      "description": "Decadal changes in the solar radiation that reaches the surface, caused by clouds and aerosols.",
+      "variable_links": [
+        {
+          "variable_id": "sw_down",
+          "role": "core_indicator",
+          "statement": "Downward shortwave radiation at the surface is the variable in which dimming and brightening are described.",
+          "limits": "Forcing field from analyses and satellite-based radiation whose sources change during the record; not a surface radiometer record.",
+          "ref_ids": [
+            "wild2009"
+          ]
+        },
+        {
+          "variable_id": "net_radiation",
+          "role": "response",
+          "statement": "Net radiation responds to changes in incoming solar radiation.",
+          "limits": "Model estimate.",
+          "ref_ids": [
+            "wild2009"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Aerosol optical depth and cloud cover, the causes of dimming and brightening, are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "wind_change",
+      "label": "Near-surface wind speed change (stilling)",
+      "label_zh": "風速變化",
+      "aliases": {
+        "zh": [
+          "風速",
+          "風",
+          "靜風",
+          "風力"
+        ],
+        "en": [
+          "wind stilling",
+          "wind speed",
+          "windiness",
+          "wind change"
+        ]
+      },
+      "description": "A long-term change of wind speed near the surface.",
+      "variable_links": [
+        {
+          "variable_id": "wind",
+          "role": "core_indicator",
+          "statement": "Near-surface wind speed is the variable in which stilling is described.",
+          "limits": "Analysis-based forcing field, not an anemometer record; published stilling trends come from station observations and may not appear in analyses.",
+          "ref_ids": [
+            "mcvicar2012"
+          ]
+        },
+        {
+          "variable_id": "pet",
+          "role": "response",
+          "statement": "Wind speed is one of the drivers of evaporative demand.",
+          "limits": "Model diagnostic with a known trend drift.",
+          "ref_ids": [
+            "mcvicar2012"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Wind direction, gusts and storms are not prepared."
+      ]
+    },
+    {
+      "phenomenon_id": "air_quality_dust",
+      "label": "Dust, aerosol and air quality",
+      "label_zh": "沙塵／氣膠／空氣品質",
+      "aliases": {
+        "zh": [
+          "沙塵",
+          "沙塵暴",
+          "氣膠",
+          "空氣污染",
+          "空污",
+          "霾",
+          "PM2.5",
+          "懸浮微粒"
+        ],
+        "en": [
+          "dust",
+          "dust storm",
+          "aerosol",
+          "air pollution",
+          "air quality",
+          "haze",
+          "smog",
+          "PM2.5"
+        ]
+      },
+      "description": "Particles suspended in the air from deserts, fires and human activity.",
+      "variable_links": [],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "No aerosol optical depth, dust, particulate matter or trace-gas product is prepared: this phenomenon cannot be analysed with the current data.",
+        "Wind speed, soil moisture or vegetation must not be presented as a dust or air-quality trend."
+      ]
+    },
+    {
+      "phenomenon_id": "sea_level_rise",
+      "label": "Sea level rise",
+      "label_zh": "海平面上升",
+      "aliases": {
+        "zh": [
+          "海平面",
+          "海平面上升",
+          "海水倒灌",
+          "海岸侵蝕"
+        ],
+        "en": [
+          "sea level",
+          "sea level rise",
+          "coastal flooding",
+          "storm surge"
+        ]
+      },
+      "description": "A long-term rise of the sea surface height.",
+      "variable_links": [],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "No sea surface height or tide-gauge product is prepared (the region catalogue names a sea-level category, but no series is delivered).",
+        "Sea surface temperature is not a sea-level measurement."
+      ]
+    },
+    {
+      "phenomenon_id": "sea_ice_decline",
+      "label": "Sea ice decline",
+      "label_zh": "海冰減少",
+      "aliases": {
+        "zh": [
+          "海冰",
+          "北極海冰",
+          "融冰",
+          "海冰面積"
+        ],
+        "en": [
+          "sea ice",
+          "sea ice loss",
+          "arctic ice",
+          "ice extent"
+        ]
+      },
+      "description": "A long-term decrease of the area or thickness of sea ice.",
+      "variable_links": [],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "No sea ice concentration, extent or thickness product is prepared (the region catalogue names a sea-ice category, but no series is delivered).",
+        "Sea surface temperature in ice-covered months is constrained by the ice analysis of the source product and must not be used as a sea-ice indicator."
+      ]
+    },
+    {
+      "phenomenon_id": "tropical_cyclone",
+      "label": "Tropical cyclones",
+      "label_zh": "颱風／熱帶氣旋",
+      "aliases": {
+        "zh": [
+          "颱風",
+          "颶風",
+          "熱帶氣旋",
+          "熱帶風暴",
+          "風災"
+        ],
+        "en": [
+          "typhoon",
+          "hurricane",
+          "tropical cyclone",
+          "tropical storm",
+          "cyclone"
+        ]
+      },
+      "description": "Intense rotating storms over warm oceans.",
+      "variable_links": [
+        {
+          "variable_id": "sst",
+          "role": "related_condition",
+          "statement": "Tropical cyclones form over warm ocean water.",
+          "limits": "Warm sea surface is a background condition, not a count or intensity of storms; many other factors control cyclone activity.",
+          "ref_ids": [
+            "ipcc_ar6_wg1_ch11"
+          ]
+        }
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": [
+        "Cyclone frequency, tracks and intensity need a storm track catalogue, which has not been delivered.",
+        "Monthly precipitation or wind speed cannot identify individual storms."
+      ]
+    }
+  ]
+}

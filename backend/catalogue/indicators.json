@@ -1,0 +1,736 @@
+{
+  "version": "indicators-1.0.0",
+  "note": "Approved standard indicator recipes (data contract §7). A phenomenon without an entry in `recipes` has no derived indicator; the selector may only pick listed indicator_id values.",
+  "recipes": [
+    {
+      "indicator_id": "spi3",
+      "version": "1.0.0",
+      "family": "spi",
+      "kind": "derived_indicator",
+      "label": "Standardized Precipitation Index, 3-month (SPI-3)",
+      "label_zh": "標準化降水指數（3 個月尺度，SPI-3）",
+      "phenomenon_applicability": {
+        "phenomenon_ids": [
+          "drought",
+          "meteorological_drought"
+        ],
+        "statement": "Meteorological drought: a precipitation deficit over 3 months relative to the fixed historical distribution of the same calendar months (McKee et al. 1993; WMO-No. 1090).",
+        "limits": [
+          "Precipitation only: evapotranspiration, temperature, soil, snow, groundwater, streamflow and water management are not represented.",
+          "Not an observed record of drought events or impacts, and not a flood indicator.",
+          "Where many accumulated totals are zero (arid locations, dry seasons) the SPI at short time scales is not normally distributed and has to be read with caution (Wu et al. 2007); the recipe refuses the fit when too few non-zero totals exist.",
+          "The input is a region-mean precipitation series of one product; the index describes that regional mean, not every location inside the region."
+        ]
+      },
+      "standard_refs": [
+        {
+          "ref_id": "mckee_1993",
+          "title": "McKee, T.B., N.J. Doesken and J. Kleist, 1993: The relationship of drought frequency and duration to time scales. Proceedings of the Eighth Conference on Applied Climatology, Anaheim, California, 17-22 January 1993. American Meteorological Society, Boston, 179-184.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Original definition of the SPI, of its time scales and of the SPI drought event (beginning, end, intensity, magnitude).",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wmo_1090_2012",
+          "title": "World Meteorological Organization, 2012: Standardized Precipitation Index User Guide (M. Svoboda, M. Hayes and D. Wood). WMO-No. 1090, Geneva.",
+          "url": "https://www.droughtmanagement.info/literature/WMO_standardized_precipitation_index_user_guide_en_2012.pdf",
+          "doi": null,
+          "applies_to": "SPI as the recommended meteorological drought index; wording of the drought-event criterion used by this recipe; classification table; record-length guidance (at least 30 years of continuous monthly data); zero is a valid value while a missing month is missing.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncl_dim_spi_n",
+          "title": "NCAR Command Language (NCL) function documentation: dim_spi_n (standardized precipitation index).",
+          "url": "https://www.ncl.ucar.edu/Document/Functions/Built-in/dim_spi_n.shtml",
+          "doi": null,
+          "applies_to": "Authoritative computation documentation: two-parameter gamma fit with Thom (1958) maximum-likelihood estimates, leading (k-1) values missing, at least 30 years of monthly data recommended.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "edwards_mckee_1997",
+          "title": "Edwards, D.C. and T.B. McKee, 1997: Characteristics of 20th century drought in the United States at multiple time scales. Climatology Report 97-2, Department of Atmospheric Science, Colorado State University, Fort Collins, Colorado.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Computation details: gamma distribution per calendar month, Thom's estimator, mixed distribution H(x) = q + (1 - q) G(x) for zero totals, transformation to the standard normal.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "thom_1958",
+          "title": "Thom, H.C.S., 1958: A note on the gamma distribution. Monthly Weather Review, 86(4), 117-122.",
+          "url": null,
+          "doi": "10.1175/1520-0493(1958)086<0117:ANOTGD>2.0.CO;2",
+          "applies_to": "Approximation of the maximum-likelihood estimate of the gamma shape parameter used for precipitation totals.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "guttman_1999",
+          "title": "Guttman, N.B., 1999: Accepting the Standardized Precipitation Index: a calculation algorithm. Journal of the American Water Resources Association, 35(2), 311-322.",
+          "url": null,
+          "doi": "10.1111/j.1752-1688.1999.tb03592.x",
+          "applies_to": "Sensitivity of the SPI to the fitted distribution and to record length.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wu_2007",
+          "title": "Wu, H., M.D. Svoboda, M.J. Hayes, D.A. Wilhite and F. Wen, 2007: Appropriate application of the Standardized Precipitation Index in arid locations and dry seasons. International Journal of Climatology, 27(1), 65-79.",
+          "url": null,
+          "doi": "10.1002/joc.1371",
+          "applies_to": "Limits of the SPI where zero precipitation totals are frequent.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncar_cdg_spi",
+          "title": "Keyantash, J. and National Center for Atmospheric Research Staff (Eds): The Climate Data Guide: Standardized Precipitation Index (SPI).",
+          "url": "https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi",
+          "doi": null,
+          "applies_to": "Strengths and limitations: precipitation only (no evapotranspiration), sensitivity to the quantity and reliability of the data used for the fit.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "climate_indices_pkg",
+          "title": "climate-indices (Python package, J. Adams): reference implementations of climate indices used for drought monitoring.",
+          "url": "https://github.com/monocongo/climate_indices",
+          "doi": null,
+          "applies_to": "Independent reference implementation used for the numerical validation of this recipe (gamma SPI, Thom estimator, values limited to [-3.09, 3.09]).",
+          "curated_version": "2026-11-15"
+        }
+      ],
+      "required_variables": [
+        {
+          "variable_id": "precip",
+          "quantity": "precipitation",
+          "cadence": "monthly",
+          "calendar": "gregorian",
+          "accepted_inputs": [
+            {
+              "unit": "mm/day",
+              "temporal_support": "monthly_mean_rate",
+              "conversion": "rate_times_days_in_month",
+              "formula": "P_month [mm] = rate [mm/day] x actual number of days of that calendar month (February has 29 days in leap years)"
+            }
+          ],
+          "spatial_support": "prepared region-mean series of one approved product; no regridding or product splicing at query time",
+          "required_period": {
+            "start": "1990-11",
+            "end": "2020-12"
+          },
+          "min_history_months": 362,
+          "history_requirement": "The product must provide every month from 1990-11 to 2020-12 for the region: the 3-month totals ending in each month of 1991-01..2020-12 need the 2 preceding month(s). Declared here so that the product decision is taken before any result is seen (data contract §4.2)."
+        }
+      ],
+      "baseline_requirements": {
+        "baseline_id": "spi_calibration_1991_2020",
+        "version": "1.0.0",
+        "kind": "calibration_reference",
+        "designation": "recipe_calibration",
+        "start": "1991-01",
+        "end": "2020-12",
+        "rule": "For each calendar month, the 3-month precipitation totals ending in that calendar month in 1991-2020 form the calibration sample of the mixed gamma distribution. The period is fixed: it does not move with the analysis period and it is not shortened to the record of a product.",
+        "ref_ids": [
+          "wmo_1090_2012",
+          "mckee_1993",
+          "ncl_dim_spi_n"
+        ],
+        "min_samples_per_calendar_month": 30,
+        "min_positive_samples_per_calendar_month": 10,
+        "requirement_basis": {
+          "min_samples_per_calendar_month": "Strict project policy (spec §7.4): the full 30-year calibration period, i.e. all 30 totals of every calendar month. WMO-No. 1090: 'At least 30 years of continuous monthly precipitation data are needed'; NCL dim_spi_n: 'At least 30 years of monthly data ... is recommended'.",
+          "min_positive_samples_per_calendar_month": "Project engineering policy, not a value prescribed by the cited standards: a two-parameter gamma fit to fewer non-zero totals is refused instead of reported."
+        },
+        "shorter_alternative": null,
+        "unsupported_status": "insufficient_baseline",
+        "product_note": "With the prepared precipitation products: GPCP (1979-) and MERRA-2 (1980-) cover the calibration period; GPM IMERG monthly (1998-) does not and yields insufficient_baseline for this indicator while its variable trend stays valid."
+      },
+      "computation": {
+        "parameters": {
+          "scale_months": 3,
+          "distribution": "gamma_2p_mixed_zero",
+          "estimator": "thom_1958_ml_approximation",
+          "zero_handling": "H(x) = q + (1 - q) G(x); a zero total has H = q",
+          "value_bounds": [
+            -3.09,
+            3.09
+          ],
+          "missing_month_rule": "a missing month makes every accumulation that contains it missing; missing is never zero precipitation"
+        },
+        "steps": [
+          "1. Monthly total: P_m = r_m x d_m, with r_m the monthly mean rate [mm/day] and d_m the actual number of days of the month.",
+          "2. Accumulation: X_t = sum of P over the 3 consecutive calendar months ending at t; missing if any of them is missing (the first 2 month(s) of a record are missing).",
+          "3. Calibration, separately for each calendar month, on the totals X_t with t in 1991-01..2020-12: q = (number of zero totals) / (number of valid totals); gamma shape and scale from the non-zero totals with Thom's approximation: A = ln(mean(x)) - mean(ln(x)); alpha = (1 + sqrt(1 + 4A/3)) / (4A); beta = mean(x) / alpha.",
+          "4. Cumulative probability: H(x) = q + (1 - q) G(x; alpha, beta), G being the gamma cumulative distribution function.",
+          "5. SPI_t = Phi^-1(H(X_t)), Phi being the standard normal distribution function; the result is limited to the value bounds.",
+          "6. The same fixed parameters are applied to every month of the record, inside and outside the calibration period."
+        ],
+        "value_bounds_basis": "Numerical bound of the climate-indices reference implementation (probabilities of 0 or 1 outside the calibration sample would otherwise give infinite values); not part of McKee et al. (1993).",
+        "numerical_validation": {
+          "reference": "climate-indices 3.2.0, indices.spi(distribution=gamma, periodicity=monthly, calibration 1991-2020)",
+          "fixture": "backend/tests/fixtures/indicators/spi_reference_climate_indices.json (TEST data: a synthetic precipitation series, not an observation)",
+          "tests": "backend/tests/test_indicators_spi.py",
+          "tolerance": "absolute 1e-6 on SPI values"
+        }
+      },
+      "event_rule": {
+        "source_statement": "WMO-No. 1090 (2012), summarising McKee et al. (1993): 'A drought event occurs any time the SPI is continuously negative and reaches an intensity of -1.0 or less. The event ends when the SPI becomes positive.' and 'The positive sum of the SPI for all the months within a drought event can be termed the drought's \"magnitude\".'",
+        "parameters": {
+          "run_below": 0.0,
+          "qualify_at_or_below": -1.0
+        },
+        "definition": "A drought event is a maximal run of consecutive calendar months with SPI < 0 whose minimum SPI is <= -1.0. It begins with the first month of the run and ends with the last month before SPI is no longer negative. Duration = number of months of the run; severity (magnitude) = sum of |SPI| over the run; peak = minimum SPI.",
+        "implementation_notes": "A month with SPI exactly 0 is not negative and therefore closes a run. Months of a run before SPI first reaches -1.0 belong to the event ('continuously negative').",
+        "identification_scope": "Events are identified on the full available SPI history of the product, never on the analysis period alone.",
+        "censoring": {
+          "left": "the event began before the analysis period, or the record begins inside the run",
+          "right": "the event continues after the end of the analysis period",
+          "gap": "the run is bounded by missing SPI months; its true beginning or end is unknown and the run is not joined across the gap",
+          "ongoing": "the run reaches the last valid month of the record"
+        },
+        "clipping_rule": "An event that crosses a boundary of the analysis period is reported once, with its full extent and a censoring flag; it is never cut into two events."
+      },
+      "aggregation": {
+        "cadence": "annual",
+        "year": "calendar year (January-December)",
+        "min_valid_months_per_year": 12,
+        "incomplete_year": "missing (null), never zero",
+        "complete_year_without_event": "zero",
+        "analysis_period_rule": "Only calendar years lying completely inside the analysis period enter an annual trend.",
+        "seasonal_adjustment": "none: annual metrics are not de-seasonalised (the index is standardised per calendar month).",
+        "monthly_metric": {
+          "metric_id": "spi3.index",
+          "label": "SPI-3 (monthly)",
+          "unit": "SPI (standard deviations)",
+          "data_kind": "index",
+          "seasonal_adjustment": "none_standardised"
+        },
+        "metrics": [
+          {
+            "metric_id": "spi3.drought_event_starts_per_year",
+            "quantity": "frequency",
+            "label": "SPI-3 drought events starting per year",
+            "unit": "events/year",
+            "data_kind": "count",
+            "rule": "Number of drought events whose first month falls in the calendar year. An event is counted once, in its start year, however long it lasts. Missing when the year is incomplete or when an event in it has an unknown beginning (data gap or start of record)."
+          },
+          {
+            "metric_id": "spi3.drought_months_per_year",
+            "quantity": "duration",
+            "label": "SPI-3 drought months per year",
+            "unit": "months/year",
+            "data_kind": "count",
+            "rule": "Number of months of the calendar year that lie inside a drought event. Months of an event crossing New Year are attributed to the year they fall in."
+          },
+          {
+            "metric_id": "spi3.drought_severity_per_year",
+            "quantity": "severity",
+            "label": "SPI-3 drought severity per year",
+            "unit": "SPI-months/year",
+            "data_kind": "continuous",
+            "rule": "Sum of |SPI| over the months of the calendar year that lie inside a drought event (the year's share of the event magnitudes)."
+          }
+        ]
+      },
+      "interpretation": {
+        "represents": "A derived meteorological-drought indicator: how unusual the 3-month precipitation total of the region is compared with the fixed 1991-2020 distribution of the same calendar months, in standard deviations of the standard normal distribution.",
+        "does_not_represent": [
+          "It is not an observed record of every kind of drought: agricultural, hydrological and socio-economic droughts and their impacts are not measured.",
+          "Its events are computed from one precipitation product by a fixed rule; they are not entries of an event catalogue and must be labelled derived_indicator, not recorded_event.",
+          "A trend of an annual metric describes the selected period for this product and region; it does not establish a cause."
+        ],
+        "versus_recorded_events": "Recorded drought events come from an event catalogue with its own definition and coverage (recorded_event). SPI events are derived (derived_indicator); the two are reported side by side and never merged."
+      }
+    },
+    {
+      "indicator_id": "spi6",
+      "version": "1.0.0",
+      "family": "spi",
+      "kind": "derived_indicator",
+      "label": "Standardized Precipitation Index, 6-month (SPI-6)",
+      "label_zh": "標準化降水指數（6 個月尺度，SPI-6）",
+      "phenomenon_applicability": {
+        "phenomenon_ids": [
+          "drought",
+          "meteorological_drought"
+        ],
+        "statement": "Meteorological drought: a precipitation deficit over 6 months relative to the fixed historical distribution of the same calendar months (McKee et al. 1993; WMO-No. 1090).",
+        "limits": [
+          "Precipitation only: evapotranspiration, temperature, soil, snow, groundwater, streamflow and water management are not represented.",
+          "Not an observed record of drought events or impacts, and not a flood indicator.",
+          "Where many accumulated totals are zero (arid locations, dry seasons) the SPI at short time scales is not normally distributed and has to be read with caution (Wu et al. 2007); the recipe refuses the fit when too few non-zero totals exist.",
+          "The input is a region-mean precipitation series of one product; the index describes that regional mean, not every location inside the region."
+        ]
+      },
+      "standard_refs": [
+        {
+          "ref_id": "mckee_1993",
+          "title": "McKee, T.B., N.J. Doesken and J. Kleist, 1993: The relationship of drought frequency and duration to time scales. Proceedings of the Eighth Conference on Applied Climatology, Anaheim, California, 17-22 January 1993. American Meteorological Society, Boston, 179-184.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Original definition of the SPI, of its time scales and of the SPI drought event (beginning, end, intensity, magnitude).",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wmo_1090_2012",
+          "title": "World Meteorological Organization, 2012: Standardized Precipitation Index User Guide (M. Svoboda, M. Hayes and D. Wood). WMO-No. 1090, Geneva.",
+          "url": "https://www.droughtmanagement.info/literature/WMO_standardized_precipitation_index_user_guide_en_2012.pdf",
+          "doi": null,
+          "applies_to": "SPI as the recommended meteorological drought index; wording of the drought-event criterion used by this recipe; classification table; record-length guidance (at least 30 years of continuous monthly data); zero is a valid value while a missing month is missing.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncl_dim_spi_n",
+          "title": "NCAR Command Language (NCL) function documentation: dim_spi_n (standardized precipitation index).",
+          "url": "https://www.ncl.ucar.edu/Document/Functions/Built-in/dim_spi_n.shtml",
+          "doi": null,
+          "applies_to": "Authoritative computation documentation: two-parameter gamma fit with Thom (1958) maximum-likelihood estimates, leading (k-1) values missing, at least 30 years of monthly data recommended.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "edwards_mckee_1997",
+          "title": "Edwards, D.C. and T.B. McKee, 1997: Characteristics of 20th century drought in the United States at multiple time scales. Climatology Report 97-2, Department of Atmospheric Science, Colorado State University, Fort Collins, Colorado.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Computation details: gamma distribution per calendar month, Thom's estimator, mixed distribution H(x) = q + (1 - q) G(x) for zero totals, transformation to the standard normal.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "thom_1958",
+          "title": "Thom, H.C.S., 1958: A note on the gamma distribution. Monthly Weather Review, 86(4), 117-122.",
+          "url": null,
+          "doi": "10.1175/1520-0493(1958)086<0117:ANOTGD>2.0.CO;2",
+          "applies_to": "Approximation of the maximum-likelihood estimate of the gamma shape parameter used for precipitation totals.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "guttman_1999",
+          "title": "Guttman, N.B., 1999: Accepting the Standardized Precipitation Index: a calculation algorithm. Journal of the American Water Resources Association, 35(2), 311-322.",
+          "url": null,
+          "doi": "10.1111/j.1752-1688.1999.tb03592.x",
+          "applies_to": "Sensitivity of the SPI to the fitted distribution and to record length.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wu_2007",
+          "title": "Wu, H., M.D. Svoboda, M.J. Hayes, D.A. Wilhite and F. Wen, 2007: Appropriate application of the Standardized Precipitation Index in arid locations and dry seasons. International Journal of Climatology, 27(1), 65-79.",
+          "url": null,
+          "doi": "10.1002/joc.1371",
+          "applies_to": "Limits of the SPI where zero precipitation totals are frequent.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncar_cdg_spi",
+          "title": "Keyantash, J. and National Center for Atmospheric Research Staff (Eds): The Climate Data Guide: Standardized Precipitation Index (SPI).",
+          "url": "https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi",
+          "doi": null,
+          "applies_to": "Strengths and limitations: precipitation only (no evapotranspiration), sensitivity to the quantity and reliability of the data used for the fit.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "climate_indices_pkg",
+          "title": "climate-indices (Python package, J. Adams): reference implementations of climate indices used for drought monitoring.",
+          "url": "https://github.com/monocongo/climate_indices",
+          "doi": null,
+          "applies_to": "Independent reference implementation used for the numerical validation of this recipe (gamma SPI, Thom estimator, values limited to [-3.09, 3.09]).",
+          "curated_version": "2026-11-15"
+        }
+      ],
+      "required_variables": [
+        {
+          "variable_id": "precip",
+          "quantity": "precipitation",
+          "cadence": "monthly",
+          "calendar": "gregorian",
+          "accepted_inputs": [
+            {
+              "unit": "mm/day",
+              "temporal_support": "monthly_mean_rate",
+              "conversion": "rate_times_days_in_month",
+              "formula": "P_month [mm] = rate [mm/day] x actual number of days of that calendar month (February has 29 days in leap years)"
+            }
+          ],
+          "spatial_support": "prepared region-mean series of one approved product; no regridding or product splicing at query time",
+          "required_period": {
+            "start": "1990-08",
+            "end": "2020-12"
+          },
+          "min_history_months": 365,
+          "history_requirement": "The product must provide every month from 1990-08 to 2020-12 for the region: the 6-month totals ending in each month of 1991-01..2020-12 need the 5 preceding month(s). Declared here so that the product decision is taken before any result is seen (data contract §4.2)."
+        }
+      ],
+      "baseline_requirements": {
+        "baseline_id": "spi_calibration_1991_2020",
+        "version": "1.0.0",
+        "kind": "calibration_reference",
+        "designation": "recipe_calibration",
+        "start": "1991-01",
+        "end": "2020-12",
+        "rule": "For each calendar month, the 6-month precipitation totals ending in that calendar month in 1991-2020 form the calibration sample of the mixed gamma distribution. The period is fixed: it does not move with the analysis period and it is not shortened to the record of a product.",
+        "ref_ids": [
+          "wmo_1090_2012",
+          "mckee_1993",
+          "ncl_dim_spi_n"
+        ],
+        "min_samples_per_calendar_month": 30,
+        "min_positive_samples_per_calendar_month": 10,
+        "requirement_basis": {
+          "min_samples_per_calendar_month": "Strict project policy (spec §7.4): the full 30-year calibration period, i.e. all 30 totals of every calendar month. WMO-No. 1090: 'At least 30 years of continuous monthly precipitation data are needed'; NCL dim_spi_n: 'At least 30 years of monthly data ... is recommended'.",
+          "min_positive_samples_per_calendar_month": "Project engineering policy, not a value prescribed by the cited standards: a two-parameter gamma fit to fewer non-zero totals is refused instead of reported."
+        },
+        "shorter_alternative": null,
+        "unsupported_status": "insufficient_baseline",
+        "product_note": "With the prepared precipitation products: GPCP (1979-) and MERRA-2 (1980-) cover the calibration period; GPM IMERG monthly (1998-) does not and yields insufficient_baseline for this indicator while its variable trend stays valid."
+      },
+      "computation": {
+        "parameters": {
+          "scale_months": 6,
+          "distribution": "gamma_2p_mixed_zero",
+          "estimator": "thom_1958_ml_approximation",
+          "zero_handling": "H(x) = q + (1 - q) G(x); a zero total has H = q",
+          "value_bounds": [
+            -3.09,
+            3.09
+          ],
+          "missing_month_rule": "a missing month makes every accumulation that contains it missing; missing is never zero precipitation"
+        },
+        "steps": [
+          "1. Monthly total: P_m = r_m x d_m, with r_m the monthly mean rate [mm/day] and d_m the actual number of days of the month.",
+          "2. Accumulation: X_t = sum of P over the 6 consecutive calendar months ending at t; missing if any of them is missing (the first 5 month(s) of a record are missing).",
+          "3. Calibration, separately for each calendar month, on the totals X_t with t in 1991-01..2020-12: q = (number of zero totals) / (number of valid totals); gamma shape and scale from the non-zero totals with Thom's approximation: A = ln(mean(x)) - mean(ln(x)); alpha = (1 + sqrt(1 + 4A/3)) / (4A); beta = mean(x) / alpha.",
+          "4. Cumulative probability: H(x) = q + (1 - q) G(x; alpha, beta), G being the gamma cumulative distribution function.",
+          "5. SPI_t = Phi^-1(H(X_t)), Phi being the standard normal distribution function; the result is limited to the value bounds.",
+          "6. The same fixed parameters are applied to every month of the record, inside and outside the calibration period."
+        ],
+        "value_bounds_basis": "Numerical bound of the climate-indices reference implementation (probabilities of 0 or 1 outside the calibration sample would otherwise give infinite values); not part of McKee et al. (1993).",
+        "numerical_validation": {
+          "reference": "climate-indices 3.2.0, indices.spi(distribution=gamma, periodicity=monthly, calibration 1991-2020)",
+          "fixture": "backend/tests/fixtures/indicators/spi_reference_climate_indices.json (TEST data: a synthetic precipitation series, not an observation)",
+          "tests": "backend/tests/test_indicators_spi.py",
+          "tolerance": "absolute 1e-6 on SPI values"
+        }
+      },
+      "event_rule": {
+        "source_statement": "WMO-No. 1090 (2012), summarising McKee et al. (1993): 'A drought event occurs any time the SPI is continuously negative and reaches an intensity of -1.0 or less. The event ends when the SPI becomes positive.' and 'The positive sum of the SPI for all the months within a drought event can be termed the drought's \"magnitude\".'",
+        "parameters": {
+          "run_below": 0.0,
+          "qualify_at_or_below": -1.0
+        },
+        "definition": "A drought event is a maximal run of consecutive calendar months with SPI < 0 whose minimum SPI is <= -1.0. It begins with the first month of the run and ends with the last month before SPI is no longer negative. Duration = number of months of the run; severity (magnitude) = sum of |SPI| over the run; peak = minimum SPI.",
+        "implementation_notes": "A month with SPI exactly 0 is not negative and therefore closes a run. Months of a run before SPI first reaches -1.0 belong to the event ('continuously negative').",
+        "identification_scope": "Events are identified on the full available SPI history of the product, never on the analysis period alone.",
+        "censoring": {
+          "left": "the event began before the analysis period, or the record begins inside the run",
+          "right": "the event continues after the end of the analysis period",
+          "gap": "the run is bounded by missing SPI months; its true beginning or end is unknown and the run is not joined across the gap",
+          "ongoing": "the run reaches the last valid month of the record"
+        },
+        "clipping_rule": "An event that crosses a boundary of the analysis period is reported once, with its full extent and a censoring flag; it is never cut into two events."
+      },
+      "aggregation": {
+        "cadence": "annual",
+        "year": "calendar year (January-December)",
+        "min_valid_months_per_year": 12,
+        "incomplete_year": "missing (null), never zero",
+        "complete_year_without_event": "zero",
+        "analysis_period_rule": "Only calendar years lying completely inside the analysis period enter an annual trend.",
+        "seasonal_adjustment": "none: annual metrics are not de-seasonalised (the index is standardised per calendar month).",
+        "monthly_metric": {
+          "metric_id": "spi6.index",
+          "label": "SPI-6 (monthly)",
+          "unit": "SPI (standard deviations)",
+          "data_kind": "index",
+          "seasonal_adjustment": "none_standardised"
+        },
+        "metrics": [
+          {
+            "metric_id": "spi6.drought_event_starts_per_year",
+            "quantity": "frequency",
+            "label": "SPI-6 drought events starting per year",
+            "unit": "events/year",
+            "data_kind": "count",
+            "rule": "Number of drought events whose first month falls in the calendar year. An event is counted once, in its start year, however long it lasts. Missing when the year is incomplete or when an event in it has an unknown beginning (data gap or start of record)."
+          },
+          {
+            "metric_id": "spi6.drought_months_per_year",
+            "quantity": "duration",
+            "label": "SPI-6 drought months per year",
+            "unit": "months/year",
+            "data_kind": "count",
+            "rule": "Number of months of the calendar year that lie inside a drought event. Months of an event crossing New Year are attributed to the year they fall in."
+          },
+          {
+            "metric_id": "spi6.drought_severity_per_year",
+            "quantity": "severity",
+            "label": "SPI-6 drought severity per year",
+            "unit": "SPI-months/year",
+            "data_kind": "continuous",
+            "rule": "Sum of |SPI| over the months of the calendar year that lie inside a drought event (the year's share of the event magnitudes)."
+          }
+        ]
+      },
+      "interpretation": {
+        "represents": "A derived meteorological-drought indicator: how unusual the 6-month precipitation total of the region is compared with the fixed 1991-2020 distribution of the same calendar months, in standard deviations of the standard normal distribution.",
+        "does_not_represent": [
+          "It is not an observed record of every kind of drought: agricultural, hydrological and socio-economic droughts and their impacts are not measured.",
+          "Its events are computed from one precipitation product by a fixed rule; they are not entries of an event catalogue and must be labelled derived_indicator, not recorded_event.",
+          "A trend of an annual metric describes the selected period for this product and region; it does not establish a cause."
+        ],
+        "versus_recorded_events": "Recorded drought events come from an event catalogue with its own definition and coverage (recorded_event). SPI events are derived (derived_indicator); the two are reported side by side and never merged."
+      }
+    },
+    {
+      "indicator_id": "spi12",
+      "version": "1.0.0",
+      "family": "spi",
+      "kind": "derived_indicator",
+      "label": "Standardized Precipitation Index, 12-month (SPI-12)",
+      "label_zh": "標準化降水指數（12 個月尺度，SPI-12）",
+      "phenomenon_applicability": {
+        "phenomenon_ids": [
+          "drought",
+          "meteorological_drought"
+        ],
+        "statement": "Meteorological drought: a precipitation deficit over 12 months relative to the fixed historical distribution of the same calendar months (McKee et al. 1993; WMO-No. 1090).",
+        "limits": [
+          "Precipitation only: evapotranspiration, temperature, soil, snow, groundwater, streamflow and water management are not represented.",
+          "Not an observed record of drought events or impacts, and not a flood indicator.",
+          "Where many accumulated totals are zero (arid locations, dry seasons) the SPI at short time scales is not normally distributed and has to be read with caution (Wu et al. 2007); the recipe refuses the fit when too few non-zero totals exist.",
+          "The input is a region-mean precipitation series of one product; the index describes that regional mean, not every location inside the region."
+        ]
+      },
+      "standard_refs": [
+        {
+          "ref_id": "mckee_1993",
+          "title": "McKee, T.B., N.J. Doesken and J. Kleist, 1993: The relationship of drought frequency and duration to time scales. Proceedings of the Eighth Conference on Applied Climatology, Anaheim, California, 17-22 January 1993. American Meteorological Society, Boston, 179-184.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Original definition of the SPI, of its time scales and of the SPI drought event (beginning, end, intensity, magnitude).",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wmo_1090_2012",
+          "title": "World Meteorological Organization, 2012: Standardized Precipitation Index User Guide (M. Svoboda, M. Hayes and D. Wood). WMO-No. 1090, Geneva.",
+          "url": "https://www.droughtmanagement.info/literature/WMO_standardized_precipitation_index_user_guide_en_2012.pdf",
+          "doi": null,
+          "applies_to": "SPI as the recommended meteorological drought index; wording of the drought-event criterion used by this recipe; classification table; record-length guidance (at least 30 years of continuous monthly data); zero is a valid value while a missing month is missing.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncl_dim_spi_n",
+          "title": "NCAR Command Language (NCL) function documentation: dim_spi_n (standardized precipitation index).",
+          "url": "https://www.ncl.ucar.edu/Document/Functions/Built-in/dim_spi_n.shtml",
+          "doi": null,
+          "applies_to": "Authoritative computation documentation: two-parameter gamma fit with Thom (1958) maximum-likelihood estimates, leading (k-1) values missing, at least 30 years of monthly data recommended.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "edwards_mckee_1997",
+          "title": "Edwards, D.C. and T.B. McKee, 1997: Characteristics of 20th century drought in the United States at multiple time scales. Climatology Report 97-2, Department of Atmospheric Science, Colorado State University, Fort Collins, Colorado.",
+          "url": null,
+          "doi": null,
+          "applies_to": "Computation details: gamma distribution per calendar month, Thom's estimator, mixed distribution H(x) = q + (1 - q) G(x) for zero totals, transformation to the standard normal.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "thom_1958",
+          "title": "Thom, H.C.S., 1958: A note on the gamma distribution. Monthly Weather Review, 86(4), 117-122.",
+          "url": null,
+          "doi": "10.1175/1520-0493(1958)086<0117:ANOTGD>2.0.CO;2",
+          "applies_to": "Approximation of the maximum-likelihood estimate of the gamma shape parameter used for precipitation totals.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "guttman_1999",
+          "title": "Guttman, N.B., 1999: Accepting the Standardized Precipitation Index: a calculation algorithm. Journal of the American Water Resources Association, 35(2), 311-322.",
+          "url": null,
+          "doi": "10.1111/j.1752-1688.1999.tb03592.x",
+          "applies_to": "Sensitivity of the SPI to the fitted distribution and to record length.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "wu_2007",
+          "title": "Wu, H., M.D. Svoboda, M.J. Hayes, D.A. Wilhite and F. Wen, 2007: Appropriate application of the Standardized Precipitation Index in arid locations and dry seasons. International Journal of Climatology, 27(1), 65-79.",
+          "url": null,
+          "doi": "10.1002/joc.1371",
+          "applies_to": "Limits of the SPI where zero precipitation totals are frequent.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "ncar_cdg_spi",
+          "title": "Keyantash, J. and National Center for Atmospheric Research Staff (Eds): The Climate Data Guide: Standardized Precipitation Index (SPI).",
+          "url": "https://climatedataguide.ucar.edu/climate-data/standardized-precipitation-index-spi",
+          "doi": null,
+          "applies_to": "Strengths and limitations: precipitation only (no evapotranspiration), sensitivity to the quantity and reliability of the data used for the fit.",
+          "curated_version": "2026-11-15"
+        },
+        {
+          "ref_id": "climate_indices_pkg",
+          "title": "climate-indices (Python package, J. Adams): reference implementations of climate indices used for drought monitoring.",
+          "url": "https://github.com/monocongo/climate_indices",
+          "doi": null,
+          "applies_to": "Independent reference implementation used for the numerical validation of this recipe (gamma SPI, Thom estimator, values limited to [-3.09, 3.09]).",
+          "curated_version": "2026-11-15"
+        }
+      ],
+      "required_variables": [
+        {
+          "variable_id": "precip",
+          "quantity": "precipitation",
+          "cadence": "monthly",
+          "calendar": "gregorian",
+          "accepted_inputs": [
+            {
+              "unit": "mm/day",
+              "temporal_support": "monthly_mean_rate",
+              "conversion": "rate_times_days_in_month",
+              "formula": "P_month [mm] = rate [mm/day] x actual number of days of that calendar month (February has 29 days in leap years)"
+            }
+          ],
+          "spatial_support": "prepared region-mean series of one approved product; no regridding or product splicing at query time",
+          "required_period": {
+            "start": "1990-02",
+            "end": "2020-12"
+          },
+          "min_history_months": 371,
+          "history_requirement": "The product must provide every month from 1990-02 to 2020-12 for the region: the 12-month totals ending in each month of 1991-01..2020-12 need the 11 preceding month(s). Declared here so that the product decision is taken before any result is seen (data contract §4.2)."
+        }
+      ],
+      "baseline_requirements": {
+        "baseline_id": "spi_calibration_1991_2020",
+        "version": "1.0.0",
+        "kind": "calibration_reference",
+        "designation": "recipe_calibration",
+        "start": "1991-01",
+        "end": "2020-12",
+        "rule": "For each calendar month, the 12-month precipitation totals ending in that calendar month in 1991-2020 form the calibration sample of the mixed gamma distribution. The period is fixed: it does not move with the analysis period and it is not shortened to the record of a product.",
+        "ref_ids": [
+          "wmo_1090_2012",
+          "mckee_1993",
+          "ncl_dim_spi_n"
+        ],
+        "min_samples_per_calendar_month": 30,
+        "min_positive_samples_per_calendar_month": 10,
+        "requirement_basis": {
+          "min_samples_per_calendar_month": "Strict project policy (spec §7.4): the full 30-year calibration period, i.e. all 30 totals of every calendar month. WMO-No. 1090: 'At least 30 years of continuous monthly precipitation data are needed'; NCL dim_spi_n: 'At least 30 years of monthly data ... is recommended'.",
+          "min_positive_samples_per_calendar_month": "Project engineering policy, not a value prescribed by the cited standards: a two-parameter gamma fit to fewer non-zero totals is refused instead of reported."
+        },
+        "shorter_alternative": null,
+        "unsupported_status": "insufficient_baseline",
+        "product_note": "With the prepared precipitation products: GPCP (1979-) and MERRA-2 (1980-) cover the calibration period; GPM IMERG monthly (1998-) does not and yields insufficient_baseline for this indicator while its variable trend stays valid."
+      },
+      "computation": {
+        "parameters": {
+          "scale_months": 12,
+          "distribution": "gamma_2p_mixed_zero",
+          "estimator": "thom_1958_ml_approximation",
+          "zero_handling": "H(x) = q + (1 - q) G(x); a zero total has H = q",
+          "value_bounds": [
+            -3.09,
+            3.09
+          ],
+          "missing_month_rule": "a missing month makes every accumulation that contains it missing; missing is never zero precipitation"
+        },
+        "steps": [
+          "1. Monthly total: P_m = r_m x d_m, with r_m the monthly mean rate [mm/day] and d_m the actual number of days of the month.",
+          "2. Accumulation: X_t = sum of P over the 12 consecutive calendar months ending at t; missing if any of them is missing (the first 11 month(s) of a record are missing).",
+          "3. Calibration, separately for each calendar month, on the totals X_t with t in 1991-01..2020-12: q = (number of zero totals) / (number of valid totals); gamma shape and scale from the non-zero totals with Thom's approximation: A = ln(mean(x)) - mean(ln(x)); alpha = (1 + sqrt(1 + 4A/3)) / (4A); beta = mean(x) / alpha.",
+          "4. Cumulative probability: H(x) = q + (1 - q) G(x; alpha, beta), G being the gamma cumulative distribution function.",
+          "5. SPI_t = Phi^-1(H(X_t)), Phi being the standard normal distribution function; the result is limited to the value bounds.",
+          "6. The same fixed parameters are applied to every month of the record, inside and outside the calibration period."
+        ],
+        "value_bounds_basis": "Numerical bound of the climate-indices reference implementation (probabilities of 0 or 1 outside the calibration sample would otherwise give infinite values); not part of McKee et al. (1993).",
+        "numerical_validation": {
+          "reference": "climate-indices 3.2.0, indices.spi(distribution=gamma, periodicity=monthly, calibration 1991-2020)",
+          "fixture": "backend/tests/fixtures/indicators/spi_reference_climate_indices.json (TEST data: a synthetic precipitation series, not an observation)",
+          "tests": "backend/tests/test_indicators_spi.py",
+          "tolerance": "absolute 1e-6 on SPI values"
+        }
+      },
+      "event_rule": {
+        "source_statement": "WMO-No. 1090 (2012), summarising McKee et al. (1993): 'A drought event occurs any time the SPI is continuously negative and reaches an intensity of -1.0 or less. The event ends when the SPI becomes positive.' and 'The positive sum of the SPI for all the months within a drought event can be termed the drought's \"magnitude\".'",
+        "parameters": {
+          "run_below": 0.0,
+          "qualify_at_or_below": -1.0
+        },
+        "definition": "A drought event is a maximal run of consecutive calendar months with SPI < 0 whose minimum SPI is <= -1.0. It begins with the first month of the run and ends with the last month before SPI is no longer negative. Duration = number of months of the run; severity (magnitude) = sum of |SPI| over the run; peak = minimum SPI.",
+        "implementation_notes": "A month with SPI exactly 0 is not negative and therefore closes a run. Months of a run before SPI first reaches -1.0 belong to the event ('continuously negative').",
+        "identification_scope": "Events are identified on the full available SPI history of the product, never on the analysis period alone.",
+        "censoring": {
+          "left": "the event began before the analysis period, or the record begins inside the run",
+          "right": "the event continues after the end of the analysis period",
+          "gap": "the run is bounded by missing SPI months; its true beginning or end is unknown and the run is not joined across the gap",
+          "ongoing": "the run reaches the last valid month of the record"
+        },
+        "clipping_rule": "An event that crosses a boundary of the analysis period is reported once, with its full extent and a censoring flag; it is never cut into two events."
+      },
+      "aggregation": {
+        "cadence": "annual",
+        "year": "calendar year (January-December)",
+        "min_valid_months_per_year": 12,
+        "incomplete_year": "missing (null), never zero",
+        "complete_year_without_event": "zero",
+        "analysis_period_rule": "Only calendar years lying completely inside the analysis period enter an annual trend.",
+        "seasonal_adjustment": "none: annual metrics are not de-seasonalised (the index is standardised per calendar month).",
+        "monthly_metric": {
+          "metric_id": "spi12.index",
+          "label": "SPI-12 (monthly)",
+          "unit": "SPI (standard deviations)",
+          "data_kind": "index",
+          "seasonal_adjustment": "none_standardised"
+        },
+        "metrics": [
+          {
+            "metric_id": "spi12.drought_event_starts_per_year",
+            "quantity": "frequency",
+            "label": "SPI-12 drought events starting per year",
+            "unit": "events/year",
+            "data_kind": "count",
+            "rule": "Number of drought events whose first month falls in the calendar year. An event is counted once, in its start year, however long it lasts. Missing when the year is incomplete or when an event in it has an unknown beginning (data gap or start of record)."
+          },
+          {
+            "metric_id": "spi12.drought_months_per_year",
+            "quantity": "duration",
+            "label": "SPI-12 drought months per year",
+            "unit": "months/year",
+            "data_kind": "count",
+            "rule": "Number of months of the calendar year that lie inside a drought event. Months of an event crossing New Year are attributed to the year they fall in."
+          },
+          {
+            "metric_id": "spi12.drought_severity_per_year",
+            "quantity": "severity",
+            "label": "SPI-12 drought severity per year",
+            "unit": "SPI-months/year",
+            "data_kind": "continuous",
+            "rule": "Sum of |SPI| over the months of the calendar year that lie inside a drought event (the year's share of the event magnitudes)."
+          }
+        ]
+      },
+      "interpretation": {
+        "represents": "A derived meteorological-drought indicator: how unusual the 12-month precipitation total of the region is compared with the fixed 1991-2020 distribution of the same calendar months, in standard deviations of the standard normal distribution.",
+        "does_not_represent": [
+          "It is not an observed record of every kind of drought: agricultural, hydrological and socio-economic droughts and their impacts are not measured.",
+          "Its events are computed from one precipitation product by a fixed rule; they are not entries of an event catalogue and must be labelled derived_indicator, not recorded_event.",
+          "A trend of an annual metric describes the selected period for this product and region; it does not establish a cause."
+        ],
+        "versus_recorded_events": "Recorded drought events come from an event catalogue with its own definition and coverage (recorded_event). SPI events are derived (derived_indicator); the two are reported side by side and never merged."
+      }
+    }
+  ],
+  "no_derived_recipe": [
+    {
+      "phenomenon_id": "flood",
+      "aliases": [
+        "flooding",
+        "inundation",
+        "淹水",
+        "洪水",
+        "水災"
+      ],
+      "status": "definition_required",
+      "reason": "No approved standard recipe derives flood occurrence from the prepared data. The prepared series are monthly region means; flood occurrence depends on sub-monthly rainfall intensity, antecedent conditions, river routing and local exposure, which they do not resolve. Monthly precipitation or its anomaly must not be labelled flood frequency. Actual flood frequency requires a recorded-event catalogue (see events/index.json).",
+      "what_is_needed": "Either a delivered flood event catalogue with coverage records (recorded_event), or an approved standard with data of sufficient temporal resolution registered as a new recipe through the development process."
+    }
+  ],
+  "default_no_recipe": {
+    "status": "definition_required",
+    "reason": "No approved standard indicator recipe is registered for this phenomenon. Related environmental variables can still be analysed; a formula is never made up at query time."
+  }
+}

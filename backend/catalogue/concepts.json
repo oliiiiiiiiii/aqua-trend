@@ -1,0 +1,721 @@
+{
+  "version": "concepts-1.0.0",
+  "note": "Physical variable concepts the selector may choose. A product is a fallback only for the same physical quantity (same definition_class, unit and temporal support). Order is decided by observation basis, record length and known defects — never by which trend is larger or more significant.",
+  "concepts": [
+    {
+      "variable_id": "precip",
+      "label": "Precipitation",
+      "label_zh": "降水",
+      "description": "Water reaching the surface as rain or snow, as a monthly mean rate. It is the supply term of the land water balance and the input of meteorological drought indices such as the SPI. Monthly means describe wet and dry months; they cannot resolve single storms, rain intensity or floods.",
+      "quantity_definition": {
+        "quantity": "precipitation rate at the surface (liquid + solid)",
+        "nature": "flux",
+        "depth_or_height": "surface",
+        "observed_or_modelled": "satellite–gauge merged estimates (IMERG, GPCP) or bias-corrected reanalysis (MERRA-2)",
+        "definition_class": "total_precipitation_rate_surface"
+      },
+      "unit": "mm/day",
+      "temporal_support": "monthly_mean_rate",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "imerg_v07_monthly",
+        "gpcp_v23_adler2018",
+        "merra2_gelaro2017",
+        "ipcc_ar6_wg1_ch8"
+      ],
+      "approved_product_ids": [
+        "p_imerg",
+        "p_gpcp",
+        "p_m2"
+      ],
+      "product_order_reason": "1 p_imerg: finest observation-based product (0.1°). 2 p_gpcp: observation-based, longest record (1979), but 2.5° native grid. 3 p_m2: reanalysis (model with observation-based correction), used only when no observation-based product applies. p_m2land is registered but not approved: same model as p_m2 over land, shorter record, never available without p_m2. A recipe that needs a long calibration record (e.g. SPI) must declare it before the product decision, which then skips products whose record is too short.",
+      "baseline_ref": {
+        "p_imerg": "clim.p_imerg.2001-2020",
+        "p_gpcp": "clim.p_gpcp.1991-2020",
+        "p_m2": "clim.p_m2.1991-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#2f6fb3",
+        "increase_reads": "wetter",
+        "decimals": 3,
+        "orb_channel": "precip"
+      }
+    },
+    {
+      "variable_id": "et",
+      "label": "Evapotranspiration",
+      "label_zh": "蒸發散",
+      "description": "Water returned from the surface to the atmosphere by soil evaporation, plant transpiration, interception loss and sublimation, as a monthly mean rate. All prepared products are model estimates (reanalysis or land surface model); evapotranspiration is not measured directly by these products.",
+      "quantity_definition": {
+        "quantity": "evapotranspiration rate from the surface",
+        "nature": "flux",
+        "depth_or_height": "surface",
+        "observed_or_modelled": "modelled (reanalysis / land surface model)",
+        "definition_class": "surface_evapotranspiration_rate"
+      },
+      "unit": "mm/day",
+      "temporal_support": "monthly_mean_rate",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "merra2_gelaro2017",
+        "gldas_rodell2004",
+        "seneviratne2010",
+        "ipcc_ar6_wg1_ch8"
+      ],
+      "approved_product_ids": [
+        "et_m2",
+        "et_m2land",
+        "et_gldas"
+      ],
+      "product_order_reason": "1 et_m2: longest record (1980). 2 et_m2land: same reanalysis, land tiles only, from 2000. 3 et_gldas: last, because its long-term trend has a known drift. Levels differ between models; products are never spliced.",
+      "baseline_ref": {
+        "et_m2": "clim.et_m2.1991-2020",
+        "et_m2land": "clim.et_m2land.2001-2020",
+        "et_gldas": "clim.et_gldas.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the quantity can be negative or its mean can be close to zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#3d9a8b",
+        "increase_reads": "more evapotranspiration",
+        "decimals": 3,
+        "orb_channel": "et"
+      }
+    },
+    {
+      "variable_id": "pet",
+      "label": "Potential evapotranspiration",
+      "label_zh": "潛在蒸發散",
+      "description": "Evaporation that would occur from a well-watered surface under the prevailing radiation, temperature, humidity and wind: a measure of atmospheric evaporative demand, not of water actually evaporated.",
+      "quantity_definition": {
+        "quantity": "potential evapotranspiration rate (Noah formulation)",
+        "nature": "flux",
+        "depth_or_height": "surface",
+        "observed_or_modelled": "modelled (land surface model diagnostic)",
+        "definition_class": "potential_evapotranspiration_rate_noah"
+      },
+      "unit": "mm/day",
+      "temporal_support": "monthly_mean_rate",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "vicente_serrano2010",
+        "mcvicar2012"
+      ],
+      "approved_product_ids": [
+        "pet_gldas"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "pet_gldas": "clim.pet_gldas.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the quantity can be negative or its mean can be close to zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#c9772b",
+        "increase_reads": "higher evaporative demand",
+        "decimals": 3,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "soil_moisture_root",
+      "label": "Root-zone soil moisture",
+      "label_zh": "根層土壤水",
+      "description": "Water stored in the soil layer that plant roots draw from. It reflects the balance of precipitation, evapotranspiration and drainage over weeks to months and is the quantity agricultural drought refers to. The prepared product is a land surface model estimate without irrigation.",
+      "quantity_definition": {
+        "quantity": "soil water storage in the root zone",
+        "nature": "stock",
+        "depth_or_height": "root zone (depth depends on the Noah vegetation class)",
+        "observed_or_modelled": "modelled (land surface model)",
+        "definition_class": "soil_water_storage_root_zone_noah"
+      },
+      "unit": "mm",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "seneviratne2010"
+      ],
+      "approved_product_ids": [
+        "sm_root"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "sm_root": "clim.sm_root.2001-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#7a5c3a",
+        "increase_reads": "wetter soil",
+        "decimals": 1,
+        "orb_channel": "root_zone"
+      }
+    },
+    {
+      "variable_id": "soil_moisture_column",
+      "label": "Soil moisture, 0–2 m",
+      "label_zh": "0–2 m 土壤水",
+      "description": "Water stored in the whole modelled soil column down to 2 m. It changes more slowly than the root zone and is the soil component of terrestrial water storage in the model.",
+      "quantity_definition": {
+        "quantity": "soil water storage, 0–200 cm",
+        "nature": "stock",
+        "depth_or_height": "0–200 cm",
+        "observed_or_modelled": "modelled (land surface model)",
+        "definition_class": "soil_water_storage_0_200cm"
+      },
+      "unit": "mm",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "seneviratne2010"
+      ],
+      "approved_product_ids": [
+        "sm_total"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "sm_total": "clim.sm_total.2001-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#8c6d46",
+        "increase_reads": "wetter soil",
+        "decimals": 1,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "soil_moisture_top",
+      "label": "Surface soil moisture, 0–10 cm",
+      "label_zh": "表層土壤水 0–10 cm",
+      "description": "Water stored in the top 10 cm of soil. It responds within days to rain and evaporation; the monthly mean describes how wet the surface was on average.",
+      "quantity_definition": {
+        "quantity": "soil water storage, 0–10 cm",
+        "nature": "stock",
+        "depth_or_height": "0–10 cm",
+        "observed_or_modelled": "modelled (land surface model)",
+        "definition_class": "soil_water_storage_0_10cm"
+      },
+      "unit": "mm",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "seneviratne2010"
+      ],
+      "approved_product_ids": [
+        "g1_soil_top"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "g1_soil_top": "clim.g1_soil_top.2001-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#a5825a",
+        "increase_reads": "wetter surface soil",
+        "decimals": 2,
+        "orb_channel": "soil_top"
+      }
+    },
+    {
+      "variable_id": "soil_wetness_root",
+      "label": "Root-zone soil wetness (degree of saturation)",
+      "label_zh": "根層土壤濕度（0–1）",
+      "description": "Degree of saturation of the root zone between 0 (dry) and 1 (saturated) in the MERRA-2 land model. It is a different quantity from soil water storage in millimetres and is not a substitute for it.",
+      "quantity_definition": {
+        "quantity": "root-zone degree of saturation",
+        "nature": "state",
+        "depth_or_height": "root zone of the MERRA-2 land model",
+        "observed_or_modelled": "modelled (reanalysis land model)",
+        "definition_class": "root_zone_wetness_fraction_of_saturation"
+      },
+      "unit": "fraction",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "merra2_gelaro2017",
+        "seneviratne2010"
+      ],
+      "approved_product_ids": [
+        "sm_m2"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "sm_m2": "clim.sm_m2.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: a bounded fraction; a percentage of a fraction is easily misread as percentage points.",
+      "display_semantics": {
+        "color": "#6b7f4e",
+        "increase_reads": "wetter soil",
+        "decimals": 4,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "tws_anomaly",
+      "label": "Terrestrial water storage anomaly",
+      "label_zh": "陸地總儲水異常",
+      "description": "Change in the total mass of water on and below the land surface (groundwater, soil moisture, snow, ice, surface water) measured by satellite gravimetry, expressed as equivalent water height relative to the product's own reference mean. It is observed, but only at scales of a few hundred kilometres, and it cannot by itself say which storage component changed.",
+      "quantity_definition": {
+        "quantity": "terrestrial water storage anomaly (equivalent water height)",
+        "nature": "stock",
+        "depth_or_height": "whole column (surface to groundwater)",
+        "observed_or_modelled": "observed (satellite gravimetry)",
+        "definition_class": "terrestrial_water_storage_anomaly_ewh"
+      },
+      "unit": "cm",
+      "temporal_support": "monthly_gravity_solution_anomaly",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "grace_mascon_watkins2015",
+        "grace_mascon_wiese2016",
+        "grace_jpl_mascon_page",
+        "rodell2018"
+      ],
+      "approved_product_ids": [
+        "tws"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "tws": "clim.tws.2003-2022"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: an anomaly has no meaningful mean to divide by.",
+      "display_semantics": {
+        "color": "#2b5d7d",
+        "increase_reads": "more stored water",
+        "decimals": 2,
+        "orb_channel": "tws"
+      }
+    },
+    {
+      "variable_id": "runoff",
+      "label": "Runoff",
+      "label_zh": "逕流",
+      "description": "Water leaving the soil column as surface and subsurface runoff in a land model, as a monthly mean rate. It indicates how much water the land generates for rivers; it is not measured river discharge and contains no routing, reservoirs or withdrawals.",
+      "quantity_definition": {
+        "quantity": "total runoff generation rate (surface + subsurface)",
+        "nature": "flux",
+        "depth_or_height": "surface and base of the soil column",
+        "observed_or_modelled": "modelled (land surface model / reanalysis land model)",
+        "definition_class": "total_runoff_rate_surface_plus_subsurface"
+      },
+      "unit": "mm/day",
+      "temporal_support": "monthly_mean_rate",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "merra2_gelaro2017",
+        "ipcc_ar6_wg1_ch8"
+      ],
+      "approved_product_ids": [
+        "runoff",
+        "ro_m2"
+      ],
+      "product_order_reason": "1 runoff (GLDAS Noah, 0.25°): kept as primary so that soil moisture, snow and runoff come from one consistent land model. 2 ro_m2 (MERRA-2 land model). Levels differ strongly between models; products are never spliced.",
+      "baseline_ref": {
+        "runoff": "clim.runoff.2001-2020",
+        "ro_m2": "clim.ro_m2.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the quantity is zero for much of the year or in many regions, so its mean is close to zero.",
+      "display_semantics": {
+        "color": "#3a86c8",
+        "increase_reads": "more runoff",
+        "decimals": 3,
+        "orb_channel": "runoff"
+      }
+    },
+    {
+      "variable_id": "swe",
+      "label": "Snow water equivalent",
+      "label_zh": "積雪水當量",
+      "description": "Depth of water that the snowpack would yield if melted. It describes seasonal water stored as snow. The prepared product is a land surface model estimate and is not valid over glaciers and ice sheets.",
+      "quantity_definition": {
+        "quantity": "snow water equivalent",
+        "nature": "stock",
+        "depth_or_height": "snowpack on the surface",
+        "observed_or_modelled": "modelled (land surface model)",
+        "definition_class": "snow_water_equivalent"
+      },
+      "unit": "mm",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "mote2018"
+      ],
+      "approved_product_ids": [
+        "swe"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "swe": "clim.swe.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the quantity is zero for much of the year or in many regions, so its mean is close to zero.",
+      "display_semantics": {
+        "color": "#8fb8d8",
+        "increase_reads": "more snow water",
+        "decimals": 2,
+        "orb_channel": "swe"
+      }
+    },
+    {
+      "variable_id": "tair",
+      "label": "Near-surface air temperature",
+      "label_zh": "近地面氣溫",
+      "description": "Temperature of the air near the surface, as a monthly mean. It is the usual variable for warming and one of the drivers of evaporative demand and snow melt. Monthly means cannot identify individual hot days or heatwaves.",
+      "quantity_definition": {
+        "quantity": "near-surface air temperature",
+        "nature": "state",
+        "depth_or_height": "near surface (forcing level)",
+        "observed_or_modelled": "analysis-based forcing field",
+        "definition_class": "near_surface_air_temperature"
+      },
+      "unit": "°C",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "ipcc_ar6_wg1_ch11"
+      ],
+      "approved_product_ids": [
+        "tair"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "tair": "clim.tair.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: °C has an arbitrary zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#c8553d",
+        "increase_reads": "warmer",
+        "decimals": 2,
+        "orb_channel": "tair"
+      }
+    },
+    {
+      "variable_id": "tsurf",
+      "label": "Land surface temperature (model, all-sky)",
+      "label_zh": "地表溫度（模式）",
+      "description": "Skin temperature of the land surface in a reanalysis land model, averaged over all hours and all sky conditions. A skin temperature differs from air temperature, especially over dry or sparsely vegetated land.",
+      "quantity_definition": {
+        "quantity": "land surface skin temperature, all-sky",
+        "nature": "state",
+        "depth_or_height": "surface skin",
+        "observed_or_modelled": "modelled (reanalysis land model)",
+        "definition_class": "land_surface_skin_temperature_all_sky_model"
+      },
+      "unit": "°C",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "merra2_gelaro2017"
+      ],
+      "approved_product_ids": [
+        "tsurf_m2"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "tsurf_m2": "clim.tsurf_m2.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: °C has an arbitrary zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#b8603f",
+        "increase_reads": "warmer surface",
+        "decimals": 2,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "lst_day",
+      "label": "Daytime land surface temperature (satellite, clear-sky)",
+      "label_zh": "白天地表溫度（衛星）",
+      "description": "Skin temperature of the land surface retrieved from thermal infrared at the daytime satellite overpass under clear sky. It is an observation, but samples only cloud-free days at one time of day and is sensitive to overpass-time drift.",
+      "quantity_definition": {
+        "quantity": "land surface skin temperature, clear-sky daytime overpass",
+        "nature": "state",
+        "depth_or_height": "surface skin",
+        "observed_or_modelled": "observed (satellite thermal infrared retrieval)",
+        "definition_class": "land_surface_skin_temperature_clear_sky_daytime"
+      },
+      "unit": "°C",
+      "temporal_support": "monthly_mean_clear_sky_daytime",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "modis_mod11c3"
+      ],
+      "approved_product_ids": [
+        "lst_day"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "lst_day": "clim.lst_day.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: °C has an arbitrary zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#d9793a",
+        "increase_reads": "warmer surface",
+        "decimals": 2,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "vpd",
+      "label": "Vapour pressure deficit",
+      "label_zh": "飽和水氣壓差",
+      "description": "Difference between the water vapour the air could hold at its temperature and the water vapour it holds. It measures the drying power of the air on plants and soil and rises with temperature when humidity does not keep pace.",
+      "quantity_definition": {
+        "quantity": "near-surface vapour pressure deficit",
+        "nature": "state",
+        "depth_or_height": "near surface (forcing level)",
+        "observed_or_modelled": "derived from analysis-based forcing fields",
+        "definition_class": "near_surface_vapour_pressure_deficit"
+      },
+      "unit": "kPa",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "grossiord2020",
+        "yuan2019",
+        "gldas_rodell2004"
+      ],
+      "approved_product_ids": [
+        "vpd"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "vpd": "clim.vpd.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the mean is close to zero in cold and humid regions.",
+      "display_semantics": {
+        "color": "#d08a2e",
+        "increase_reads": "drier air",
+        "decimals": 3,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "net_radiation",
+      "label": "Surface net radiation",
+      "label_zh": "淨輻射",
+      "description": "Net shortwave plus net longwave radiation at the land surface: the energy available for evaporation, heating the air and heating the ground.",
+      "quantity_definition": {
+        "quantity": "surface net radiation (net shortwave + net longwave)",
+        "nature": "flux",
+        "depth_or_height": "surface",
+        "observed_or_modelled": "modelled (land surface model / reanalysis land model)",
+        "definition_class": "surface_net_radiation_sw_plus_lw"
+      },
+      "unit": "W/m2",
+      "temporal_support": "monthly_mean_flux_density",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "merra2_gelaro2017",
+        "wild2009"
+      ],
+      "approved_product_ids": [
+        "rn",
+        "rn_m2"
+      ],
+      "product_order_reason": "1 rn (GLDAS Noah): consistent with the other GLDAS land variables. 2 rn_m2 (MERRA-2 land model).",
+      "baseline_ref": {
+        "rn": "clim.rn.2001-2020",
+        "rn_m2": "clim.rn_m2.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: the quantity can be negative or its mean can be close to zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#e0a526",
+        "increase_reads": "more net energy",
+        "decimals": 1,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "sw_down",
+      "label": "Downward shortwave radiation",
+      "label_zh": "向下短波輻射",
+      "description": "Solar radiation reaching the surface. It reflects cloudiness and aerosols as well as the seasonal sun, and is a main driver of evaporative demand and plant growth.",
+      "quantity_definition": {
+        "quantity": "surface downward shortwave radiation",
+        "nature": "flux",
+        "depth_or_height": "surface",
+        "observed_or_modelled": "analysis- and satellite-based forcing field",
+        "definition_class": "surface_downward_shortwave_radiation"
+      },
+      "unit": "W/m2",
+      "temporal_support": "monthly_mean_flux_density",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "wild2009"
+      ],
+      "approved_product_ids": [
+        "swdown"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "swdown": "clim.swdown.2001-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#e6b422",
+        "increase_reads": "more sunlight",
+        "decimals": 1,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "wind",
+      "label": "Near-surface wind speed",
+      "label_zh": "近地面風速",
+      "description": "Speed of the air near the surface, without direction. It affects evaporative demand; it does not describe circulation patterns or storms.",
+      "quantity_definition": {
+        "quantity": "near-surface wind speed (scalar)",
+        "nature": "state",
+        "depth_or_height": "near surface (forcing level)",
+        "observed_or_modelled": "analysis-based forcing field",
+        "definition_class": "near_surface_wind_speed"
+      },
+      "unit": "m/s",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "gldas_rodell2004",
+        "mcvicar2012"
+      ],
+      "approved_product_ids": [
+        "wind"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "wind": "clim.wind.2001-2020"
+      },
+      "relative_change": {
+        "denominator": "fixed_baseline_mean",
+        "condition": "denominator_strictly_positive",
+        "definition": "100 × slope per decade ÷ mean of the fixed seasonal baseline cycle of the selected product in the region",
+        "caution": "A percentage becomes unstable where the baseline mean is close to zero; the original-unit slope is always the primary result."
+      },
+      "relative_change_note": null,
+      "display_semantics": {
+        "color": "#6f8597",
+        "increase_reads": "windier",
+        "decimals": 2,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "ndvi",
+      "label": "Vegetation greenness (NDVI)",
+      "label_zh": "植被指數 NDVI",
+      "description": "Normalised difference vegetation index from satellite reflectance: a dimensionless measure of how green the land surface is. It tracks leaf cover and its seasonality; it is not biomass, crop yield or ecosystem health.",
+      "quantity_definition": {
+        "quantity": "normalised difference vegetation index",
+        "nature": "index",
+        "depth_or_height": "land surface (canopy top)",
+        "observed_or_modelled": "observed (satellite reflectance)",
+        "definition_class": "ndvi_modis"
+      },
+      "unit": "NDVI",
+      "temporal_support": "monthly_composite_index",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "modis_mod13c2",
+        "zhu2016"
+      ],
+      "approved_product_ids": [
+        "ndvi"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "ndvi": "clim.ndvi.2001-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: an index with an arbitrary scale and possible negative values.",
+      "display_semantics": {
+        "color": "#4c9a4a",
+        "increase_reads": "greener",
+        "decimals": 4,
+        "orb_channel": null
+      }
+    },
+    {
+      "variable_id": "sst",
+      "label": "Sea surface temperature",
+      "label_zh": "海表溫度",
+      "description": "Temperature of the ocean surface from a blended satellite and in situ analysis, as a monthly mean. Available for ocean regions only. Monthly means describe ocean warming; they cannot resolve marine heatwave events.",
+      "quantity_definition": {
+        "quantity": "sea surface temperature",
+        "nature": "state",
+        "depth_or_height": "sea surface",
+        "observed_or_modelled": "observed (blended satellite + in situ analysis)",
+        "definition_class": "sea_surface_temperature_oi_analysis"
+      },
+      "unit": "°C",
+      "temporal_support": "monthly_mean_state",
+      "data_kind": "continuous",
+      "scientific_refs": [
+        "oisst_huang2021",
+        "oisst_v21_dataset"
+      ],
+      "approved_product_ids": [
+        "sst"
+      ],
+      "product_order_reason": null,
+      "baseline_ref": {
+        "sst": "clim.sst.1991-2020"
+      },
+      "relative_change": null,
+      "relative_change_note": "No relative change: °C has an arbitrary zero, so slope ÷ mean is not meaningful.",
+      "display_semantics": {
+        "color": "#1f7a8c",
+        "increase_reads": "warmer sea surface",
+        "decimals": 2,
+        "orb_channel": null
+      }
+    }
+  ]
+}

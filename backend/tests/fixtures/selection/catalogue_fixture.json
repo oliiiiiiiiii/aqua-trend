@@ -1,0 +1,87 @@
+{
+  "_comment": "TEST DATA ONLY - placeholder catalogue for selector tests; not scientific content.",
+  "versions": {
+    "dataset_version": "test-data-1",
+    "catalogue_version": "test-catalogue-1",
+    "region_catalogue_version": "test-regions-1",
+    "indicator_registry_version": "test-indicators-1",
+    "quality_policy_version": "test-quality-1"
+  },
+  "concepts": {
+    "precip": {"variable_id": "precip", "label": "Precipitation", "label_zh": "降水",
+      "description": "TEST: liquid and solid water reaching the surface.",
+      "quantity_definition": {"quantity": "precipitation rate", "nature": "flux"},
+      "unit": "mm/day", "scientific_refs": ["test_ref_precip"]},
+    "soil_moisture_root": {"variable_id": "soil_moisture_root", "label": "Root-zone soil moisture", "label_zh": "根區土壤水分",
+      "description": "TEST: water stored in the root zone.",
+      "quantity_definition": {"quantity": "soil water", "nature": "stock"},
+      "unit": "kg/m2", "scientific_refs": ["test_ref_soil"]},
+    "tws_anomaly": {"variable_id": "tws_anomaly", "label": "Terrestrial water storage anomaly", "label_zh": "陸地水儲量距平",
+      "description": "TEST: anomaly of total water stored on and below land.",
+      "quantity_definition": {"quantity": "water storage anomaly", "nature": "state"},
+      "unit": "cm", "scientific_refs": []},
+    "tair": {"variable_id": "tair", "label": "Air temperature", "label_zh": "氣溫",
+      "description": "TEST: near-surface air temperature.",
+      "quantity_definition": {"quantity": "air temperature", "nature": "state"},
+      "unit": "K", "scientific_refs": ["test_ref_tair"]},
+    "vpd": {"variable_id": "vpd", "label": "Vapour pressure deficit", "label_zh": "飽和水汽壓差",
+      "description": "TEST: atmospheric dryness.",
+      "quantity_definition": {"quantity": "vapour pressure deficit", "nature": "state"},
+      "unit": "kPa", "scientific_refs": []},
+    "ndvi": {"variable_id": "ndvi", "label": "NDVI", "label_zh": "植生指數",
+      "description": "TEST: vegetation greenness index.",
+      "quantity_definition": {"quantity": "normalised difference vegetation index", "nature": "index"},
+      "unit": "1", "scientific_refs": []},
+    "swe": {"variable_id": "swe", "label": "Snow water equivalent", "label_zh": "雪水當量",
+      "description": "TEST: water held in the snowpack.",
+      "quantity_definition": {"quantity": "snow water equivalent", "nature": "stock"},
+      "unit": "kg/m2", "scientific_refs": []},
+    "runoff": {"variable_id": "runoff", "label": "Runoff", "label_zh": "逕流",
+      "description": "TEST: water leaving the land surface and subsurface.",
+      "quantity_definition": {"quantity": "runoff", "nature": "flux"},
+      "unit": "mm/day", "scientific_refs": []}
+  },
+  "refs": {
+    "test_ref_precip": {"ref_id": "test_ref_precip", "title": "TEST-REF precipitation"},
+    "test_ref_soil": {"ref_id": "test_ref_soil", "title": "TEST-REF soil moisture"},
+    "test_ref_tair": {"ref_id": "test_ref_tair", "title": "TEST-REF air temperature"},
+    "test_ref_drought": {"ref_id": "test_ref_drought", "title": "TEST-REF drought note"},
+    "test_ref_heat": {"ref_id": "test_ref_heat", "title": "TEST-REF heatwave note"}
+  },
+  "phenomena": [
+    {"phenomenon_id": "drought", "label": "Drought", "label_zh": "乾旱", "aliases": ["dry spell", "旱災", "乾旱"],
+      "description": "TEST: prolonged water deficit.",
+      "variable_links": [
+        {"variable_id": "precip", "role": "core_indicator", "statement": "TEST: precipitation deficit defines meteorological drought.", "limits": "TEST: says nothing about impacts.", "ref_ids": ["test_ref_drought", "test_ref_precip"]},
+        {"variable_id": "soil_moisture_root", "role": "related_condition", "statement": "TEST: root-zone soil moisture reflects agricultural drought.", "limits": null, "ref_ids": ["test_ref_soil"]},
+        {"variable_id": "ndvi", "role": "response", "statement": "TEST: vegetation greenness may respond to water deficit.", "limits": "TEST: also responds to land use.", "ref_ids": ["test_ref_drought"]}
+      ],
+      "indicator_ids": ["spi3"], "unanswerable_notes": []},
+    {"phenomenon_id": "flood", "label": "Flood", "label_zh": "淹水", "aliases": ["flooding", "inundation", "洪水", "水災"],
+      "description": "TEST: water covering normally dry land.",
+      "variable_links": [
+        {"variable_id": "precip", "role": "related_condition", "statement": "TEST: heavy precipitation is a condition associated with floods.", "limits": "TEST: monthly precipitation is not flood frequency.", "ref_ids": ["test_ref_precip"]},
+        {"variable_id": "runoff", "role": "related_condition", "statement": "TEST: runoff is associated with flooding.", "limits": null, "ref_ids": []}
+      ],
+      "indicator_ids": ["flood_recorded"],
+      "unanswerable_notes": ["TEST: flood event frequency needs a recorded event catalogue, which is not delivered."]},
+    {"phenomenon_id": "heatwave", "label": "Heatwave", "label_zh": "熱浪", "aliases": ["heat wave", "extreme heat", "高溫"],
+      "description": "TEST: period of unusually high temperature.",
+      "variable_links": [
+        {"variable_id": "tair", "role": "core_indicator", "statement": "TEST: air temperature measures heat.", "limits": "TEST: monthly means hide short events.", "ref_ids": ["test_ref_heat", "test_ref_tair"]},
+        {"variable_id": "vpd", "role": "related_condition", "statement": "TEST: atmospheric dryness accompanies heat.", "limits": null, "ref_ids": ["test_ref_heat"]}
+      ],
+      "indicator_ids": [],
+      "unanswerable_notes": ["TEST: no approved heatwave indicator recipe exists."]}
+  ],
+  "recipes": {
+    "spi3": {"indicator_id": "spi3", "version": "test-1", "label": "SPI-3 (TEST)", "kind": "derived_indicator",
+      "phenomenon_applicability": "TEST: meteorological drought.", "interpretation": "TEST"},
+    "flood_recorded": {"indicator_id": "flood_recorded", "version": "test-1", "label": "Recorded floods (TEST)", "kind": "recorded_event",
+      "phenomenon_applicability": "TEST: recorded flood events.", "interpretation": "TEST"}
+  },
+  "regions": {
+    "eu": {"id": "eu", "name": "Europe", "name_zh": "歐洲"},
+    "tw": {"id": "tw", "name": "Taiwan", "name_zh": "臺灣"}
+  }
+}

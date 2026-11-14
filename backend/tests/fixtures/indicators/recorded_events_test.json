@@ -1,0 +1,85 @@
+{
+  "_label": "TEST DATA — invented event catalogues, events and coverage records. Not real events.",
+  "catalogues": [
+    {"catalogue_id": "test_cat_a", "phenomenon_id": "flood", "status": "ready", "priority": 1, "version": "test-a-1",
+     "source_ref": {"ref_id": "test_source_a", "title": "TEST catalogue A (invented)"}, "definition_ref": "test definition A",
+     "canonical_ids": false,
+     "severity_metric": {"name": "affected_area_km2", "unit": "km2", "definition": "TEST metric", "annual_aggregation": "sum"}},
+    {"catalogue_id": "test_cat_b", "phenomenon_id": "flood", "status": "ready", "priority": 2, "version": "test-b-1",
+     "source_ref": {"ref_id": "test_source_b", "title": "TEST catalogue B (invented)"}, "definition_ref": "test definition B",
+     "canonical_ids": false, "severity_metric": null},
+    {"catalogue_id": "test_cat_integrated", "phenomenon_id": "storm", "status": "ready", "priority": 1, "version": "test-int-1",
+     "source_ref": {"ref_id": "test_source_int", "title": "TEST integrated catalogue (invented)"}, "definition_ref": "test definition",
+     "canonical_ids": true, "severity_metric": null},
+    {"catalogue_id": "test_cat_pending", "phenomenon_id": "landslide", "status": "pending", "priority": 1, "version": null,
+     "missing": ["events_file", "coverage_file"]}
+  ],
+  "events": {
+    "test_cat_a": [
+      {"event_id": "A1", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a", "test-region-b"],
+       "start": "2001-03-04", "end": "2001-03-10", "time_precision": {"start": "day", "end": "day"},
+       "metrics": {"affected_area_km2": {"value": 100.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": [], "censoring": []},
+      {"event_id": "A1", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a"],
+       "start": "2001-03-04", "end": "2001-03-10", "time_precision": {"start": "day", "end": "day"},
+       "metrics": {"affected_area_km2": {"value": 100.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": ["repeated_report"], "censoring": []},
+      {"event_id": "A2", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a"],
+       "start": "2003", "end": "2003", "time_precision": {"start": "year", "end": "year"},
+       "metrics": {"affected_area_km2": {"value": 40.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": ["coarse_time"], "censoring": []},
+      {"event_id": "A3", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a"],
+       "start": "2005-12-28", "end": "2006-01-05", "time_precision": {"start": "day", "end": "day"},
+       "metrics": {"affected_area_km2": {"value": 10.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": [], "censoring": []},
+      {"event_id": "A4", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a"],
+       "start": "2007-06", "end": "2007-07", "time_precision": {"start": "month", "end": "month"},
+       "metrics": {},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": ["coarse_time"], "censoring": []},
+      {"event_id": "A5", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a"],
+       "start": "2009-11-01", "end": null, "time_precision": {"start": "day", "end": null},
+       "metrics": {"affected_area_km2": {"value": 5.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": [], "censoring": ["ongoing"]},
+      {"event_id": "A6", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-other"],
+       "start": "2002-07-01", "end": "2002-07-02", "time_precision": {"start": "day", "end": "day"},
+       "metrics": {"affected_area_km2": {"value": 1.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": [], "censoring": []},
+      {"event_id": "A7", "phenomenon_id": "flood", "definition_ref": "test definition A", "region_ids": ["test-region-a", "test-region-c"],
+       "start": "2008-05-01T06:00:00+08:00", "end": "2008-05-03T18:00:00+08:00", "time_precision": {"start": "time", "end": "time"},
+       "metrics": {"affected_area_km2": {"value": 20.0, "unit": "km2", "definition": "TEST metric"}},
+       "source_ref": "test_source_a", "source_version": "test-a-1", "quality_flags": [], "censoring": []}
+    ],
+    "test_cat_b": [
+      {"event_id": "B-same-flood-as-A1", "phenomenon_id": "flood", "definition_ref": "test definition B", "region_ids": ["test-region-a"],
+       "start": "2001-03", "end": "2001-03", "time_precision": {"start": "month", "end": "month"}, "metrics": {},
+       "source_ref": "test_source_b", "source_version": "test-b-1", "quality_flags": [], "censoring": []},
+      {"event_id": "B-same-flood-as-A3", "phenomenon_id": "flood", "definition_ref": "test definition B", "region_ids": ["test-region-a"],
+       "start": "2005-12", "end": "2006-01", "time_precision": {"start": "month", "end": "month"}, "metrics": {},
+       "source_ref": "test_source_b", "source_version": "test-b-1", "quality_flags": [], "censoring": []}
+    ],
+    "test_cat_integrated": [
+      {"event_id": "src1-77", "canonical_event_id": "CANON-1", "phenomenon_id": "storm", "definition_ref": "test definition", "region_ids": ["test-region-a"],
+       "start": "2010-08-02", "end": "2010-08-04", "time_precision": {"start": "day", "end": "day"}, "metrics": {},
+       "source_ref": "test_source_int", "source_version": "test-int-1", "quality_flags": [], "censoring": []},
+      {"event_id": "src2-abc", "canonical_event_id": "CANON-1", "phenomenon_id": "storm", "definition_ref": "test definition", "region_ids": ["test-region-a"],
+       "start": "2010-08-02", "end": "2010-08-05", "time_precision": {"start": "day", "end": "day"}, "metrics": {},
+       "source_ref": "test_source_int", "source_version": "test-int-1", "quality_flags": [], "censoring": []},
+      {"event_id": "src1-78", "canonical_event_id": "CANON-2", "phenomenon_id": "storm", "definition_ref": "test definition", "region_ids": ["test-region-a"],
+       "start": "2011-09-10", "end": "2011-09-11", "time_precision": {"start": "day", "end": "day"}, "metrics": {},
+       "source_ref": "test_source_int", "source_version": "test-int-1", "quality_flags": [], "censoring": []}
+    ]
+  },
+  "coverage": {
+    "test_cat_a": [
+      {"catalogue_id": "test_cat_a", "region_id": "test-region-a", "phenomenon_id": "flood", "start": "2000-01", "end": "2009-12",
+       "completeness": "complete", "known_gaps": [{"start": "2004-06", "end": "2004-08", "reason": "TEST gap"}],
+       "policy_version": "test-policy-1", "coverage_version": "test-cov-1"},
+      {"catalogue_id": "test_cat_a", "region_id": "test-region-b", "phenomenon_id": "flood", "start": "2000-01", "end": "2009-12",
+       "completeness": "partial", "known_gaps": [], "policy_version": "test-policy-1", "coverage_version": "test-cov-1"}
+    ],
+    "test_cat_integrated": [
+      {"catalogue_id": "test_cat_integrated", "region_id": "test-region-a", "phenomenon_id": "storm", "start": "2010", "end": "2012",
+       "completeness": "complete", "known_gaps": [], "policy_version": "test-policy-1", "coverage_version": "test-cov-1"}
+    ]
+  }
+}

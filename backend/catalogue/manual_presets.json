@@ -1,0 +1,5 @@
+{
+  "version": "manual-presets-1.0.0",
+  "note": "Manual preset adjustments (spec §8.3). Schema: backend/catalogue/README.md, section 'manual_presets.json'. Empty = only automatic presets apply.",
+  "adjustments": []
+}

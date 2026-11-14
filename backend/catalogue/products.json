@@ -1,0 +1,811 @@
+{
+  "version": "products-1.0.0",
+  "note": "One product per series-2 layer (product_id = layer id). 'start'/'end' are the prepared record at registration; the store serves the bounds of the delivered data. 'approved' order lives in concepts.json.",
+  "products": [
+    {
+      "product_id": "p_imerg",
+      "variable_id": "precip",
+      "agency": "NASA (GPM mission; distributed by NASA GES DISC)",
+      "product_name": "GPM IMERG Final Run, monthly",
+      "version": "V07",
+      "source_refs": [
+        "imerg_v07_monthly"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Surface precipitation rate (rain and snow) from the merged multi-satellite estimate, calibrated with monthly gauge analyses over land.",
+      "definition_class": "total_precipitation_rate_surface",
+      "native_resolution": "0.1°, monthly",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Satellite retrievals are less reliable over snow and ice, at high latitudes and for light or orographic precipitation.",
+        "The record before the GPM launch (2014) relies on the TRMM-era constellation; sensor changes can affect long-term homogeneity.",
+        "Monthly means cannot resolve individual rain events."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "降水",
+      "nasa": true,
+      "family": "IMERG",
+      "start": "1998-01",
+      "end": "2025-09"
+    },
+    {
+      "product_id": "p_gpcp",
+      "variable_id": "precip",
+      "agency": "GPCP (produced at the University of Maryland; distributed by NOAA PSL)",
+      "product_name": "GPCP Monthly Analysis",
+      "version": "v2.3",
+      "source_refs": [
+        "gpcp_v23_adler2018"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Surface precipitation rate from the merged satellite–gauge monthly analysis.",
+      "definition_class": "total_precipitation_rate_surface",
+      "native_resolution": "2.5°, monthly",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "The 2.5° native grid is much coarser than most regions; small regions inherit the value of one or two native cells.",
+        "Not a NASA portal product: distributed by NOAA PSL.",
+        "Monthly means cannot resolve individual rain events."
+      ],
+      "caveat": "GPCP is distributed by NOAA PSL (not a NASA portal).",
+      "caveat_zh": "GPCP 由 NOAA PSL 發布（非 NASA 入口）",
+      "label_zh": "降水",
+      "nasa": false,
+      "family": "GPCP",
+      "start": "1979-01",
+      "end": "2026-10"
+    },
+    {
+      "product_id": "p_m2",
+      "variable_id": "precip",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 bias-corrected total precipitation (PRECTOTCORR)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxflx"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Surface precipitation rate from the MERRA-2 reanalysis after its observation-based precipitation correction.",
+      "definition_class": "total_precipitation_rate_surface",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXFLX)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Changes in the assimilated observing system can introduce artificial shifts in reanalysis time series.",
+        "Monthly means cannot resolve individual rain events."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "降水（校正）",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "1980-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "p_m2land",
+      "variable_id": "precip",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 land precipitation (PRECTOTLAND)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Precipitation rate seen by the land surface model of MERRA-2 (land tiles only).",
+      "definition_class": "total_precipitation_rate_land_tiles",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Registered for inspection only: same model as p_m2 with a shorter prepared record (from 2000) and delivered only for regions that also have p_m2, so it can never be needed as a fallback."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "陸地降水",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "et_m2",
+      "variable_id": "et",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 surface evaporation (EVAP)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxflx"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Total evaporation from the surface (soil evaporation, transpiration, interception loss, sublimation) of the MERRA-2 reanalysis.",
+      "definition_class": "surface_evapotranspiration_rate",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXFLX)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Grid-cell total: in coastal and lake cells it includes open-water evaporation, unlike the land-only products.",
+        "Evapotranspiration is not assimilated; it depends on the model's land surface and forcing."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "蒸發",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "1980-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "et_m2land",
+      "variable_id": "et",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 land evapotranspiration (EVLAND)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Evapotranspiration from the land tiles of the MERRA-2 land surface model.",
+      "definition_class": "surface_evapotranspiration_rate",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Land tiles only; differs from et_m2 where a region contains open water.",
+        "Prepared record starts in 2000."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "陸地蒸發",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "et_gldas",
+      "variable_id": "et",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah evapotranspiration",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Evapotranspiration of the Noah land surface model in GLDAS-2.1.",
+      "definition_class": "surface_evapotranspiration_rate",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Known drift in the long-term trend of GLDAS-2.1 evapotranspiration (team finding W11); it is the last fallback for that reason.",
+        "GLDAS-2.1 forcing sources change during the record."
+      ],
+      "caveat": "GLDAS-2.1 evapotranspiration has a known drift in its long-term trend (team finding W11).",
+      "caveat_zh": "GLDAS-2.1 蒸散長期趨勢有已知漂移（隊友 FINDINGS W11）",
+      "label_zh": "蒸散",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "pet_gldas",
+      "variable_id": "pet",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah potential evapotranspiration",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Potential evapotranspiration diagnosed by the Noah land surface model (evaporation that the atmosphere would take from a well-watered surface).",
+      "definition_class": "potential_evapotranspiration_rate_noah",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Known drift in the long-term trend of GLDAS-2.1 potential evapotranspiration.",
+        "Model-specific formulation; not interchangeable with reference-crop or pan evaporation."
+      ],
+      "caveat": "GLDAS-2.1 potential evapotranspiration has a known drift in its long-term trend.",
+      "caveat_zh": "GLDAS-2.1 潛在蒸散趨勢有已知漂移",
+      "label_zh": "潛在蒸散",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "sm_root",
+      "variable_id": "soil_moisture_root",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah root-zone soil moisture",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm",
+      "physical_definition": "Water stored in the root zone of the Noah model (depth depends on the model's vegetation class).",
+      "definition_class": "soil_water_storage_root_zone_noah",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Absolute values depend on model soil parameters; anomalies and trends are more meaningful than levels.",
+        "No irrigation or groundwater in the model."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "根層土壤水",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "sm_total",
+      "variable_id": "soil_moisture_column",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah soil moisture, 0–2 m",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm",
+      "physical_definition": "Water stored in the four Noah soil layers down to 2 m.",
+      "definition_class": "soil_water_storage_0_200cm",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Absolute values depend on model soil parameters.",
+        "No irrigation or groundwater in the model."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "0–2 m 土壤水",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "g1_soil_top",
+      "variable_id": "soil_moisture_top",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah soil moisture, 0–10 cm (1°)",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah10_m_21"
+      ],
+      "unit": "mm",
+      "physical_definition": "Water stored in the top Noah soil layer (0–10 cm).",
+      "definition_class": "soil_water_storage_0_10cm",
+      "native_resolution": "1°, monthly (GLDAS_NOAH10_M)",
+      "prepared_resolution": "regional mean of the GLDAS 1° product (separate upstream export), monthly",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Prepared from the 1° product: coarser than the other GLDAS layers.",
+        "The surface layer responds within days; a monthly mean smooths that variability."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "表層土壤水 0–10 cm",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "sm_m2",
+      "variable_id": "soil_wetness_root",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 root-zone soil wetness (GWETROOT)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "fraction",
+      "physical_definition": "Degree of saturation (0–1) of the root zone in the MERRA-2 land surface model.",
+      "definition_class": "root_zone_wetness_fraction_of_saturation",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "A dimensionless degree of saturation: it cannot be converted to millimetres of water without the model's soil parameters, so it is not a fallback for the GLDAS storage products."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "根層土壤濕度（0–1）",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "tws",
+      "variable_id": "tws_anomaly",
+      "agency": "NASA Jet Propulsion Laboratory (distributed by NASA PO.DAAC)",
+      "product_name": "GRACE / GRACE-FO JPL mascon terrestrial water storage anomaly",
+      "version": "release not recorded in the export-2 hand-off",
+      "source_refs": [
+        "grace_mascon_watkins2015",
+        "grace_mascon_wiese2016",
+        "grace_jpl_mascon_dataset",
+        "grace_jpl_mascon_page"
+      ],
+      "unit": "cm",
+      "physical_definition": "Anomaly of total water mass (groundwater, soil moisture, snow, ice, surface water) as equivalent water height, relative to the product's own 2004.0–2009.999 time mean.",
+      "definition_class": "terrestrial_water_storage_anomaly_ewh",
+      "native_resolution": "3° spherical-cap mascons, sampled on a 0.5° grid; monthly solutions",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_gravity_solution_anomaly",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Effective resolution is about 300 km: regions smaller than about 200,000 km² mix in signal from their surroundings (the region catalogue carries a warning for such regions).",
+        "Missing months: early mission months, battery-management gaps from 2011, and the gap between GRACE and GRACE-FO (2017-07 to 2018-05). They are null and are never interpolated.",
+        "Large earthquakes cause gravity jumps that are not hydrological.",
+        "A glacial isostatic adjustment model is removed upstream; its error is largest over formerly glaciated regions.",
+        "The anomaly cannot be separated into groundwater, soil moisture, snow or surface water without other data."
+      ],
+      "caveat": "Effective resolution of GRACE is about 300 km; large earthquakes cause non-hydrological gravity jumps.",
+      "caveat_zh": "GRACE 有效解析度約 300 km；大地震會造成非水文的重力跳動",
+      "label_zh": "陸地總儲水異常",
+      "nasa": true,
+      "family": "GRACE",
+      "start": "2002-04",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "runoff",
+      "variable_id": "runoff",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah runoff",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Total runoff generated by the Noah land surface model (surface plus subsurface), as a grid-cell flux.",
+      "definition_class": "total_runoff_rate_surface_plus_subsurface",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "Runoff generation, not river discharge: no routing, reservoirs, withdrawals or gauges.",
+        "The export-2 hand-off does not record the component fields or formula used upstream.",
+        "Levels differ strongly between land surface models."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "逕流",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "ro_m2",
+      "variable_id": "runoff",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 runoff (RUNOFF + BASEFLOW)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "mm/day",
+      "physical_definition": "Overland runoff plus baseflow of the MERRA-2 land surface model, as a grid-cell flux.",
+      "definition_class": "total_runoff_rate_surface_plus_subsurface",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_rate",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Runoff generation, not river discharge: no routing, reservoirs, withdrawals or gauges.",
+        "Levels differ strongly between land surface models."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "逕流",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "swe",
+      "variable_id": "swe",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah snow water equivalent",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "mm",
+      "physical_definition": "Water equivalent of the snowpack simulated by the Noah land surface model.",
+      "definition_class": "snow_water_equivalent",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "GLDAS has no glacier or ice-sheet model: where snow never melts the simulated snowpack keeps accumulating (values of tens of metres occur in this export). Do not interpret this product over ice sheets, glaciers or permanent snow.",
+        "Mostly zero outside the snow season and in snow-free regions."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "積雪水當量",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "tair",
+      "variable_id": "tair",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS near-surface air temperature (forcing)",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "°C",
+      "physical_definition": "Near-surface air temperature of the GLDAS-2.1 meteorological forcing.",
+      "definition_class": "near_surface_air_temperature",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "A forcing field derived from atmospheric analyses, not a station record.",
+        "GLDAS-2.1 forcing sources change during the record.",
+        "Converted upstream from K to °C."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "近地面氣溫",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "tsurf_m2",
+      "variable_id": "tsurf",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 land surface temperature (TSURF)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "°C",
+      "physical_definition": "Surface (skin) temperature of the land, including snow, in the MERRA-2 land surface model; all-sky, all hours.",
+      "definition_class": "land_surface_skin_temperature_all_sky_model",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "A skin temperature: it differs from air temperature and from a clear-sky daytime satellite retrieval.",
+        "Converted upstream from K to °C."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "地表溫度",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "lst_day",
+      "variable_id": "lst_day",
+      "agency": "NASA (MODIS; distributed by NASA LP DAAC)",
+      "product_name": "MODIS/Terra daytime land surface temperature",
+      "version": "collection not recorded in the export-2 hand-off",
+      "source_refs": [
+        "modis_mod11c3"
+      ],
+      "unit": "°C",
+      "physical_definition": "Clear-sky land surface (skin) temperature retrieved at the Terra daytime overpass.",
+      "definition_class": "land_surface_skin_temperature_clear_sky_daytime",
+      "native_resolution": "0.05° climate modelling grid, monthly",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_clear_sky_daytime",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Terra's orbit has drifted to an earlier overpass time since 2020, which produces a spurious cooling trend (team finding W6). Trends that include years after 2020 must be read with this caveat.",
+        "Clear-sky only: cloudy days are not sampled.",
+        "A daytime skin temperature at one overpass time; not air temperature and not a daily mean."
+      ],
+      "caveat": "MODIS Terra orbit drift after 2020 causes a spurious cooling trend (team finding W6).",
+      "caveat_zh": "MODIS Terra 2020 年後軌道漂移，會造成假的降溫趨勢（隊友 FINDINGS W6）",
+      "label_zh": "白天地表溫度",
+      "nasa": true,
+      "family": "MODIS",
+      "start": "2000-02",
+      "end": "2026-10"
+    },
+    {
+      "product_id": "vpd",
+      "variable_id": "vpd",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "Vapour pressure deficit computed from GLDAS forcing",
+      "version": "2.1 (derived upstream)",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "kPa",
+      "physical_definition": "Saturation vapour pressure at air temperature minus actual vapour pressure near the surface, computed upstream from the GLDAS forcing fields.",
+      "definition_class": "near_surface_vapour_pressure_deficit",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Computed upstream from forcing temperature, humidity and pressure. The export-2 hand-off does not record the component fields or formula used upstream.",
+        "Computed from monthly fields, so it is not the mean of sub-daily vapour pressure deficit.",
+        "GLDAS-2.1 forcing sources change during the record."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "飽和水氣壓差",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "rn",
+      "variable_id": "net_radiation",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS Noah net radiation",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "W/m2",
+      "physical_definition": "Net radiation at the land surface (net shortwave plus net longwave) of the Noah model.",
+      "definition_class": "surface_net_radiation_sw_plus_lw",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_flux_density",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
+        "The export-2 hand-off does not record the component fields or formula used upstream.",
+        "Depends on model albedo and surface temperature."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "淨輻射",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "rn_m2",
+      "variable_id": "net_radiation",
+      "agency": "NASA Global Modeling and Assimilation Office (distributed by NASA GES DISC)",
+      "product_name": "MERRA-2 land net radiation (SWLAND + LWLAND)",
+      "version": "5.12.4",
+      "source_refs": [
+        "merra2_gelaro2017",
+        "merra2_m2tmnxlnd"
+      ],
+      "unit": "W/m2",
+      "physical_definition": "Net shortwave plus net longwave radiation at the land surface in the MERRA-2 land surface model.",
+      "definition_class": "surface_net_radiation_sw_plus_lw",
+      "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_flux_density",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "Reanalysis model output; not a direct observation.",
+        "Depends on model clouds, albedo and surface temperature."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "淨輻射",
+      "nasa": true,
+      "family": "MERRA-2",
+      "start": "2000-01",
+      "end": "2026-09"
+    },
+    {
+      "product_id": "swdown",
+      "variable_id": "sw_down",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS downward shortwave radiation (forcing)",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "W/m2",
+      "physical_definition": "Downward shortwave (solar) radiation at the surface in the GLDAS-2.1 forcing.",
+      "definition_class": "surface_downward_shortwave_radiation",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_flux_density",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "A forcing field from analyses and satellite-based radiation, not a surface radiometer record.",
+        "GLDAS-2.1 forcing sources change during the record, which can affect trends."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "向下短波",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "wind",
+      "variable_id": "wind",
+      "agency": "NASA GSFC Hydrological Sciences Laboratory (distributed by NASA GES DISC)",
+      "product_name": "GLDAS near-surface wind speed (forcing)",
+      "version": "2.1",
+      "source_refs": [
+        "gldas_rodell2004",
+        "gldas_noah025_m_21"
+      ],
+      "unit": "m/s",
+      "physical_definition": "Near-surface wind speed of the GLDAS-2.1 forcing (speed only, no direction).",
+      "definition_class": "near_surface_wind_speed",
+      "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "A forcing field derived from atmospheric analyses, not an anemometer record.",
+        "Speed only: no wind direction, so circulation changes cannot be inferred.",
+        "GLDAS-2.1 forcing sources change during the record."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "風速",
+      "nasa": true,
+      "family": "GLDAS",
+      "start": "2000-01",
+      "end": "2026-07"
+    },
+    {
+      "product_id": "ndvi",
+      "variable_id": "ndvi",
+      "agency": "NASA (MODIS; distributed by NASA LP DAAC)",
+      "product_name": "MODIS monthly NDVI",
+      "version": "collection and platform not recorded in the export-2 hand-off",
+      "source_refs": [
+        "modis_mod13c2"
+      ],
+      "unit": "NDVI",
+      "physical_definition": "Normalised difference vegetation index, (NIR − red) / (NIR + red), from MODIS surface reflectance composites.",
+      "definition_class": "ndvi_modis",
+      "native_resolution": "0.05° climate modelling grid, monthly",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_composite_index",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "A greenness index, not biomass, productivity or vegetation health.",
+        "Saturates over dense canopies; affected by snow, cloud, aerosol and soil background.",
+        "High-latitude regions have missing winter months (no sunlight or snow); those months are null.",
+        "Sensor ageing and orbit drift of the platform can affect long-term trends."
+      ],
+      "caveat": null,
+      "caveat_zh": null,
+      "label_zh": "植被指數 NDVI",
+      "nasa": true,
+      "family": "MODIS",
+      "start": "2000-02",
+      "end": "2026-10"
+    },
+    {
+      "product_id": "sst",
+      "variable_id": "sst",
+      "agency": "NOAA National Centers for Environmental Information",
+      "product_name": "NOAA OISST (monthly mean of the daily analysis)",
+      "version": "v2.1",
+      "source_refs": [
+        "oisst_huang2021",
+        "oisst_v21_dataset"
+      ],
+      "unit": "°C",
+      "physical_definition": "Sea surface temperature from the daily optimum-interpolation blend of satellite, ship, buoy and Argo observations.",
+      "definition_class": "sea_surface_temperature_oi_analysis",
+      "native_resolution": "0.25°, daily",
+      "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
+      "temporal_support": "monthly_mean_state",
+      "cadence": "monthly",
+      "calendar": "gregorian",
+      "quality_limits": [
+        "A NOAA product, not a NASA product.",
+        "Delivered for ocean regions only.",
+        "Sea-ice covered months are missing or constrained by an ice-to-temperature relation in the source analysis.",
+        "Monthly means cannot resolve marine heatwave events, which are defined on daily data."
+      ],
+      "caveat": "NOAA OISST (not a NASA product).",
+      "caveat_zh": "NOAA OISST（非 NASA）",
+      "label_zh": "海表溫度",
+      "nasa": false,
+      "family": "OISST",
+      "start": "1982-01",
+      "end": "2026-10"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": "events-1.0.0",
+  "note": "Registry of recorded-event catalogues (data contract §6). No catalogue has been delivered: every entry is `pending` and every recorded-event result is `data_required`. A pending entry is a delivery slot, not data; there are no event files in this directory and an absent file is never read as 'zero events'.",
+  "delivery_format": "see README.md in this directory",
+  "aggregation_rule": {
+    "version": "recorded-aggregation-1.0.0",
+    "catalogue_selection": "One approved catalogue per phenomenon, region and analysis: the `ready` catalogue with the lowest `priority` number that has a delivery for the region. Records of different catalogues are never concatenated.",
+    "deduplication": "By `event_id` inside the selected catalogue; by `canonical_event_id` only when the catalogue declares `canonical_ids: true`, i.e. the cross-catalogue mapping and de-duplication policy were prepared upstream. A repeated key counts once.",
+    "region_rule": "An event counts once for a region listed in its `region_ids`; the region mapping is delivered with the catalogue and is not rebuilt at query time.",
+    "year_attribution": "An event belongs to the calendar year of its start and is counted once, also when it lasts into later years or crosses a boundary of the analysis period. If the source precision leaves the start year undetermined, the candidate years are missing.",
+    "time_precision": "Source precision is kept (year / month / day / time). A coarse record is an interval; no day or time of day is invented.",
+    "duration": "Inclusive calendar days, exact only when both ends are known to the day. Coarser records carry [min, max] bounds from their uncertainty intervals and make the annual duration sum missing. An event without an end is flagged `ongoing` and has no duration.",
+    "zero_rule": "A year without events is zero only if it lies wholly inside coverage declared `complete` and no known gap touches it. `partial` / `unknown` coverage, known gaps, years cut by the coverage boundary and regions without a coverage record are missing (null).",
+    "incomplete_year": "missing (null), never zero",
+    "analysis_period_rule": "Only calendar years lying completely inside the analysis period enter an annual trend. Events that began before the period are listed with censoring `left` and are not counted again inside it.",
+    "severity_annual_aggregations": ["sum"],
+    "severity_rule": "Annual severity is computed only for a catalogue whose `severity_metric.annual_aggregation` is one of `severity_annual_aggregations`; any other declared aggregation gives `not_applicable` instead of a sum.",
+    "seasonal_adjustment": "none_annual"
+  },
+  "metrics": [
+    {"suffix": "event_starts_per_year", "quantity": "frequency", "label": "Recorded events starting per year", "unit": "events/year", "data_kind": "count",
+     "rule": "Number of catalogue events of the region that start in the calendar year (see aggregation_rule.year_attribution and zero_rule)."},
+    {"suffix": "event_days_per_year", "quantity": "duration", "label": "Recorded event duration per start year", "unit": "days/year", "data_kind": "continuous",
+     "rule": "Sum of the exact durations (inclusive calendar days) of the events starting in the calendar year; missing if any of them has no exact duration."},
+    {"suffix": "severity_per_year", "quantity": "severity", "label": "Recorded event severity per start year", "unit": null, "data_kind": "continuous",
+     "rule": "Sum of the catalogue's registered `severity_metric` over the events starting in the calendar year; unit and definition come from the catalogue. Not available when the catalogue registers no severity metric; missing if any event of the year lacks the value."}
+  ],
+  "catalogues": [
+    {
+      "catalogue_id": "recorded_flood_events",
+      "phenomenon_id": "flood",
+      "label": "Recorded flood events (delivery slot)",
+      "status": "pending",
+      "priority": 1,
+      "version": null,
+      "source_ref": null,
+      "definition_ref": null,
+      "canonical_ids": false,
+      "severity_metric": null,
+      "events_file": "recorded_flood_events/events.json",
+      "coverage_file": "recorded_flood_events/coverage.json",
+      "missing": ["events_file", "coverage_file", "version", "source_ref", "definition_ref"],
+      "reason": "No flood event catalogue has been delivered. Flood frequency, duration and severity are data_required; monthly precipitation is not a substitute."
+    },
+    {
+      "catalogue_id": "recorded_drought_events",
+      "phenomenon_id": "drought",
+      "label": "Recorded drought events (delivery slot)",
+      "status": "pending",
+      "priority": 1,
+      "version": null,
+      "source_ref": null,
+      "definition_ref": null,
+      "canonical_ids": false,
+      "severity_metric": null,
+      "events_file": "recorded_drought_events/events.json",
+      "coverage_file": "recorded_drought_events/coverage.json",
+      "missing": ["events_file", "coverage_file", "version", "source_ref", "definition_ref"],
+      "reason": "No drought event catalogue has been delivered. Recorded drought events are data_required; the derived SPI indicators are reported separately as derived_indicator."
+    }
+  ]
+}

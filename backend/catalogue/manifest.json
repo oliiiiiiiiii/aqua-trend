@@ -1,0 +1,39 @@
+{
+  "manifest_version": "manifest-1.0.0",
+  "catalogue_version": "catalogue-1.0.0",
+  "note": "Declared part of the data release manifest (data contract §2). PreparedDataStore.open() validates every asset and publishes the effective manifest (derived versions + asset_status) as store.manifest; the declarations below never override what validation finds.",
+  "dataset": {
+    "data_dir": "web/public/data",
+    "export_version": "export-2",
+    "series_format": "series-2",
+    "cadence": "monthly",
+    "calendar": "gregorian",
+    "dataset_version_rule": "<export version>.<generated date>.<first 12 hex of sha256 over catalog/variables.json, catalog/series_index.json and the content (sha256 of every file, name-sorted) of series/>; any changed value yields a new version even when file sizes are unchanged",
+    "registered_against_dataset_version": "export-2.2026-11-14.2d8143913d72"
+  },
+  "version_rules": {
+    "catalogue_version": "<catalogue_version above>+<first 10 hex of sha256 over concepts.json, products.json, refs.json, baselines.json, phenomena.json>; editing any of these files changes the effective version even if the declared version is not bumped",
+    "region_catalogue_version": "regions-<first 12 hex of sha256 over catalog/regions.json and the content hashes of geo/*.geojson>",
+    "indicator_registry_version": "'version' of indicators.json, or not_delivered",
+    "quality_policy_version": "'version' of policies/quality_policy.json",
+    "catalogue_content_digest": "first 16 hex of sha256 over the bytes of policies/*.json, indicators.json, manual_presets.json and events/**/*.json — their own version strings are declared by the editor, so the digest makes an edit without a version bump visible in snapshot_id",
+    "snapshot_id": "snap-<first 16 hex of sha256 over all versions>"
+  },
+  "series_index": "catalog/series_index.json (in data_dir)",
+  "region_catalogue": "catalog/regions.json + geo/<layer>.geojson (in data_dir)",
+  "baselines": "baselines.json",
+  "indicator_registry": "indicators.json",
+  "event_catalogues": "events/index.json",
+  "asset_status": {
+    "catalogue.concepts": {"status": "ready"},
+    "catalogue.products": {"status": "ready"},
+    "catalogue.refs": {"status": "ready"},
+    "catalogue.baselines": {"status": "ready"},
+    "catalogue.phenomena": {"status": "ready"},
+    "catalogue.manual_presets": {"status": "ready", "reason": "empty: no manual adjustment registered"},
+    "catalogue.indicators": {"status": "pending", "reason": "owned by the indicator work package; validated at open() when delivered"},
+    "data.series": {"status": "ready", "reason": "monthly series-2 for basin3, basin4, named, lme, sea and ice regions; hex cells have no series"},
+    "events": {"status": "pending", "missing_fields": ["events/index.json", "event files", "coverage records"],
+               "reason": "no recorded event catalogue (flood, drought, heatwave, fire, cyclone) has been delivered; recorded-event results are data_required"}
+  }
+}

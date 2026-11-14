@@ -163,6 +163,7 @@ class SelectionPlan(Model):
     selector: SelectorInfo
     created_at: str
     reused: bool = False                   # set on the copy returned in a result
+    # optional extras set by the selector (extra='allow'): reuse_reason, served_model, validation_notes
 
 
 # --------------------------------------------------------------------------- resolved plan
@@ -272,6 +273,7 @@ class BaselineInfo(Model):
     status_reason: Optional[str] = None
     refs: list[ScientificRef] = Field(default_factory=list)
     applies_to: list[str] = Field(default_factory=list)   # variable / indicator ids
+    # optional extras (extra='allow'): parameters, fit_check
 
 
 # --------------------------------------------------------------------------- trend
@@ -288,6 +290,10 @@ class TrendMethod(Model):
     lag_policy: Optional[str] = None
     seasonal_adjustment: str       # "fixed_baseline_monthly_anomaly" | "none_annual" | "none_standardised"
     policy_version: str
+    stats_policy_version: Optional[str] = None
+    dof: Optional[float] = None
+    prewhiten_rho: Optional[float] = None
+    se_per_decade: Optional[float] = None
 
 
 class TrendResult(Model):
@@ -391,6 +397,7 @@ class IndicatorMetric(Model):
     trend: Optional[TrendResult] = None
     aggregation_rule: Optional[str] = None
     limitations: list[str] = Field(default_factory=list)
+    # optional extras (extra='allow'): data_kind, seasonal_adjustment, in_analysis
 
 
 class IndicatorResult(Model):
