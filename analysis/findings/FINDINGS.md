@@ -249,6 +249,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - Island-wide, M≥4 counts rise +9%/decade (p = 0.006), but M≥5 are flat (p = 0.93).
 - Visual: `results/47_taiwan_aftershocks/taiwan_aftershocks.png`.
 
+## N7. The world is burning less: MODIS fire detections −11% per decade in both satellites. **Robust**
+- Robust decline on 25% of burning land: African savannas, the steppe croplands, eastern China, Indonesia (−51%/decade) and the Cerrado.
+- Robust increase on 6%: central India, NE China and the Andes–Amazon edge.
+- Unchanged before orbit drift (2003–19).
+- Boreal North America: +30%/decade with the 2023 record, but p = 0.07.
+- Punjab: the satellites disagree (Terra −41%/decade, Aqua flat), though both show the collapse after 2021.
+- Visuals: `results/45_fire_trends/map_fire_trend.png`, `regional_fire_series.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

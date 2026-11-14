@@ -56,6 +56,8 @@ HERO = [
     ("N14_fire_smoke_corr", "results/42_airs_omi/map_fire_smoke_correlation.png", "Where fires burn, AIRS CO and OMI aerosol follow"),
     ("N15_water_vapour_per_K", "results/42_airs_omi/map_water_vapour_per_K.png", "Warmer air, wetter air: AIRS water vapour 6%/K over oceans"),
     ("N16_taiwan_aftershocks", "results/47_taiwan_aftershocks/taiwan_aftershocks.png", "Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95)"),
+    ("N17_fire_trend", "results/45_fire_trends/map_fire_trend.png", "The world is burning less: fire detections −11%/decade (Terra & Aqua agree)"),
+    ("N18_fire_regions", "results/45_fire_trends/regional_fire_series.png", "Fire regions year by year, Terra vs Aqua"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

@@ -83,3 +83,6 @@
 | 2026-11-14 17:27 | 42_airs_omi | done | ozone AIRS~OMI r=0.92; fire->CO r=0.14; NO2 polluted sig down 26%/up 18%; WV 6.0%/K |
 | 2026-11-14 17:28 | 42_airs_omi | done | ozone AIRS~OMI r=0.92; fire->CO r=0.14; NO2 polluted sig down 26%/up 18%; WV 6.0%/K |
 | 2026-11-14 17:29 | 47_taiwan_aftershocks | done | Chi-Chi p=0.95, Hualien p=0.96 (recovery 18.9 yr); Taiwan mainshock trend p=0.01 |
+| 2026-11-14 17:30 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |
+| 2026-11-14 17:32 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |
+| 2026-11-14 17:32 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |

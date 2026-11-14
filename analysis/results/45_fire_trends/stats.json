@@ -1,0 +1,151 @@
+{
+  "burning_cells": 17399,
+  "frac_robust_down": 0.24983509474974386,
+  "frac_robust_up": 0.05593795460620856,
+  "frac_sign_agree_terra_aqua": 0.7570550031611012,
+  "sign_agree_full_vs_2003_2019": 0.9754570910887828,
+  "regions": [
+    {
+      "region": "Boreal North America",
+      "aqua_mean": 32138.390625,
+      "record_year": 2023,
+      "aqua_pct_per_decade": 30.345327847293223,
+      "aqua_mk_p": 0.07219491360513254,
+      "aqua_pct_per_decade_2003_2019": 13.676741764309343,
+      "aqua_mk_p_2003_2019": 0.5976439315443395,
+      "terra_pct_per_decade": 35.3563244098571,
+      "terra_mk_p": 0.07219491360513254,
+      "terra_pct_per_decade_2003_2019": 19.383268650609587,
+      "terra_mk_p_2003_2019": 0.43968652710486045
+    },
+    {
+      "region": "Siberia & Russian Far East",
+      "aqua_mean": 101668.609375,
+      "record_year": 2003,
+      "aqua_pct_per_decade": -7.89711685666389,
+      "aqua_mk_p": 0.5653150900709356,
+      "aqua_pct_per_decade_2003_2019": 3.224447649836925,
+      "aqua_mk_p_2003_2019": 0.7150317752938318,
+      "terra_pct_per_decade": -2.203716562872968,
+      "terra_mk_p": 0.9583680818654058,
+      "terra_pct_per_decade_2003_2019": 11.620571670192904,
+      "terra_mk_p_2003_2019": 0.43968652710486045
+    },
+    {
+      "region": "Western US",
+      "aqua_mean": 21338.26171875,
+      "record_year": 2021,
+      "aqua_pct_per_decade": 12.75486589554354,
+      "aqua_mk_p": 0.37335049702106615,
+      "aqua_pct_per_decade_2003_2019": 9.792550026865662,
+      "aqua_mk_p_2003_2019": 0.7764940676883935,
+      "terra_pct_per_decade": 13.275955200122887,
+      "terra_mk_p": 0.34570998519847684,
+      "terra_pct_per_decade_2003_2019": 14.38395172000292,
+      "terra_mk_p_2003_2019": 0.6553075802476113
+    },
+    {
+      "region": "Northern African savanna",
+      "aqua_mean": 664406.375,
+      "record_year": 2007,
+      "aqua_pct_per_decade": -11.200307275130458,
+      "aqua_mk_p": 0.00013176941557446073,
+      "aqua_pct_per_decade_2003_2019": -11.017302415085446,
+      "aqua_mk_p_2003_2019": 0.010340361794472324,
+      "terra_pct_per_decade": -18.177897879697266,
+      "terra_mk_p": 3.407033006557071e-05,
+      "terra_pct_per_decade_2003_2019": -12.050174755453222,
+      "terra_mk_p_2003_2019": 0.04217070212970702
+    },
+    {
+      "region": "Southern African savanna",
+      "aqua_mean": 891680.875,
+      "record_year": 2024,
+      "aqua_pct_per_decade": 1.0402997424559373,
+      "aqua_mk_p": 0.6381968845774691,
+      "aqua_pct_per_decade_2003_2019": 1.3054636662933456,
+      "aqua_mk_p_2003_2019": 0.6553075802476113,
+      "terra_pct_per_decade": -9.085072545395228,
+      "terra_mk_p": 0.001983031852676538,
+      "terra_pct_per_decade_2003_2019": -2.6610783356484515,
+      "terra_mk_p_2003_2019": 0.5976439315443395
+    },
+    {
+      "region": "Amazon & Cerrado",
+      "aqua_mean": 257832.21875,
+      "record_year": 2007,
+      "aqua_pct_per_decade": -15.266295563160131,
+      "aqua_mk_p": 0.10192608044242166,
+      "aqua_pct_per_decade_2003_2019": -40.32231328608571,
+      "aqua_mk_p_2003_2019": 0.017119110549244844,
+      "terra_pct_per_decade": 0.05406776487268894,
+      "terra_mk_p": 1.0,
+      "terra_pct_per_decade_2003_2019": -23.83457862479876,
+      "terra_mk_p_2003_2019": 0.34884640290128766
+    },
+    {
+      "region": "Australia",
+      "aqua_mean": 137177.734375,
+      "record_year": 2012,
+      "aqua_pct_per_decade": 0.07937796128868956,
+      "aqua_mk_p": 1.0,
+      "aqua_pct_per_decade_2003_2019": 13.981851862033007,
+      "aqua_mk_p_2003_2019": 0.5423278567488096,
+      "terra_pct_per_decade": -6.707961694787434,
+      "terra_mk_p": 0.5653150900709356,
+      "terra_pct_per_decade_2003_2019": 9.916678575875748,
+      "terra_mk_p_2003_2019": 0.7764940676883935
+    },
+    {
+      "region": "Mainland SE Asia",
+      "aqua_mean": 124998.5625,
+      "record_year": 2004,
+      "aqua_pct_per_decade": -19.97142967144122,
+      "aqua_mk_p": 0.011846735739671552,
+      "aqua_pct_per_decade_2003_2019": -18.97662138623373,
+      "aqua_mk_p_2003_2019": 0.10886459480774507,
+      "terra_pct_per_decade": -2.713934356712747,
+      "terra_mk_p": 0.46394161057118555,
+      "terra_pct_per_decade_2003_2019": -2.5268547983410414,
+      "terra_mk_p_2003_2019": 0.6553075802476113
+    },
+    {
+      "region": "Indonesia & Malaysia",
+      "aqua_mean": 41084.0,
+      "record_year": 2015,
+      "aqua_pct_per_decade": -50.99308733326843,
+      "aqua_mk_p": 0.004244767907667345,
+      "aqua_pct_per_decade_2003_2019": -34.34112587682425,
+      "aqua_mk_p_2003_2019": 0.3927276123262421,
+      "terra_pct_per_decade": -48.39637927319842,
+      "terra_mk_p": 0.006065457175522773,
+      "terra_pct_per_decade_2003_2019": -13.02031149547393,
+      "terra_mk_p_2003_2019": 0.7150317752938318
+    },
+    {
+      "region": "Punjab & Haryana",
+      "aqua_mean": 15989.173828125,
+      "record_year": 2016,
+      "aqua_pct_per_decade": -1.7511849143041978,
+      "aqua_mk_p": 0.8755457169966204,
+      "aqua_pct_per_decade_2003_2019": 13.403195001298311,
+      "aqua_mk_p_2003_2019": 0.15133363966308636,
+      "terra_pct_per_decade": -40.631423590186344,
+      "terra_mk_p": 1.0310307660113968e-05,
+      "terra_pct_per_decade_2003_2019": -25.46765239592581,
+      "terra_mk_p_2003_2019": 0.034088901411189226
+    }
+  ],
+  "global_aqua": {
+    "pct_per_decade": -11.218981823384402,
+    "mk_p": 0.00010171605248970795,
+    "pct_per_decade_2003_2019": -12.211632298163385,
+    "mk_p_2003_2019": 0.00019489090240009966
+  },
+  "global_terra": {
+    "pct_per_decade": -10.084440605594983,
+    "mk_p": 0.0001697619900099483,
+    "pct_per_decade_2003_2019": -10.012695551408171,
+    "mk_p_2003_2019": 0.017119110549244844
+  }
+}

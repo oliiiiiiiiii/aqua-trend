@@ -28,6 +28,8 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N1 | Earthquakes are not increasing. Small-quake counts rise +22%/decade from better detection. Large quakes (M≥6, M≥7, GCMT Mw≥6) show no trend since 1983. Starting in 1973 shows a false +5%/decade, created by a magnitude-scale switch. | Robust null + artefact |
 | N2 | Human-made earthquakes: wastewater injection raised Oklahoma ×779 (887 M≥3 quakes in 2015) and the Permian Basin ×325. Regulation halved the rate every 1.2 years. The natural New Madrid zone is flat. | Robust |
 | N3 | Water and ice steer the North Pole: GRACE mass change predicts the post-2000 drift change (5.0 vs 5.1 mas/yr, 10° apart). Groundwater pumping pushes the pole toward India. Record short day: −1.65 ms on 5 Jul 2024. | Robust (2 independent systems) |
+| N5 | AIRS × OMI: ozone agrees (r = 0.92); Canada 2023 smoke was rank 1 of 22 in both AIRS CO and OMI aerosol; NO₂ fell −15 to −27%/decade in the US, Europe, East Asia and Taiwan, but rose in North India (+13%) and the Persian Gulf (+10%). | Robust (cross-sensor) |
+| N7 | The world is burning less: fire detections −11%/decade in both MODIS satellites (savannas, steppe, E China, Indonesia). | Robust |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 

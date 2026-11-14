@@ -62,7 +62,7 @@ print(res, flush=True)
 REG = {"Boreal North America": (-170, -52, 50, 72), "Siberia & Russian Far East": (60, 180, 50, 75), "Western US": (-125, -103, 31, 49),
        "Northern African savanna": (-18, 45, 0, 16), "Southern African savanna": (10, 42, -20, 0), "Amazon & Cerrado": (-75, -40, -20, 0),
        "Australia": (112, 155, -40, -10), "Mainland SE Asia": (94, 110, 10, 25), "Indonesia & Malaysia": (95, 142, -10, 7),
-       "Punjab & Haryana (crop stubble)": (73.5, 77.5, 29, 32.5)}
+       "Punjab & Haryana": (73.5, 77.5, 29, 32.5)}
 rows, ser = [], {}
 for nm, (x0, x1, y0, y1) in REG.items():
     m = (lat[:, None] >= y0) & (lat[:, None] <= y1) & (lon[None] >= x0) & (lon[None] <= x1)
@@ -106,11 +106,11 @@ cax = fig.add_axes([0.3, 0.10, 0.4, 0.022])
 cb = fig.colorbar(im, cax=cax, orientation="horizontal"); cb.outline.set_visible(False); cb.ax.tick_params(labelsize=8, length=0)
 cb.set_label("trend in fire detections 2003–2025 (% per decade; blue = fewer fires; faded = not robust)", fontsize=8.5, color=viz.INK2)
 rg = {r["region"]: r for r in rows}
-fig.text(0.01, 0.965, "The world's fire map is shifting: fewer savanna fires, more in the forests of the north", fontsize=15, fontweight="bold", va="top")
+fig.text(0.01, 0.965, "The world is burning less: fewer fires in savannas, steppe farmland, eastern China and Indonesia", fontsize=15, fontweight="bold", va="top")
 sub = (f"MODIS fire detections per 0.5° cell. Full colour = significant in Aqua (Mann–Kendall, FDR q=0.10) and the same direction in Terra. "
-       f"Robust decline on {res['frac_robust_down']:.0%} of burning land, increase on {res['frac_robust_up']:.0%}. Northern African savanna "
-       f"{rg['Northern African savanna']['aqua_pct_per_decade']:+.0f}%/decade, Boreal North America {rg['Boreal North America']['aqua_pct_per_decade']:+.0f}%/decade "
-       f"(record {rg['Boreal North America']['record_year']}), Punjab crop-stubble burning {rg['Punjab & Haryana (crop stubble)']['aqua_pct_per_decade']:+.0f}%/decade.")
+       f"Robust decline on {res['frac_robust_down']:.0%} of burning land, increase on {res['frac_robust_up']:.0%} (central India, NE China, the Andes–Amazon edge). "
+       f"Globally {res['global_aqua']['pct_per_decade']:+.0f}%/decade in both satellites (p < 0.001, also before orbit drift began). Boreal North America is the exception: "
+       f"{rg['Boreal North America']['aqua_pct_per_decade']:+.0f}%/decade with a record in {rg['Boreal North America']['record_year']}, but too variable to be significant (p = {rg['Boreal North America']['aqua_mk_p']:.2f}).")
 fig.text(0.01, 0.915, "\n".join(textwrap.wrap(sub, 175)), fontsize=9.5, color=viz.INK2, va="top")
 fig.text(0.99, 0.01, SRC, fontsize=7, color=viz.MUTED, ha="right")
 fig.savefig(f"{out}/map_fire_trend.png"); plt.close(fig)
@@ -124,7 +124,7 @@ for ax, nm in zip(axs.ravel(), REG):
     ax.plot(YRS, t / 1e3, color=viz.SERIES[0], lw=1.4, alpha=0.8)
     ax.set_title(nm, fontsize=9.3, loc="left", fontweight="bold", color=viz.INK)
     ok = r["aqua_mk_p"] < 0.05 and np.sign(r["aqua_pct_per_decade"]) == np.sign(r["terra_pct_per_decade"])
-    ax.text(0.02, 0.97, f"Aqua {r['aqua_pct_per_decade']:+.0f}%/dec (p={r['aqua_mk_p']:.2f})\nTerra {r['terra_pct_per_decade']:+.0f}%/dec"
+    ax.text(0.02, 0.97, f"Aqua {r['aqua_pct_per_decade']:+.0f}%/dec (p={r['aqua_mk_p']:.2g})\nTerra {r['terra_pct_per_decade']:+.0f}%/dec"
             + ("" if ok else "\n(not robust)"), transform=ax.transAxes, fontsize=7.6, va="top", color=viz.INK2)
     ax.set_ylim(0, max(a.max(), t.max()) / 1e3 * 1.45)
     for sp_ in ("top", "right", "left"):
@@ -135,8 +135,9 @@ axs[0, 0].text(2004, axs[0, 0].get_ylim()[1] * 0.62, "Aqua (13:30)", color=viz.S
 axs[0, 0].text(2004, axs[0, 0].get_ylim()[1] * 0.52, "Terra (10:30)", color=viz.SERIES[0], fontsize=8, fontweight="bold")
 fig.text(0.05, 0.965, "Fire regions, year by year, seen by two satellites", fontsize=15, fontweight="bold", va="top")
 sub = (f"Annual vegetation-fire detections. A trend counts as robust only if Aqua is significant and Terra agrees in direction. Global: Aqua "
-       f"{res['global_aqua']['pct_per_decade']:+.0f}%/decade (p={res['global_aqua']['mk_p']:.2f}), Terra {res['global_terra']['pct_per_decade']:+.0f}%/decade "
-       f"(Terra's overpass drifted earlier after 2020, so it misses more afternoon fires).")
+       f"{res['global_aqua']['pct_per_decade']:+.0f}%/decade (p={res['global_aqua']['mk_p']:.0e}), Terra {res['global_terra']['pct_per_decade']:+.0f}%/decade "
+       f"(p={res['global_terra']['mk_p']:.0e}); the same in 2003–2019, before either orbit drifted. Punjab's crop-stubble fires: the satellites disagree on the "
+       f"long-term trend, but both show the collapse after 2021.")
 fig.text(0.05, 0.915, "\n".join(textwrap.wrap(sub, 190)), fontsize=9.3, color=viz.INK2, va="top")
 fig.text(0.99, 0.01, SRC, fontsize=7, color=viz.MUTED, ha="right")
 fig.savefig(f"{out}/regional_fire_series.png"); plt.close(fig)

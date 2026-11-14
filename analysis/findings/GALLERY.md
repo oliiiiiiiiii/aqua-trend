@@ -53,6 +53,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N14](#n14) | Where fires burn, AIRS CO and OMI aerosol follow | `results/42_airs_omi/map_fire_smoke_correlation.png` |
 | [N15](#n15) | Warmer air, wetter air: AIRS water vapour 6%/K over oceans | `results/42_airs_omi/map_water_vapour_per_K.png` |
 | [N16](#n16) | Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95) | `results/47_taiwan_aftershocks/taiwan_aftershocks.png` |
+| [N17](#n17) | The world is burning less: fire detections −11%/decade (Terra & Aqua agree) | `results/45_fire_trends/map_fire_trend.png` |
+| [N18](#n18) | Fire regions year by year, Terra vs Aqua | `results/45_fire_trends/regional_fire_series.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -365,6 +367,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/47_taiwan_aftershocks/taiwan_aftershocks.png`</sub>
 
 ![Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95)](figures/N16_taiwan_aftershocks.png)
+
+### N17
+**The world is burning less: fire detections −11%/decade (Terra & Aqua agree)**  
+<sub>source: `results/45_fire_trends/map_fire_trend.png`</sub>
+
+![The world is burning less: fire detections −11%/decade (Terra & Aqua agree)](figures/N17_fire_trend.png)
+
+### N18
+**Fire regions year by year, Terra vs Aqua**  
+<sub>source: `results/45_fire_trends/regional_fire_series.png`</sub>
+
+![Fire regions year by year, Terra vs Aqua](figures/N18_fire_regions.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

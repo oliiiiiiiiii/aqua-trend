@@ -52,7 +52,7 @@
 | N03 | AIRS × OMI: ozone cross-check, smoke (CO vs aerosol vs fires), NO₂ vs CO combustion fingerprints, water vapour per K | AIRS3STM v7, OMTO3d, OMNO2d, FIRMS | 6 figures | med | done (task 42: ozone r=0.92, Canada 2023 rank 1 in CO & AI, NO₂ redrawn) |
 | N04 | Polar motion & length of day vs GRACE mass excitation | IERS C04 + GRACE mascons | pole path, drift attribution, LOD | low | done (task 43: GRACE explains post-2000 drift change within 10°) |
 | N05 | Seasonal water-load modulation of earthquakes | USGS + GRACE | Schuster test per region and cell | low | done (task 44: null) |
-| N06 | Global fire trends: savanna decline vs boreal rise, Terra/Aqua cross-check | FIRMS MODIS C6.1 | trend map + regional series | low | next (task 45) |
+| N06 | Global fire trends: savanna decline vs boreal rise, Terra/Aqua cross-check | FIRMS MODIS C6.1 | trend map + regional series | low | done (task 45: global −11%/dec both satellites; savanna/steppe/E China/Indonesia down; boreal n.s.) |
 | N07 | Ozone hole recovery: hinge test | NASA Ozone Watch | hinge plot | low | done (task 46: break 1993, recovery n.s.) |
 | N08 | Methane surge 2020–22: AIRS CH₄ vs NOAA in situ; tropical wetland flooding (GRACE/IMERG) as the driver? | AIRS CH4_VMR, NOAA GML, GRACE | CH₄ growth vs wetland water map | med | todo (water link) |
 | N09 | Taiwan: Hualien 2024 M7.4 aftershock decay (Omori–Utsu) vs Chi-Chi 1999; b-value | USGS M≥4 | Omori fit + map | low | done (task 47: p≈0.95 both; M≥4 rise is detection) |
