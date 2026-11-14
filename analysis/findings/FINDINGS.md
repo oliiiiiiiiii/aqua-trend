@@ -401,6 +401,15 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - South Asia: fine mode +21%/decade (6 of 7 significant), coarse mode −23%. Haze there is becoming more combustion-dominated as dust declines.
 - Visual: `results/58_haze_fine_coarse/haze_fine_vs_coarse.png`.
 
+## N15. Clearing skies over East Asia: CERES sees less sunlight bounced to space and more reaching the ground as haze fell. **Robust (CERES radiometer + MERRA-2)**
+- Eastern China, 2005–2025:
+  - Clear-sky reflection measured by CERES fell −2.2 W m⁻² per decade (p = 2e-5).
+  - It tracks aerosol year by year (r = 0.96; 0.83 detrended), about 19 W m⁻² per unit AOD.
+  - Sunlight at the ground rose: +6.4 (clear-sky) and +5.4 (all-sky) W m⁻² per decade.
+- Indo-Gangetic plain: the ground dimmed −6.7 W m⁻² per decade, but space barely sees it. This is consistent with absorbing soot.
+- The clean-up removes an aerosol "sunscreen", which adds to warming.
+- Visual: `results/63_asia_brightening/asia_brightening.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

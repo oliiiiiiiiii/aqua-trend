@@ -66,7 +66,7 @@
 | N10 | Volcanic SO₂ and the Hunga Tonga 2022 stratospheric water injection | MSAQSO2L4 point sources, MLS H2O | event maps + series | med | done (task 49: China −92%, India +103%, 4 satellites agree; task 50: Hunga +13% strat. water, e-fold 4.5 yr) |
 | N11 | Saharan dust trend from OMI aerosol index vs Sahel greening and rain | OMTO3d UVAI + GPCP + NDVI | trend/correlation maps | low | done (task 51: dust down 9–17%/dec, MERRA-2 & OMI agree; greener years cleaner, 89% of land) |
 | N12 | Hunga Tonga aftermath: stratospheric cooling and ozone response | MLS T, O3 (ML3DZT, ML3DZO3) | time–height anomaly sections | low | done (task 53: −1.6 K, −2.8% O₃ in year 1; cooling robust, ozone fades) |
-| N13 | East Asia "brightening": sulfate AOD drop (MERRA-2) vs surface sunshine (CERES) | M2TMNXAER SUEXTTAU, CERES EBAF | trend maps + China series | med | todo |
+| N13 | East Asia "brightening": sulfate AOD drop (MERRA-2) vs surface sunshine (CERES) | M2TMNXAER, CERES EBAF | trend maps + China series | med | done (task 63: E China TOA clear-sky SW −2.2 W/m²/dec, r=0.96 with AOD; IGP dimming −6.7) |
 | N14 | SO₂/NO₂ ratio as a coal-vs-traffic fingerprint per city | MSAQSO2L4 + OMNO2d | scatter by city/year | low | todo |
 | N15 | Taiwan & SE Asia air: Vietnam's SO₂ ×4.6 vs Taiwan −78% — does it reach Taiwan? (MERRA-2 sulfate AOD, back-trajectory proxy via winds) | M2TMNXAER, AERONET | regional series | med | done (task 52: 27 AERONET sites, Taipei −39%/dec, sulfate tracks China SO₂ r=0.89) |
 | N16 | AERONET Ångström exponent: is Asia's haze getting coarser (dust) or finer (combustion)? Fine/coarse split trends | AERONET SDA | site trends | low | done (task 58: EA fine −43%/dec, SA fine +21%/dec, dust down in both) |

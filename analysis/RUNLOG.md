@@ -134,3 +134,6 @@
 | 2026-11-15 02:00 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
 | 2026-11-15 02:01 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
 | 2026-11-15 02:01 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
+| 2026-11-15 02:10 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
+| 2026-11-15 02:13 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
+| 2026-11-15 02:14 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |

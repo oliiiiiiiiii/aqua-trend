@@ -70,6 +70,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W40](#w40) | Where the land sinks: tide gauges minus altimetry (Manila −9 mm/yr, Alaska +20) | `results/60_land_sinking/land_sinking_map.png` |
 | [W41](#w41) | Two sea-ice traps: a cherry-picked Arctic pause and the Antarctic collapse | `results/61_seaice_pause_flip/seaice_pause_and_flip.png` |
 | [W42](#w42) | The sea level people feel: Manila +12.5 mm/yr (ocean 3.9 + sinking 8.6) | `results/62_relative_sea_level/relative_sea_level.png` |
+| [N26](#n26) | Clearing skies over East Asia: CERES reflection tracks haze (r = 0.96) | `results/63_asia_brightening/asia_brightening.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -484,6 +485,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/62_relative_sea_level/relative_sea_level.png`</sub>
 
 ![The sea level people feel: Manila +12.5 mm/yr (ocean 3.9 + sinking 8.6)](figures/W42_relative_sea_level.png)
+
+### N26
+**Clearing skies over East Asia: CERES reflection tracks haze (r = 0.96)**  
+<sub>source: `results/63_asia_brightening/asia_brightening.png`</sub>
+
+![Clearing skies over East Asia: CERES reflection tracks haze (r = 0.96)](figures/N26_asia_brightening.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

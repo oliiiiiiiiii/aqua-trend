@@ -43,6 +43,7 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N12 | Asia's haze redrawn: 27 AERONET ground stations — Taipei −39%/dec, Beijing −68%/dec, Seoul −48%; India's Ganges plain +19%. | Robust |
 | N13 | Hunga Tonga's wet stratosphere cooled 2 K and lost 3% ozone in year 1 (cooling robust; ozone dip fades). | Robust / Significant |
 | N14 | Asia's haze changes grain: fine combustion particles −43%/decade in East Asia, +21% in South Asia; dust falls in both. | Robust |
+| N15 | Clearing skies over East Asia: CERES clear-sky reflection −2.2 W/m²/decade, tracking haze (r = 0.96); ground sunshine +5–6 W/m²/decade. | Robust |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
