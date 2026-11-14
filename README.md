@@ -25,6 +25,10 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | W17 | 32% of land is at its lowest water storage of the GRACE era, against about 15% by chance. Record lows span the Middle East, Central Asia and eastern Europe; record highs span the Sahel and East Africa. | Significant |
 | W18 | East Asia extremes ranked: Yangtze 2022 storage was the lowest of 259 months, Henan July 2021 rain was the wettest of 25 years, and Taiwan's Jan–May 2021 rain was the 2nd driest. | Robust |
 | W19 | Turning points: on 45% of land the storage trend changed course after 2014. The North China Plain reversed to gain; Central Europe and the Caspian got worse. | Significant |
+| N1 | Earthquakes are not increasing. Small-quake counts rise +22%/decade from better detection. Large quakes (M≥6, M≥7, GCMT Mw≥6) show no trend since 1983. Starting in 1973 shows a false +5%/decade, created by a magnitude-scale switch. | Robust null + artefact |
+| N2 | Human-made earthquakes: wastewater injection raised Oklahoma ×779 (887 M≥3 quakes in 2015) and the Permian Basin ×325. Regulation halved the rate every 1.2 years. The natural New Madrid zone is flat. | Robust |
+| N3 | Water and ice steer the North Pole: GRACE mass change predicts the post-2000 drift change (5.0 vs 5.1 mas/yr, 10° apart). Groundwater pumping pushes the pole toward India. Record short day: −1.65 ms on 5 Jul 2024. | Robust (2 independent systems) |
+| N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
 The **negative results** are also recorded:
@@ -34,6 +38,7 @@ The **negative results** are also recorded:
 - No detectable soil-moisture → rain feedback at monthly scale.
 - No global "wet seasons wetter" amplification.
 - No robust whiplash trend.
+- No detectable seasonal water-load modulation of earthquakes.
 
 They show why a trend needs a second dataset.
 
