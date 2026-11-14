@@ -32,6 +32,7 @@ HERO = [
     ("W25_where_land_water_swings", "results/30_ocean_land_seesaw/map_where_land_water_swings.png", "Where the ocean's borrowed water sits (Amazon = biggest sponge)"),
     ("W26_record_2024_hot_dry", "results/32_compound_hot_dry/map_2023_25_compound_event.png", "2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico)"),
     ("W27_hot_dry_calendar", "results/32_compound_hot_dry/calendar_compound_hot_dry.png", "Every month since 2001: share of land hot AND dry"),
+    ("W28_amazon_dry_season", "results/33_seasonal_swing/amazon_dry_season.png", "Southern Amazon dry season: drier and longer in 3 rain datasets"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

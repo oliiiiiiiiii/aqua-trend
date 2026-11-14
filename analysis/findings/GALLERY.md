@@ -29,6 +29,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W25](#w25) | Where the ocean's borrowed water sits (Amazon = biggest sponge) | `results/30_ocean_land_seesaw/map_where_land_water_swings.png` |
 | [W26](#w26) | 2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico) | `results/32_compound_hot_dry/map_2023_25_compound_event.png` |
 | [W27](#w27) | Every month since 2001: share of land hot AND dry | `results/32_compound_hot_dry/calendar_compound_hot_dry.png` |
+| [W28](#w28) | Southern Amazon dry season: drier and longer in 3 rain datasets | `results/33_seasonal_swing/amazon_dry_season.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -197,6 +198,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/32_compound_hot_dry/calendar_compound_hot_dry.png`</sub>
 
 ![Every month since 2001: share of land hot AND dry](figures/W27_hot_dry_calendar.png)
+
+### W28
+**Southern Amazon dry season: drier and longer in 3 rain datasets**  
+<sub>source: `results/33_seasonal_swing/amazon_dry_season.png`</sub>
+
+![Southern Amazon dry season: drier and longer in 3 rain datasets](figures/W28_amazon_dry_season.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

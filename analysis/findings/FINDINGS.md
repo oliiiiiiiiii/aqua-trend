@@ -93,7 +93,23 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - No pixel has a significant trend in annual counts: 25 years of mostly-zero counts give little statistical power.
 - Visual: `results/32_compound_hot_dry/map_2023_25_compound_event.png` (map), `calendar_compound_hot_dry.png` (every month since 2001; 2023–25 is the darkest band).
 
+## W15. The southern Amazon's dry season is getting drier and longer — **Robust (3 rain datasets agree)**
+- **Jul–Sep rain** over the southern Amazon / deforestation arc (70–50°W, 15–5°S):
+  - GPCP **-10%/decade** over 1979–2025 (p = 3e-04);
+  - IMERG **-17%** (p = 0.01);
+  - MERRA-2 gauge-corrected **-26%** (p = 5e-04).
+  - Both OLS-AR1 and Mann-Kendall agree in every dataset.
+- **Dry-season length** (months under 100 mm): GPCP +6 days/decade (p = 2e-04), IMERG +13, MERRA-2 +17. The GPCP mean went from 4.1 months (1979–2000) to 4.8 months (2014–25).
+- **GRACE:** end-of-dry-season storage (Sep–Nov) -2.0 cm/decade is not significant (p = 0.32), but **2024 is the lowest** of the GRACE era. This connects to W14: the Amazon was the epicentre of the 2023–25 compound hot-dry event.
+- **Caveat:** the three rain products share some gauge input (GPCC), though gauges are sparse in the Amazon so the satellite and model parts dominate. The physics fits published work on dry-season lengthening in the southern Amazon (deforestation plus warming of the tropical North Atlantic).
+- **Also robust in all three datasets:** the Sahel wet season is getting wetter: GPCP +7%/decade, IMERG +6%, MERRA-2 +26%. Southern Africa, Ganges and Mekong dry-season trends appear only in GPCP and are not robust.
+- Visual: `results/33_seasonal_swing/amazon_dry_season.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
+- **"Wet seasons wetter, dry seasons drier" over time is not a global pattern (task 33).**
+  - Classes from GPCP 1979–2025: amplifying 17%, damping 17%, wetter all year 34%, drier all year 32%.
+  - Only 1–7% of land is significant, and about 0% over 2001–25. The class maps from IMERG and GPCP agree on 61% of land (25% by chance).
+  - The GRACE annual-cycle amplitude has no significant trend on any land pixel. Only 16 years have 10 or more months.
 - **Does wet soil make its own rain? Not detectable at monthly scale (task 31).**
   - Test: partial r(soil moisture_t, rain_t+1 | rain_t, rain_t−1, ENSO), warm season.
   - Result: significant on only 0.2–0.3% of land in every dataset pair. |r| > 0.2 occurs on 7% of land, against 8% for a placebo using rain a year later. Pattern agreement between the soil models is r = 0.40.

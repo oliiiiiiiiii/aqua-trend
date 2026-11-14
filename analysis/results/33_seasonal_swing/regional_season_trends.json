@@ -1,0 +1,122 @@
+{
+ "Southern Amazon": {
+  "p_gpcp": {
+   "period": "1979-2025",
+   "pct_dec": -10.3,
+   "p": 0.0003,
+   "mk": 0.0004
+  },
+  "p_imerg": {
+   "period": "2001-2025",
+   "pct_dec": -16.5,
+   "p": 0.0088,
+   "mk": 0.0109
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": -25.8,
+   "p": 0.0005,
+   "mk": 0.0016
+  }
+ },
+ "Southern Africa": {
+  "p_gpcp": {
+   "period": "1979-2025",
+   "pct_dec": -9.5,
+   "p": 0.0159,
+   "mk": 0.0163
+  },
+  "p_imerg": {
+   "period": "2001-2025",
+   "pct_dec": -11.2,
+   "p": 0.1781,
+   "mk": 0.2723
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": 0.3,
+   "p": 0.9808,
+   "mk": 0.9814
+  }
+ },
+ "Ganges-Brahmaputra": {
+  "p_gpcp": {
+   "period": "1980-2025",
+   "pct_dec": -11.0,
+   "p": 0.0226,
+   "mk": 0.0189
+  },
+  "p_imerg": {
+   "period": "2001-2025",
+   "pct_dec": 0.4,
+   "p": 0.9772,
+   "mk": 1.0
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": 17.0,
+   "p": 0.3165,
+   "mk": 0.4137
+  }
+ },
+ "Sahel (wet season)": {
+  "p_gpcp": {
+   "period": "1979-2025",
+   "pct_dec": 7.0,
+   "p": 0.0,
+   "mk": 0.0
+  },
+  "p_imerg": {
+   "period": "2001-2025",
+   "pct_dec": 6.3,
+   "p": 0.0119,
+   "mk": 0.0265
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": 26.0,
+   "p": 0.0,
+   "mk": 0.0
+  }
+ },
+ "Taiwan dry season": {
+  "p_gpcp": {
+   "period": "1979-2025",
+   "pct_dec": 0.3,
+   "p": 0.9364,
+   "mk": 0.4092
+  },
+  "p_imerg": {
+   "period": "2001-2024",
+   "pct_dec": -11.2,
+   "p": 0.4583,
+   "mk": 0.2437
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": 3.0,
+   "p": 0.8311,
+   "mk": 0.8701
+  }
+ },
+ "Mekong dry season": {
+  "p_gpcp": {
+   "period": "1979-2025",
+   "pct_dec": 9.9,
+   "p": 0.0222,
+   "mk": 0.0208
+  },
+  "p_imerg": {
+   "period": "2001-2025",
+   "pct_dec": -4.2,
+   "p": 0.7259,
+   "mk": 0.2158
+  },
+  "p_m2land": {
+   "period": "2001-2025",
+   "pct_dec": 12.9,
+   "p": 0.398,
+   "mk": 0.6913
+  }
+ }
+}

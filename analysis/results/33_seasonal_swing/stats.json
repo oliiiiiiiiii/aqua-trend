@@ -1,0 +1,172 @@
+{
+  "gpcp_1979_2025": {
+    "amplifying": {
+      "all": 0.17394071410662335,
+      "sig": 0.013364541281725232
+    },
+    "wetter_all_year": {
+      "all": 0.33669531877767633,
+      "sig": 0.06561150038544701
+    },
+    "drier_all_year": {
+      "all": 0.3155630418049076,
+      "sig": 0.05446559732914185
+    },
+    "damping": {
+      "all": 0.1738009253107927,
+      "sig": 0.016235198991290972
+    }
+  },
+  "imerg_2001_2025": {
+    "amplifying": {
+      "all": 0.20974469886663397,
+      "sig": 0.0001876634500454582
+    },
+    "wetter_all_year": {
+      "all": 0.25949722212079007,
+      "sig": 0.0007324236904241169
+    },
+    "drier_all_year": {
+      "all": 0.3342366711006053,
+      "sig": 0.002200376066177583
+    },
+    "damping": {
+      "all": 0.19652140791197065,
+      "sig": 0.0004684856227877341
+    }
+  },
+  "gpcp_2001_2025": {
+    "amplifying": {
+      "all": 0.18052739799980635,
+      "sig": 0.0
+    },
+    "wetter_all_year": {
+      "all": 0.2486403251633018,
+      "sig": 0.0006497562646688936
+    },
+    "drier_all_year": {
+      "all": 0.3634600370241051,
+      "sig": 0.0020412367750496
+    },
+    "damping": {
+      "all": 0.2069608950890025,
+      "sig": 0.00016652861198088374
+    }
+  },
+  "class_agreement_imerg_gpcp_2001_2025": 0.60647284951204,
+  "grace_amplitude": {
+    "years": [
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2012,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "sig_up": 0.0,
+    "sig_down": 0.0
+  },
+  "grace_amp_vs_rain_swing_spatial_r": -0.06413920852184696,
+  "regions": [
+    {
+      "region": "Amazon",
+      "wet_pct_dec_1979": -1.3540074004833136,
+      "dry_pct_dec_1979": -6.43133449351452,
+      "wet_pct_dec_imerg": -6.4731592724002045,
+      "dry_pct_dec_imerg": -13.372597939622379,
+      "grace_amp_pct_dec": 2.971034976286377,
+      "grace_amp_cm": 30.076794808385706
+    },
+    {
+      "region": "Congo",
+      "wet_pct_dec_1979": -0.09175112048300389,
+      "dry_pct_dec_1979": 0.1335002039486711,
+      "wet_pct_dec_imerg": -0.38702459784707577,
+      "dry_pct_dec_imerg": -9.00506549629644,
+      "grace_amp_pct_dec": 6.3968169863531905,
+      "grace_amp_cm": 12.129971308252175
+    },
+    {
+      "region": "Ganges-Brahmaputra",
+      "wet_pct_dec_1979": -2.4862698491606667,
+      "dry_pct_dec_1979": -15.677189503434711,
+      "wet_pct_dec_imerg": -0.8705546154981199,
+      "dry_pct_dec_imerg": -4.091998622846475,
+      "grace_amp_pct_dec": 2.1032483544887497,
+      "grace_amp_cm": 21.06594184735228
+    },
+    {
+      "region": "Mekong",
+      "wet_pct_dec_1979": 2.0749754501540605,
+      "dry_pct_dec_1979": 12.768306223913779,
+      "wet_pct_dec_imerg": 3.313111578026712,
+      "dry_pct_dec_imerg": 4.617540141831125,
+      "grace_amp_pct_dec": -7.240723821208811,
+      "grace_amp_cm": 21.033765955760362
+    },
+    {
+      "region": "Sahel",
+      "wet_pct_dec_1979": 9.56842726959609,
+      "dry_pct_dec_1979": null,
+      "wet_pct_dec_imerg": 9.781184621653592,
+      "dry_pct_dec_imerg": null,
+      "grace_amp_pct_dec": 17.651131603832674,
+      "grace_amp_cm": 9.011096014673019
+    },
+    {
+      "region": "Yangtze",
+      "wet_pct_dec_1979": 1.4553571878379077,
+      "dry_pct_dec_1979": 2.872292762858608,
+      "wet_pct_dec_imerg": 8.052183608808047,
+      "dry_pct_dec_imerg": 5.567126098403597,
+      "grace_amp_pct_dec": 4.643690282599509,
+      "grace_amp_cm": 7.992390025207117
+    },
+    {
+      "region": "Taiwan",
+      "wet_pct_dec_1979": -4.135014320268274,
+      "dry_pct_dec_1979": -8.239530795620082,
+      "wet_pct_dec_imerg": -14.816943496902926,
+      "dry_pct_dec_imerg": -4.996732675487024,
+      "grace_amp_pct_dec": null,
+      "grace_amp_cm": 1.9434723877009632
+    },
+    {
+      "region": "Southern Africa",
+      "wet_pct_dec_1979": -2.002428120314021,
+      "dry_pct_dec_1979": -17.005998194665747,
+      "wet_pct_dec_imerg": -11.034041154976096,
+      "dry_pct_dec_imerg": -15.918839279976003,
+      "grace_amp_pct_dec": -3.985355938798227,
+      "grace_amp_cm": 10.661294225331769
+    },
+    {
+      "region": "Australia north",
+      "wet_pct_dec_1979": 1.7337064737827383,
+      "dry_pct_dec_1979": 12.422727353803413,
+      "wet_pct_dec_imerg": -9.647660844899631,
+      "dry_pct_dec_imerg": 21.156971253175236,
+      "grace_amp_pct_dec": 12.40226104873409,
+      "grace_amp_cm": 8.35619940519442
+    },
+    {
+      "region": "Mississippi",
+      "wet_pct_dec_1979": 0.9298347192988249,
+      "dry_pct_dec_1979": 0.23028035137351452,
+      "wet_pct_dec_imerg": 5.187554431024167,
+      "dry_pct_dec_imerg": -5.621621600650015,
+      "grace_amp_pct_dec": 4.605373965170951,
+      "grace_amp_cm": 9.342362881683494
+    }
+  ]
+}

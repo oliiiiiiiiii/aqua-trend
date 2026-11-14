@@ -38,3 +38,7 @@
 | 2026-11-14 09:40 | 31_soil_rain_coupling | done | robust + 0.0% / − 0.0% of land; pattern r A-B +0.40 |
 | 2026-11-14 09:45 | 32_compound_hot_dry | done | % land compound 3.7->4.6 (MERRA-2); GLDAS 1.0->4.2; pattern r +0.33 |
 | 2026-11-14 09:50 | 32_compound_hot_dry | done | % land compound 3.7->4.6 (MERRA-2); GLDAS 1.0->4.2; pattern r +0.33 |
+| 2026-11-14 09:56 | 33_seasonal_swing | done | GPCP classes amplifying 17%/1%, wetter_all_year 34%/7%, drier_all_year 32%/5%, damping 17%/2% |
+| 2026-11-14 09:59 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
+| 2026-11-14 10:01 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
+| 2026-11-14 10:02 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
