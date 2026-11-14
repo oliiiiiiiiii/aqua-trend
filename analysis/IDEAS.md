@@ -46,7 +46,7 @@
 | I42 | World lakes from altimetry: rising/falling map, Caspian vs GRACE | NASA GWM | map + series | low | done (task 55: 53 falling / 46 rising; Caspian −1.16 m/dec, r=0.999 with GRACE) |
 | I43 | Reservoir drought fingerprint: do reservoir level anomalies track GRACE/SPI drought across basins (Kariba, Mead, Brazil hydropower)? | GWM + GRACE + GPCP | per-reservoir lag correlation | med | todo |
 | I44 | Mekong flood pulse (Tonle Sap) vs upstream dams, rain-controlled | GWM + GPCP + GRACE | multi-panel | low | done (task 57: −1.04 m/dec rain-adjusted, GRACE confirms) |
-| I45 | Other dammed rivers' downstream lakes/wetlands: Inner Niger Delta, Sudd, Okavango, Pantanal — flood-pulse amplitude from GRACE + altimetry | GWM, GRACE, GPCP | pulse amplitude series | med | todo |
+| I45 | Other dammed rivers' downstream lakes/wetlands: Inner Niger Delta, Sudd, Okavango, Pantanal — flood-pulse amplitude from GRACE + altimetry | GWM, GRACE, GPCP | pulse amplitude series | med | done (task 59: Pantanal step 2019 + fires ×1.8; Niger delta/Lake Chad +12–13 cm/dec) |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |

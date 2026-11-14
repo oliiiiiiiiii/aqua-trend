@@ -66,6 +66,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W37](#w37) | The Mekong's heartbeat weakens: Tonle Sap flood peak −1 m/decade for the same rain | `results/57_tonle_sap_pulse/tonle_sap_flood_pulse.png` |
 | [W38](#w38) | How long must we watch? Rain trends can take a century to emerge | `results/56_time_of_emergence/time_of_emergence.png` |
 | [N25](#n25) | Asia's haze changes grain: fine combustion particles −43%/dec in East Asia, +21% in South Asia | `results/58_haze_fine_coarse/haze_fine_vs_coarse.png` |
+| [W39](#w39) | Wetlands at the extremes: the Pantanal dries and burns, the Sahel's wetlands refill | `results/59_wetlands_extremes/wetlands_extremes.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -456,6 +457,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/58_haze_fine_coarse/haze_fine_vs_coarse.png`</sub>
 
 ![Asia's haze changes grain: fine combustion particles −43%/dec in East Asia, +21% in South Asia](figures/N25_haze_fine_coarse.png)
+
+### W39
+**Wetlands at the extremes: the Pantanal dries and burns, the Sahel's wetlands refill**  
+<sub>source: `results/59_wetlands_extremes/wetlands_extremes.png`</sub>
+
+![Wetlands at the extremes: the Pantanal dries and burns, the Sahel's wetlands refill](figures/W39_wetlands_extremes.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

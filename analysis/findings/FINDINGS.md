@@ -214,6 +214,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Lesson: "not significant" usually means "not yet detectable", not "no change".
 - Visual: `results/56_time_of_emergence/time_of_emergence.png`.
 
+## W24. Wetlands at the extremes: the Pantanal dries out and burns, the Sahel's great wetlands refill — **Robust (GRACE + rain + fire)**
+- Pantanal:
+  - Water storage stepped down in Dec 2019 (Pettitt p = 1e-25), and 2024 is the lowest in the GRACE record.
+  - Fire detections in 2019–24 are ×1.8 the 2003–18 rate (records in 2020 and 2024).
+  - Each year's fires follow the preceding wet season's rain (ρ = −0.51, p = 0.014).
+- Inner Niger Delta (+13 cm/decade) and Lake Chad basin (+12 cm/decade) are refilling with the Sahel rain recovery (+10%/decade since 1981).
+- Visual: `results/59_wetlands_extremes/wetlands_extremes.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

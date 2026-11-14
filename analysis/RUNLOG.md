@@ -120,3 +120,6 @@
 | 2026-11-15 00:50 | 58_haze_fine_coarse | done | median fine/coarse %/dec: EA -43/-21, SA +21/-23, ME +9/-10 |
 | 2026-11-15 00:50 | 58_haze_fine_coarse | done | median fine/coarse %/dec: EA -43/-21, SA +21/-23, ME +9/-10 |
 | 2026-11-15 00:53 | 56_time_of_emergence | done | emerged: tws 58%, p_gpcp 18%, sst 68%, ndvi 31% |
+| 2026-11-15 01:02 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |
+| 2026-11-15 01:03 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |
+| 2026-11-15 01:05 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |

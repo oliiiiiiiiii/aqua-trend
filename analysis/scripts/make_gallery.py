@@ -69,6 +69,7 @@ HERO = [
     ("W37_tonle_sap_pulse", "results/57_tonle_sap_pulse/tonle_sap_flood_pulse.png", "The Mekong's heartbeat weakens: Tonle Sap flood peak −1 m/decade for the same rain"),
     ("W38_time_of_emergence", "results/56_time_of_emergence/time_of_emergence.png", "How long must we watch? Rain trends can take a century to emerge"),
     ("N25_haze_fine_coarse", "results/58_haze_fine_coarse/haze_fine_vs_coarse.png", "Asia's haze changes grain: fine combustion particles −43%/dec in East Asia, +21% in South Asia"),
+    ("W39_wetlands_extremes", "results/59_wetlands_extremes/wetlands_extremes.png", "Wetlands at the extremes: the Pantanal dries and burns, the Sahel's wetlands refill"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),
