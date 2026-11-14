@@ -225,6 +225,13 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - The core speeds the Earth up, while ice melt (by GRACE) lengthens the day by +1.5 ms per century.
 - Visuals: `results/43_earth_rotation/pole_drift_water.png`, `length_of_day.png`.
 
+## N4. The ozone hole stopped growing in the 1990s; healing is still in the noise. **Robust break / Suggestive recovery**
+- Hole area grew +17 million km²/decade until **1993**, and the hinged fit beats a straight line (p = 4e-10).
+- Since 2001: −0.5 million km²/decade (p = 0.68), or −1.2 (p = 0.38) without the anomalous 2020–23 years.
+- The 2026 hole is 24.9 million km².
+- Cross-check from task 42: AIRS (infrared) and OMI (UV) Antarctic spring ozone agree year to year.
+- Visual: `results/46_ozone_hole/ozone_hole_hinge.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

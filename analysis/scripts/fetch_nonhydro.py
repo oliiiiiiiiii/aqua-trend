@@ -65,19 +65,20 @@ def firms():
     for y in range(2000, 2026):
         zf = f"{d}/modis_{y}_all_countries.zip"
         out = f"{PROC}/firms/modis_{y}_0p5_monthly.npz"
-        if os.path.exists(out):
+        if os.path.exists(out) and "count_T" in np.load(out).files:
             continue
         if not dl(f"https://firms.modaps.eosdis.nasa.gov/data/country/zips/modis_{y}_all_countries.zip", zf):
             print("  no zip", y, flush=True)
             continue
         cnt = np.zeros((12, 360, 720), np.float32); frp = np.zeros((12, 360, 720), np.float32)
+        cT = np.zeros((12, 360, 720), np.float32); cA = np.zeros((12, 360, 720), np.float32)
         n_all = 0
         with zipfile.ZipFile(zf) as z:
             for nm in z.namelist():
                 if not nm.endswith(".csv"):
                     continue
                 with z.open(nm) as f:
-                    df = pd.read_csv(f, usecols=["latitude", "longitude", "acq_date", "confidence", "frp", "type"])
+                    df = pd.read_csv(f, usecols=["latitude", "longitude", "acq_date", "confidence", "frp", "type", "satellite"])
                 df = df[(df["type"] == 0) & (df["confidence"] >= 30)]   # presumed vegetation fires, nominal+high confidence
                 if df.empty:
                     continue
@@ -86,8 +87,12 @@ def firms():
                 j = np.clip(((df.longitude.values + 180) / 0.5).astype(int), 0, 719)
                 np.add.at(cnt, (mo, i, j), 1)
                 np.add.at(frp, (mo, i, j), df.frp.values.astype(np.float32))
+                st = df.satellite.astype(str).str.upper().str[0].values
+                for code, arr in (("T", cT), ("A", cA)):
+                    k = st == code
+                    np.add.at(arr, (mo[k], i[k], j[k]), 1)
                 n_all += len(df)
-        np.savez_compressed(out, count=cnt, frp=frp)
+        np.savez_compressed(out, count=cnt, frp=frp, count_T=cT, count_A=cA)
         os.chmod(out, 0o777)
         print(f"  firms {y}: {n_all} vegetation-fire detections", flush=True)
     print("firms ok", flush=True)

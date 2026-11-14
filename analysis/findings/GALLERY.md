@@ -44,6 +44,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N05](#n05) | Injection regions ×100–×800 vs a flat natural control; regulation halves the rate | `results/41_induced_seismicity/induced_counts.png` |
 | [N06](#n06) | Water and ice steer the North Pole: GRACE predicts the post-2000 drift change within 10° | `results/43_earth_rotation/pole_drift_water.png` |
 | [N07](#n07) | The Earth spins faster: record short days in the 2020s, while melting ice lengthens the day | `results/43_earth_rotation/length_of_day.png` |
+| [N08](#n08) | The ozone hole stopped growing in 1993 (p=4e-10); recovery not yet significant | `results/46_ozone_hole/ozone_hole_hinge.png` |
+| [N09](#n09) | Null: seasonal water load does not detectably modulate earthquakes | `results/44_quake_seasonality/seasonal_quakes_vs_water_load.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -302,6 +304,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/43_earth_rotation/length_of_day.png`</sub>
 
 ![The Earth spins faster: record short days in the 2020s, while melting ice lengthens the day](figures/N07_length_of_day.png)
+
+### N08
+**The ozone hole stopped growing in 1993 (p=4e-10); recovery not yet significant**  
+<sub>source: `results/46_ozone_hole/ozone_hole_hinge.png`</sub>
+
+![The ozone hole stopped growing in 1993 (p=4e-10); recovery not yet significant](figures/N08_ozone_hole.png)
+
+### N09
+**Null: seasonal water load does not detectably modulate earthquakes**  
+<sub>source: `results/44_quake_seasonality/seasonal_quakes_vs_water_load.png`</sub>
+
+![Null: seasonal water load does not detectably modulate earthquakes](figures/N09_quake_seasonality.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  
