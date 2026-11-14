@@ -2,14 +2,19 @@
 .env
 .env.*
 !.env.example
+.envrc
 .netrc
 _netrc
 .urs_cookies
 .dodsrc
 *.pem
 *.key
+*.p12
+*.pfx
+secrets/
 
 # ===== 衛星資料（檔案太大，不放 git） =====
+# 注意：data/processed/ 刻意不忽略，示範區域的處理後資料要讓評審免帳號使用
 data/raw/
 data/interim/
 data/cache/
@@ -17,44 +22,113 @@ data/cache/
 *.nc4
 *.hdf
 *.HDF
+*.h4
 *.h5
 *.he5
 *.hdf5
 *.grib
 *.grib2
+*.grb
+*.grb2
+*.idx
 *.zarr/
 *.tif
 *.tiff
+*.aux.xml
 *.zip
+*.tar
 *.tar.gz
+*.tgz
+*.7z
 
 # ===== Python =====
 __pycache__/
 *.py[cod]
+*.so
 *.egg-info/
+*.egg
+.eggs/
 .venv/
 venv/
 env/
+__pypackages__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.hypothesis/
+dask-worker-space/
 
 # ===== Jupyter =====
 .ipynb_checkpoints/
+.virtual_documents/
 
 # ===== Node / 前端 =====
 node_modules/
 dist/
 build/
+out/
 .next/
+.nuxt/
+.output/
+.svelte-kit/
 .vite/
-npm-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+.turbo/
+.parcel-cache/
+.cache/
+*.tsbuildinfo
+next-env.d.ts
+.eslintcache
+.stylelintcache
+coverage/
+storybook-static/
+.vercel/
+.netlify/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ===== 測試報告（Playwright 等） =====
+test-results/
+playwright-report/
+blob-report/
+
+# ===== Log / 暫存檔 =====
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ===== Claude Code 個人設定 =====
+.claude/settings.local.json
+CLAUDE.local.md
 
 # ===== 編輯器 / 系統 =====
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
+.history/
 *.swp
+*.swo
+*~
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
