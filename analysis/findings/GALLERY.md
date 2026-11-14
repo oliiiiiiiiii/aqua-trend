@@ -40,6 +40,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N01](#n01) | Earthquakes aren't increasing: only small-quake detection is (and a 1983 magnitude-scale trap) | `results/40_global_earthquakes/global_quake_counts.png` |
 | [N02](#n02) | Four decades of large earthquakes + the 2004–2012 great-quake burst test | `results/40_global_earthquakes/map_big_quakes_timeline.png` |
 | [N03](#n03) | Where the small-quake 'increase' lives: network growth, not tectonics | `results/40_global_earthquakes/map_quake_rate_change.png` |
+| [N04](#n04) | Human-made earthquakes: the wastewater boom moved from Oklahoma to West Texas | `results/41_induced_seismicity/map_three_eras.png` |
+| [N05](#n05) | Injection regions ×100–×800 vs a flat natural control; regulation halves the rate | `results/41_induced_seismicity/induced_counts.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -274,6 +276,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/40_global_earthquakes/map_quake_rate_change.png`</sub>
 
 ![Where the small-quake 'increase' lives: network growth, not tectonics](figures/N03_quakes_where.png)
+
+### N04
+**Human-made earthquakes: the wastewater boom moved from Oklahoma to West Texas**  
+<sub>source: `results/41_induced_seismicity/map_three_eras.png`</sub>
+
+![Human-made earthquakes: the wastewater boom moved from Oklahoma to West Texas](figures/N04_induced_map.png)
+
+### N05
+**Injection regions ×100–×800 vs a flat natural control; regulation halves the rate**  
+<sub>source: `results/41_induced_seismicity/induced_counts.png`</sub>
+
+![Injection regions ×100–×800 vs a flat natural control; regulation halves the rate](figures/N05_induced_counts.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

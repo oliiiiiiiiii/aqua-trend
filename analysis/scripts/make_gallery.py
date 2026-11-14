@@ -43,6 +43,8 @@ HERO = [
     ("N01_quakes_detection", "results/40_global_earthquakes/global_quake_counts.png", "Earthquakes aren't increasing: only small-quake detection is (and a 1983 magnitude-scale trap)"),
     ("N02_quakes_map", "results/40_global_earthquakes/map_big_quakes_timeline.png", "Four decades of large earthquakes + the 2004–2012 great-quake burst test"),
     ("N03_quakes_where", "results/40_global_earthquakes/map_quake_rate_change.png", "Where the small-quake 'increase' lives: network growth, not tectonics"),
+    ("N04_induced_map", "results/41_induced_seismicity/map_three_eras.png", "Human-made earthquakes: the wastewater boom moved from Oklahoma to West Texas"),
+    ("N05_induced_counts", "results/41_induced_seismicity/induced_counts.png", "Injection regions ×100–×800 vs a flat natural control; regulation halves the rate"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

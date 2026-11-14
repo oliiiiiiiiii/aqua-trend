@@ -64,3 +64,6 @@
 | 2026-11-14 16:54 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
 | 2026-11-14 16:56 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
 | 2026-11-14 16:58 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
+| 2026-11-14 17:01 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian doubling 3.3 yr; New Madrid flat |
+| 2026-11-14 17:01 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian 2017-22 doubling 1.1 yr; New Madrid flat |
+| 2026-11-14 17:02 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian 2017-22 doubling 1.1 yr; New Madrid flat |

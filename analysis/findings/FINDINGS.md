@@ -208,6 +208,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - Borderline, because the threshold was chosen after the burst was noticed.
 - Visuals: `results/40_global_earthquakes/global_quake_counts.png`, `map_big_quakes_timeline.png`, `map_quake_rate_change.png`, `detection_fmd_by_decade.png`.
 
+## N2. Human-made earthquakes: wastewater injection turned Oklahoma into a quake zone, then West Texas. **Robust (×100s rate ratios, natural control flat)**
+- Oklahoma M≥3: **1.1/yr (1980–2008) → 887 in 2015 (×779)**. After the 2016 injection cuts, the rate halved every 1.2 years (p = 2e-35), to about 17/yr now.
+- Permian Basin: ×325, doubling every 1.1 years in 2017–22. After Texas's late-2021 response areas it fell **−41%** from 2022 to 2025 (p = 3e-6).
+- Kansas ×116, Fort Worth ×145, and Raton Basin ×10 (from 2001, coal-bed-methane water).
+- The natural New Madrid zone is flat (p = 0.94), so the booms are not a detection artefact.
+- Water link: the driver is the disposal of produced water, a human transfer of water from one rock layer to another.
+- Visuals: `results/41_induced_seismicity/map_three_eras.png`, `induced_counts.png`.
+
 ---
 ## 1. The Arctic's summer ice cap has shrunk by an area ≈ 68 × Taiwan — **Robust**
 - September sea-ice extent: **−11.6 % per decade** (vs 1981–2010), p = 3e-12; 2.45 million km² of September ice lost between 1979–88 and 2017–26.
