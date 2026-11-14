@@ -81,7 +81,23 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Why it matters: a sea-level record of a few years can show a fake "acceleration" or "pause" just from where rain falls — detecting the climate trend needs the land water removed (source → destination accounting).
 - Visual: `results/30_ocean_land_seesaw/seesaw_timeseries.png`, `map_where_land_water_swings.png`.
 
+## W14. 2024 was the most widespread hot-and-dry year of the satellite era — **Robust record (2 land models + GRACE); linear trend model-dependent**
+- Compound month = root-zone soil moisture below its 10th percentile **and** temperature above its 90th, per pixel and calendar month. By chance alone this happens about 1% of the time.
+- **Both land models rank 2024 first:** 8.9% (MERRA-2) and 8.0% (GLDAS) of land in this state in an average month. The previous records were 6.1% (2002) and 5.4% (2019). In both models the most widespread 24-month window ends in May 2025.
+- **Where (Jun 2023 – May 2025):** the Amazon basin, Cameroon and Congo, southern Africa (Zambia, Zimbabwe, Madagascar), Mexico, Morocco and Algeria, and Canada. Hardest hit: Cameroon 7.0, Brazil 6.4, Venezuela 5.8, Bolivia 5.5, Peru 5.2, Zimbabwe 4.9 compound months out of 24 (≈ 0.5 expected by chance).
+- **GRACE independently confirms it:** Mexico's storage in Oct 2023 was the lowest of all 259 months; the Amazon in Sep 2024 was the 3rd-lowest month (−16.6 cm); southern Africa in Jan 2025 ranked 7th.
+- **The honest part:**
+  - Hot months rose in both models (MERRA-2 1.1 → 1.8, GLDAS 0.9 → 2.0 per year, 2001–12 vs 2014–25).
+  - **Dry months go opposite ways:** MERRA-2 1.6 → 1.3 vs GLDAS 1.0 → 1.9. GLDAS's drying matches its known forcing drift.
+  - So the 25-year compound trend is model-dependent: MERRA-2 3.7 → 4.6% (p = 0.51) vs GLDAS 1.0 → 4.2% (p = 0.0004).
+  - No pixel has a significant trend in annual counts: 25 years of mostly-zero counts give little statistical power.
+- Visual: `results/32_compound_hot_dry/map_2023_25_compound_event.png` (map), `calendar_compound_hot_dry.png` (every month since 2001; 2023–25 is the darkest band).
+
 ## W11. Null results worth showing (honesty = credibility)
+- **Does wet soil make its own rain? Not detectable at monthly scale (task 31).**
+  - Test: partial r(soil moisture_t, rain_t+1 | rain_t, rain_t−1, ENSO), warm season.
+  - Result: significant on only 0.2–0.3% of land in every dataset pair. |r| > 0.2 occurs on 7% of land, against 8% for a placebo using rain a year later. Pattern agreement between the soil models is r = 0.40.
+  - Any soil → rain feedback is too weak or too fast for monthly data, so it would need daily data or model experiments.
 - India's greening vs groundwater: spatial r = +0.09, p = 0.58 after spatial-autocorrelation correction (naive p = 5e-4) → not supported (task 26).
 - Ocean evaporation upwind does not predict downstream monthly rain (task 22b).
 - ⚠ GLDAS-2.1 PET/ET *trends* drift (Quebec ET doubles with flat T and radiation). MERRA-2 cross-check: ET rises significantly on 42 % of land in GLDAS vs 19.5 % in MERRA-2; **both agree on only 12 %** (`map_ET_trend_models_agree.png`). Basin runoff ratios: GLDAS 59 down / 10 up vs MERRA-2 8 down / 65 up (r = 0.20) → **no robust basin runoff trend**; teaching case on model spread.

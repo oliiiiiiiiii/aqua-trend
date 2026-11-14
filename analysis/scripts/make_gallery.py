@@ -30,6 +30,8 @@ HERO = [
     ("W21_land_to_ocean_series", "results/28_land_to_ocean/cumulative_mass.png", "Water leaving the land, arriving in the ocean"),
     ("W24_ocean_land_seesaw", "results/30_ocean_land_seesaw/seesaw_timeseries.png", "Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm)"),
     ("W25_where_land_water_swings", "results/30_ocean_land_seesaw/map_where_land_water_swings.png", "Where the ocean's borrowed water sits (Amazon = biggest sponge)"),
+    ("W26_record_2024_hot_dry", "results/32_compound_hot_dry/map_2023_25_compound_event.png", "2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico)"),
+    ("W27_hot_dry_calendar", "results/32_compound_hot_dry/calendar_compound_hot_dry.png", "Every month since 2001: share of land hot AND dry"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

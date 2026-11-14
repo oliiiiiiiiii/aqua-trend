@@ -34,3 +34,7 @@
 | 2026-11-14 01:41 | 20c_merra2_crosscheck | done | ELI pattern r=+0.59; MERRA-2 shift -0.012 CI [-0.025023961681607927, 0.0014542971890242657] |
 | 2026-11-14 09:34 | 30_ocean_land_seesaw | done | land-ocean r=+0.67; 2011 dip -5.0 mm; ENSO lag 5 r=+0.41 |
 | 2026-11-14 09:36 | 30_ocean_land_seesaw | done | land-ocean r=+0.67; 2011 dip -5.0 mm; ENSO lag 5 r=+0.41 |
+| 2026-11-14 09:39 | 31_soil_rain_coupling | done | robust + 0.0% / − 0.0% of land; pattern r A-B +nan |
+| 2026-11-14 09:40 | 31_soil_rain_coupling | done | robust + 0.0% / − 0.0% of land; pattern r A-B +0.40 |
+| 2026-11-14 09:45 | 32_compound_hot_dry | done | % land compound 3.7->4.6 (MERRA-2); GLDAS 1.0->4.2; pattern r +0.33 |
+| 2026-11-14 09:50 | 32_compound_hot_dry | done | % land compound 3.7->4.6 (MERRA-2); GLDAS 1.0->4.2; pattern r +0.33 |

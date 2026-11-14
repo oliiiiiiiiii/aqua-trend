@@ -27,6 +27,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W21](#w21) | Water leaving the land, arriving in the ocean | `results/28_land_to_ocean/cumulative_mass.png` |
 | [W24](#w24) | Ocean–land seesaw: rain stored on land lowers global sea level (2011: −5 mm) | `results/30_ocean_land_seesaw/seesaw_timeseries.png` |
 | [W25](#w25) | Where the ocean's borrowed water sits (Amazon = biggest sponge) | `results/30_ocean_land_seesaw/map_where_land_water_swings.png` |
+| [W26](#w26) | 2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico) | `results/32_compound_hot_dry/map_2023_25_compound_event.png` |
+| [W27](#w27) | Every month since 2001: share of land hot AND dry | `results/32_compound_hot_dry/calendar_compound_hot_dry.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -183,6 +185,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/30_ocean_land_seesaw/map_where_land_water_swings.png`</sub>
 
 ![Where the ocean's borrowed water sits (Amazon = biggest sponge)](figures/W25_where_land_water_swings.png)
+
+### W26
+**2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico)**  
+<sub>source: `results/32_compound_hot_dry/map_2023_25_compound_event.png`</sub>
+
+![2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico)](figures/W26_record_2024_hot_dry.png)
+
+### W27
+**Every month since 2001: share of land hot AND dry**  
+<sub>source: `results/32_compound_hot_dry/calendar_compound_hot_dry.png`</sub>
+
+![Every month since 2001: share of land hot AND dry](figures/W27_hot_dry_calendar.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

@@ -1,0 +1,109 @@
+{
+  "pattern_r_change": 0.3292145635537827,
+  "r_global_area_series": 0.6305245907702545,
+  "frac_more_agree": 0.0,
+  "frac_fewer_agree": 0.0,
+  "frac_both_sig_up": 0.0,
+  "frac_both_sig_down": 0.0,
+  "area_trend_A": {
+    "early_mean": 3.653915887848258,
+    "late_mean": 4.6164733559857005,
+    "slope_per_decade": 0.6363713483026852,
+    "p": 0.5052548663087233,
+    "mk_p": 0.498219385345291
+  },
+  "top_months_A": {
+    "2002-07": 12.1,
+    "2023-10": 11.66,
+    "2023-09": 11.52,
+    "2024-09": 10.87,
+    "2024-05": 10.52,
+    "2024-02": 10.48,
+    "2023-11": 10.1,
+    "2024-03": 9.89
+  },
+  "area_trend_B": {
+    "early_mean": 0.9670520491226281,
+    "late_mean": 4.177142486035159,
+    "slope_per_decade": 2.14043817005066,
+    "p": 0.00039827047844014784,
+    "mk_p": 1.5555676707190713e-05
+  },
+  "top_months_B": {
+    "2024-09": 14.31,
+    "2024-08": 9.51,
+    "2016-02": 9.39,
+    "2015-09": 9.33,
+    "2019-03": 9.23,
+    "2015-10": 9.14,
+    "2023-12": 8.93,
+    "2015-12": 8.89
+  },
+  "record_2024": {
+    "A": {
+      "rank_2024": 1,
+      "pct_2024": 8.92097198516685,
+      "previous_record": 6.0605914452917125,
+      "previous_record_year": 2002
+    },
+    "B": {
+      "rank_2024": 1,
+      "pct_2024": 8.037021783183162,
+      "previous_record": 5.402971981164473,
+      "previous_record_year": 2019
+    }
+  },
+  "top_countries_2023_25": [
+    {
+      "country": "Cameroon",
+      "mean_compound_months": 6.95587777788238,
+      "frac_area_ge6": 0.6205689681665831
+    },
+    {
+      "country": "Brazil",
+      "mean_compound_months": 6.382491258309207,
+      "frac_area_ge6": 0.5799065403801424
+    },
+    {
+      "country": "Venezuela",
+      "mean_compound_months": 5.8470033450084316,
+      "frac_area_ge6": 0.45864716388526994
+    },
+    {
+      "country": "Bolivia",
+      "mean_compound_months": 5.458405063326867,
+      "frac_area_ge6": 0.45192847946414183
+    },
+    {
+      "country": "Peru",
+      "mean_compound_months": 5.1901699762375815,
+      "frac_area_ge6": 0.3812074617256309
+    },
+    {
+      "country": "Zimbabwe",
+      "mean_compound_months": 4.945292174195377,
+      "frac_area_ge6": 0.3746883669325938
+    },
+    {
+      "country": "Mexico",
+      "mean_compound_months": 4.77075656396468,
+      "frac_area_ge6": 0.3559688892434824
+    },
+    {
+      "country": "Zambia",
+      "mean_compound_months": 4.512897123544201,
+      "frac_area_ge6": 0.29538976662522304
+    },
+    {
+      "country": "Paraguay",
+      "mean_compound_months": 4.497098483549045,
+      "frac_area_ge6": 0.2773782694156644
+    },
+    {
+      "country": "Algeria",
+      "mean_compound_months": 4.445514445656674,
+      "frac_area_ge6": 0.268534171699803
+    }
+  ],
+  "hotspots": []
+}
