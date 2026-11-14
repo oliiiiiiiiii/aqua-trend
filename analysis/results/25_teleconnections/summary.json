@@ -1,0 +1,62 @@
+{
+  "ENSO (Ni\u00f1o3.4) -> rain": {
+    "frac_land_sig_pos": 0.10116226219076684,
+    "frac_land_sig_neg": 0.08350107135900266,
+    "median_lag_months": 1.0
+  },
+  "ENSO (Ni\u00f1o3.4) -> ET": {
+    "frac_land_sig_pos": 0.06567755340562301,
+    "frac_land_sig_neg": 0.04717226154145835,
+    "median_lag_months": 2.0
+  },
+  "ENSO (Ni\u00f1o3.4) -> water storage": {
+    "frac_land_sig_pos": 0.08658528666969677,
+    "frac_land_sig_neg": 0.1082559574053633,
+    "median_lag_months": 4.0
+  },
+  "Indian Ocean Dipole -> rain": {
+    "frac_land_sig_pos": 0.03235179533796507,
+    "frac_land_sig_neg": 0.035160054541912865,
+    "median_lag_months": 1.0
+  },
+  "Indian Ocean Dipole -> ET": {
+    "frac_land_sig_pos": 0.007970261671320046,
+    "frac_land_sig_neg": 0.011200571391468087,
+    "median_lag_months": 2.0
+  },
+  "Indian Ocean Dipole -> water storage": {
+    "frac_land_sig_pos": 0.02829361729757808,
+    "frac_land_sig_neg": 0.02788779949353938,
+    "median_lag_months": 4.0
+  },
+  "PDO -> rain": {
+    "frac_land_sig_pos": 0.01569703266021687,
+    "frac_land_sig_neg": 0.019641581715473023,
+    "median_lag_months": 1.0
+  },
+  "PDO -> ET": {
+    "frac_land_sig_pos": 0.02644308811116161,
+    "frac_land_sig_neg": 0.01712551133043309,
+    "median_lag_months": 1.0
+  },
+  "PDO -> water storage": {
+    "frac_land_sig_pos": 0.19883449126680086,
+    "frac_land_sig_neg": 0.21352509577300177,
+    "median_lag_months": 2.0
+  },
+  "East African lakes (Victoria) vs Indian Ocean Dipole": {
+    "lag": 6,
+    "r": 0.19483792925324916,
+    "p": 0.1569522833600131
+  },
+  "Taiwan (island) vs ENSO (Ni\u00f1o3.4)": {
+    "lag": 0,
+    "r": -0.031789213830468864,
+    "p": 0.5632212365182485
+  },
+  "Sahel vs ENSO (Ni\u00f1o3.4)": {
+    "lag": 0,
+    "r": -0.11495161472443724,
+    "p": 0.13185994086819114
+  }
+}

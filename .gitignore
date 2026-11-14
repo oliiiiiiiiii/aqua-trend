@@ -58,3 +58,10 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 *.swp
+
+# ===== analysis workspace: local only (data ~46 GB, venv, logs) =====
+analysis/data/
+analysis/logs/
+analysis/.venv/
+*.npy
+*.npz

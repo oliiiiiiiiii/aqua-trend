@@ -1,0 +1,172 @@
+{
+  "China South-to-North Water Diversion": {
+    "src": {
+      "label": "Han River basin (Danjiangkou)",
+      "area_km2": 165305.9,
+      "grace_cells": 62,
+      "trend_all_cm_yr": 0.1532470851041499,
+      "p_all": 0.3054517177172052,
+      "trend_pre_cm_yr": 0.1277426038556392,
+      "p_pre": 0.7644223720701155,
+      "trend_post_cm_yr": 0.5763889941028456,
+      "p_post": 0.2699777641072159,
+      "vol_pre_km3_yr": 0.21116606098699908,
+      "vol_post_km3_yr": 0.952805014202656,
+      "rain_mean_pre": 2.680166139282261,
+      "rain_mean_post": 2.922854520656816,
+      "rain_pct_change": 9.054975279985666
+    },
+    "dst": {
+      "label": "Hai River basin (Beijing-Tianjin-Hebei)",
+      "area_km2": 215965.0,
+      "grace_cells": 87,
+      "trend_all_cm_yr": -1.0546691207278103,
+      "p_all": 0.03203043477177504,
+      "trend_pre_cm_yr": -1.6223650503630396,
+      "p_pre": 6.763554078984841e-05,
+      "trend_post_cm_yr": 1.062851186806491,
+      "p_post": 0.1608371775045753,
+      "vol_pre_km3_yr": -3.503740681016539,
+      "vol_post_km3_yr": 2.2953865655866386,
+      "rain_mean_pre": 1.459506689930393,
+      "rain_mean_post": 1.8169837128755273,
+      "rain_pct_change": 24.493003383368062
+    }
+  },
+  "Colorado River": {
+    "src": {
+      "label": "Upper Colorado (Lake Powell)",
+      "area_km2": 67936.1,
+      "grace_cells": 28,
+      "trend_all_cm_yr": -0.13132773276331194,
+      "p_all": 0.17865570380352114,
+      "trend_pre_cm_yr": 0.004388329817407616,
+      "p_pre": 0.9646009386168852,
+      "trend_post_cm_yr": -2.1742233034777527,
+      "p_post": 0.2788618140238846,
+      "vol_pre_km3_yr": 0.0029812601330838563,
+      "vol_post_km3_yr": -1.47708251767395,
+      "rain_mean_pre": 1.069193398157908,
+      "rain_mean_post": 1.2208950400897927,
+      "rain_pct_change": 14.188419250740637
+    },
+    "dst": {
+      "label": "Lower Colorado / S. California",
+      "area_km2": 117076.9,
+      "grace_cells": 49,
+      "trend_all_cm_yr": -0.569190944507759,
+      "p_all": 0.0029673056368602754,
+      "trend_pre_cm_yr": -0.6933614062657708,
+      "p_pre": 0.006266102985990233,
+      "trend_post_cm_yr": -1.411544270597126,
+      "p_post": 0.30232875299780493,
+      "vol_pre_km3_yr": -0.8117660402523702,
+      "vol_post_km3_yr": -1.6525922741427266,
+      "rain_mean_pre": 0.6173342827652922,
+      "rain_mean_post": 0.649713553389324,
+      "rain_pct_change": 5.245014172709128
+    }
+  },
+  "Indus": {
+    "src": {
+      "label": "Upper Indus (Karakoram glaciers)",
+      "area_km2": 69087.2,
+      "grace_cells": 28,
+      "trend_all_cm_yr": -1.249748410715227,
+      "p_all": 0.000250851093894875,
+      "trend_pre_cm_yr": 0.09026041144285056,
+      "p_pre": 0.9279613619014558,
+      "trend_post_cm_yr": -2.2195943930705733,
+      "p_post": 3.5455546411783145e-06,
+      "vol_pre_km3_yr": 0.062358390974345056,
+      "vol_post_km3_yr": -1.5334556175294531,
+      "rain_mean_pre": 1.473511489481589,
+      "rain_mean_post": 1.5156268196293017,
+      "rain_pct_change": 2.858160960966072
+    },
+    "dst": {
+      "label": "Punjab plains (irrigation)",
+      "area_km2": 290471.3,
+      "grace_cells": 111,
+      "trend_all_cm_yr": -2.0904151032068645,
+      "p_all": 6.608152055203629e-13,
+      "trend_pre_cm_yr": -2.0603855234117443,
+      "p_pre": 5.964614255552894e-05,
+      "trend_post_cm_yr": -2.678163106504244,
+      "p_post": 3.375831185366646e-11,
+      "vol_pre_km3_yr": -5.984828614865898,
+      "vol_post_km3_yr": -7.779295191583262,
+      "rain_mean_pre": 1.8380113626153831,
+      "rain_mean_post": 2.12574955414946,
+      "rain_pct_change": 15.654864675300061
+    }
+  },
+  "Nile (GERD)": {
+    "src": {
+      "label": "Blue Nile / GERD (Ethiopia)",
+      "area_km2": 308196.7,
+      "grace_cells": 104,
+      "trend_all_cm_yr": 1.0933842045091124,
+      "p_all": 2.34831645014766e-09,
+      "trend_pre_cm_yr": 0.6470802289023975,
+      "p_pre": 1.3524183013434854e-08,
+      "trend_post_cm_yr": 2.3306421307456158,
+      "p_post": 0.0091720306159915,
+      "vol_pre_km3_yr": 1.9942799118296355,
+      "vol_post_km3_yr": 7.182962135767674,
+      "rain_mean_pre": 2.835652858330214,
+      "rain_mean_post": 2.7752848499658938,
+      "rain_pct_change": -2.128892758751444
+    },
+    "dst": {
+      "label": "Lake Nasser / Egypt",
+      "area_km2": 797088.8,
+      "grace_cells": 277,
+      "trend_all_cm_yr": 0.07281522571803097,
+      "p_all": 5.7991127598837084e-08,
+      "trend_pre_cm_yr": 0.04391153377386523,
+      "p_pre": 8.44702215749087e-05,
+      "trend_post_cm_yr": 0.25214619987709236,
+      "p_post": 0.08072660732104892,
+      "vol_pre_km3_yr": 0.35001391761969713,
+      "vol_post_km3_yr": 2.0098291188459174,
+      "rain_mean_pre": 0.14588492623833071,
+      "rain_mean_post": 0.20403913229289392,
+      "rain_pct_change": 39.863067113292615
+    }
+  },
+  "Amu Darya -> Aral Sea": {
+    "src": {
+      "label": "Amu Darya headwaters (Pamir)",
+      "area_km2": 121256.0,
+      "grace_cells": 46,
+      "trend_all_cm_yr": -1.6719854610685663,
+      "p_all": 0.00015531512827054504,
+      "trend_pre_cm_yr": 0.3925620150927455,
+      "p_pre": 0.851943109702567,
+      "trend_post_cm_yr": -2.0708250878627115,
+      "p_post": 0.0011312893984142542,
+      "vol_pre_km3_yr": 0.4760049970208596,
+      "vol_post_km3_yr": -2.5109996685388096,
+      "rain_mean_pre": 1.2517061765109256,
+      "rain_mean_post": 1.2641095070105377,
+      "rain_pct_change": 0.9909139007515222
+    },
+    "dst": {
+      "label": "Aral Sea basin",
+      "area_km2": 64660.9,
+      "grace_cells": 28,
+      "trend_all_cm_yr": -0.4974289256608281,
+      "p_all": 8.12332665805795e-07,
+      "trend_pre_cm_yr": -0.317626387941339,
+      "p_pre": 0.3483660770108402,
+      "trend_post_cm_yr": -0.40972545774308466,
+      "p_post": 0.0002758028286855943,
+      "vol_pre_km3_yr": -0.2053800810803613,
+      "vol_post_km3_yr": -0.26493216850579826,
+      "rain_mean_pre": 0.6121397293016289,
+      "rain_mean_post": 0.7986195635288016,
+      "rain_pct_change": 30.463605824101926
+    }
+  }
+}

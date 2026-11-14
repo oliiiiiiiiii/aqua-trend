@@ -1,0 +1,11 @@
+{
+  "spatial_spearman_r": 0.09326056204877596,
+  "spatial_p_naive": 0.0005104934872764644,
+  "spatial_p_adjusted": 0.5800272551805534,
+  "n_cells": 1385,
+  "rabi_greening_frac": 0.6855119490301035,
+  "nw_india_rabi_ndvi_trend_per_decade": 0.03916395199673187,
+  "nw_india_rabi_p": 3.1198601443033106e-10,
+  "nw_india_temporal_r_rabi_vs_gw": -0.8395662073985828,
+  "nw_india_temporal_p": 1.5503076343644621e-07
+}

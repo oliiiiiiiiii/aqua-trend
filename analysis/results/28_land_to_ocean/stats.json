@@ -1,0 +1,64 @@
+{
+  "parts": {
+    "Greenland": {
+      "trend_gt_yr": -258.2476917497217,
+      "ci_gt_yr": 12.348377538944796,
+      "p": 1.0684647252587033e-26,
+      "sea_level_mm_yr": 0.7137857704525199
+    },
+    "Antarctica": {
+      "trend_gt_yr": -125.97464315497878,
+      "ci_gt_yr": 13.67555524364017,
+      "p": 7.115404671312418e-14,
+      "sea_level_mm_yr": 0.3481886212133189
+    },
+    "Alaska & W Canada glaciers": {
+      "trend_gt_yr": -73.82375568247937,
+      "ci_gt_yr": 4.727850476272049,
+      "p": 9.54372645042191e-21,
+      "sea_level_mm_yr": 0.20404575921083298
+    },
+    "Arctic Canada & Svalbard & Russian Arctic": {
+      "trend_gt_yr": -74.171004683128,
+      "ci_gt_yr": 2.4498857065567927,
+      "p": 1.0543792012738807e-40,
+      "sea_level_mm_yr": 0.2050055408599447
+    },
+    "High Mountain Asia": {
+      "trend_gt_yr": -30.83098722471768,
+      "ci_gt_yr": 3.769734177345639,
+      "p": 1.623890206514892e-15,
+      "sea_level_mm_yr": 0.0852155534127078
+    },
+    "Patagonia & Andes": {
+      "trend_gt_yr": -26.042061036671697,
+      "ci_gt_yr": 1.300531993590507,
+      "p": 4.49005793303294e-31,
+      "sea_level_mm_yr": 0.07197916262208871
+    },
+    "Iceland": {
+      "trend_gt_yr": -7.281716986048016,
+      "ci_gt_yr": 0.6127852869856953,
+      "p": 6.633374015223221e-25,
+      "sea_level_mm_yr": 0.02012635982876732
+    },
+    "Other land (aquifers, lakes, soil, snow)": {
+      "trend_gt_yr": -106.54392729335447,
+      "ci_gt_yr": 34.12462570980846,
+      "p": 6.627526940387909e-07,
+      "sea_level_mm_yr": 0.2944829388981605
+    },
+    "Ocean (destination)": {
+      "trend_gt_yr": 730.7502736373173,
+      "ci_gt_yr": 33.785881272409874,
+      "p": 4.6077612670151884e-54,
+      "sea_level_mm_yr": 2.0197630559350945
+    }
+  },
+  "land_total_gt_yr": -702.9157878110997,
+  "ocean_gain_gt_yr": 730.7502736373173,
+  "closure_gt_yr": 27.834485826217588,
+  "gmsl_altimetry_mm_yr_2002_2026": 3.47457445984809,
+  "ocean_mass_mm_yr": 2.0197630559350945,
+  "implied_steric_mm_yr": 1.4548114039129953
+}

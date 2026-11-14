@@ -1,0 +1,15 @@
+{
+  "N_09": {
+    "figure": "results/09b_sea_ice_maps/before_after_N_09.png",
+    "ice_area_lost_km2": 2450431.25
+  },
+  "S_02": {
+    "figure": "results/09b_sea_ice_maps/before_after_S_02.png",
+    "ice_area_lost_km2": 287207.53125
+  },
+  "S_09": {
+    "figure": "results/09b_sea_ice_maps/before_after_S_09.png",
+    "ice_area_lost_km2": 540764.0625
+  },
+  "arctic_sept_sig_fraction_of_active": 0.7653984890764309
+}

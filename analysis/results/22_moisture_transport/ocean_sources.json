@@ -1,0 +1,65 @@
+{
+  "Taiwan": {
+    "lag": 0,
+    "n_sig_pos_cells": 23,
+    "max_r": 0.27179357839559826,
+    "top_source_centroid": [
+      113.95833333333333,
+      -59.833333333333336
+    ]
+  },
+  "South China": {
+    "lag": 0,
+    "n_sig_pos_cells": 1,
+    "max_r": 0.23119931317934697,
+    "top_source_centroid": [
+      -71.25,
+      61.0
+    ]
+  },
+  "NW India": {
+    "lag": 0,
+    "n_sig_pos_cells": 23,
+    "max_r": 0.2672146108274429,
+    "top_source_centroid": [
+      -95.41666666666667,
+      68.16666666666667
+    ]
+  },
+  "Sahel": {
+    "lag": 1,
+    "n_sig_pos_cells": 848,
+    "max_r": 0.28815761309472493,
+    "top_source_centroid": [
+      -21.625,
+      20.470588235294116
+    ]
+  },
+  "East Africa (Victoria)": {
+    "lag": 0,
+    "n_sig_pos_cells": 1158,
+    "max_r": 0.341061070427388,
+    "top_source_centroid": [
+      -27.44612068965517,
+      43.008620689655174
+    ]
+  },
+  "North China Plain": {
+    "lag": 0,
+    "n_sig_pos_cells": 831,
+    "max_r": 0.38518037305678204,
+    "top_source_centroid": [
+      127.45535714285714,
+      56.083333333333336
+    ]
+  },
+  "Amazon": {
+    "lag": 1,
+    "n_sig_pos_cells": 2982,
+    "max_r": 0.3168519616285532,
+    "top_source_centroid": [
+      79.9101170568562,
+      20.543478260869566
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "lag_histogram": {
+    "0": 0.03395918988463791,
+    "1": 0.6726496030376602,
+    "2": 0.12777760116196368,
+    "3": 0.053999761465985854,
+    "4": 0.030751788639723842,
+    "5": 0.031239913480105158,
+    "6": 0.021098459845092652,
+    "7": 0.015730525554873247,
+    "8": 0.009324602142678159,
+    "9": 0.003468554787279188
+  },
+  "regions": [
+    {
+      "region": "NW India (Punjab-Haryana-Rajasthan)",
+      "median_lag": 1.0,
+      "mean_r": 0.2388751485977107,
+      "frac_sig": 0.8875739644970414
+    },
+    {
+      "region": "North China Plain",
+      "median_lag": 3.0,
+      "mean_r": 0.17618486581675366,
+      "frac_sig": 0.6477987421383647
+    },
+    {
+      "region": "Amazon deforestation arc",
+      "median_lag": 1.0,
+      "mean_r": 0.3039745814651072,
+      "frac_sig": 0.9359375
+    },
+    {
+      "region": "Sahel",
+      "median_lag": 2.0,
+      "mean_r": 0.16312542633660837,
+      "frac_sig": 0.5559416261292565
+    },
+    {
+      "region": "East African lakes (Victoria)",
+      "median_lag": 1.0,
+      "mean_r": 0.19579017993805603,
+      "frac_sig": 0.575
+    },
+    {
+      "region": "California Central Valley",
+      "median_lag": 5.0,
+      "mean_r": 0.3479419792415763,
+      "frac_sig": 1.0
+    },
+    {
+      "region": "Indo-Gangetic Plain",
+      "median_lag": 1.0,
+      "mean_r": 0.2674118189173755,
+      "frac_sig": 0.8983516483516484
+    },
+    {
+      "region": "Okavango-Zambezi",
+      "median_lag": 4.0,
+      "mean_r": 0.21444320971459285,
+      "frac_sig": 0.6979166666666666
+    },
+    {
+      "region": "Tigris-Euphrates (Iraq-Iran-Syria)",
+      "median_lag": 3.0,
+      "mean_r": 0.20998633717503004,
+      "frac_sig": 0.6577380952380952
+    }
+  ]
+}
