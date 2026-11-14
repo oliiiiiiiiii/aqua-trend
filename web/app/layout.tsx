@@ -1,19 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree, Fredoka } from "next/font/google";
+import "@fontsource-variable/figtree";
+import "@fontsource-variable/fredoka";
 import { PlaneCursor } from "@/components/shell/PlaneCursor";
 import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
 import "./globals.css";
-
-const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", display: "swap" });
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const metadata: Metadata = {
   title: { template: "%s | Aqua Trend", default: "Aqua Trend" },
   description:
-    "Pick a region on a 3D planet, choose up to three water-cycle targets, and read real NASA GLDAS trend evidence beside a data-driven crystal ball. A NASA Space Apps 2026 demo.",
+    "Explore Earth-system phenomena using regional time series, registered indicators and adjusted trend evidence.",
   icons: { icon: { url: `${BASE}/icon.svg`, type: "image/svg+xml" } },
 };
 
@@ -31,7 +29,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-theme="terrarium"
       suppressHydrationWarning
-      className={`${fredoka.variable} ${figtree.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />

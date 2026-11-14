@@ -1,3 +1,4 @@
+.journal { --font-j-display: "Fraunces Variable"; --font-j-text: "Source Sans 3 Variable"; }
 /* "Field journal" concept: scoped design tokens. Everything hangs off .journal, so the rest of the site is untouched.
    Light = cool grey-green drawing paper with ink-blue lines and one fern-green accent.
    Dark  = deep ink page with chalk lines and a chalk-green accent. */

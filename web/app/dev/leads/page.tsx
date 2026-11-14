@@ -59,6 +59,7 @@ export default function LeadsHarness() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-6">
+      <p className="mb-4">Developer preview. This page combines real regional series with synthetic example leads.</p>
       <div className="mb-4 flex flex-wrap items-end gap-4 rounded-card bg-paper p-4 text-ink shadow-card">
         <label className="min-w-0 max-w-full text-sm">
           <span className="mb-1 block font-semibold">Region</span>

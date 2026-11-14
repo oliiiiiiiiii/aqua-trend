@@ -5,6 +5,7 @@ import type { GlobePoint } from "@/lib/contracts";
 import type { LayerId, Region, VarId } from "@/lib/types";
 import { LAYER_LABEL } from "@/lib/data";
 import { VARIABLES } from "@/lib/variables";
+import { useReducedMotion } from "./hooks";
 import { Segmented } from "./Segmented";
 
 const GlobeCanvas = dynamic(() => import("@/components/globe/GlobeCanvas"), {
@@ -49,6 +50,8 @@ export const GlobePane = memo(function GlobePane({
   pickStatus: string;
   canvasClassName: string;
 }) {
+  const [paused, setPaused] = useState(false);
+  const reduced = useReducedMotion();
   const [hover, setHover] = useState<Region | null>(null);
   const onHover = useCallback((hit: (GlobePoint & { region: Region | null }) | null) => {
     const r = hit?.region ?? null;
@@ -62,6 +65,7 @@ export const GlobePane = memo(function GlobePane({
         <GlobeCanvas
           className="h-full w-full"
           interactive
+          motionPaused={paused}
           boundaryLayer={layer as LayerId}
           selected={selected}
           overlay={overlay}
@@ -70,6 +74,9 @@ export const GlobePane = memo(function GlobePane({
           onZoomChange={onZoomChange}
         />
       </div>
+      {!reduced && <button type="button" className="mx-auto rounded-ctl border border-stage-line px-3 py-1.5 text-sm" onClick={() => setPaused(v => !v)}>
+        {paused ? "Resume globe animation" : "Pause globe animation"}
+      </button>}
       <p className="sr-only" aria-live="polite">{pickStatus}</p>
       <p className="min-h-[1.5rem] text-center text-sm text-on-stage-2">
         {pickStatus ||

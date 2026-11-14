@@ -1,0 +1,1 @@
+"""Aqua Trend research service."""

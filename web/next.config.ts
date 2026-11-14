@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
-// Pure front-end demo: `next build` emits a static site into ./out.
+const researchApi = (process.env.AQUA_RESEARCH_API_URL ?? "http://127.0.0.1:8765").replace(/\/$/, "");
 const nextConfig: NextConfig = {
-  output: "export",
-  trailingSlash: true,
   images: { unoptimized: true },
   reactStrictMode: true,
+  async rewrites() {
+    return [{ source: "/api/:path*", destination: `${researchApi}/api/:path*` }];
+  },
 };
 
 export default nextConfig;

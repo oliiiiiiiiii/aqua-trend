@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import ExploreApp from "@/components/explore/ExploreApp";
+import ResearchWorkspace from "@/components/research/ResearchWorkspace";
 
 export const metadata: Metadata = {
-  title: "Explore",
-  description: "Choose a region and up to three water targets, replay the monthly history and read the trend evidence.",
+  title: "Earth System Trend Detective",
+  description: "Investigate an Earth-system phenomenon with regional time series, fixed historical references and adjusted trend evidence.",
 };
 
 export default function ExplorePage() {
@@ -18,7 +18,7 @@ export default function ExplorePage() {
         </div>
       }
     >
-      <ExploreApp />
+      <ResearchWorkspace />
     </Suspense>
   );
 }

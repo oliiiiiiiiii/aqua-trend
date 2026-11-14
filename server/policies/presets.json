@@ -1,0 +1,16 @@
+{
+  "version": "discovery-1",
+  "regions": [
+    "named-california-central-valley", "named-north-china-plain",
+    "named-sahel", "named-amazon-deforestation-arc", "named-po-valley",
+    "named-greenland", "named-east-china-sea", "named-taiwan-main-island"
+  ],
+  "windows": [
+    {"start": "2003-01", "end": "2012-12"},
+    {"start": "2005-01", "end": "2024-12"},
+    {"start": "2015-01", "end": "2024-12"},
+    {"start": "1995-01", "end": "2024-12"}
+  ],
+  "weights": {"relevance": 0.3, "effect": 0.3, "quality": 0.25, "stability": 0.15},
+  "overrides": []
+}

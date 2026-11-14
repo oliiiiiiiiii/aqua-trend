@@ -2,6 +2,7 @@
 // Toy-planet region picker (plain three.js). Contract: GlobeCanvasProps in lib/contracts.ts.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { GlobeCanvasProps } from "@/lib/contracts";
+import { useReducedMotion } from "@/components/explore/hooks";
 import { cssVar, useThemeId } from "@/lib/theme";
 import { GlobeEngine, type EngineCallbacks, type ThemeColors, type TrendInfo, type View } from "./engine";
 import { PLANET, parseCssColor } from "./palette";
@@ -14,6 +15,7 @@ export interface GlobeCanvasExtraProps {
   ariaLabel?: string;
   /** show the on-canvas zoom buttons (default true when interactive) */
   showControls?: boolean;
+  motionPaused?: boolean;
 }
 
 const DEFAULT_VIEW: View = { lon: 15, lat: 18, zoom: 1 };
@@ -46,6 +48,7 @@ export default function GlobeCanvas({
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
   showControls = true,
+  motionPaused = false,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -55,7 +58,8 @@ export default function GlobeCanvas({
   const [trend, setTrend] = useState<TrendInfo | null>(null);
   const [cursor, setCursor] = useState("");
   const themeId = useThemeId();
-  const initialRef = useRef({ interactive, initialView });
+  const reducedMotion = useReducedMotion();
+  const initialRef = useRef({ interactive, initialView, motionPaused });
 
   useLayoutEffect(() => {
     cbRef.current = { onPick, onHover, onZoomChange };
@@ -69,7 +73,7 @@ export default function GlobeCanvas({
     try {
       engine = new GlobeEngine(host, {
         interactive: initialRef.current.interactive,
-        reducedMotion: window.matchMedia(reducedQuery).matches,
+        reducedMotion: initialRef.current.motionPaused || window.matchMedia(reducedQuery).matches,
         initialView: initialRef.current.initialView,
         theme: readTheme(),
       });
@@ -95,17 +99,14 @@ export default function GlobeCanvas({
         setStatus("error");
       },
     );
-    const mq = window.matchMedia(reducedQuery);
-    const onMq = () => engine.setReducedMotion(mq.matches);
-    mq.addEventListener("change", onMq);
     return () => {
       alive = false;
-      mq.removeEventListener("change", onMq);
       engine.dispose();
       engineRef.current = null;
     };
   }, []);
 
+  useEffect(() => { engineRef.current?.setReducedMotion(reducedMotion || motionPaused); }, [reducedMotion, motionPaused]);
   useEffect(() => { engineRef.current?.setInteractive(interactive); }, [interactive]);
   useEffect(() => { void engineRef.current?.setBoundaryLayer(boundaryLayer ?? null).catch(() => {}); }, [boundaryLayer]);
   useEffect(() => {

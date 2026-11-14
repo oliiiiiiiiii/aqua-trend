@@ -1,0 +1,20 @@
+{
+  "dataset_version": "export-2-5f22f1428d16",
+  "release_commit": "5f22f1428d163db9aa735876a2b1983ac2f3720b",
+  "series_tree": "a7b18e2ed001958a2d5f85b837f5dab88058a6b6",
+  "series_index": "catalog/series_index.json",
+  "spatial_metadata": "catalog/series_spatial_support.json",
+  "data_format": "series-2",
+  "cadence": "monthly",
+  "calendar": "gregorian",
+  "spatial_preparation": "Region-weighted monthly mean over source cells with available finite data. The export retained products with at least 30% mean spatial coverage (except GLDAS 1° surface soil water, for which the source applied temporal coverage).",
+  "catalogue_version": "physical-concepts-1",
+  "region_catalogue_version": "aqua-regions-1",
+  "indicator_registry_version": "earth-indicators-1",
+  "quality_policy_version": "single-product-1",
+  "baseline_version": "fixed-references-1",
+  "event_catalogues": {
+    "drought": [{"catalogue_id": "prepared-drought", "path": "events/drought.json"}],
+    "flood": [{"catalogue_id": "prepared-flood", "path": "events/flood.json"}]
+  }
+}
