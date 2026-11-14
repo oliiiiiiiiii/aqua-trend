@@ -62,6 +62,8 @@ HERO = [
     ("N20_hunga_tonga_water", "results/50_hunga_tonga_water/hunga_tonga_stratospheric_water.png", "Hunga Tonga added 13% to stratospheric water; half remains"),
     ("N21_dust_greening", "results/51_dust_greening/dust_trends_and_greening.png", "Less dust over the Sahel and Middle East; greener years are cleaner"),
     ("N22_methane_null", "results/48_methane/methane_vs_wetland_water.png", "Methane surge vs wetland water: a correlation that is only shared trend"),
+    ("N23_asia_haze", "results/52_asia_haze/asia_haze_trends.png", "Asia's haze map redrawn: AERONET confirms clearer East Asia (Taipei −39%/dec), hazier India"),
+    ("N24_hunga_aftermath", "results/53_hunga_aftermath/hunga_aftermath_temperature_ozone.png", "After Hunga Tonga: the wet stratosphere cooled 2 K and lost 3% ozone"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

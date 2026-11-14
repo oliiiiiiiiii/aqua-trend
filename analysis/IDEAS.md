@@ -58,7 +58,9 @@
 | N09 | Taiwan: Hualien 2024 M7.4 aftershock decay (Omori–Utsu) vs Chi-Chi 1999; b-value | USGS M≥4 | Omori fit + map | low | done (task 47: p≈0.95 both; M≥4 rise is detection) |
 | N10 | Volcanic SO₂ and the Hunga Tonga 2022 stratospheric water injection | MSAQSO2L4 point sources, MLS H2O | event maps + series | med | done (task 49: China −92%, India +103%, 4 satellites agree; task 50: Hunga +13% strat. water, e-fold 4.5 yr) |
 | N11 | Saharan dust trend from OMI aerosol index vs Sahel greening and rain | OMTO3d UVAI + GPCP + NDVI | trend/correlation maps | low | done (task 51: dust down 9–17%/dec, MERRA-2 & OMI agree; greener years cleaner, 89% of land) |
-| N12 | Hunga Tonga aftermath: stratospheric cooling and ozone response | MLS T, O3 (ML3DZT, ML3DZO3) | time–height anomaly sections | low | todo |
+| N12 | Hunga Tonga aftermath: stratospheric cooling and ozone response | MLS T, O3 (ML3DZT, ML3DZO3) | time–height anomaly sections | low | done (task 53: −1.6 K, −2.8% O₃ in year 1; cooling robust, ozone fades) |
 | N13 | East Asia "brightening": sulfate AOD drop (MERRA-2) vs surface sunshine (CERES) | M2TMNXAER SUEXTTAU, CERES EBAF | trend maps + China series | med | todo |
 | N14 | SO₂/NO₂ ratio as a coal-vs-traffic fingerprint per city | MSAQSO2L4 + OMNO2d | scatter by city/year | low | todo |
-| N15 | Taiwan & SE Asia air: Vietnam's SO₂ ×4.6 vs Taiwan −78% — does it reach Taiwan? (MERRA-2 sulfate AOD, back-trajectory proxy via winds) | M2TMNXAER, MERRA-2 winds | regional series | med | todo |
+| N15 | Taiwan & SE Asia air: Vietnam's SO₂ ×4.6 vs Taiwan −78% — does it reach Taiwan? (MERRA-2 sulfate AOD, back-trajectory proxy via winds) | M2TMNXAER, AERONET | regional series | med | done (task 52: 27 AERONET sites, Taipei −39%/dec, sulfate tracks China SO₂ r=0.89) |
+| N16 | AERONET Ångström exponent: is Asia's haze getting coarser (dust) or finer (combustion)? Fine/coarse split trends | AERONET SDA | site trends | low | todo |
+| N17 | Mount Pinatubo-style check for smaller eruptions: MLS/OMPS volcanic SO₂ and stratospheric aerosol since 2004 (Raikoke 2019, Ruang 2024) | MLS SO2, OMPS LP | event series | med | todo |

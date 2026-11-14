@@ -100,3 +100,7 @@
 | 2026-11-14 19:48 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
 | 2026-11-14 19:49 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
 | 2026-11-14 19:51 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |
+| 2026-11-14 19:59 | 52_asia_haze | done | 27 AERONET sites: 16 down, 3 up; Taiwan sulfate -17%/dec, r(China SO2)=0.89 |
+| 2026-11-14 20:00 | 52_asia_haze | done | 27 AERONET sites: 16 down, 3 up; Taiwan sulfate -17%/dec, r(China SO2)=0.89 |
+| 2026-11-14 20:03 | 53_hunga_aftermath | done | 15-40 hPa 15-55S 2022-23: H2O +35%, T -0.7 K, O3 -0.7% |
+| 2026-11-14 20:04 | 53_hunga_aftermath | done | 15-40 hPa 15-55S first year: H2O +49%, T -1.6 K, O3 -2.8% |

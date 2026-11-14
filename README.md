@@ -33,6 +33,8 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N8 | SO₂ moved from China (−92%) to India (+103%) and the Gulf; four satellites agree. | Robust |
 | N9 | Hunga Tonga added +13% to stratospheric water (9σ); half is still there after four years. | Robust |
 | N10 | Less dust over the Sahel (−9%/dec) and Iraq–Syria (−17%/dec); greener years are cleaner years. | Robust |
+| N12 | Asia's haze redrawn: 27 AERONET ground stations — Taipei −39%/dec, Beijing −68%/dec, Seoul −48%; India's Ganges plain +19%. | Robust |
+| N13 | Hunga Tonga's wet stratosphere cooled 2 K and lost 3% ozone in year 1 (cooling robust; ozone dip fades). | Robust / Significant |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 

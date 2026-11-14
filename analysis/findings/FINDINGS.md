@@ -298,6 +298,26 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Tropical rain (r = −0.20) and El Niño (r = +0.03) show no link either.
 - Visual: `results/48_methane/methane_vs_wetland_water.png`.
 
+## N12. Asia's haze map redrawn: ground sun-photometers confirm clearer East Asian skies and hazier South Asia. **Robust (AERONET + MERRA-2/MODIS)**
+- 27 AERONET stations with ≥10 years of data: 16 show a significant decline in aerosol optical depth, 3 a rise. Station trends match MERRA-2 at r = 0.87.
+- Declines (%/decade):
+  - Beijing-CAMS −68 (2013–25).
+  - Seoul −48.
+  - Taiwan: EPA-NCU (Chungli) **−45**, Taipei **−39**.
+  - Osaka −37.
+- Rises (%/decade): Ganges plain (Gandhi College) +19, Jaipur +16, Dhaka +15.
+- Over Taiwan, MERRA-2 sulfate AOD falls −17%/decade and tracks China's SO₂ emissions (r = 0.89).
+  - Detrended, r = 0.39, so most of the link is the shared trend.
+  - The reanalysis underestimates Taiwan's local clean-up 2–3×.
+- Visual: `results/52_asia_haze/asia_haze_trends.png`.
+
+## N13. Hunga Tonga's aftermath: the wetter southern stratosphere turned colder and briefly lost ozone. **Robust cooling / Significant first-year ozone dip**
+- Aura MLS, 15–55°S, 15–40 hPa, Feb 2022–Jan 2023: water +49%, temperature −1.6 K, ozone −2.8%.
+- At the peak levels: cooling −2.1 K (7 σ) and ozone −3.0% (3.5 σ). Both are beyond every 12-month mean of 2005–21.
+- Since 2022, monthly water anomalies anticorrelate with temperature (r = −0.63, vs −0.06 before) and with ozone (r = −0.56).
+- The ozone dip fades over two years (−1.0%, 2.2 σ).
+- Visual: `results/53_hunga_aftermath/hunga_aftermath_temperature_ozone.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.
