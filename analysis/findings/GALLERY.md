@@ -35,6 +35,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W31](#w31) | Where land water is at a record low/high right now (32% / 23% of land) | `results/35_record_map/map_record_low_high_now.png` |
 | [W32](#w32) | When each place hit its driest point of the satellite era | `results/35_record_map/map_year_of_lowest_storage.png` |
 | [W28b](#w28b) | Why the Amazon dry season dries: a warming tropical Atlantic accounts for the trend | `results/36_amazon_moisture_budget/amazon_moisture_budget.png` |
+| [W33](#w33) | East Asia extremes ranked: Yangtze 2022 record-low storage, Henan 2021, Taiwan 2021 | `results/37_eastasia_extremes/eastasia_extremes.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -239,6 +240,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/36_amazon_moisture_budget/amazon_moisture_budget.png`</sub>
 
 ![Why the Amazon dry season dries: a warming tropical Atlantic accounts for the trend](figures/W28b_amazon_why.png)
+
+### W33
+**East Asia extremes ranked: Yangtze 2022 record-low storage, Henan 2021, Taiwan 2021**  
+<sub>source: `results/37_eastasia_extremes/eastasia_extremes.png`</sub>
+
+![East Asia extremes ranked: Yangtze 2022 record-low storage, Henan 2021, Taiwan 2021](figures/W33_eastasia_extremes.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

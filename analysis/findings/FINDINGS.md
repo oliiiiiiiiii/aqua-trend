@@ -137,6 +137,16 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - **Caveat:** under a trend, records naturally cluster at the end of the series, so this map is a vivid way of showing the trends plus recent extremes (2023–25 droughts, see W14). The most recent GRACE-FO months may still be revised.
 - Visual: `results/35_record_map/map_record_low_high_now.png`, `map_year_of_lowest_storage.png`.
 
+## W18. East Asia's water extremes, ranked from space — **Robust (GRACE + IMERG)**
+- **2022 Yangtze heat-drought:** basin water storage fell to **-10.5 cm in 2022-09, the lowest of all 259 GRACE months.** The previous record was -8.9 cm (2003-11). IMERG July–August rain was 52% of normal, the driest of 25 years.
+- **2021 Henan / North China floods:** July rain over Henan was 247% of normal, the wettest of 25 years. North China Plain storage jumped **+13.6 cm in 3 months** (#2 of 231 3-month gains), the start of the aquifer recovery in W3.
+- **Taiwan 2021:** January–May island rain was 60% of normal (#2 driest of 25). Pearl River storage reached -8.6 cm in 2021-06 (#11).
+- **Three Gorges (I19), not cleanly detectable:**
+  - Reservoir region minus the upstream Sichuan basin steps up through the impoundment stages: +0.3 → +0.5 → +2.2 → +4.9 cm.
+  - It then falls back to -0.1 cm after the dam reached 175 m.
+  - GRACE's roughly 300 km footprint can't separate a narrow reservoir of about 22 km³ from regional drought and wet variability.
+- Visual: `results/37_eastasia_extremes/eastasia_extremes.png`, `three_gorges.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **"Wet seasons wetter, dry seasons drier" over time is not a global pattern (task 33).**
   - Classes from GPCP 1979–2025: amplifying 17%, damping 17%, wetter all year 34%, drier all year 32%.

@@ -50,3 +50,7 @@
 | 2026-11-14 10:12 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
 | 2026-11-14 10:13 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
 | 2026-11-14 10:14 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
+| 2026-11-14 10:17 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
+| 2026-11-14 10:18 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
+| 2026-11-14 10:19 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
+| 2026-11-14 10:20 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |

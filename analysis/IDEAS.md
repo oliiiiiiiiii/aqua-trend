@@ -20,7 +20,7 @@
 | I16 | Taiwan coastal subsidence vs sea-level rise (Yunlin/Changhua): relative SLR | Sentinel-1 InSAR (heavy) | — | high | parked |
 | I17 | GERD filling: compare GRACE gain (≈7 km³/yr) with reported reservoir volume (altimetry of the reservoir surface + area from Landsat/Sentinel) | GRACE + SWOT/altimetry | storage vs reported volume | med | todo |
 | I18 | Greening cools the land: Loess Plateau & Inner Mongolia NDVI +9…14 %/dec while daytime LST −0.7…−0.85 °C/dec — evaporative cooling (ET up?) | MODIS NDVI/LST + GLDAS ET | 3-panel map NDVI↑ ET↑ LST↓ | low | superseded — LST cooling is a Terra drift artefact (task 07b) |
-| I19 | Three Gorges / Yangtze reservoir filling 2003–2010 in GRACE | GRACE + HydroBASINS | storage step | low | todo |
+| I19 | Three Gorges / Yangtze reservoir filling 2003–2010 in GRACE | GRACE + HydroBASINS | storage step | low | done (task 37: not cleanly detectable; Yangtze 2022 record low found) |
 | I20 | SWOT lake/reservoir levels (2023–26) for GERD, Lake Victoria, Caspian — independent check of GRACE storage changes | SWOT_L2_HR_LakeSP (PO.DAAC) | lake-level series vs GRACE | med | todo |
 | I21 | Quantify GLDAS-2.1 forcing inhomogeneity (SWdown/PET jumps) globally; mask affected pixels for ET trends | GLDAS vs MERRA-2 | change-point map | low | todo |
 | I22 | Atmospheric rivers / typhoon moisture into Taiwan: hourly IVT extremes trend | MERRA-2 M2T1NXINT (hourly, heavy) | AR-day calendar | high | parked |

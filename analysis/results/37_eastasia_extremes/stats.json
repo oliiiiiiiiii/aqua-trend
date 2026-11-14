@@ -1,0 +1,65 @@
+{
+  "events": {
+    "Yangtze basin": {
+      "label": "2022 heat-drought",
+      "extreme_cm": -10.494420280673829,
+      "month": "2022-09",
+      "rank": 1,
+      "n_months": 259,
+      "previous_record_cm": -8.87209165133097,
+      "previous_record_month": "2003-11"
+    },
+    "North China Plain": {
+      "label": "2021 Henan/Hebei floods",
+      "extreme_cm": 1.1421243943416153,
+      "month": "2021-10",
+      "rank": 125,
+      "n_months": 259,
+      "previous_record_cm": 19.11012693272619,
+      "previous_record_month": "2004-01"
+    },
+    "Pearl River": {
+      "label": "2020\u201321 South China drought",
+      "extreme_cm": -8.58134123223566,
+      "month": "2021-06",
+      "rank": 11,
+      "n_months": 259,
+      "previous_record_cm": -12.217713465349174,
+      "previous_record_month": "2011-09"
+    }
+  },
+  "ncp_2021_jump": {
+    "max_3month_gain_cm": 13.551553987215495,
+    "start_month": "2021-07",
+    "rank": 2,
+    "n": 231
+  },
+  "taiwan_janmay_rain": {
+    "y2021_pct_of_mean": 59.62226374097641,
+    "rank_2021_driest": 2,
+    "n_years": 25
+  },
+  "yangtze_julaug_rain": {
+    "y2022_pct_of_mean": 52.11558532714844,
+    "rank_2022_driest": 1,
+    "n_years": 25
+  },
+  "henan_july_rain": {
+    "y2021_pct_of_mean": 247.12135314941406,
+    "rank_2021_wettest": 1,
+    "n_years": 25
+  },
+  "three_gorges": {
+    "pettitt": {
+      "result": "(161, 10392.0, 1.466653456266589e-16)"
+    },
+    "stage_means_cm": {
+      "before 2003-06": 0.28375952180685654,
+      "2003-06..2006-09": 0.5336619266170509,
+      "2006-10..2008-10": 2.169104935310348,
+      "2008-11..2010-09": 4.888151467018955,
+      "2010-10..2015": -0.05759884026886259
+    },
+    "n_before_2003_06": 12
+  }
+}
