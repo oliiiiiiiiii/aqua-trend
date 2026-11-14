@@ -256,7 +256,16 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Clouds hide about half the effect.
 - Visual: `results/65_arctic_darkening/arctic_darkening.png`.
 
+## W29. Ice loss by region: mountain glaciers and the Amundsen Sea speed up; Greenland's loss slowed after 2012 — **Robust rates / region-dependent acceleration**
+- GRACE 2002–2026:
+  - Greenland −258 Gt/yr (−5,569 Gt total), but its loss slowed from −284 to −208 Gt/yr after 2012 (p < 0.01).
+  - Antarctica −126 Gt/yr with no overall acceleration (p = 0.32). The Amundsen Sea sector is −141 Gt/yr and accelerating (p = 0.02); East Antarctica gains +58 Gt/yr.
+  - Mountain glaciers are all losing faster (p < 0.01): Arctic Canada/Svalbard −74, High Mountain Asia −31, Patagonia −26 Gt/yr.
+- Total ≈ 35 mm of sea-level rise since 2002.
+- Visual: `results/68_ice_loss_acceleration/ice_loss_by_region.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
+- **Amazon resilience loss (task 67):** NDVI lag-1 autocorrelation rose on 59% of forest pixels (forest-mean τ = +0.38), but the surrogate p = 0.15, and there is no link with dry-season drying. No robust early-warning signal yet.
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.
   - Land-mean events per location per year, 1980–2002 → 2003–25: GPCP 0.194 → 0.167 (×0.86, trend p = 0.009, a *decrease*); MERRA-2 0.151 → 0.157 (×1.04, p = 0.29).

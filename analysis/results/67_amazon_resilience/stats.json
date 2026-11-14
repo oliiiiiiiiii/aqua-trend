@@ -1,0 +1,21 @@
+{
+  "n_pixels": 2008,
+  "frac_tau_pos": 0.5856573705179283,
+  "frac_tau_gt_0p3": 0.2151394422310757,
+  "frac_tau_lt_m0p3": 0.11205179282868526,
+  "median_tau": 0.06536807931911907,
+  "tau_forest_mean_series": 0.38416542364949846,
+  "p_surrogate_forest_mean": 0.14685314685314685,
+  "tau_mean_of_pixel_ar1": 0.4253458512474043,
+  "ar1_first_window": 0.20024386384149187,
+  "ar1_last_window": 0.2808778638179098,
+  "first_window_end": "2005-01-01",
+  "last_window_end": "2026-10-01",
+  "spearman_tau_vs_dry_season_rain_trend": {
+    "rho": 0.010032243647588639,
+    "p_naive": 0.6532272559413147,
+    "n": 2008
+  },
+  "median_tau_south_of_5S": 0.06367172647772806,
+  "median_tau_north_of_5S": 0.06840981544850984
+}

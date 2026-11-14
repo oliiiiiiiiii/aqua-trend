@@ -145,3 +145,10 @@
 | 2026-11-15 02:24 | 66_cloud_sst_feedback | done | sig positive on 48% of ocean; California +6.7 W/m2/K; Blob r=+0.55 |
 | 2026-11-15 02:26 | 66_cloud_sst_feedback | done | sig positive on 48% of ocean; California +6.7 W/m2/K; Blob r=+0.55 |
 | 2026-11-15 02:27 | 66_cloud_sst_feedback | done | sig positive on 48% of ocean; California +6.7 W/m2/K; Blob r=+0.55 |
+| 2026-11-15 02:29 | 67_amazon_resilience | done | tau>0 on 59% of forest; forest-mean tau +0.38 p=0.147 |
+| 2026-11-15 02:31 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |
+| 2026-11-15 02:32 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |
+| 2026-11-15 02:33 | 67_amazon_resilience | done | tau>0 on 59% of forest; forest-mean tau +0.38 p=0.147 |
+| 2026-11-15 02:33 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |
+| 2026-11-15 02:34 | 67_amazon_resilience | done | tau>0 on 59% of forest; forest-mean tau +0.38 p=0.147 |
+| 2026-11-15 02:35 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |

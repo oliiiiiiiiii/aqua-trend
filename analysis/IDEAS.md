@@ -50,6 +50,9 @@
 | I46 | Vertical land motion from tide gauges minus altimetry (global) | PSMSL + NASA-SSH | VLM map | low | done (task 60: 230 sinking / 184 rising; Manila −8.6 mm/yr) |
 | I47 | Relative sea-level rise felt at each coast = altimetry rise + land sinking: which cities face the fastest relative rise? | PSMSL + NASA-SSH | ranked map | low | done (task 62: Manila +12.5 mm/yr; 4% of gauges > 2x global) |
 | I48 | Taiwan land subsidence (Yunlin/Changhua) — needs InSAR (OPERA DISP-S1 / Sentinel-1) since PSMSL lacks modern Taiwan gauges | OPERA DISP | subsidence map | high | todo |
+| I49 | Amazon resilience: rolling AR1 of NDVI (critical slowing down) with surrogate test | MODIS NDVI | τ map + series | med | done (task 67: τ>0 on 59%, p=0.15 — not significant) |
+| I50 | Ice loss by region with acceleration (GRACE) | GRACE | curves + rates | low | done (task 68: glaciers & ASE accelerating, Greenland slowing) |
+| I51 | Repeat the resilience test with VOD (AMSR passive microwave, less saturation) or MODIS EVI | LPRM VOD / MOD13C2 EVI | τ map | med | todo |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |
