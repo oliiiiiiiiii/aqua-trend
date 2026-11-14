@@ -682,3 +682,59 @@ Demo 可以使用團隊事先從真實資料驗證過的區域，展示仍需保
 | 投稿格式 | 七頁英文投影片是本文件的建議方案，尚未定案 | 團隊依素材決定投影片或三十秒影片 |
 
 目前已有區域靜態資產、GLDAS 格點資料與初步趨勢輸出；倉庫尚未包含點擊選區、區域資料彙整或全量關聯推薦的執行程式。下一步將現有區域與資料接入，補齊來源與產製紀錄，再建立完整候選目錄並校準研究引擎。文件整理與查核使用 AI 協助，團隊提出原始構想並確認上述需求；本次文件更新未生成研究數據或顯著性結果。
+
+## 15. 目前的區域分割方式
+
+本節說明 `build_regions.py`（2026-11-14 版）實際產出的區域，對應 `web/public/data/catalog/regions.json` 與 `web/public/data/geo/`。共 7,641 個區域，分成七種圖層；圖層之間可以重疊。
+
+### 圖層
+
+| 圖層 | 數量 | 切法 | 來源 | 用途 |
+| --- | ---: | --- | --- | --- |
+| `basin3` | 292 | HydroBASINS 第 3 級流域（含格陵蘭、沙漠與內陸流域） | HydroSHEDS | 陸地的主要分析單位 |
+| `basin4` | 1,342 | HydroBASINS 第 4 級流域；`parent` 依 Pfafstetter 碼前 3 碼對到 `basin3` | HydroSHEDS | 放大後的細流域 |
+| `ice` | 2 | 東、西南極冰蓋＝IPCC AR6 的 EAN／WAN 分區 ∩ Natural Earth 南極大陸 | regionmask 內建 AR6、Natural Earth 50m | HydroBASINS 不含南極 |
+| `lme` | 66 | 大海洋生態系（沿岸海域） | Marine Regions（geo.vliz.be WFS） | 沿岸海溫、海平面等 |
+| `sea` | 15 | IPCC AR6 海洋分區扣掉 LME 與陸地；剩下的海面缺口分給最近的分區 | regionmask 內建 AR6 | 外海 |
+| `named` | 42 | 隊友 `regions.py` 的 41 個經緯度矩形 + 台灣本島輪廓 | 隊友 branch、Natural Earth 50m | 搜尋與 Demo 入口；可重疊 |
+| `hex` | 5,882 | H3 第 2 級六角格（每格約 8.7 萬 km²），全球無縫 | Uber H3 | 通用選區與回退 |
+
+- **覆蓋率**：用 0.5° 格網檢查，`basin3`＋`ice`＋`lme`＋`sea` 涵蓋 99.94% 的地表。沒有涵蓋到的是 HydroBASINS 沒收錄的北極小島，這些地方由 `hex` 接手。
+- **原本的計畫和實際不同的地方**：
+  - 外海原本要用 IHO 海域，但檔案過大（單批超過 55 MB），改用 AR6 海洋分區。
+  - 山岳冰川分區（RGI）尚未接入，因為資料網站搬遷；冰川本來就落在流域內。
+- **名稱**：
+  - 流域以「流域內總長最長的 Natural Earth 河流」命名，例如「Bío-Bío 流域（智利）」。121 個大流域找不到河名，改用「國家 流域 Pfafstetter 碼」，例如「台灣 流域 437」。
+  - 河名會誤導：`b3-6030026140` 叫「Bío-Bío 流域」，實際是南緯 18°–41° 的整片智利太平洋側。
+- **國家**：國家只是搜尋入口，不是分析單位。每個區域記錄面積佔比 ≥ 5% 的前 4 個國家；`countries.json` 有 174 個國家／地區代碼。台灣顯示為「台灣」。
+
+### 每個區域的屬性
+
+| 欄位 | 怎麼算 |
+| --- | --- |
+| `area_km2` | 用等面積投影（EPSG:6933）計算 |
+| `surface`、`surface_frac` | 0.5° 格點中，陸地（`basin3`）、冰（`ice` 與格陵蘭流域）、海洋所佔的面積比例 |
+| `available` | 依地表類型決定 17 個類別能不能選：陸地 ≥ 30% 給陸地類別，海洋 ≥ 30% 給海洋類別；積雪要求 GLDAS 1° 的降雪佔總降水 ≥ 5%（冰區一律可選）；海冰只給中心緯度 ≥ 65°N 或 ≤ 55°S 的海洋區域 |
+| `warnings` | 面積 < 200,000 km² 時，總儲水與地下水加警告（GRACE 解析度不足）；`_mixed`＝陸海混合；`_small`＝比 0.5° 格點還小 |
+| `n_cells_0p5` | 落在區域內的 0.5° 格點中心數；有 95 個區域為 0 |
+
+`available` 只是區域適用性提示，不代表資料已下載或分析一定能通過；最終資格由具體產品的覆蓋與方法判定（見第 8 節）。
+
+### 給分析用的遮罩
+
+`data/masks/regions_0p5.npz`（和隊友 `hub.py` 的格網相同：緯度 −89.75 起、經度 −179.75 起，0.5°）與 `regions_1deg.npz`：
+
+- 非重疊圖層是一張整數圖，記錄每個格點屬於該圖層的第幾個區域，−1 表示不屬於任何區域；
+- `named` 是 (區域, 緯度, 經度) 的布林陣列；
+- `<圖層>_ids` 對應區域代碼。
+
+區域平均以格點中心是否落在多邊形內決定歸屬，並以 cos(緯度) 加權。區域比 1° 格點小時，`analysis/export_web.py` 改用中心最近的陸地格點（≤ 2°），並在序列檔標 `nearest_cell: true`。
+
+### 重現
+
+```bash
+bash fetch_regions.sh        # HydroBASINS 第 3、4 級（9 個大洲）與 LME，存到 data/raw/regions/
+python3 build_regions.py     # 分 load / masks / attrs / write 四階段，可單獨執行
+```
+
+需要 `geopandas`、`regionmask`、`h3`、`shapely`（另需 `matplotlib` 產生預覽圖 `geo/preview_regions.png`）。Natural Earth 的國界、陸地與河流 GeoJSON 由 GitHub 的 `nvkelso/natural-earth-vector` 取得。上游授權：HydroSHEDS 依其授權條款；Marine Regions 為 CC-BY；Natural Earth 為公眾領域；IPCC AR6 分區依 regionmask 引用說明。
