@@ -71,3 +71,5 @@
 | 2026-11-14 17:11 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
 | 2026-11-14 17:12 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
 | 2026-11-14 17:12 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
+| 2026-11-14 17:15 | 44_quake_seasonality | done | California p=0.96 peak Jan; Japan p=0.31 peak Aug; Himalaya (Nepal arc) p=0.14 peak Jan; Taiwan p=0.83 peak Dec |
+| 2026-11-14 17:16 | 44_quake_seasonality | done | California p=0.96 peak Jan; Japan p=0.31 peak Aug; Himalaya (Nepal arc) p=0.14 peak Jan; Taiwan p=0.83 peak Dec |

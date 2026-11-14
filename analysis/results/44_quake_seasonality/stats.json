@@ -1,0 +1,92 @@
+{
+  "regions": [
+    {
+      "region": "California",
+      "catalogue": "california_m25",
+      "min_mag": 2.5,
+      "start": 1984,
+      "n_all": 75184,
+      "n_main": 17165,
+      "schuster_p": 0.9570430321686573,
+      "modulation_amp": 0.003198707969817532,
+      "peak_month": 0.6243867171281832,
+      "peak_month_name": "Jan",
+      "p_odd_years": 0.3638765037409101,
+      "p_even_years": 0.5968019017845623,
+      "phase_diff_halves_deg": 179.66208320331202,
+      "load_max_month": "Apr",
+      "load_min_month": "Oct",
+      "load_amp_cm": 6.9049391746521,
+      "r_rate_vs_load": -0.06488924801840602,
+      "r_rate_vs_unloading": -0.09218214612955712
+    },
+    {
+      "region": "Japan",
+      "catalogue": "japan_m4",
+      "min_mag": 4.0,
+      "start": 1990,
+      "n_all": 25667,
+      "n_main": 6179,
+      "schuster_p": 0.3142066603979308,
+      "modulation_amp": 0.027375983575573724,
+      "peak_month": 7.328758421513483,
+      "peak_month_name": "Aug",
+      "p_odd_years": 0.6263052153168008,
+      "p_even_years": 0.07439516821342256,
+      "phase_diff_halves_deg": 108.66767887771039,
+      "load_max_month": "Dec",
+      "load_min_month": "Jun",
+      "load_amp_cm": 1.7141826152801514,
+      "r_rate_vs_load": -0.36476300442617665,
+      "r_rate_vs_unloading": -0.4722464330575763
+    },
+    {
+      "region": "Himalaya (Nepal arc)",
+      "catalogue": "global_m45",
+      "min_mag": 4.5,
+      "start": 1973,
+      "n_all": 866,
+      "n_main": 434,
+      "schuster_p": 0.1432780333269571,
+      "modulation_amp": 0.13381906235939023,
+      "peak_month": 0.2051974976267296,
+      "peak_month_name": "Jan",
+      "p_odd_years": 0.343196031362469,
+      "p_even_years": 0.2170119236727566,
+      "phase_diff_halves_deg": 59.50439581550114,
+      "load_max_month": "Sep",
+      "load_min_month": "May",
+      "load_amp_cm": 11.133529663085938,
+      "r_rate_vs_load": -0.1060739408409873,
+      "r_rate_vs_unloading": 0.7366396492487263
+    },
+    {
+      "region": "Taiwan",
+      "catalogue": "taiwan_m3",
+      "min_mag": 4.0,
+      "start": 1990,
+      "n_all": 4534,
+      "n_main": 736,
+      "schuster_p": 0.8298934244564075,
+      "modulation_amp": 0.031833294600749865,
+      "peak_month": 11.030070557985802,
+      "peak_month_name": "Dec",
+      "p_odd_years": 0.4413756617904621,
+      "p_even_years": 0.9095364266465711,
+      "phase_diff_halves_deg": 170.7026087983975,
+      "load_max_month": "Jun",
+      "load_min_month": "Jan",
+      "load_amp_cm": 8.985580444335938,
+      "r_rate_vs_load": -0.3066820556316473,
+      "r_rate_vs_unloading": 0.1291794798887765
+    }
+  ],
+  "California_cells": {
+    "n_tested": 63,
+    "n_sig": 0
+  },
+  "Japan_cells": {
+    "n_tested": 44,
+    "n_sig": 0
+  }
+}

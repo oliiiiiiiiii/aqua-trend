@@ -225,6 +225,12 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - The core speeds the Earth up, while ice melt (by GRACE) lengthens the day by +1.5 ms per century.
 - Visuals: `results/43_earth_rotation/pole_drift_water.png`, `length_of_day.png`.
 
+## N-nulls. Non-water nulls
+- **Seasonal water load does not detectably modulate earthquakes (task 44).**
+  - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.
+  - No 1° cell passes FDR. The signal needs complete local catalogues.
+- **Global M≥6 rate since 1983** (task 40): no trend in either catalogue (see N1).
+
 ---
 ## 1. The Arctic's summer ice cap has shrunk by an area ≈ 68 × Taiwan — **Robust**
 - September sea-ice extent: **−11.6 % per decade** (vs 1981–2010), p = 3e-12; 2.45 million km² of September ice lost between 1979–88 and 2017–26.
