@@ -98,6 +98,7 @@ uniform vec3 uCoast;      // c0, amp, phase
 uniform float uIceCap;    // 1: the dry part of the cut-away is ice
 uniform float uGroundY; uniform float uSeabed; uniform float uRim;
 uniform vec3 uWaterTop; uniform vec3 uWaterDeep;
+uniform vec3 uIsle; uniform vec2 uIsleIrr; uniform float uHasIsle;
 varying vec3 vPos;
 varying vec3 vWorld;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -105,60 +106,58 @@ void main() {
   float ang = atan(vPos.z, vPos.x);
   float wob = 0.006 * sin(ang * 7.0) + 0.004 * sin(ang * 13.0 + 1.3);
   float y = vPos.y;
-  float bTop = uTopY + wob;
-  float bRoot = uRootY + wob * 1.8;
+  // dd: distance from the shoreline measured on the rim at this angle (> 0 on land, < 0 in water), the same function the
+  // ground uses, so the cross-section follows the very same coast profile as the surface above it
   vec2 pr = vec2(cos(ang), sin(ang)) * uRim;
-  float cl = coastAt(uCoast, pr.y);
-  // irregular, wavering seam instead of a straight wall: dj > 0 on the land side
-  float dj = cl - pr.x + 0.022 * sin(y * 34.0 + pr.y * 9.0) + 0.016 * sin(y * 71.0 - pr.y * 5.0) + 0.012 * (hash(floor(vec2(ang * 28.0, y * 52.0))) - 0.5);
-  float sea = uSeaMode > 1.5 ? 1.0 : (uSeaMode > 0.5 ? step(dj, 0.0) : 0.0);
+  float dd = 10.0;
+  if (uSeaMode > 1.5) dd = uHasIsle > 0.5 ? isleAt(uIsle, uIsleIrr, pr) - length(pr - uIsle.xy) : -1.0;
+  else if (uSeaMode > 0.5) dd = coastAt(uCoast, pr.y) - pr.x;
+  // ground surface under the rim, relative to the waterline (twin of scenery.makeLayout height without hills)
+  float hs = 0.0;
+  if (uSeaMode > 0.5) {
+    if (uSeaMode > 1.5 && uIsleIrr.y < 0.001) hs = -uSeabed;
+    else hs = dd <= 0.0 ? -0.03 - (uSeabed - 0.03) * smoothstep(0.0, 0.45, -dd) : -0.03 + 0.07 * smoothstep(0.0, 0.12, dd);
+  }
+  float surfY = uGroundY + min(hs, 0.0);
+  float dep = surfY - y; // depth below the ground surface
+  // strata follow the surface: the topsoil pinches out at the shore, the root zone thins out into the shelf, a sand layer covers the seabed
+  float kTop = smoothstep(0.02, 0.14, dd);
+  float bTop = (uGroundY - uTopY) * kTop + wob * kTop;
+  float bRoot = (uGroundY - uRootY) * smoothstep(-0.05, 0.35, dd) + wob * 1.8 * smoothstep(0.0, 0.3, dd);
+  float bSand = bRoot + 0.12 * (1.0 - smoothstep(0.1, 0.4, dd));
+  vec3 sand = vec3(0.89, 0.8, 0.59) * (0.97 + 0.05 * sin(dep * 90.0));
   vec3 c; float hatch = 0.0; float data = 0.0;
-  float seabedY = uGroundY - uSeabed;
-  // on a coast the seabed slopes away from the shore, like the beach profile of the ground
-  if (uSeaMode > 0.5 && uSeaMode < 1.5) seabedY = uGroundY - 0.03 - (uSeabed - 0.03) * smoothstep(0.0, 0.45, -dj);
-  vec3 sand = vec3(0.86, 0.77, 0.56) * (0.93 + 0.1 * hash(floor(vec2(ang * 30.0, y * 60.0))));
-  float nearSeam = uSeaMode > 0.5 && uSeaMode < 1.5 ? 1.0 - smoothstep(0.0, 0.085, abs(dj)) : 0.0;
-  if (sea > 0.5) {
-    if (y > seabedY) {
-      float t = clamp((uGroundY - y) / uSeabed, 0.0, 1.0);
-      c = mix(uWaterTop, uWaterDeep, t);
-      data = 0.5;
-    } else if (y > seabedY - 0.12) {
-      c = sand;
-    } else {
-      c = uDeep;
-      vec2 cell = floor(vec2(ang * 26.0, y * 34.0));
-      c *= 0.94 + 0.14 * step(0.82, hash(cell));
-    }
-  } else if (uIceCap > 0.5) {
-    float stripe = 0.5 + 0.5 * sin(y * 70.0 + wob * 40.0);
-    if (y > bRoot) {
-      c = mix(vec3(0.88, 0.95, 1.0), vec3(0.76, 0.89, 0.98), stripe * smoothstep(bTop, bRoot, y));
-    } else {
-      float t = clamp((bRoot - y) / 0.5, 0.0, 1.0);
-      c = mix(vec3(0.62, 0.8, 0.94), vec3(0.3, 0.42, 0.56), t) * (0.96 + 0.08 * step(0.7, hash(floor(vec2(ang * 22.0, y * 30.0)))));
-    }
-  } else {
-    if (y > bTop) { c = uTop; hatch = uTopHatch; data = uTopData; }
-    else if (y > bRoot) { c = uRoot; hatch = uRootHatch; data = uRootData; }
-    else {
-      c = uDeep;
-      vec2 cell = floor(vec2(ang * 26.0, y * 34.0));
-      float pk = hash(cell);
-      c *= 0.94 + 0.14 * step(0.82, pk) - 0.06 * step(pk, 0.1);
-    }
+  if (dep < 0.0) {
+    // water column: translucent blue from the waterline down to the seabed, a little darker with depth
+    c = mix(uWaterTop, uWaterDeep, clamp((uGroundY - y) / uSeabed, 0.0, 1.0) * 0.8);
+    data = 0.5;
+  } else if (dep < bTop && uIceCap < 0.5) { c = uTop; hatch = uTopHatch; data = uTopData; }
+  else if (dep < bRoot) {
+    if (uIceCap > 0.5) {
+      float stripe = 0.5 + 0.5 * sin(dep * 70.0 + wob * 40.0);
+      c = mix(vec3(0.88, 0.95, 1.0), vec3(0.76, 0.89, 0.98), stripe * smoothstep(bTop, bRoot, dep));
+    } else { c = uRoot; hatch = uRootHatch; data = uRootData; }
+  }
+  else if (dep < bSand) c = sand;
+  else {
+    vec2 cell = floor(vec2(ang * 26.0, y * 34.0));
+    float pk = hash(cell);
+    if (uIceCap > 0.5) {
+      float t = clamp((uRootY - y) / 0.5, 0.0, 1.0);
+      c = mix(vec3(0.62, 0.8, 0.94), vec3(0.3, 0.42, 0.56), t) * (0.96 + 0.08 * step(0.7, pk));
+    } else c = uDeep * (0.94 + 0.14 * step(0.82, pk) - 0.06 * step(pk, 0.1));
+  }
+  if (dep >= 0.0 && uIceCap < 0.5) {
     if (hatch > 0.5) {
       float s = step(0.5, fract((gl_FragCoord.x + gl_FragCoord.y) / (9.0 * uDpr)));
       c = mix(uHatchA, uHatchB, s);
-    } else if (data < 0.5 && y > bRoot) {
+    } else if (data < 0.5 && dep < bRoot) {
       // tiny pebbles in neutral earth, never in a data band (texture would read as a value change)
       float pk = hash(floor(vec2(ang * 40.0, y * 70.0)));
       c *= 0.96 + 0.08 * step(0.85, pk);
     }
-    float seam = min(abs(y - bTop), abs(y - bRoot));
+    float seam = min(abs(dep - bTop) + 1.0 - kTop, abs(dep - bRoot) + 1.0 - smoothstep(-0.05, 0.1, dd));
     c *= mix(0.72, 1.0, smoothstep(0.0, 0.0045, seam));
-    // beach sand and shingle bleed into the soil bands near the shore (a dithered wedge, never a wall)
-    if (y > bRoot && nearSeam > 0.0 && hash(floor(vec2(ang * 44.0, y * 80.0)) + 3.0) < nearSeam * 0.8) { c = sand; data = 0.0; }
   }
   vec3 n = normalize(cross(dFdx(vWorld), dFdy(vWorld)));
   if (dot(n, cameraPosition - vWorld) < 0.0) n = -n;
@@ -410,6 +409,7 @@ export class OrbScene {
         uTopY: { value: SOIL.topY }, uRootY: { value: SOIL.rootY }, uDpr: { value: this.dpr },
         uLightW: { value: lightDir.clone() },
         uSeaMode: { value: 0 }, uCoast: { value: new THREE.Vector3() }, uIceCap: { value: 0 },
+        uIsle: { value: new THREE.Vector3() }, uIsleIrr: { value: new THREE.Vector2() }, uHasIsle: { value: 0 },
         uGroundY: { value: GROUND_Y }, uSeabed: { value: SEABED_DEPTH }, uRim: { value: RIM },
         uWaterTop: { value: new THREE.Vector3(...WATER_SHALLOW) }, uWaterDeep: { value: new THREE.Vector3(...WATER_DEEP) },
       },
@@ -548,6 +548,7 @@ export class OrbScene {
     W.uHasIsle.value = L.isle ? 1 : 0;
     if (L.isle) W.uIsle.value.set(L.isle.x, L.isle.z, L.isle.r);
     W.uIsleIrr.value.set(L.isleIrr ?? 0, L.isleIrr != null ? ISLE_IRR : 0);
+    U.uHasIsle.value = W.uHasIsle.value; U.uIsle.value.copy(W.uIsle.value); U.uIsleIrr.value.copy(W.uIsleIrr.value);
     this.soilShown = L.soilCap;
     this.runMode = L.seaMode === 1 ? "lanes" : L.seaMode === 2 && !L.isle ? "none" : "radial";
     this.layoutSlots(seeded(`${seed}|slots`));
@@ -841,23 +842,23 @@ export class OrbScene {
       S.e[i] = (i * GOLDEN) % 1;
     }
     // soil beads on the land part of the cut-away: low-discrepancy angles and depths, so any prefix is evenly spread
-    const landAng = (a: number) => {
+    const landAng = (a: number, margin: number) => {
       if (!L.coast) return true;
       const x = Math.cos(a) * RIM, z = Math.sin(a) * RIM;
-      return x < coastX(L.coast, z) - 0.09;
+      return x < coastX(L.coast, z) - margin;
     };
-    const fill = (B: Slots, yHi: number, yLo: number) => {
+    const fill = (B: Slots, yHi: number, yLo: number, margin: number) => {
       let k = 0;
       for (let i = 0; i < B.a.length; i++) {
         let a = 0;
-        do { a = (((k++ * GOLDEN) % 1) + rnd() * 0.02) * Math.PI * 2; } while (!landAng(a) && k < 20000);
+        do { a = (((k++ * GOLDEN) % 1) + rnd() * 0.02) * Math.PI * 2; } while (!landAng(a, margin) && k < 20000);
         B.a[i] = a;
         B.b[i] = yHi + (yLo - yHi) * ((i * 0.7548776662 + 0.12) % 1);
         B.c[i] = 0.75 + rnd() * 0.5;
       }
     };
-    fill(this.beadTopSlots, GROUND_Y - 0.018, SOIL.topY + 0.016);
-    fill(this.beadRootSlots, SOIL.topY - 0.022, SOIL.rootY + 0.03);
+    fill(this.beadTopSlots, GROUND_Y - 0.018, SOIL.topY + 0.016, 0.16); // topsoil is full thickness from 0.14 inland
+    fill(this.beadRootSlots, SOIL.topY - 0.022, SOIL.rootY + 0.03, 0.38); // the root zone reaches full depth 0.35 inland
   }
 
   /** vapour, runoff paths and soil beads on the hex board (the rain drops are laid out by layoutSlots) */
