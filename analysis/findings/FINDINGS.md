@@ -154,6 +154,11 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Visual: `results/37_eastasia_extremes/eastasia_extremes.png`, `three_gorges.png`.
 
 ## W11. Null results worth showing (honesty = credibility)
+- **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
+  - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.
+  - Land-mean events per location per year, 1980–2002 → 2003–25: GPCP 0.194 → 0.167 (×0.86, trend p = 0.009, a *decrease*); MERRA-2 0.151 → 0.157 (×1.04, p = 0.29).
+  - The two maps agree in sign on 57% of land, and their annual series correlate at r = 0.41. No pixel passes FDR.
+  - Published increases use daily data, longer records or different definitions. Our monthly satellite-era test can't confirm them, and GPCP's pre-1987 satellite inputs may affect variance.
 - **"Wet seasons wetter, dry seasons drier" over time is not a global pattern (task 33).**
   - Classes from GPCP 1979–2025: amplifying 17%, damping 17%, wetter all year 34%, drier all year 32%.
   - Only 1–7% of land is significant, and about 0% over 2001–25. The class maps from IMERG and GPCP agree on 61% of land (25% by chance).
