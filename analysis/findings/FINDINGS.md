@@ -410,6 +410,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - The clean-up removes an aerosol "sunscreen", which adds to warming.
 - Visual: `results/63_asia_brightening/asia_brightening.png`.
 
+## N16. Earth's energy imbalance has more than doubled: the planet absorbs more sunlight than ever measured. **Robust (CERES)**
+- Net energy into the planet: 0.67 W m⁻² (2001–05) → 1.65 W m⁻² (2021–25), +0.45 ± 0.14 W m⁻² per decade (p = 7e-10).
+- 2023 was the record year; the last 12 months average 1.96 W m⁻².
+- Absorbed sunlight rose +0.88 W m⁻² per decade and is accelerating (p = 1e-6).
+  - About half comes from fewer and dimmer clouds, half from clear-sky changes (ice and snow loss, cleaner air; task 63).
+- The warmer planet radiates +0.42 more, offsetting only part of the gain.
+- Visual: `results/64_energy_imbalance/energy_imbalance.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

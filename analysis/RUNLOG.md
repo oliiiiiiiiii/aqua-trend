@@ -137,3 +137,5 @@
 | 2026-11-15 02:10 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
 | 2026-11-15 02:13 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
 | 2026-11-15 02:14 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
+| 2026-11-15 02:16 | 64_energy_imbalance | done | EEI 0.67 -> 1.65 W/m2; trend +0.45/dec p=7e-10 |
+| 2026-11-15 02:16 | 64_energy_imbalance | done | EEI 0.67 -> 1.65 W/m2; trend +0.45/dec p=7e-10 |
