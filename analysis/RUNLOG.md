@@ -67,3 +67,7 @@
 | 2026-11-14 17:01 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian doubling 3.3 yr; New Madrid flat |
 | 2026-11-14 17:01 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian 2017-22 doubling 1.1 yr; New Madrid flat |
 | 2026-11-14 17:02 | 41_induced_seismicity | done | Oklahoma 1.1/yr -> 887 (2015); Permian 2017-22 doubling 1.1 yr; New Madrid flat |
+| 2026-11-14 17:10 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
+| 2026-11-14 17:11 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
+| 2026-11-14 17:12 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |
+| 2026-11-14 17:12 | 43_earth_rotation | done | pole drift 2014-25 3.3 mas/yr toward 10W; GRACE predicts 5.0 toward -15W (angle 10 deg vs observed change); LOD min -1.65 ms |

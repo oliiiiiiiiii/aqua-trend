@@ -216,6 +216,15 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Water link: the driver is the disposal of produced water, a human transfer of water from one rock layer to another.
 - Visuals: `results/41_induced_seismicity/map_three_eras.png`, `induced_counts.png`.
 
+## N3. Water and ice are steering the North Pole, and the day is getting shorter anyway. **Robust (space geodesy and GRACE agree within 10°)**
+- The mean pole drifted toward Canada (72–97°W) until 2001, then turned east (27°E in 2002–13, 10°W in 2014–25).
+- **GRACE mass change predicts a change in drift of 5.0 mas/yr toward 15°E. The observed change is 5.1 mas/yr toward 24°E**, with interannual r = 0.73 / 0.54.
+  - Contributions: Greenland 2.6 mas/yr toward 46°W, Antarctica 2.0 toward 59°E, ocean 1.6 toward 12°E.
+  - **Land water (groundwater pumping) 1.2 toward 69°E.** That is the hydrology hub again.
+- Length of day: the record short day was **−1.65 ms (5 Jul 2024)**, and 168–239 days per year since 2020 were shorter than 86,400 s.
+  - The core speeds the Earth up, while ice melt (by GRACE) lengthens the day by +1.5 ms per century.
+- Visuals: `results/43_earth_rotation/pole_drift_water.png`, `length_of_day.png`.
+
 ---
 ## 1. The Arctic's summer ice cap has shrunk by an area ≈ 68 × Taiwan — **Robust**
 - September sea-ice extent: **−11.6 % per decade** (vs 1981–2010), p = 3e-12; 2.45 million km² of September ice lost between 1979–88 and 2017–26.
