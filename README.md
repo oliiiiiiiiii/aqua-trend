@@ -18,9 +18,24 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | W8 | Rain follows moisture convergence by the winds (r = 0.57–0.81), not upwind ocean evaporation. | Robust |
 | W9 | Marine heatwave days at Kenting rose from 6 to 115 per year, with 211 in 2024. | Robust |
 | W12 | Land loses 703 Gt/yr and the ocean gains 731 Gt/yr (closure within 4%). Aquifers and lakes add about 0.3 mm/yr to sea level. | Robust |
+| W13 | Ocean–land seesaw: when the continents soak up rain, sea level drops. In 2011 about 1,600 Gt was parked on land and ocean mass fell 5 mm. The Amazon is the biggest "sponge". | Robust |
+| W14 | 2024 was the most widespread hot-and-dry year of the satellite era in both land models (Amazon, southern Africa, Mexico). GRACE shows Mexico at a record low. | Robust record |
+| W15 | The southern Amazon's dry season is drier (−10 to −26%/decade) and longer (+6 to +17 days/decade) in 3 rain datasets. A warming tropical Atlantic quantitatively accounts for the trend. | Robust |
+| W16 | Rain is replacing snow: the snow share on snowy land fell from 35% to 31% (MERRA-2). MODIS spring snow cover confirms the decline for the Alps, eastern Europe and Japan & Korea, but not for High Mountain Asia. | Robust in aggregate |
+| W17 | 32% of land is at its lowest water storage of the GRACE era, against about 15% by chance. Record lows span the Middle East, Central Asia and eastern Europe; record highs span the Sahel and East Africa. | Significant |
+| W18 | East Asia extremes ranked: Yangtze 2022 storage was the lowest of 259 months, Henan July 2021 rain was the wettest of 25 years, and Taiwan's Jan–May 2021 rain was the 2nd driest. | Robust |
+| W19 | Turning points: on 45% of land the storage trend changed course after 2014. The North China Plain reversed to gain; Central Europe and the Caspian got worse. | Significant |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
-The **negative results** are also recorded: GLDAS ET drift, the Terra LST orbit-drift "cooling", and the evaporation-regime shift that is model-dependent. They show why a trend needs a second dataset.
+The **negative results** are also recorded:
+- GLDAS ET drift.
+- The Terra LST orbit-drift "cooling".
+- The model-dependent evaporation-regime shift.
+- No detectable soil-moisture → rain feedback at monthly scale.
+- No global "wet seasons wetter" amplification.
+- No robust whiplash trend.
+
+They show why a trend needs a second dataset.
 
 ## Layout
 ```
