@@ -153,6 +153,25 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - GRACE's roughly 300 km footprint can't separate a narrow reservoir of about 22 km³ from regional drought and wet variability.
 - Visual: `results/37_eastasia_extremes/eastasia_extremes.png`, `three_gorges.png`.
 
+## W19. Turning points: on 45% of land the water-storage trend changed course after 2014 — **Significant (GRACE; AR(1)-adjusted, FDR)**
+- Trend 2014–26 compared with 2002–13 (z-test on AR(1)-adjusted standard errors):
+  - **reversal from loss to gain 12%** of land;
+  - **reversal from gain to loss 10%**;
+  - accelerating loss 7%; slowing loss 7%; accelerating gain 6%.
+- **Recoveries:**
+  - North China Plain -1.3 → **+1.2 cm/yr** (p = 0.002; the diversion plus floods, W3);
+  - Bangladesh, Malawi, Mozambique, Somalia and Egypt (most of their area);
+  - the Sahel's gain accelerated (+0.5 → +1.9).
+  - Saudi Arabia and Iraq: depletion slowing.
+- **New or worse losses:**
+  - Central Europe +0.04 → **-0.83 cm/yr** (p = 0.01; the 2018–22 European droughts); Poland is 100% gain → loss.
+  - Caspian region -2.4 → **-5.4**.
+  - Patagonia -3.0 → -4.2.
+  - Romania, Tunisia, Greece and Central Asia: accelerating loss.
+  - Paraguay, Morocco and Zambia: gain → loss.
+- **Sensitivity:** NW India shows no change in this two-era split (-2.1 → -2.3, box 70–80°E). With W3b's box and three phases, GRACE total storage does slow (−4.1 → −3.0 → −1.7 cm/yr) while GLDAS soil + snow stays near zero. So that slowdown is real in GRACE, but depends on the breakpoints.
+- Visual: `results/39_turning_points/map_turning_points.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

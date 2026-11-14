@@ -56,3 +56,5 @@
 | 2026-11-14 10:20 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
 | 2026-11-14 10:25 | 34b_modis_snow_cover | done | MAM cover sig down 0% / up 0%; agree with MERRA-2 62% |
 | 2026-11-14 10:28 | 38_whiplash | done | GPCP x0.86 (p=0.009), MERRA-2 x1.04 (p=0.29); map agree 57% |
+| 2026-11-14 10:30 | 39_turning_points | done | sig change 45% of land; loss->gain 12%, gain->loss 10% |
+| 2026-11-14 10:33 | 39_turning_points | done | sig change 45% of land; loss->gain 12%, gain->loss 10% |
