@@ -181,6 +181,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Annual rain has no trend; the lakes rise in steps. GRACE: the Victoria basin holds +49 cm more water than in 2003–12.
 - Visual: `results/54_east_africa_lakes/east_africa_lakes.png`.
 
+## W21. The world's lakes from space: the Caspian sinks, East Africa rises, reservoirs swing with droughts — **Robust (Caspian: altimetry + GRACE, r = 0.999)**
+- NASA GWM altimetry, 332 lakes, 2009–2025: 53 falling, 46 rising (FDR).
+- Caspian Sea −1.16 m/decade (~2 m since 2009). GRACE agrees year by year (r = 0.999), confirming #6.
+- Also falling: the Aral remnants, Urmia, Issyk-Kul, Salton Sea (−2.2 m/decade), and Kariba reservoir (−5.3 m/decade, the drought hydropower crisis).
+- Rising: East Africa's lakes, Lake Chad (+0.33 m/decade) and Nasser (+4.5 m/decade, despite GERD).
+- New dams being filled (Laos, China) show the largest rises.
+- Visual: `results/55_world_lakes/world_lakes_trends.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

@@ -1,0 +1,520 @@
+id,name,lat,lon,country,gwm_type,regulated,n_years,advisories,merger_problem,sen_m_per_decade,p,change_2009_11_to_2023_25,sig
+000026,Vanern,59.175,13.663,Sweden,Reservoir,True,17,Regulated water levels | Winter ice,False,0.0062,0.9343,0.1383,False
+000503,Kremenshugskoye,49.225,32.832,Ukraine,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,0.0938,0.4338,0.1481,False
+000398,Kyoga,1.484,32.778,Uganda,Reservoir,False,17,Anthropogenic effects | Shallow waters,False,1.5204,0.0002,2.2994,True
+001462,Saratov,52.503,48.18,Russian Federation,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,0.125,0.0034,0.1807,True
+000413,Hovs Gol,51.319,100.498,Mongolia,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,,,,
+000557,Burigi,-2.018,31.193,Tanzania,closed,False,17,Series mission-merger compromised (TP/J2) | Narrow water crossing,False,1.2336,0.0089,2.1636,True
+000275,Kara-Bogaz,41.593,53.536,Turkmenistan,Reservoir,False,17,Anthropogenic effects | Shallow waters,False,-1.4668,0.0001,-2.6068,True
+001238,Opinaca,52.381,-76.705,Canada,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Data capture compromised (J1)",False,1.0135,0.0829,1.6553,False
+000441,Claire,58.36,-112.041,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+000091,Naivasha,-0.75,36.41,Kenya,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Shallow waters,False,2.3116,0.0,3.6869,True
+001490,Grande Riviere IV,54.146,-73.207,Canada,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,-0.0259,0.8368,-0.0028,False
+000411,Har 2,48.056,93.149,Mongolia,open,False,17,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,0.6104,0.0363,0.3419,False
+001621,Nova Ponte,-19.125,-47.39,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-4.6355,0.496,-5.2119,False
+002001,Dalmaj,32.179,45.458,Iraq,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture DEM compromised (J3),False,0.0031,1.0,-0.0724,False
+001081,Keller,63.929,-121.498,Canada,open,False,0,Series mission-merger compromised (J1/J2) | Winter ice,False,,,,
+000511,Taupo,-38.831,176.015,New Zealand,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture compromised (TP),False,0.1393,0.0755,0.1313,False
+000171,Migriggyangzham,33.386,90.137,Rep. China,closedx,False,17,Series mission-merger compromised (TP/J2) | High Latitude/Altitude,False,4.9208,0.0001,7.1899,True
+005620,Kenai,60.401,-149.433,USA,open,False,6,Series mission-merger compromised (J3/J2) | Winter ice | Data capture DEM compromised (J3),True,,,,
+000758,Victoria 2,-33.996,141.245,Australia,Reservoir,True,17,Regulated water levels,False,-0.0836,0.5923,0.5389,False
+000600,Tshchikskoye 1,45.017,39.371,Russian Federation,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Complex region | Data capture compromised (TP, J1)",False,0.0416,0.9671,-0.0871,False
+000948,Ondozero,63.85,33.211,Russian Federation,Reservoir,False,17,Anthropogenic effects | Winter ice | Data capture compromised (J1),False,-0.1037,0.1275,-0.1431,False
+006133,Berg 1,60.407,-143.744,USA,open,False,0,"Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Narrow water crossing | Data capture compromised (TP, J2, J3) | Data capture DEM compromised (J3)",True,,,,
+000416,Mweru,-8.998,28.646,DR Congo,open,False,17,,False,0.2672,0.3031,0.0817,False
+000042,Manitoba,50.754,-98.626,Canada,Reservoir,True,0,Regulated water levels | Winter ice | Shallow waters | Data capture compromised (J1),False,,,,
+001886,Kagalurpak,60.984,-164.051,USA,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,0.0483,0.0393,0.0944,False
+000480,Winnebago,44.049,-88.403,USA,Reservoir,True,17,Regulated water levels | Winter ice | Shallow waters | Data capture compromised (J1),False,0.0537,0.0017,0.0653,True
+000274,Kinkony,-16.143,45.766,Madagascar,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Narrow water crossing | Shallow waters,False,-0.6014,0.0008,-0.7102,True
+000534,Oro,16.232,-3.874,Mali,closed,False,17,Series mission-merger compromised (TP/J2) | Data capture compromised (TP),False,0.0659,0.0391,0.0751,False
+000409,Yathkyed,62.46,-97.507,Canada,open,False,0,"Series mission-merger compromised (S6a/J3) | Winter ice | Data capture DEM compromised (J3, S6a) | Data capture compromised (J1)",True,,,,
+001446,Piedra Aguila,-40.342,-70.06,Argentina,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-3.8,0.0015,-3.1671,True
+001408,Pyhajarvi 2,61.377,23.511,Finland,Reservoir,True,14,Regulated water levels | High Latitude/Altitude,False,0.0656,0.0161,0.0608,True
+000678,Bear 2,42.089,-111.256,USA,Reservoir,False,16,"Series mission-merger compromised (TP/J1, J1/J2) | Anthropogenic effects | Winter ice | Overpass skims coastline | Data capture compromised (J1)",False,0.1921,0.5445,0.4869,False
+000316,Baikal,51.902,105.692,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice | Potential seiche/wind effects,False,0.0843,0.1734,0.1231,False
+006871,Huangdeng,26.736,99.142,Rep. China,Reservoir,True,12,"Regulated water levels | Mid-series reservoir formation | Series mission-merger compromised (TP/J2, S6a/J3) | Narrow water crossing | Data capture DEM compromised (J3, S6a) | Data capture compromised (TP)",True,,,,
+001053,Schultz,64.758,-97.591,Canada,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,,,,
+000252,Cedar,53.214,-100.186,Canada,Reservoir,True,0,Regulated water levels | Winter ice,False,,,,
+000209,Ulungar,47.052,87.259,Rep. China,closed,False,17,Series mission-merger compromised (TP/J2) | Winter ice,False,0.106,0.873,0.1705,False
+001575,Bagre,11.566,-0.761,Burkino Faso,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,0.7406,0.1494,0.5856,False
+000280,Istadehye,32.485,67.967,Afghanistan,closed,False,17,"Overpass skims coastline | Shallow water | Data capture compromised (TP, J1)",False,0.1637,0.0,0.2154,True
+000512,Seul,50.588,-93.158,Canada,Reservoir,True,0,"Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Data capture compromised (TP, J1)",False,,,,
+000348,Athabasca,59.165,-110.063,Canada,Reservoir,False,0,Anthropogenic effects | Winter ice,False,,,,
+001554,Peixoto,-20.416,-46.849,Brazil,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,-1.0478,0.2613,-0.8599,False
+000337,Superior 1,46.825,-87.034,USA,Reservoir,True,17,Regulated water levels | Winter ice | Potential seiche/wind effects | Potential tide effects,False,0.1983,0.158,0.2742,False
+000514,Towuti,-2.726,121.626,Rep. Indonesia,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Data capture compromised (J1)",False,-0.0062,0.8376,-0.1076,False
+000253,Bolshoy Uvat,57.536,70.626,Russian Federation,closed,False,17,Series mission-merger compromised (TP/J2) | High Latitude/Altitude,False,0.0792,0.4143,0.0904,False
+000590,Krasnooskolskoye,49.531,37.694,Ukraine,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Narrow water crossing | Overpass far from dam | Shallow waters | Data capture compromised (TP),False,-0.4656,0.4266,-1.5881,False
+004033,Zhexi,28.045,111.12,Rep. China,Reservoir,True,16,"Series mission-merger compromised (TP/J2, J3/J2)  | Regulated water levels | Narrow water crossing | Data capture compromised (TP, J2)",True,0.7302,0.3004,1.7052,
+000847,LE Magalhaes,-10.42,-48.414,Brazil,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2, S6a/J3) | Regulated water levels | Mid-series reservoir formation | Data capture DEM compromised (J3) | Data capture compromised (J1)",True,-0.1218,0.029,-0.1951,
+000502,Sivash,45.708,34.952,Ukraine,lagoon,False,17,Series mission-merger compromised (TP/J2) | Winter ice | Shallow waters,False,-0.2321,0.0095,-0.3752,True
+000454,Lesser Slave,55.423,-114.936,Canada,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.0763,0.9016,-0.1739,False
+001121,Carey 1,62.211,-102.843,Canada,open,False,0,Series mission-merger compromised (S6a/J3) | Winter ice | Data capture DEM compromised (J3) | Data capture compromised (J1),True,,,,
+001000,Sheksna,59.458,38.488,Russian Federation,Reservoir,True,5,Regulated water levels | Winter ice,False,,,,
+003906,Gelingullu,39.66,35.119,Turkey,Reservoir,True,13,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3),True,,,,
+000254,Smallwood,54.141,-64.696,Canada,Reservoir,False,0,Series mission-merger compromised (TP/J1) | Anthropogenic effects | Winter ice | Narrow water crossing | Data capture compromised (J1),False,,,,
+000258,Iliamna,59.655,-154.759,USA,open,False,17,Winter ice | Data capture compromised (J1),False,0.0673,0.6505,0.0917,False
+000482,Mjosa,60.892,10.703,Norway,Reservoir,True,15,Series mission-merger compromised (J3/J2) | Regulated water levels | High Latitude/Altitude | Potential seiche/wind effects | Narrow water crossing,True,0.2625,0.1376,0.4813,
+000684,Sakakawea,47.515,-101.887,USA,Reservoir,True,17,Series mission-merger compromised (TP/J1) | Regulated water levels | Winter ice | Data capture compromised (J1),False,-1.2852,0.0638,-2.3776,False
+000425,Krasnoyarskoye,55.126,91.77,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.8256,0.1162,-2.5383,False
+001878,Lewis Clark,42.844,-97.679,USA,Reservoir,True,15,Regulated water levels | Data capture compromised (J2),False,-0.1365,0.0008,-0.2113,True
+000625,Tarbela,34.098,72.713,Pakistan,Reservoir,True,17,"Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3, S6a)",False,0.0604,1.0,4.6179,False
+001672,Ariau,-2.836,-56.995,Brazil,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Complex region",False,-0.2152,0.7731,-0.3344,False
+001259,Victoria 3,48.326,-57.368,Canada,Reservoir,False,7,Anthropogenic effects | Winter ice | Series mission-merger compromised (TP/J2) | Narrow water crossing | Data capture compromised (TP),False,,,,
+004819,Karun IV,31.621,50.613,Iran,Reservoir,True,14,"Series mission-merger compromised (S6a/J3) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,-1.1749,0.7426,4.5988,
+000583,Bratskoye,56.095,101.927,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice,False,0.8115,0.529,0.7564,False
+001377,Volgogradskoye,50.821,46.022,Russian Federation,Reservoir,True,17,Series mission-merger compromised (TP/J1) | Regulated water levels | Winter ice | Data capture compromised (J1),False,0.1153,0.2322,0.181,False
+001296,Millennium,10.566,35.152,Ethiopia,Reservoir,True,10,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3)",True,,,,
+001470,Eildon,-37.209,145.917,Australia,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (TP),False,3.0808,0.387,12.7216,False
+002323,Gilgel Gibe III,7.355,37.365,Ethiopia,Reservoir,True,16,"Series mission-merger compromised (TP/J2, S6a/J3) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3) | Data capture compromised (TP)",True,35.0325,0.0001,44.2465,
+000451,Pipmuacan,49.796,-70.322,Canada,Reservoir,False,8,"Anthropogenic effects | Winter ice | Series mission-merger compromised (TP/J2) | Data capture compromised (J2, J3)",False,,,,
+000344,Chiquita,-30.466,-62.749,Argentina,closedx,False,17,Shallow waters,False,-0.1704,0.419,-0.3747,False
+000338,Issyk-Kul,42.429,77.51,Kyrgyzstan,Reservoir,False,17,Anthropogenic effects | Potential seiche/wind effects,False,-0.5245,0.0009,-0.7012,True
+001979,Nuozhadu,23.005,100.255,Rep. China,Reservoir,True,13,"Series mission-merger compromised (TP/J2, J3/J2)  | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (TP)",True,,,,
+000804,Passo Fundo,-27.587,-52.782,Brazil,Reservoir,True,15,Regulated water levels | Narrow water crossing,False,-0.7302,0.4885,-0.5471,False
+000335,Michigan,42.171,-87.101,USA,Reservoir,False,17,Anthropogenic effects | Winter ice | Potential seiche/wind effects | Potential tide effects,False,0.4841,0.1076,0.3127,False
+000156,Ang-tzu,31.041,87.151,Rep. China,closed,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (J1)",False,1.1766,0.0483,1.0725,False
+000900,Verkhneye Kuyto,64.989,30.738,Russian Federation,Reservoir,False,0,Anthropogenic effects | Winter ice | Narrow water crossing,False,,,,
+000331,Nasser,23.201,32.887,Egypt,Reservoir,True,17,Regulated water levels,False,4.5326,0.0001,5.7136,True
+000223,Rybinkskoye,58.431,38.496,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice,False,-0.1485,0.3031,-0.225,False
+000278,Balkhash 1,46.561,74.795,Kazakhstan,Reservoir,False,5,Anthropogenic effects | Winter ice | Shallow lake,False,,,,
+000244,Dubawnt,62.997,-101.064,Canada,open,False,0,Winter ice,False,,,,
+000362,Inder,48.493,51.881,Kazakhstan,closedx,False,17,Shallow waters,False,-0.0887,0.0007,-0.0958,True
+000809,Votkinskoye,57.096,54.969,Russian Federation,Reservoir,True,16,Series mission-merger compromised (TP/J1) | Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.1078,0.4995,-0.2397,False
+000222,Nipigon,49.717,-88.503,Canada,Reservoir,False,0,Anthropogenic effects | Winter ice,False,,,,
+000238,Zhalauly 1,52.847,74.163,Kazakhstan,Reservoir,False,17,Anthropogenic effects | Winter ice | Shallow waters | Complex region,False,0.2235,0.0638,0.069,False
+001606,Barkley,36.891,-88.008,USA,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,-0.1246,0.0168,-0.2389,True
+000410,Southern Indian,57.225,-98.354,Canada,Reservoir,False,0,Anthropogenic effects | Winter ice,False,,,,
+000403,Er Roseires,11.244,34.898,Rep. Sudan,Reservoir,True,16,Regulated water levels | Narrow water crossing | Overpass far from dam,False,1.1548,0.2978,1.8967,False
+001533,Songhua,43.67,126.709,Rep. China,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3),False,2.5342,0.3573,3.5456,False
+001899,Chikuminuk,60.215,-159.041,USA,open,False,11,Winter ice,False,,,,
+000615,Zaysan,48.905,83.505,Kazakhstan,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Data capture compromised (J1)",False,0.3208,0.8207,0.7939,False
+000111,Ercek,38.679,43.569,Turkey,closed,False,17,,False,0.4425,0.3874,0.06,False
+000479,Kayrakkumskoye 1,40.299,70.222,Tajikistan,Reservoir,True,17,Regulated water levels | Winter ice,False,0.3296,0.4338,0.1723,False
+000221,Peipus,58.59,27.509,Estonia,open,False,17,Winter ice | Potential seiche/wind effects | Shallow waters,False,-0.0973,0.5923,-0.1517,False
+000334,Ontario,43.598,-77.443,USA,Reservoir,False,17,Anthropogenic effects | Winter ice,False,0.0025,0.9671,-0.0194,False
+001847,Thac Mo,11.829,107.055,Vietnam,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation,False,0.7375,0.5366,3.6819,False
+001437,Jebel Aulia,10.678,32.277,Rep. Sudan,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Overpass far from dam,False,0.9961,0.0006,1.3653,True
+000953,Beloye 1,60.261,37.276,Russian Federation,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,0.0503,0.255,0.0331,False
+000672,Cascade,44.533,-116.107,USA,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Overpass skims coastline | Data capture compromised (TP, J1)",False,-0.2796,0.0478,-0.3943,False
+000317,Malawi,-11.466,34.635,Malawi,Reservoir,False,17,Anthropogenic effects | Potential seiche/wind effects,False,0.2128,0.7708,0.5335,False
+000393,Volta,6.636,-0.252,Ghana,Reservoir,True,17,Regulated water levels | Data capture compromised (J1),False,1.1958,0.5452,0.5985,False
+001555,Paraibuna,-23.459,-45.525,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels,False,-1.4978,0.6629,-1.9794,False
+000794,Iepe,-22.917,-50.608,Brazil,Reservoir,True,15,Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J2),False,-1.3104,0.2763,-1.4451,False
+000063,Rkiz,16.718,-15.404,Mauritania,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Narrow water crossing | Shallow waters | Complex region,False,0.2259,0.5677,0.4008,False
+000269,Tharthar,33.879,43.379,Iraq,Reservoir,False,17,Anthropogenic effects,False,-1.852,0.1082,-3.3868,False
+000259,Elton,49.131,46.643,Russian Federation,Reservoir,False,17,Anthropogenic effects | Shallow waters,False,-0.1039,0.0002,-0.1043,True
+001419,Emborcacao,-18.378,-47.698,Brazil,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-2.9736,0.5584,0.7895,False
+004619,Chakachamna,61.215,-152.733,USA,open,False,17,Winter ice | Narrow water crossing,False,0.4112,0.0638,0.3465,False
+005169,Kemer,37.501,28.605,Turkey,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J3),False,-5.8698,0.0045,-7.7322,True
+000395,Balaton,46.86,17.812,Hungary,Reservoir,True,17,Regulated water levels | Winter ice,False,0.0259,0.6505,0.0905,False
+001469,Baird Inlet,60.803,-163.518,USA,bay,False,0,Series mission-merger compromised (J1/J2) | Winter ice | Potential tide effects,False,,,,
+000529,Burullus,31.397,30.649,Egypt,open,False,17,Series mission-merger compromised (TP/J2) | Complex region,False,0.1098,0.0045,0.1571,True
+003913,Sir,37.5,36.591,Turkey,Reservoir,True,17,"Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Overpass skims coastline | Data capture compromised (J2, J3) | Data capture DEM compromised (J3)",True,-0.8849,0.387,-1.8117,
+000757,Narran,-29.854,147.334,Australia,Reservoir,False,17,"Series mission-merger compromised (TP/J1) | Anthropogenic effects | Shallow waters | Complex region | Data capture compromosed (TP, J1)",False,0.5259,0.5714,0.1904,False
+001516,Kinbasket,52.105,-118.511,Canada,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Narrow water crossing,False,-2.1274,0.1628,-2.0128,False
+000349,Ziway,8.035,38.922,Ethiopia,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Shallow waters,False,0.2987,0.1494,0.4099,False
+001440,Alexandrina,-35.412,139.256,Australia,Reservoir,True,17,Regulated water levels | Shallow waters,False,0.0947,0.0017,0.9164,True
+000342,Neusiedl,47.879,16.791,Austria,Reservoir,False,11,"Series mission-merger compromised (TP/J1, J1/J2) | Anthropogenic effects | High Latitude/Altitude | Shallow waters | Data capture compromised (TP, J1, J2)",False,,,,
+000333,Erie 1,42.053,-81.525,USA,Reservoir,False,17,Anthropogenic effects | Winter ice | Potential seiche/wind effects,False,0.2479,0.0722,0.1421,False
+000845,Sniardwy,53.741,21.583,Poland,Reservoir,False,17,"Anthropogenic effects | Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (J1)",False,-0.0835,0.0134,-0.1271,True
+001560,North Knife,58.001,-97.09,Canada,open,False,0,Winter ice | Series mission-merger compromised (TP/J2),False,,,,
+000746,Rupanco,-40.827,-72.537,Chile,open,False,17,,False,-0.0684,0.0911,-0.021,False
+000394,Kariba,-16.647,28.556,Zambia,Reservoir,True,17,Regulated water levels,False,-5.3149,0.0,-7.8012,True
+000266,Lake of the Woods 1,49.05,-94.997,USA,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.0942,0.2322,-0.0797,False
+003919,Tahtakopru,36.861,36.694,Turkey,Reservoir,True,17,Regulated water levels | Overpass skims coastline,False,1.7043,0.4838,2.6339,False
+006446,Jinping I,27.947,101.532,Rep. China,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3),False,49.5896,0.234,156.0243,False
+000166,Dong,31.608,91.13,Rep. China,closed,False,15,"Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Data capture compromised (TP)",True,-0.1394,0.5383,0.0431,
+001618,Nizhnekamsk,55.771,53.168,Russian Federation,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Narrow water crossing | Overpass far from dam | Complex region,False,0.2612,0.3007,0.6619,False
+003849,Jabbul 1,36.062,37.511,Syria,Reservoir,False,17,Anthropogenic effects | Shallow waters | Complex region,False,0.1346,0.3402,0.1537,False
+005044,Balik,39.749,43.558,Turkey,open,True,17,"Regulated water levels | Data capture compromised (J2, J3)",False,-1.5224,0.0,-1.8103,True
+006131,Minto 2,65.176,-149.313,USA,open,False,13,Winter ice | Shallow waters,False,,,,
+000368,Salton Sea,33.264,-115.716,USA,Reservoir,False,17,Anthropogenic effects | Shallow waters | Data capture compromised (J1),False,-2.215,0.0,-2.9922,True
+000778,Mamia,-4.509,-63.263,Brazil,open,False,17,Series mission-merger compromised (TP/J2) | Narrow water crossing | Complex region,False,-0.1851,0.7731,-0.1868,False
+000401,Hoytiainen,63.044,29.519,Finland,Reservoir,True,9,Regulated water levels | High Latitude/Altitude | Narrow water crossing | Overpass far from dam,False,,,,
+001619,Three Gorges,31.051,109.834,Rep. China,Reservoir,True,14,"Series mission-merger compromised (J3/J2, S6a/J3) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,0.5008,0.6614,1.8091,
+004034,Tehri,30.518,78.369,India,Reservoir,True,13,"Series mission-merger compromised (TP/J2, J3/J2, S6a/J3)  | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,,,,
+001493,FD Roosevelt,48.55,-118.138,USA,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels | Overpass far from dam,False,0.0775,0.7526,0.435,False
+000118,Nettiling,66.138,-71.034,Canada,open,False,0,Winter ice,False,,,,
+000781,Badajos,-3.219,-62.801,Brazil,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Narrow water crossing | Data capture compromised (J1)",False,-0.2037,0.7108,-0.3518,False
+000470,Gods,54.75,-93.991,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+001534,Mosul,36.734,42.754,Iraq,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels,False,-1.3795,0.6505,-6.8133,False
+000081,Chiuta,-14.728,35.883,Malawi,closed,False,17,Series mission-merger compromised (TP/J2) | Overpass skims coastline | Shallow waters,False,-0.7445,0.0765,-1.0428,False
+002317,Grande Riviere I,53.797,-77.546,Canada,Reservoir,True,7,Regulated water levels | Winter ice | Narrow water crossing,False,,,,
+000141,La-ang,30.647,81.271,Rep. China,closed,False,17,Series mission-merger compromised (TP/J1) | Winter ice,False,-2.1125,0.0002,-3.0492,True
+001628,Quiminha,-8.963,13.861,Angola,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,3.7833,0.029,5.2979,True
+000504,Manicouagan,50.835,-68.71,Canada,Reservoir,True,0,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Winter ice | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (TP, J2)",True,,,,
+000432,Guri,7.219,-62.825,Venezuela,Reservoir,True,17,Regulated water levels | Complex region,False,1.1164,0.6505,0.0346,False
+000314,Victoria 1,-0.507,33.488,Tanzania,Reservoir,True,17,Regulated water levels,False,1.2547,0.0,1.7001,True
+001770,Erepecu,-1.337,-56.46,Brazil,open,False,17,Series mission-merger compromised (TP/J2) | Complex region,False,-0.0353,0.9671,-0.3468,False
+000420,Great Slave,61.413,-115.265,Canada,Reservoir,False,0,Anthropogenic effects | Winter ice,False,,,,
+001778,Balbina,-1.813,-59.587,Brazil,Reservoir,True,17,Series mission-merger compromised (J1/J2) | Regulated water levels | Data capture compromised (J1),False,-0.6276,0.1082,-1.0788,False
+001723,Bansagar,24.033,80.873,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Overpass far from dam,False,2.7587,0.0189,8.3472,True
+002330,Hammar 4,31.501,47.713,Iraq,Reservoir,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Anthropogenic effects | Shallow water | Complex region",False,-0.0999,0.5923,-0.1778,False
+006132,Strandline,61.484,-151.893,USA,open,False,0,"Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Narrow water crossing | Data capture DEM compromised (J3) | Complex region | Data capture compromised (TP, J2, J3)",True,,,,
+000448,Vermelha,-19.948,-49.881,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-2.0357,0.1082,-1.4838,False
+000224,Khanka,45.19,132.765,Russian Federation,Reservoir,False,17,Anthropogenic effects | Winter ice | Potential seiche/wind effects | Shallow waters,False,0.1849,0.4338,0.355,False
+000873,Kakhovskoye,47.502,34.182,Ukraine,Reservoir,True,17,Regulated water levels | Winter ice,False,-0.1168,0.2322,-10.081,False
+000012,Winnipeg,53.302,-98.111,Canada,Reservoir,True,0,Regulated water levels | Winter ice | Data capture compromised (J1),False,,,,
+001479,Sao Simao,-18.781,-50.367,Brazil,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels,False,-1.1362,0.1151,-1.0443,False
+001986,Ertan,27.23,101.884,Rep. China,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,-1.9153,0.0529,-1.5461,False
+001570,Shui Feng,40.574,125.171,Rep. China,Reservoir,True,15,"Series mission-merger compromised (TP/J2. S6a/J3) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,5.356,0.6207,14.6206,
+000754,Viedma,-49.67,-72.966,Argentina,open,False,16,Winter ice | Data capture compromised (J2) | Narrow water crossing,False,-0.0746,0.4995,0.0683,False
+000610,Sarykamyshskoye,42.047,57.366,Turkmenistan,Reservoir,False,17,Anthropogenic effects | Winter ice,False,0.4408,0.5614,0.0557,False
+000786,Araros,-4.246,-40.493,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,1.5352,0.4113,0.5536,False
+001784,Patzcuaro,19.632,-101.636,Mexico,closedx,False,17,,False,-0.7584,0.0124,-1.1142,True
+000486,Yellowstone,44.444,-110.358,USA,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,,,,
+001762,Faro,-2.069,-56.721,Brazil,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Complex region | Data capture compromised (J1)",False,-0.0423,0.9016,-0.3819,False
+000408,Baker 1,64.19,-95.381,Canada,open,False,0,Winter ice,False,,,,
+000029,Atitlan,14.693,-91.141,Guatemala,closed,False,16,Series mission-merger compromised (J3/J2),True,-2.8604,0.1849,-0.6633,
+001422,Itumbiara,-18.342,-48.662,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,0.1429,0.9016,1.7414,False
+000385,Hulun 1,49.093,117.554,Rep. China,open,False,0,Winter ice,False,,,,
+000460,Chardarinskoye,41.169,68.031,Kazakhstan,Reservoir,True,17,Regulated water levels | Winter ice | Shallow waters,False,-0.5319,0.0529,-1.2388,False
+001031,Aylmer,64.111,-108.267,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+000442,Nueltin,60.28,-99.691,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+001448,Karai,35.871,50.245,Iran,Reservoir,False,17,Anthropogenic effects | Desiccated | Complex region | Data capture DEM compromised (J3),False,0.7863,0.0074,1.3179,True
+001302,Champlain,45.163,-73.254,USA,open,False,17,Series mission-merger compromised (TP/J2) | Winter ice,False,-0.0347,0.5923,-0.1325,False
+001992,Xiaowan,24.849,100.174,Rep. China,Reservoir,True,14,"Series mission-merger compromised (TP/J2, S6a/J3) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,17.5325,0.0015,46.2006,
+000652,Zhelin,29.231,115.059,Rep. China,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,-0.1784,0.087,-0.5056,False
+003901,Hasan Ugurlu,40.904,36.651,Turkey,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-3.0955,0.0831,-4.5725,False
+004852,Saslaj,36.623,42.825,Iraq,Reservoir,True,5,"Regulated water levels | Narrow water crossing | Data capture compromised (J3, S6a) | Change of Reference Mission (J3)",True,,,,
+002327,Aral Sea 1,44.976,59.804,Uzbekistan,Reservoir,False,16,Anthropogenic effects | Winter ice | Shallow waters | Complex region,False,-0.2334,0.006,-0.5338,True
+000234,Sasykkol,46.577,81.127,Kazakhstan,closed,False,17,Winter ice | Shallow waters,False,0.0053,0.9516,-0.0919,False
+001604,Ozarks,38.246,-92.788,USA,Reservoir,True,14,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-0.3513,0.0022,-0.3623,True
+000440,Aberdeen,64.553,-99.496,Canada,open,False,0,"Series mission-merger compromised (S6a/J3) | Winter ice | Data capture DEM compromised (J3, S6a) | Data capture compromised (J1)",True,,,,
+000498,Mallery,63.844,-98.375,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+001442,Aral Sea 3,46.309,61.027,Kazakhstan,Reservoir,False,17,Anthropogenic effects | Winter ice | Complex region,False,-0.704,0.0095,-0.8924,True
+000022,Onegh,61.53,35.52,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice | Potential seiche/wind effects,False,-0.0424,0.4338,-0.0555,False
+003871,Jabbul 2,35.894,37.615,Syria,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture compromised (TP),False,-0.1156,0.38,-0.1632,False
+000322,Quagan,45.218,124.236,Rep. China,Reservoir,True,17,Series mission-merger compromised (TP/J1) | Regulated water levels | High Latitude/Altitude | Data capture compromised (J1),False,0.3933,0.0084,0.5585,True
+001285,Dale Hollow,36.571,-85.378,USA,Reservoir,True,16,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Narrow water crossing",True,-0.4996,0.0103,-0.711,
+000336,Huron,44.487,-82.354,USA,Reservoir,False,17,Anthropogenic effects | Winter ice | Potential seiche/wind effects | Potential tide effects,False,0.4605,0.1696,0.2925,False
+000236,Reindeer,57.782,-101.784,Canada,Reservoir,True,0,Regulated water levels | Winter ice,False,,,,
+001439,Shiroro,10.048,6.999,Nigeria,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,0.6673,0.174,0.5072,False
+000706,Falcon,26.8,-99.252,Mexico,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-7.0799,0.0001,-10.3611,True
+001172,Tobin,53.558,-103.519,Canada,Reservoir,True,17,Regulated water levels | Winter ice | Series mission-merger compromised (J1/J2) | Data capture compromised (J1),False,0.1362,0.0008,0.1771,True
+000423,Wollaston,58.228,-103.25,Canada,open,False,0,Winter ice,False,,,,
+000343,Hongze,33.287,118.542,Rep. China,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Shallow waters | Complex region,False,0.1588,0.387,0.238,False
+000587,Chukchagirskoye,52.063,136.665,Russian Federation,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice | Shallow waters | Data capture compromised (J1),False,,,,
+001241,Grande Riviere III,53.82,-75.555,Canada,Reservoir,True,17,Regulated water levels | Winter ice,False,-0.8158,0.0638,-1.8969,False
+001444,Jehil,31.395,61.829,Afghanistan,closed,False,11,Series mission-merger compromised (TP/J2) | Overpass skims coastline | Shallow waters | Complex region | Data capture DEM compromised (S6a),False,,,,
+001378,Novosibirskoye,54.398,82.104,Russian Federation,Reservoir,True,14,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,-0.0902,0.0002,-0.1482,True
+000341,Angostura 1,16.114,-92.549,Mexico,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Narrow water crossing | Data capture compromised (TP, J1)",False,-4.1199,0.0,-7.4119,True
+000340,Ijsselmeer,52.763,5.326,Netherlands,Reservoir,True,17,Regulated water levels | High Latitude/Altitude | Shallow waters,False,0.0431,0.0235,0.0644,True
+000152,Zhari Namco,30.954,85.811,Rep. China,closed,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (J1)",False,1.6915,0.0952,1.9632,False
+001262,Sam Rayburn,31.172,-94.196,USA,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels,False,0.4849,0.1082,1.2057,False
+000203,Winnipegosis,52.004,-99.888,Canada,open,False,0,Winter ice,False,,,,
+000433,Ust-Ilimskoye,57.487,102.393,Russian Federation,Reservoir,True,0,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,,,,
+001617,Vueltosa,7.741,-71.519,Venezuela,Reservoir,True,17,Regulated water levels | Mid-series reservoir formation | Narrow water crossing,False,-4.1855,0.1494,-3.3561,False
+000682,Fort Peck,47.626,-107.672,USA,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Narrow water crossing | Overpass far from dam,False,-0.7984,0.6505,-1.3315,False
+000431,Kapchagayskoye,43.838,77.245,Kazakhstan,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,-0.2526,0.1722,-0.6919,False
+000798,Promissao,-21.703,-49.133,Brazil,Reservoir,True,15,Series mission-merger compromised (TP/J2) | Regulated water levels | Overpass far from dam | Data capture compromised (J2),False,-0.7317,0.0478,-0.4865,False
+001005,Irape,-16.756,-42.685,Brazil,Reservoir,True,15,"Series mission-merger compromised (S6a/J3) | Regulated water levels | Data capture DEM compromised (J3, S6a)",True,-4.1714,0.4361,-4.0687,
+001240,Grande Riviere II,53.695,-77.696,Canada,Reservoir,True,17,Regulated water levels | Winter ice | Narrow water crossing | Data capture compromised (J1),False,-0.0289,0.9016,-0.0503,False
+000369,Enriquillo,18.522,-71.735,Dominican Republic,Reservoir,False,17,Series mission-merger compromised (TP/J1) | Anthropogenic effects | Data capture compromised (J1),False,-4.3089,0.0176,-3.1472,True
+000447,Hammar 3,30.723,47.296,Iraq,Reservoir,False,17,Anthropogenic effects | Narrow water crossing | Shallow waters | Complex region,False,-0.1996,0.0357,-0.284,False
+001421,Madaba Grande,-2.35,-56.56,Brazil,open,False,17,Series mission-merger compromised (TP/J2),False,-0.1369,0.4338,-0.5614,False
+000519,Gandhi,24.327,75.338,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,3.198,0.0255,10.3529,True
+000449,Gaoyou,32.866,119.336,Rep. China,Reservoir,True,17,Regulated water levels | Shallow waters | Complex region | Data capture compromised (J1),False,-0.047,0.4338,-0.0318,False
+000484,Dore 1,54.747,-107.27,Canada,open,False,0,Winter ice,False,,,,
+000121,Pangong,33.904,78.499,India,closed,False,13,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (TP, J1)",False,,,,
+000093,Turkana,3.779,36.073,Kenya,Reservoir,False,17,Anthropogenic effects,False,3.5429,0.0011,5.2351,True
+000509,St. Jean,48.615,-71.85,Canada,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.0883,0.2322,-0.0178,False
+005244,Minchumina,63.858,-152.32,USA,open,False,15,Winter ice | Shallow waters,False,0.0828,0.3731,0.1319,False
+000438,Gouin,48.583,-74.647,Canada,Reservoir,False,17,Anthropogenic effects | Winter ice | Data capture compromised (J1),False,-0.0296,0.9016,0.3097,False
+000402,Tana 1,12.074,37.42,Ethiopia,Reservoir,True,17,Regulated water levels,False,0.3113,0.0765,0.5826,False
+000051,Poopo,-18.797,-67.368,Bolivia,Reservoir,False,16,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Overpass skims coastline | Shallow waters,False,-0.0227,0.2604,0.0008,False
+000501,Itaipu,-25.366,-54.554,Paraguay,Reservoir,True,16,Regulated water levels,False,-0.5554,0.0259,-0.7265,True
+001431,Sterkfontein,-28.411,29.013,South Africa,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture compromised (TP),False,0.0114,0.9738,0.0611,False
+001458,Mtera,-7.048,35.837,Tanzania,Reservoir,True,17,"Series mission-merger compromised (TP/J1) | Regulated water levels | Shallow waters | Data capture compromised (TP, J1)",False,3.2708,0.1275,1.3957,False
+000406,Kwania,1.733,32.69,Uganda,Reservoir,False,17,Series mission-merger compromised (TP/J1) | Anthropogenic effects | Shallow waters | Data capture compromised (J1),False,1.6618,0.0,2.4453,True
+000753,Argentino,-50.219,-72.227,Argentina,open,False,17,Winter ice,False,0.0904,0.3434,0.027,False
+000453,Toledo Bend,31.804,-93.853,USA,Reservoir,True,17,Regulated water levels | Overpass far from dam,False,0.1015,0.5974,0.7182,False
+001610,Sidney Lanier,34.206,-83.987,USA,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels,False,0.384,0.4338,0.5111,False
+000107,Beysehir,37.694,31.567,Turkey,Reservoir,True,17,Regulated water levels,False,-0.9438,0.001,-0.9369,True
+000422,Grajau,-6.709,-43.654,Brazil,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels,False,0.2216,0.3004,0.1242,False
+000315,Tanganyika,-7.301,30.261,DR Congo,open,False,17,Potential seiche/wind effects,False,1.6685,0.0002,2.3928,True
+001372,Sipiwesk,55.165,-97.501,Canada,Reservoir,False,0,Series mission-merger compromised (J1/J2) | Anthropogenic effects | Winter ice | Data capture compromised (J1),False,,,,
+000412,Martre,63.121,-117.549,Canada,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,,,,
+001777,Mamori,-3.653,-60.123,Brazil,open,False,17,Series mission-merger compromised (TP/J2) | Complex region,False,-0.2396,0.8368,-0.7572,False
+000669,Koocanusa,48.601,-115.251,USA,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (TP, J1)",False,0.4537,0.6505,3.7067,False
+001168,Diefenbaker,50.906,-106.946,Canada,Reservoir,True,15,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,-1.3529,0.0175,-1.4271,True
+000775,Tefe,-3.3,-64.724,Brazil,open,False,15,"Series mission-merger compromised (TP/J1, J1/J2) | Complex region | Data capture compromised (J1, J3) | Data capture DEM compromised (J3)",False,-0.3122,0.8431,-0.1262,False
+000429,Kasba,60.143,-101.939,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+000129,Daye,30.103,115.002,Rep. China,Reservoir,True,17,Regulated water levels | Narrow water crossing | Complex region,False,0.1975,0.2016,0.3449,False
+001118,Forde,63.246,-97.169,Canada,open,False,0,Series mission-merger compromised (TP/J2) | Winter ice,False,,,,
+001947,Boguchany,58.415,100.449,Russian Federation,Reservoir,True,13,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Winter ice | Data capture DEM compromised (J3),False,,,,
+001908,Chauekuktuli,60.054,-158.869,USA,open,False,17,Series mission-merger compromised (TP/J2) | High Latitude/Altitude,False,-0.0197,0.9016,0.0509,False
+000177,Orba,34.485,80.99,Rep. China,closed,False,0,Series mission-merger compromised (TP/J2) | Winter ice | Narrow water crossing | Data capture compromised (TP),False,,,,
+002292,Indrawati,19.196,82.798,India,Reservoir,True,15,"Series mission-merger compromised (TP/J1, J1/J2, S6a/J3) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3, S6a) | Data capture compromosed (TP, J1)",True,0.3229,0.7665,0.1283,
+000397,Saimmaa,61.185,28.591,Finland,Reservoir,True,17,"Regulated water levels | Winter ice | Data capture compromised (TP, J1)",False,-0.0082,0.9671,0.1952,False
+001764,Guaribas,-4.05,-58.787,Brazil,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Complex region | Data capture compromised (J1)",False,-0.1733,0.6505,-0.9442,False
+000424,Aydarkul,40.578,67.591,Uzbekistan,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Winter ice | Shallow waters | Data capture compromised (TP, J1)",False,-1.3934,0.0005,-2.1309,True
+000115,Urmia 1,37.285,45.473,Iran,Reservoir,False,17,Anthropogenic effects | Shallow waters | Complex region,False,-0.5107,0.0167,-0.8878,True
+000232,Chany,54.983,77.362,Russian Federation,closed,False,0,Series mission-merger compromised (J1/J2) | Winter ice | Overpass  skims coastline | Shallow waters | Data capture compromised (J1),False,,,,
+000958,Vallabhsagar,21.489,74.08,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,1.2543,0.0002,2.0192,True
+000443,Napaktulik,66.137,-113.033,Canada,open,False,0,"Series mission-merger compromised (S6a/J3) | Winter ice | Data capture DEM compromised (J3, S6a) | Data capture compromised (J1)",True,,,,
+004009,Kajakai,32.341,65.183,Afghanistan,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels,False,-3.602,0.0009,-4.8376,True
+000353,Zeyaskoye,54.383,127.69,Russian Federation,Reservoir,True,0,Regulated water levels | Winter ice,False,,,,
+000277,Aral Sea 2,45.596,58.692,Uzbekistan,Reservoir,False,15,Series mission-merger compromised  (J1/J2) | Anthropogenic effects | High Latitude/Altitude | Complex region | Data capture compromised (J1),False,-5.6389,0.0,-7.2454,True
+000505,Paijanne,61.953,25.617,Finland,open,False,10,Winter ice,False,,,,
+000082,Rukwa,-7.75,31.938,Tanzania,Reservoir,False,17,Anthropogenic effects | Shallow waters,False,3.0637,0.262,4.2681,False
+001504,Bankim,6.109,11.277,Cameroon,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Data capture compromised (J1)",False,0.1153,0.9671,-1.0306,False
+000421,Great Bear,65.869,-120.918,Canada,open,False,0,Winter ice,False,,,,
+000417,Kainji,10.5,4.509,Nigeria,Reservoir,True,17,Regulated water levels,False,0.6443,0.0736,1.2098,False
+000980,Noi,14.919,105.406,Thailand,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,0.1816,0.4838,0.104,False
+001161,Primrose,54.945,-109.786,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+001025,Hardisty,64.718,-117.583,Canada,open,False,0,Series mission-merger compromised (TP/J2) | Winter ice | Complex region | Data capture compromised (TP),False,,,,
+000003,Talbot,54.022,-99.888,Canada,closedx,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (J1)",False,0.3717,0.0321,0.3472,False
+000208,Manas,45.844,86.104,Rep. China,Reservoir,False,14,Series mission-merger compromised (TP/J2) | Anthropogenic effects | High Latitude/Altitude | Shallow waters | Complex region | Data capture compromised (TP),False,-0.4891,0.0022,-0.5579,True
+000068,Chad 1,12.996,14.394,Chad,Reservoir,False,17,Anthropogenic effects | Shallow waters | Complex region | Data capture compromised (J1),False,0.3291,0.0001,0.4661,True
+001857,Sharpe 1,44.159,-99.649,USA,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,-0.2083,0.0002,-0.2435,True
+000358,Koitere,62.878,30.683,Finland,Reservoir,True,17,Regulated water levels | High Latitude/Altitude | Narrow water crossing,False,-0.0686,0.2322,-0.0758,False
+000396,Ladoga,61.07,31.27,Russian Federation,open,False,17,Winter ice | Potential seiche/wind effects,False,-0.197,0.4338,-0.1927,False
+000436,Becharof,57.936,-156.488,USA,open,False,17,Winter ice,False,0.0798,0.2016,0.1578,False
+000415,Kafue,-15.701,27.76,Zambia,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Shallow waters | Complex region,False,-0.3456,0.0476,-0.8525,False
+001720,Rajghat,24.586,78.291,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam,False,0.8973,0.174,1.1834,False
+001450,Karakaya,38.438,38.802,Turkey,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing,False,-1.6114,0.3031,0.2275,False
+006134,Starodubtsov,60.321,-143.98,USA,open,False,0,Series mission-merger compromised (TP/J2)  | Winter ice | Narrow water crossing | Data capture DEM compromised (J3),False,,,,
+001155,Williston,56.346,-124.402,Canada,Reservoir,True,0,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice,False,,,,
+000189,Dogai Coring,34.591,89.154,Rep. China,closedx,False,15,Series mission-merger compromised (TP/J2) | Winter ice | Data capture compromised (TP),False,2.8018,0.001,3.5781,True
+000231,Saitlan,54.974,78.565,Russian Federation,closedx,False,17,High Latitude/Altitude,False,0.7776,0.0071,0.8471,True
+002282,Xiaolangdi,35.034,112.096,Rep. China,Reservoir,True,14,"Series mission-merger compromised (TP/J2, J3/J2, S6a/J3)  | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3, S6a)",True,9.5589,0.0798,11.6696,
+001495,Kentucky,36.741,-88.104,USA,Reservoir,True,8,"Series mission-merger compromised (J2/J3) | Regulated water levels | Narrow water crossing | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+000418,Faguibine,16.719,-4.068,Mali,Reservoir,False,17,Anthropogenic effects | Shallow waters,False,-0.1591,0.0003,-0.234,True
+000021,Windsor 1,21.022,-73.522,Bahamas,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Shallow waters,False,-0.1758,0.0005,-0.1889,True
+001500,Srisailam,15.957,78.441,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,-0.312,0.6505,-1.3127,False
+000462,Powell 1,37.375,-110.728,USA,Reservoir,True,13,"Series mission-merger compromised (TP/J2, S6a/J3) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3)",True,,,,
+000810,Kamskoye,58.711,56.128,Russian Federation,Reservoir,True,16,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.264,0.2604,-0.27,False
+000439,Colhue Huapi,-45.495,-68.703,Argentina,Reservoir,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Anthropogenic effects | Potential seiche/wind effects | Shallow water | Data capture compromised (J1)",False,-1.1963,0.0024,-2.0586,True
+000264,Amadjuak,64.888,-71.16,Canada,open,False,0,Winter ice,False,,,,
+000475,Tehek,64.809,-95.506,Canada,open,False,0,"Series mission-merger compromised (TP/J2, S6a/J3) | Winter ice | Data capture DEM compromised (J3)",True,,,,
+000459,Sayano Shushenskoye,51.647,92.409,Russian Federation,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Winter ice | Overpass far from dam,False,-0.3618,0.2517,-0.2801,False
+000355,Oulujarvi,64.304,27.144,Finland,Reservoir,True,0,Regulated water levels | Winter ice | Data capture compromised (J1),False,,,,
+001674,Melgaco,-1.843,-50.971,Brazil,open,False,17,Narrow water crossing | Complex region,False,-0.0594,0.1082,-0.1342,False
+001673,Santo,-3.75,-57.322,Brazil,open,False,17,Series mission-merger compromised (TP/J2) | Narrow water crossing | Complex region | Data capture compromised (TP),False,-0.338,0.6505,-0.6835,False
+000372,Dorgon,47.679,93.536,Mongolia,closedx,False,17,Winter ice | Data capture compromised (J1),False,0.9798,0.0589,0.8719,False
+001286,Cumberland 2,36.974,-84.954,USA,Reservoir,True,5,Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3) | Change of Reference Mission (J3),True,,,,
+000270,Caspian Sea,41.97,50.385,Kazakhstan,Reservoir,False,17,Anthropogenic effects | Winter ice | Potential seiche/wind effects,False,-1.161,0.0002,-1.7407,True
+001550,Manso,-14.875,-55.781,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass skims coastline,False,-0.0922,0.8368,-0.0944,False
+001465,Oahe,46.191,-100.596,USA,Reservoir,True,15,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Winter ice | Narrow water crossing | Overpass far from dam",True,-3.0639,0.0041,-3.852,
+000345,Sobradinho,-10.101,-42.409,Brazil,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam,False,0.4163,0.8123,-0.1261,False
+000347,Bosten,41.948,87.28,Rep. China,Reservoir,False,17,Anthropogenic effects | Winter ice | Data capture compromised (J1),False,1.0087,0.0635,0.9245,False
+001341,Gorkovskoye,57.322,43.182,Russian Federation,Reservoir,True,17,Series mission-merger compromised (TP/J1) | Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.0653,0.0638,-0.1136,False
+000744,Todos los Santos,-41.108,-72.327,Chile,open,False,17,,False,-0.1849,0.0151,-0.1728,True
+001503,Manchar,26.392,67.796,Pakistan,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Shallow waters | Data capture compromised (TP),False,-0.006,1.0,-0.0601,False
+000435,Vygozero,63.217,34.925,Russian Federation,open,False,0,Winter ice,False,,,,
+000380,Utikuma,55.79,-115.561,Canada,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels | High Latitude/Altitude | Narrow water crossing | Shallow waters | Data capture compromised (TP),False,-0.2783,0.0028,-0.2816,True
+000034,Arapa,-15.15,-70.061,Peru,closed,False,17,Series mission-merger compromised (J1/J2) | Data capture compromised (J1),False,-0.45,0.1494,-0.4792,False
+001376,Kuybyshevskoye,54.095,48.753,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,0.1795,0.483,0.8944,False
+000558,Kikuletwa,-3.624,37.437,Tanzania,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Overpass far from dam | Data capture compromised (TP),False,1.4432,0.0357,1.801,False
+000351,Nicaragua,11.792,-85.714,Nicaragua,open,False,17,Potential seiche/wind effects,False,0.1546,0.5366,0.034,False
+000032,Junin,-11.032,-76.077,Peru,Reservoir,True,16,Regulated water levels,False,-0.3337,0.0343,-0.4019,False
+000285,Ngoring,34.922,97.741,Rep. China,closedx,False,13,Winter ice | Data capture compromised (J1),False,,,,
+000972,Lam Pao,16.915,103.361,Thailand,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,1.7893,0.012,2.3161,True
+000735,Huechulafquen,-39.784,-71.265,Argentina,open,False,17,,False,-0.0508,0.2016,-0.0702,False
+001418,Lower Arrow,49.43,-118.1,Canada,Reservoir,True,16,Series mission-merger compromised (TP/J2) | Regulated water levels | High Latitude/Altitude | Overpass skims coastline | Data capture compromised (TP),False,-1.9896,0.0217,-3.615,True
+001416,Kanevskoye,49.964,31.526,Ukraine,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,0.121,0.0095,0.1648,True
+000414,Cahora Bassa,-15.67,31.779,Mozambique,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Data capture compromised (J1)",False,0.0322,0.9671,-7.5652,False
+000434,Vilyuyskoye,62.578,111.231,Russian Federation,Reservoir,True,0,Regulated water levels | Winter ice | Overpass far from dam | Data capture compromised (J1),False,,,,
+000053,Mangueira,-33.363,-53.002,Brazil,Reservoir,False,17,Anthropogenic effects | Potential seiche/wind effects | Overpass skims coastline | Shallow waters | Data capture compromised (J1),False,0.0646,0.6505,-0.0407,False
+001551,Jose Richa,-25.537,-53.078,Brazil,Reservoir,True,16,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam | Data capture compromised (TP)",True,-0.3112,0.0791,-0.1822,
+000319,Tonle,12.521,104.482,Cambodia,open,False,17,Series mission-merger compromised (TP/J2) | Narrow water crossing | Shallow waters | Complex region,False,-0.4666,0.2322,-0.5151,False
+000592,Tsimlyanskoye,48.219,43.088,Russian Federation,Reservoir,True,17,Regulated water levels | Winter ice,False,0.199,0.4551,0.801,False
+001426,Little Quill,51.907,-104.08,Canada,Reservoir,False,0,Winter ice | Anthropogenic effects | Data capture compromised (J1),False,,,,
+000520,Kiyevskoye,50.853,30.472,Ukraine,Reservoir,True,17,Regulated water levels | Winter ice | Data capture compromised (J1),False,-0.0239,0.3434,-0.0625,False
+003306,Hjarbaek,56.591,9.275,Denmark,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | High Latitude/Altitude,False,-0.0665,0.174,-0.0279,False
+000612,Toktogulskoye,41.779,73.239,Kyrgyzstan,Reservoir,True,16,Regulated water levels | Overpass far from dam,False,-0.2946,0.5515,-2.1457,False
+001441,Albert 2,-35.602,139.372,Australia,Reservoir,False,17,Anthropogenic effects | Shallow waters | Narrow water crossing | Overpass skims coastline,False,0.0199,0.7731,0.3482,False
+003177,Qui Parle,45.104,-95.988,USA,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,0.2257,0.0529,0.0789,False
+010159,Amboseli,-2.671,37.096,Kenya,ephemeral,False,17,Series mission-merger compromised (TP/J2) | Shallow waters,False,-0.1191,0.0026,-0.1342,
+010065,Torrens,-31.412,138.005,Australia,ephemeral,False,17,Series mission-merger compromised (TP/J2) | Potential seiche/wind effects | Shallow waters,False,0.025,0.0912,0.0601,
+010068,Eyre,-27.959,136.955,Australia,ephemeral,False,17,"Series mission-merger compromised (TP/J2, S6a/J3) | Potential seiche/wind effects | Shallow waters | Data capture cal/val compromised (S6a)",True,-0.1575,0.0034,-0.2047,
+101414,Alcantara,39.766,-6.698,Spain,Reservoir,True,8,Series mission-merger compromised (J2/J3) | Regulated water levels | Narrow water crossing | Data capture compromised (J2) | Data capture DEM compromised (J3) | Change of Reference Mission (J3),True,,,,
+101452,Casa de Piedra,-38.25,-67.371,Argentina,Reservoir,True,14,"Regulated water levels | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,-5.2523,0.1546,-0.5822,
+001598,Dniprovske,48.512,34.892,Ukraine,Reservoir,True,10,"Series mission-merger compromised (J2/J3) | Regulated water levels | Winter ice | Narrow water crossing | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+101577,Karkheh,32.496,48.117,Iran,Reservoir,True,3,"Series mission-merger compromised (TP/J2, S6a/J3) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (S6a) | Data capture compromised (J2)",True,,,,
+001552,Taquaracu,-22.688,-51.537,Brazil,Reservoir,True,5,Regulated water levels | Narrow water crossing | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+100419,Gove,-13.269,15.705,Angola,Reservoir,True,5,Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+003620,Segredo,-25.993,-52.015,Brazil,Reservoir,True,9,"Series mission-merger compromised (J2/J3) | Regulated water levels | Narrow water crossing | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+001680,Primavera,-21.54,-52.039,Brazil,Reservoir,True,17,"Series mission-merger compromised (TP/J1) | Regulated water levels | Mid-series reservoir formation | Data capture compromised (TP, J1)",False,-0.302,0.0151,-0.3852,True
+000310,Mistassini,50.515,-73.996,Canada,open,False,8,"Series mission-merger compromised (TP/J3, J2/J3) | Winter ice | Data capture DEM compromised (J3) | Data capture compromised (J2) | Change of Reference Mission (J3)",True,,,,
+000508,Malaren,59.268,17.737,Sweden,open,False,17,Winter ice | Narrow water crossing | Change of Reference Mission (J3),True,0.0254,0.6505,0.0717,
+001779,Nova Avanhandava,-21.254,-49.883,Brazil,Reservoir,True,15,Regulated water levels | Narrow water crossing,False,-0.1491,0.0945,-0.161,False
+101150,Nechako,53.795,-126.546,Canada,Reservoir,True,11,"Series mission-merger compromised (J3/J2) | Regulated water levels | Winter ice | Data capture compromised (J2, J3)",True,,,,
+100642,Rana Pratap,24.877,75.59,India,Reservoir,True,10,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Data capture compromised (TP, J2, J3)",True,,,,
+001290,Murray 2,34.046,-81.246,USA,Reservoir,True,17,Regulated water levels,False,-0.151,0.174,-0.1354,False
+100038,General Vintter,-43.938,-71.658,Argentina,closedx,False,17,Series mission-merger compromised (J3/J2) | Data capture DEM compromised (J3),True,-0.0513,0.0079,-0.0806,
+000268,Vattern,58.651,14.873,Sweden,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture ompromised (J1)",False,0.1118,0.3031,0.2576,False
+100265,Wakatipu,-44.971,168.391,New Zealand,Reservoir,True,17,Regulated water levels | Data capture DEM compromised (J3),False,0.0721,0.0092,0.0874,True
+106871,Huangdeng,27.01,99.155,Rep. China,Reservoir,True,17,Regulated water levels | Mid-series reservoir formation | Series mission-merger compromised (TP/J2) | Overpass far from dam | Narrow water crossing | Data capture DEM compromised (J3),False,26.3846,0.0112,38.6719,True
+301438,Ataturk,38.008,39.091,Turkey,Reservoir,True,16,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Overpass far from dam,False,-0.7602,0.7526,0.832,False
+001063,Nunavakpak,60.776,-162.545,USA,open,False,17,Series mission-merger compromised (TP/J1) | Winter ice | Data capture compromised (J1),False,-0.0485,0.7731,-0.0625,False
+001869,Devils,48.05,-98.82,USA,closedx,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Data capture compromosed (J1)",False,-0.6645,0.0151,-0.4603,True
+000567,Zhandyshalkar,50.642,70.416,Kazakhstan,closed,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Shallow waters | Complex region | High Latitude/Altitude | Overpass skims coastline | Data capture compromised (J1)",False,0.0693,0.8368,0.2025,False
+000228,Kuchukskoye,52.76,79.712,Russian Federation,closedx,False,17,Shallow waters | High Latitude/Altitude | Overpass skims coastline,False,0.2312,0.0218,0.2777,True
+000018,Abert,42.655,-120.207,USA,closed,False,17,Shallow waters,False,-0.0831,0.5552,-0.045,False
+001736,Arys,45.894,66.307,Kazakhstan,closed,False,17,Series mission-merger compromised (TP/J2) | Shallow waters,False,-0.1457,0.0296,-0.1904,True
+000325,Imlor,61.89,73.38,,,False,15,,False,0.2012,0.0377,0.2258,False
+000303,Baia Grande,-15.498,-60.192,Bolivia,closed,False,17,Shallow waters,False,-0.9163,0.002,-0.9754,True
+000249,Kushmurun,52.737,64.886,Kazakhstan,closed,False,15,Shallow waters | High Latitude/Altitude,False,0.8259,0.0,1.7075,True
+006729,Zhamanakkol,49.064,63.724,Kazakhstan,closed,False,17,Shallow waters,False,0.0468,0.5923,1.307,False
+001763,Imarui,-28.4,-48.86,Brazil,lagoon,False,17,Series mission-merger compromised (TP/J2) | Shallow waters | Potential tide effects,False,0.0899,0.0002,0.1391,True
+006382,Se San IV,14.017,107.547,Vietnam,Reservoir,True,14,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3),False,0.8017,0.1005,1.6461,False
+006770,Dachaoshan,24.126,100.505,Rep. China,Reservoir,True,7,"Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture DEM compromised (J3, S6a)",False,,,,
+006361,Xekaman I,14.978,107.174,Laos,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Data capture DEM compromised (J3) | Data capture compromised (TP),False,62.4878,0.0068,87.4346,True
+001739,Nam Ngum II,18.851,102.784,Laos,Reservoir,True,8,"Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass skims coastline | Data capture DEM compromised (J3, S6a)",False,,,,
+006984,Xayaburi,19.934,101.765,Laos,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam,False,-0.002,1.0,0.0086,False
+004103,Manwan,24.744,100.223,Rep. China,Reservoir,True,5,Narrow water crossing | Regulated water levels | Overpass far from dam | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+001599,Mohave,35.204,-114.575,USA,Reservoir,True,16,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3),True,-0.0367,0.3138,0.0484,
+005484,Kytai,45.623,29.206,Ukraine,open,False,17,,False,-0.2854,0.0235,-0.3521,True
+000487,Garda,45.508,10.584,Italy,open,False,10,Series mission-merger compromised (J3/J2) | Data capture DEM compromised (J3) | Data capture compromised (J2),True,,,,
+001843,Dniester,48.624,27.35,Ukraine,Reservoir,True,11,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (J2),True,,,,
+004669,Sasyk Syvash,45.187,33.552,Ukraine,open,False,17,Shallow waters,False,-0.0209,0.6208,-0.0064,False
+005015,Kotlabukh,45.418,29.02,Ukraine,open,False,17,Series mission-merger compromised (TP/J2),False,-0.218,0.0235,-0.2678,True
+001635,Porto Novo,6.451,2.65,Benin,lagoon,False,17,Narrow water crossing | Potential tide effects,False,0.0409,0.4838,0.086,False
+101953,Ilisu,37.887,42.004,Turkey,Reservoir,True,7,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Data capture compromised (J2) | Data capture DEM compromised (J3),True,,,,
+001595,Nyouzomou,5.148,-5.383,Ivory Coast,lagoon,False,17,Potential tide effects,False,-0.015,0.387,-0.039,False
+001501,Aby,5.131,-3.124,Ivory Coast,lagoon,False,17,Potential tide effects | Data capture compromised (J1),False,0.0135,0.9016,0.004,False
+001647,Boughrara,33.495,10.702,Tunisia,lagoon,False,17,Potential tide effects | Overpass skims coastline,False,-0.1005,0.0435,-0.1121,False
+006215,Esna,24.463,32.88,Egypt,barrage,True,8,Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+005059,Afambo,11.387,41.69,Ethiopia,Reservoir,False,13,"Series mission-merger compromised (TP/J2, J3/J2) | Anthropogenic effects | Data capture DEM compromised (J3)",True,,,,
+003766,Tchimbele,0.623,10.408,Gabon,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass skims coastline,False,0.8478,0.5923,-0.9606,False
+003875,Gaborone,-24.714,25.908,Botswana,Reservoir,True,10,"Series mission-merger compromised (S6a/J3) | Regulated water levels | Narrow water crossing | Data capture compromised (J2, J3) | Data capture cal/val compromised (S6a)",True,,,,
+003683,Garafiri,10.547,-12.482,Guinea,Reservoir,True,14,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Mid-series reservoir formation | Data capture compromised (TP, J2, J3)",True,-1.1667,0.1253,-2.1623,
+103924,Melka Wakena,7.083,39.269,Ethiopia,Reservoir,True,17,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J3),True,0.7733,0.3434,1.0592,
+006217,Assiut,27.146,31.307,Egypt,barrage,True,16,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3),True,0.9512,0.0011,1.116,
+005778,Dilolo,-11.517,22.038,Angola,open,False,17,Narrow water crossing,False,0.0203,0.8877,0.0898,False
+005045,Yakouta,14.041,-0.181,Burkina Faso,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,0.0056,1.0,-0.0854,False
+003765,Kpong,6.153,0.079,Ghana,Reservoir,True,13,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture DEM compromised (J3) | Data capture compromised (TP),False,,,,
+000985,Inferior,16.321,-94.617,Mexico,lagoon,False,17,Potential tide effects,False,0.0884,0.3297,0.3379,False
+005582,Ambadi,8.722,29.362,South Sudan,open,False,17,Series mission-merger compromised (TP/J2) | Complex region,False,0.448,0.0015,0.6718,True
+005232,AE Hansali,32.711,-5.858,Morocco,Reservoir,True,13,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Data capture compromised (J3)",True,,,,
+005809,Idriss,34.129,-4.664,Morocco,Reservoir,True,16,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Data capture DEM compromised (J3)",True,-9.7192,0.0103,-15.4156,
+005445,Niandouba,12.944,-13.931,Senegal,Reservoir,True,17,Regulated water levels,False,-0.6016,0.1157,-1.3744,False
+001788,Agua Brava,22.118,-105.531,Mexico,lagoon,False,17,Series mission-merger compromised (TP/J2) | Potential tide effects,False,0.0901,0.0006,0.1481,True
+003939,Pequenos Libombos,-26.107,32.228,Mozambique,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Data capture compromised (TP),False,0.7499,0.349,1.927,False
+005052,Mikuyu,-4.564,34.939,Tanzania,open,False,16,"Series mission-merger compromised (TP/J2) | Narrow water crossing | Data capture compromised (TP, J2, J3)",False,5.1181,0.1654,6.7793,False
+004013,Chivero,-17.929,30.875,Zimbabwe,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,-0.54,0.0058,-1.1061,True
+006341,Yamula,39.026,35.563,Turkey,Reservoir,True,13,Series mission-merger compromised (TP/J2) | Regulated water levels | Mid-series reservoir formation | Narrow water crossing | Overpass far from dam | Data capture compromised (J3),False,,,,
+006965,Unknown,-51.313,-73.553,Chile,open,False,0,"High Latitude/Altitude | Data capture DEM compromised (J3, S6a) | Data capture compromised (J2)",False,,,,
+006901,Leones,-46.759,-73.186,Chile,open,False,13,"Series mission-merger compromised (J3/J2) | Narrow water crossing | High Latitude/Altitude | Data capture DEM compromised (J3) | Data capture compromised (J2, S6a)",True,,,,
+006971,Fourpeaked,58.784,-153.477,USA,open,False,10,Series mission-merger compromised (S6a/J3) | Narrow water crossing | Winter ice | Overpass skims coastline | Data capture DEM compromised (J3),True,,,,
+006939,Sor Teresa,-49.02,-73.691,Chile,open,False,13,High Latitude/Altitude | Data capture DEM compromised (J3) | Data capture compromised (J2),False,,,,
+006890,Grey,-51.019,-73.187,Chile,open,False,15,Narrow water crossing | High Latitude/Altitude | Data capture DEM compromised (J3) | Data capture compromised (J2),False,-0.356,0.0228,-0.4127,True
+006921,Unknown,64.15,-65.971,Canada,open,False,10,Winter ice | Data capture compromised (J3),False,,,,
+003885,Vanderkloof,-30.427,25.143,South Africa,Reservoir,True,15,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3),True,-0.7901,0.235,-1.0232,
+005461,Witbank,-25.9,29.295,South Africa,Reservoir,True,5,"Series mission-merger compromised (J2/J3) | Regulated water levels | Narrow water crossing | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+003879,Roodekopjies,-25.429,27.618,South Africa,Reservoir,True,17,"Regulated water levels | Narrow water crossing | Data capture compromised (J2, J3, S6a)",False,-0.2376,0.0395,-0.3689,False
+003878,Rhenosterkop,-25.095,28.919,South Africa,Reservoir,True,17,"Regulated water levels | Narrow water crossing | Overpass skims coastline | Data capture DEM compromised (J3) | Data capture compromised (J2, J3, S6a)",False,-5.1383,0.3049,-0.3244,False
+006128,Verlorenvlei,-32.349,18.436,South Africa,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Narrow water crossing | Complex region,False,-1.4911,0.0548,-0.6418,False
+106128,Verlorenvlei,-32.333,18.407,South Africa,Reservoir,False,17,Series mission-merger compromised (TP/J2) | Anthropogenic effects | Narrow water crossing | Complex region,False,-1.634,0.018,-0.8111,True
+005065,Krugers Drift,-28.863,25.95,South Africa,Reservoir,True,17,Regulated water levels | Overpass skims coastline,False,1.7372,0.1039,1.5268,False
+004818,Boegoeberg,-29.447,22.535,South Africa,Reservoir,True,13,"Series mission-merger compromised (TP/J2, J3/J2) | Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture DEM compromised (J3) | Data capture compromised (J2)",True,,,,
+101302,Champlain,44.242,-73.332,USA,open,False,14,Series mission-merger compromised (J3/J2) | Winter ice | Narrow water crossing | Data capture compromised (J2) | Data capture DEM compromised (J3),True,-0.413,0.3811,-0.472,
+003666,Imlor,61.89,73.376,Russian Federation,closedx,False,17,Series mission-merger compromised (J1/J2) | Narrow water crossing | High Latitude/Altitude | Data capture compromised (J1),False,0.0362,0.7731,0.0412,False
+000622,Balkhash 2,46.527,77.666,Kazakhstan,Reservoir,False,5,Anthropogenic effects | Winter ice | Shallow lake,False,,,,
+005826,Owyhee,43.385,-117.31,USA,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Data capture compromised (TP),False,3.5312,0.0,4.4388,True
+000561,Karatomarskoye,52.867,62.85,Kazakhstan,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,-0.8026,0.0529,-0.5817,False
+001835,Zeid,37.384,65.38,Turkmenistan,Reservoir,True,17,Regulated water levels | Overpass skims coastline | Shallow waters | Complex region,False,0.5127,0.0006,0.66,True
+001710,Sardar Sarovar,21.973,74.289,India,Reservoir,True,11,"Regulated water levels | Series mission-merger compromised (S6a/J3) | Narrow water crossing | Data capture DEM compromised (J3, S6a) | Data capture compromised (J2)",True,,,,
+001476,Chilika,19.769,85.395,India,lagoon,False,17,"Potential tide effects | Shallow waters | Data capture DEM compromised (J3, S6a)",False,0.0695,0.1275,0.0681,False
+001722,Bargi,22.726,80.288,India,Reservoir,True,15,"Regulated water levels | Series mission-merger compromised (J3/J2) | Narrow water crossing | Overpass far from dam | Data capture compromised (J1, J2) | Data capture DEM compromised (J3)",True,2.3417,0.003,3.1249,
+000430,Raeside,-29.484,122.015,Australia,closed,False,17,Shallow waters,False,-0.2148,0.0,-0.244,True
+000618,Zhalauly 2,52.898,74.235,Kazakhstan,Reservoir,False,17,Anthropogenic effects | Winter ice | Shallow waters,False,0.0236,0.6505,0.0233,False
+001717,Supa,15.333,74.387,India,Reservoir,True,15,"Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J2, J3)",False,-4.1708,0.0378,-0.5371,False
+000037,Buenos Aires,-46.524,-71.152,Argentina,closedx,False,14,"High Latitude/Altitude | Overpass skims coastline | Data capture compromised (J1, J2, J3)",False,0.0863,0.7426,0.0882,False
+000627,Sarezskoye,38.249,72.945,Tajikistan,open,False,17,Narrow water crossing | Data capture compromised (J2),False,-0.0587,0.9765,1.2885,False
+001836,Aibugir,42.667,58.364,Turkmenistan,closedx,False,5,Overpass skims coastline | Narrow water crossing | Shallow waters | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+001792,Sudochye,43.563,58.588,Uzbekistan,Reservoir,False,13,Anthropogenic effects | Shallow waters | Data capture DEM compromised (J3) | Winter ice,False,,,,
+001106,Wasekamio,56.727,-108.742,Canada,open,False,0,Winter ice | Data capture compromised (J1),False,,,,
+001207,Sandy 1,53.043,-92.806,Canada,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,-0.0944,0.5366,-0.1744,False
+000407,Geneva 1,46.421,6.897,Switzerland,Reservoir,True,17,"Regulated water levels | Data capture compromised (J1, J2, J3)",False,0.025,0.3031,0.0325,False
+001386,Grosvenor,58.686,-155.28,USA,open,False,10,"Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Data capture compromised (J2, J3)",True,,,,
+001072,Kukaklek,59.172,-155.404,USA,open,False,17,"Series mission-merger compromised (TP/J2) | Winter ice | Data capture compromised (TP, J1, J3)",False,0.0361,0.4338,0.1006,False
+000497,Dall,60.315,-163.835,USA,open,False,17,Winter ice,False,0.0122,0.7108,0.0131,False
+001065,Nuyakuk,59.947,-159.15,USA,open,False,13,Series mission-merger compromised (J3/J2) | High Latitude/Altitude | Data capture compromised (J3),True,,,,
+001816,Tikchik,59.944,-158.326,USA,open,False,17,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice",False,0.072,0.5366,0.1117,False
+000474,Storsjon 1,62.829,14.478,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (J3/J2) | Narrow water crossing | Winter ice | Overpass far from dam | Data capture compromised (J2, J3)",True,,,,
+004073,Jurula,16.355,77.625,India,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,-0.1823,0.6505,0.0037,False
+006024,Chandil,23.007,86.083,India,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,1.2875,0.0002,3.1381,True
+004053,Siddheshwar,19.623,76.951,India,Reservoir,True,17,"Regulated water levels | Data capture compromised (J2, J3)",False,1.09,0.0074,1.3233,True
+004055,Kaddam,19.131,78.752,India,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,0.8568,0.0912,1.1065,False
+006012,Shahjad,24.949,78.458,India,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,0.454,0.5813,0.9494,False
+006010,Paricha,25.389,78.662,India,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing,False,-0.0648,0.4838,0.008,False
+004914,Parkasam,16.554,80.539,India,Reservoir,True,16,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Data capture DEM compromised (J3),False,-0.0083,1.0,-0.1928,False
+003987,Ghod,18.722,74.489,India,Reservoir,True,17,Regulated water levels | Narrow water crossing,False,0.363,0.4838,-0.0885,False
+002053,Missisa,52.365,-85.231,Canada,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,0.0176,0.8046,-0.1802,False
+001999,Winisk,52.839,-87.422,Canada,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,-0.0096,0.9671,-0.046,False
+003954,Verkhne-Tobolskaya,52.531,62.337,Kazakhstan,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass skims coastline | High Latitude/Altitude,False,-0.6346,0.174,0.1524,False
+006600,Sherubaynurinskoye,49.483,72.806,Kazakhstan,Reservoir,True,14,"Regulated water levels | Winter ice | Data capture compromised (J2, J3)",False,0.1929,0.8267,0.3969,False
+006486,Shagan,49.909,78.958,Kazakhstan,Reservoir,False,17,Anthropogenic effects | Narrow water crossing | Overpass skims coastline | High Latitude/Altitude,False,-0.8156,0.0287,-1.2121,True
+004470,Teniz,54.054,64.569,Kazakhstan,open,False,16,"Overpass skims coastline | Winter ice | Data capture compromised (J2, J3, S6a)",False,0.8895,0.1305,0.9127,False
+006596,Kengirskoye,47.935,67.762,Kazakhstan,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing,False,1.5201,0.0357,2.1288,False
+007049,Ewan,62.434,-145.793,USA,open,False,17,Series mission-merger compromised (TP/J2) | Winter ice | Data capture compromised (J3) |  ,False,0.0637,0.5366,0.1269,False
+107048,Crosswind,62.387,-146.009,USA,open,False,11,"Series mission-merger compromised (J3/J2) | Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",True,,,,
+007032,Turquoise,60.793,-153.992,USA,open,False,17,"Winter ice | Narrow water crossing | Overpass skims coastline | Data capture compromised (J2, J3)",False,0.0098,0.9671,-0.0023,False
+007072,South Olga Lakes 2,57.046,-154.275,USA,open,False,10,Series mission-merger compromised (TP/J2) | Winter ice | Narrow water crossing | Overpass skims coastline | Data capture compromised (J2),False,,,,
+007048,Crosswind,62.371,-146.028,USA,open,False,5,"Series mission-merger compromised (J3/J2) | Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",True,,,,
+007058,Chelatna,62.445,-151.424,USA,open,False,5,"Series mission-merger compromised (J3/J2) | Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",True,,,,
+002174,Ogoki 2,50.833,-87.189,Canada,open,False,17,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1),False,-0.2793,0.0357,-0.4369,False
+001459,Mirim,-32.576,-52.557,Brazil,lagoon,False,17,Series mission-merger compromised (TP/J2) | Potential tide effects | Overpass skims coastline,False,0.3697,0.3031,0.7665,False
+000679,Estreito,-9.332,-48.363,Brazil,Reservoir,True,14,"Regulated water levels | Narrow water crossing | Overpass far from dam | Data capture compromised (J2, J3)",False,-1.2775,0.011,-1.3844,True
+001695,Ita,-27.318,-52.228,Brazil,Reservoir,True,8,"Regulated water levels | Mid-series reservoir formation | Series mission-merger compromised (TP/J2) | Data capture compromised (J2) | Data capture DEM compromised (J3, S6a)",False,,,,
+000962,Jirau,-10.099,-65.302,Brazil,Reservoir,True,16,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Narrow water crossing | Data capture DEM compromised (J3)",True,2.1098,0.1151,2.581,
+000054,Araruama,-22.903,-42.096,Brazil,lagoon,False,17,Series mission-merger compromised (TP/J2) | Potential tide effects,False,0.0208,0.7727,-0.0031,False
+000036,Cochrane,-47.329,-71.939,Chile,open,False,16,"High Latitude/Altitude | Data capture compromised (J2, J3)",False,-0.1374,0.1628,-0.1501,False
+001436,Greve,-48.964,-73.751,Chile,open,False,12,High Latitude/Altitude | Complex region | Narrow water crossing | Data capture DEM compromised (J3) | Data capture compromised (J2),False,,,,
+000728,Velasco Ibarra,-0.892,-79.758,Ecuador,Reservoir,True,17,"Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Data capture compromised (J2, J3)",False,0.7184,0.0912,1.0285,False
+000596,Iriklinskoye,51.966,58.803,Russian Federation,Reservoir,True,15,"Series mission-merger compromised (TP/J2) | Regulated water levels | High Latitude/Altitude | Narrow water crossing | Data capture compromised (J2, J3)",False,0.9819,0.1982,2.629,False
+002068,Indin,64.19,-115.236,Canada,open,False,0,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Data capture compromised (J1, J2, J3)",False,,,,
+001077,Kluane,61.206,-138.598,Canada,open,False,0,Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J3),False,,,,
+000903,Thingvallavatn,64.234,-21.096,Iceland,open,False,6,"Series mission-merger compromised (S6a/J3) | Winter ice | Data capture DEM compromised (J3) | Data capture compromised (J2, J3, S6a)",True,,,,
+003645,Krokslon,64.149,-19.054,Iceland,Reservoir,True,3,"Regulated water levels | Winter ice | Narrow water crossing | Data capture compromised (J2, J3, S6a)",False,,,,
+004945,Thorisvatn,64.329,-18.8,Iceland,Reservoir,True,17,"Series mission-merger compromised (TP/J1, J1/J2) | Regulated water levels | Overpass far from dam | Winter ice | Narrow water crossing | Data capture DEM compromised (J3, S6a)",False,-0.4261,0.503,-1.2136,False
+004399,Myvatn,65.573,-16.994,Iceland,open,False,5,"Series mission-merger compromised (J3/J2) | Winter ice | Data capture compromised (J2, J3, S6a)",True,,,,
+006933,Unknown,65.689,-38.364,Greenland,open,False,17,"Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",False,0.0952,0.0151,0.1857,True
+006897,Motzfeldt,61.202,-45.053,Greenland,open,False,0,Series mission-merger compromised (S6a/J3) | Winter ice | Narrow water crossing | Data capture DEM compromised (S6a) | Data capture compromised (J2),True,,,,
+003899,Halslon,64.769,-15.877,Iceland,Reservoir,True,1,Regulated water levels | Winter ice | Narrow water crossing | Change of Reference Mission (S6a),True,,,,
+006680,Brown Water,64.559,-115.897,Canada,open,False,0,"Series mission-merger compromised (TP/J1, J1/J2, S6a/J3) | Winter ice | Data capture compromised (J2, J3)",True,,,,
+005453,Thonokied,64.362,-109.68,Canada,open,False,0,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Overpass near island/peninsula",False,,,,
+005472,Unknown,64.326,-109.473,Canada,open,False,0,Series mission-merger compromised (J1/J2) | Winter ice | Narrow water crossing,False,,,,
+006647,Tikiraq,65.811,-107.628,Canada,open,False,0,Series mission-merger compromised (TP/J2) | Winter ice,False,,,,
+006681,Unknown,65.357,-116.845,Canada,open,False,0,"Series mission-merger compromised (TP/J1, J1/J2) | Winter ice | Narrow water crossing | Overpass near island/peninsula",False,,,,
+004840,Tarpon 1,64.757,-108.93,Canada,open,False,0,Winter ice | Narrow water crossing | Overpass near island/peninsula,False,,,,
+005560,Unknown,66.133,-146.739,USA,open,False,0,Winter ice | Shallow waters | Narrow water crossing,False,,,,
+007154,Unknown,66.075,-147.718,USA,open,False,0,Winter ice | Shallow waters | Narrow water crossing,False,,,,
+000862,Polifitou,40.245,21.993,Greece,Reservoir,True,17,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Data capture compromised (J2) | Data capture DEM compromised (J3)",True,-0.3771,0.458,-0.9547,
+001796,Iron Gates II,44.54,22.569,Romania,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2),False,-0.0707,0.2661,-0.0565,False
+000837,Ness,57.148,-4.665,United Kingdom,Reservoir,True,8,Regulated water levels | Narrow water crossing | Data capture compromised (J3) | Change of Reference Mission (J3),True,,,,
+001751,Kremasta,39.006,21.403,Greece,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Overpass skims coastline,False,-2.704,0.0638,-4.004,False
+001265,Haringvliet,51.716,4.619,Netherlands,bay,False,17,Anthropogenic effects | Series mission-merger compromised (TP/J2) | Narrow water crossing | Complex region,False,0.0833,0.1494,0.1385,False
+101396,Ooster Scheldekring,51.604,4.026,Netherlands,bay,False,17,Anthropogenic effects | Series mission-merger compromised (J1/J2),False,0.2772,0.012,0.336,True
+001786,Terminos,18.588,-91.551,Mexico,lagoon,False,5,Potential tide effects | Change of Reference Mission (S6a),True,,,,
+001649,Bardawil,31.146,33.348,Egypt,lagoon,False,5,Potential tide effects | Change of Reference Mission (S6a),True,,,,
+001753,Brouwersdam,51.743,3.848,Netherlands,bay,False,5,Anthropogenic effects | Narrow water crossing | Complex region | Change of Reference Mission (S6a),True,,,,
+001396,Ooster Scheldekring,51.489,4.173,Netherlands,bay,False,5,Anthropogenic effects | Change of Reference Mission (S6a),True,,,,
+001681,Patos,-31.455,-51.939,Brazil,lagoon,False,17,Potential tide effects | Series mission-merger compromised (TP/S6a) | Change of Reference Mission (S6a),True,0.045,0.4338,0.1556,
+004056,Manyad,18.861,77.268,India,Reservoir,True,8,"Regulated water levels | Series mission-merger compromised (J2/J3) | Narrow water crossing | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+004388,Hipparagi,16.646,74.906,India,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,0.8529,0.174,0.3785,False
+004783,Koilsagar,16.728,77.774,India,Reservoir,True,17,Series mission-merger compromised (TP/J2) | Regulated water levels | Narrow water crossing | Data capture compromised (TP),False,2.4214,0.0,2.0095,True
+004958,Birsinghpur,23.279,81.042,India,Reservoir,True,17,Regulated water levels,False,0.0593,0.3031,0.1117,False
+005382,Brahmamsagar,14.778,78.904,India,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Mid-series reservoir formation | Data capture compromised (TP),False,1.9046,0.4338,-1.6929,False
+004532,Dhuty,22.207,80.06,India,Reservoir,True,16,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Data capture compromised (TP),False,-0.1534,0.2553,-0.2045,False
+004990,Tansa,19.564,73.263,India,Reservoir,True,17,"Regulated water levels | Series mission-merger compromised (TP/J2) | Data capture compromised (J2, J3)",False,1.0231,0.0235,2.1333,True
+004773,Gose Khurd,21.069,79.568,India,Reservoir,True,17,Regulated water levels | Narrow water crossing | Overpass far from dam,False,5.5456,0.0003,7.6653,True
+004078,Vani Vilasa,13.836,76.433,India,Reservoir,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing,False,6.7858,0.23,8.6428,False
+001805,Stroms Vattudal,64.193,15.181,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (J2/J3) | Winter ice | Data capture compromised (J2, J3) | Change of Reference Mission (J3)",True,,,,
+001696,Syvari,63.341,27.971,Finland,Reservoir,True,16,"Regulated water levels | Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",False,-0.3122,0.0034,-0.2225,True
+000925,Kallsjon,63.674,12.99,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Data capture compromised (TP, J2, J3)",True,,,,
+002301,Gardiken,65.464,15.833,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Narrow water crossing | Overpass skims coastline | Data capture compromised (TP, J2, J3) | Data capture DEM compromised (J3)",True,,,,
+000911,Skagern,59.004,14.279,Sweden,Reservoir,True,13,Regulated water levels | Series mission-merger compromised (J1/J2) | Winter ice | Data capture compromised (J1) | Data capture DEM compromised (J3),False,,,,
+000357,Pielinen,63.053,29.961,Finland,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (TP/J2) | Winter ice | Data capture compromised (J1, J2, J3)",False,,,,
+000880,Storuman,65.256,16.76,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Data capture compromised (J2, J3)",True,,,,
+000926,Torrojen,63.79,13.067,Sweden,Reservoir,True,0,"Regulated water levels | Series mission-merger compromised (TP/J2, J3/J2) | Winter ice | Data capture compromised (J2, J3)",True,,,,
+003967,Rasul,32.685,73.524,Pakistan,barrage,True,17,Regulated water levels | Narrow water crossing | Overpass near island/peninsula | Data capture compromised (J2),False,-0.6452,0.0104,-0.6334,True
+004386,Qadirabad,32.333,73.72,Pakistan,barrage,True,17,Regulated water levels | Series mission-merger compromised (TP/J2) | Narrow water crossing | Overpass near island/peninsula,False,-0.1247,0.2007,-0.1655,False
+004556,Allegheny,41.786,-78.898,USA,Reservoir,True,15,Series mission-merger compromised (J3/J2) | Regulated water levels | Narrow water crossing | Data capture compromised (J2) | Data capture DEM compromised (J3),True,0.347,0.6961,0.256,
+007296,Candia,45.325,7.914,Italy,closedx,False,15,"Series mission-merger compromised (J3/J2) | Winter ice | Narrow water crossing | Shallow waters | Data capture compromised (J3, S6a)",True,1.1988,0.0071,1.433,
+007287,St. Joseph 2,46.901,-71.628,Canada,Reservoir,True,14,"Regulated water levels | Winter ice | Narrow water crossing | Data capture compromised (J2, J3)",False,-0.1171,0.2736,-0.1447,False
+002325,Glowworm,64.752,-109.302,Canada,open,False,0,Series mission-merger compromised (TP/J1) | Winter ice,False,,,,

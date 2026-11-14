@@ -108,3 +108,6 @@
 | 2026-11-15 00:12 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +0.85 m); OND rain~DMI r=0.70 |
 | 2026-11-15 00:14 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +1.36 m); OND rain~DMI r=0.70 |
 | 2026-11-15 00:15 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +1.36 m); OND rain~DMI r=0.70 |
+| 2026-11-15 00:20 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |
+| 2026-11-15 00:21 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |
+| 2026-11-15 00:23 | 55_world_lakes | done | 332 lakes: 53 falling, 46 rising (FDR); Caspian -1.16 m/dec |

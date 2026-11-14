@@ -1,0 +1,171 @@
+{
+  "n_targets": 519,
+  "n_with_14yr": 368,
+  "n_usable": 332,
+  "n_sig_up": 46,
+  "n_sig_down": 53,
+  "regulated": {
+    "n": 184,
+    "sig_up": 26,
+    "sig_down": 24,
+    "median_trend": -0.003970508658008652
+  },
+  "not_regulated": {
+    "n": 148,
+    "sig_up": 20,
+    "sig_down": 29,
+    "median_trend": 0.015530563186813163
+  },
+  "top_falling": [
+    {
+      "name": "Falcon",
+      "country": "Mexico",
+      "regulated": true,
+      "sen_m_per_decade": -7.08,
+      "p": 0.0
+    },
+    {
+      "name": "Kemer",
+      "country": "Turkey",
+      "regulated": true,
+      "sen_m_per_decade": -5.87,
+      "p": 0.004
+    },
+    {
+      "name": "Aral Sea 2",
+      "country": "Uzbekistan",
+      "regulated": false,
+      "sen_m_per_decade": -5.639,
+      "p": 0.0
+    },
+    {
+      "name": "Kariba",
+      "country": "Zambia",
+      "regulated": true,
+      "sen_m_per_decade": -5.315,
+      "p": 0.0
+    },
+    {
+      "name": "Rhenosterkop",
+      "country": "South Africa",
+      "regulated": true,
+      "sen_m_per_decade": -5.138,
+      "p": 0.305
+    },
+    {
+      "name": "Nova Ponte",
+      "country": "Brazil",
+      "regulated": true,
+      "sen_m_per_decade": -4.635,
+      "p": 0.496
+    },
+    {
+      "name": "Enriquillo",
+      "country": "Dominican Republic",
+      "regulated": false,
+      "sen_m_per_decade": -4.309,
+      "p": 0.018
+    },
+    {
+      "name": "Vueltosa",
+      "country": "Venezuela",
+      "regulated": true,
+      "sen_m_per_decade": -4.185,
+      "p": 0.149
+    },
+    {
+      "name": "Supa",
+      "country": "India",
+      "regulated": true,
+      "sen_m_per_decade": -4.171,
+      "p": 0.038
+    },
+    {
+      "name": "Angostura 1",
+      "country": "Mexico",
+      "regulated": true,
+      "sen_m_per_decade": -4.12,
+      "p": 0.0
+    }
+  ],
+  "top_rising": [
+    {
+      "name": "Xekaman I",
+      "country": "Laos",
+      "regulated": true,
+      "sen_m_per_decade": 62.488,
+      "p": 0.007
+    },
+    {
+      "name": "Jinping I",
+      "country": "Rep. China",
+      "regulated": true,
+      "sen_m_per_decade": 49.59,
+      "p": 0.234
+    },
+    {
+      "name": "Huangdeng",
+      "country": "Rep. China",
+      "regulated": true,
+      "sen_m_per_decade": 26.385,
+      "p": 0.011
+    },
+    {
+      "name": "Vani Vilasa",
+      "country": "India",
+      "regulated": true,
+      "sen_m_per_decade": 6.786,
+      "p": 0.23
+    },
+    {
+      "name": "Gose Khurd",
+      "country": "India",
+      "regulated": true,
+      "sen_m_per_decade": 5.546,
+      "p": 0.0
+    },
+    {
+      "name": "Mikuyu",
+      "country": "Tanzania",
+      "regulated": false,
+      "sen_m_per_decade": 5.118,
+      "p": 0.165
+    },
+    {
+      "name": "Migriggyangzham",
+      "country": "Rep. China",
+      "regulated": false,
+      "sen_m_per_decade": 4.921,
+      "p": 0.0
+    },
+    {
+      "name": "Nasser",
+      "country": "Egypt",
+      "regulated": true,
+      "sen_m_per_decade": 4.533,
+      "p": 0.0
+    },
+    {
+      "name": "Quiminha",
+      "country": "Angola",
+      "regulated": true,
+      "sen_m_per_decade": 3.783,
+      "p": 0.029
+    },
+    {
+      "name": "Turkana",
+      "country": "Kenya",
+      "regulated": false,
+      "sen_m_per_decade": 3.543,
+      "p": 0.001
+    }
+  ],
+  "caspian": {
+    "altimetry_m_per_decade": -1.1610119047619047,
+    "altimetry_p": 0.0001803503620878555,
+    "grace_cm_per_decade_box": -57.17350986796832,
+    "grace_p": 0.00013219522867058409,
+    "note": "GRACE box mean includes surrounding land; the lake's level change spread over the box area is a lower bound",
+    "r_annual_altimetry_vs_grace": 0.9989499658448819
+  }
+}
