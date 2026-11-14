@@ -123,3 +123,11 @@
 | 2026-11-15 01:02 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |
 | 2026-11-15 01:03 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |
 | 2026-11-15 01:05 | 59_wetlands_extremes | done | Pantanal TWS step 2019-12-01 (p=1e-25), fires x1.8; Niger delta +13 cm/dec |
+| 2026-11-15 01:09 | 60_land_sinking | done | 718 gauges: 240 sinking, 185 rising; Manila -8.6 mm/yr |
+| 2026-11-15 01:18 | 61_seaice_pause_flip | done | Arctic pause chance 3%; Antarctic ice~SST r=-0.53 |
+| 2026-11-15 01:36 | 61_seaice_pause_flip | done | Arctic pause chance 3%; Antarctic ice~SST r=-0.53 |
+| 2026-11-15 01:45 | 61_seaice_pause_flip | done | Arctic pause chance 3%; Antarctic ice~SST r=-0.53 |
+| 2026-11-15 01:57 | 61_seaice_pause_flip | done | Arctic pause chance 3%; Antarctic ice~SST r=-0.53 |
+| 2026-11-15 01:57 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |
+| 2026-11-15 01:58 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |
+| 2026-11-15 01:58 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |

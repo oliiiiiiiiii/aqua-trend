@@ -222,6 +222,24 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Inner Niger Delta (+13 cm/decade) and Lake Chad basin (+12 cm/decade) are refilling with the Sahel rain recovery (+10%/decade since 1981).
 - Visual: `results/59_wetlands_extremes/wetlands_extremes.png`.
 
+## W25. Where the land sinks: tide gauges minus satellite altimetry reveal vertical land motion — **Robust pattern (682 gauges)**
+- 230 gauges are sinking and 184 rising (FDR).
+- Groundwater-pumped coasts sink: **Manila −8.6 mm/yr** (more than twice global sea-level rise), Bangkok −3.6, Galveston −4.0, Venice −5.8.
+- Samoa is still sinking after its 2009 earthquake.
+- Ice-age rebound lifts SE Alaska (+15 to +22 mm/yr) and Stockholm (+5).
+- Tohoku 2011: coseismic drops of −0.4 m at Onahama and Kamaishi, then post-seismic uplift of +13 mm/yr at Onahama.
+- Caveat: a few mm/yr of coastal-altimetry error is possible in the North Sea. Taiwan has no modern PSMSL record.
+- Visual: `results/60_land_sinking/land_sinking_map.png`.
+
+## W26. Two sea-ice traps: a cherry-picked Arctic "pause", and an Antarctic collapse that coincides with ocean warming — **Teaching (suggestive)**
+- Arctic September ice: −0.76 M km²/decade since 1979, but flat since 2012 (the record-low year).
+  - Monte Carlo: a pre-chosen 14-year window this flat occurs in 3% of runs, but anywhere in the record in 41%.
+  - A breakpoint model does not beat one line (p = 0.08). The slowdown is possible, not proven.
+- Antarctic ice collapsed in Aug 2016, and the 50–60°S ocean warmed +0.29 °C (SST step 2009).
+  - Annual r = −0.47, but surrogate p = 0.08, and year-to-year changes don't co-move.
+  - Smoothing inflates the apparent correlation (r = −0.53 with an effective n of about 2).
+- Visual: `results/61_seaice_pause_flip/seaice_pause_and_flip.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

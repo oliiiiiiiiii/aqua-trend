@@ -1,0 +1,452 @@
+{
+  "n_stations": 682,
+  "n_sig_sinking": 230,
+  "n_sig_rising": 184,
+  "median_vlm": -0.0863527413533689,
+  "fastest_sinking": [
+    {
+      "name": "MANILA, S. HARBOR",
+      "lat": 14.58,
+      "lon": 120.97,
+      "vlm_mm_yr": -8.62,
+      "se": 0.62,
+      "p": 0.0
+    },
+    {
+      "name": "KO TAPHAO NOI",
+      "lat": 7.83,
+      "lon": 98.43,
+      "vlm_mm_yr": -8.5,
+      "se": 1.04,
+      "p": 0.0
+    },
+    {
+      "name": "DAESAN",
+      "lat": 37.01,
+      "lon": 126.35,
+      "vlm_mm_yr": -7.68,
+      "se": 1.91,
+      "p": 0.0
+    },
+    {
+      "name": "NEWPORT",
+      "lat": 51.55,
+      "lon": -2.99,
+      "vlm_mm_yr": -7.42,
+      "se": 0.81,
+      "p": 0.0
+    },
+    {
+      "name": "NORFOLK ISLAND",
+      "lat": -29.06,
+      "lon": 167.95,
+      "vlm_mm_yr": -7.41,
+      "se": 1.48,
+      "p": 0.0
+    },
+    {
+      "name": "PAGO PAGO",
+      "lat": -14.28,
+      "lon": -170.69,
+      "vlm_mm_yr": -7.29,
+      "se": 0.96,
+      "p": 0.0
+    },
+    {
+      "name": "APIA B",
+      "lat": -13.83,
+      "lon": -171.76,
+      "vlm_mm_yr": -6.18,
+      "se": 0.37,
+      "p": 0.0
+    },
+    {
+      "name": "VENEZIA II",
+      "lat": 45.42,
+      "lon": 12.43,
+      "vlm_mm_yr": -5.75,
+      "se": 0.63,
+      "p": 0.0
+    },
+    {
+      "name": "LIVERPOOL (GLADSTONE DOCK)",
+      "lat": 53.45,
+      "lon": -3.02,
+      "vlm_mm_yr": -5.34,
+      "se": 0.88,
+      "p": 0.0
+    },
+    {
+      "name": "WHITBY",
+      "lat": 54.49,
+      "lon": -0.61,
+      "vlm_mm_yr": -5.31,
+      "se": 0.71,
+      "p": 0.0
+    },
+    {
+      "name": "KO LAK",
+      "lat": 11.8,
+      "lon": 99.82,
+      "vlm_mm_yr": -5.27,
+      "se": 0.35,
+      "p": 0.0
+    },
+    {
+      "name": "OMAEZAKI II",
+      "lat": 34.61,
+      "lon": 138.22,
+      "vlm_mm_yr": -5.11,
+      "se": 1.95,
+      "p": 0.01
+    },
+    {
+      "name": "PETROPAVLOVSK-KAMCHATSKY",
+      "lat": 52.98,
+      "lon": 158.65,
+      "vlm_mm_yr": -5.08,
+      "se": 0.41,
+      "p": 0.0
+    },
+    {
+      "name": "CROMER",
+      "lat": 52.93,
+      "lon": 1.3,
+      "vlm_mm_yr": -5.06,
+      "se": 0.77,
+      "p": 0.0
+    },
+    {
+      "name": "KERGUELEN",
+      "lat": -49.35,
+      "lon": 70.26,
+      "vlm_mm_yr": -4.91,
+      "se": 0.72,
+      "p": 0.0
+    }
+  ],
+  "fastest_rising": [
+    {
+      "name": "RATAN",
+      "lat": 63.99,
+      "lon": 20.9,
+      "vlm_mm_yr": 9.78,
+      "se": 0.42,
+      "p": 0.0
+    },
+    {
+      "name": "VALDEZ",
+      "lat": 61.12,
+      "lon": -146.36,
+      "vlm_mm_yr": 9.84,
+      "se": 0.39,
+      "p": 0.0
+    },
+    {
+      "name": "SKAGSUDDE",
+      "lat": 63.19,
+      "lon": 19.01,
+      "vlm_mm_yr": 9.92,
+      "se": 0.6,
+      "p": 0.0
+    },
+    {
+      "name": "NIKISKI,  ALASKA",
+      "lat": 60.68,
+      "lon": -151.4,
+      "vlm_mm_yr": 12.24,
+      "se": 0.48,
+      "p": 0.0
+    },
+    {
+      "name": "ONAHAMA",
+      "lat": 36.94,
+      "lon": 140.89,
+      "vlm_mm_yr": 12.63,
+      "se": 3.2,
+      "p": 0.0
+    },
+    {
+      "name": "HONNGU",
+      "lat": 18.8,
+      "lon": 105.77,
+      "vlm_mm_yr": 13.15,
+      "se": 1.78,
+      "p": 0.0
+    },
+    {
+      "name": "JUNEAU",
+      "lat": 58.3,
+      "lon": -134.41,
+      "vlm_mm_yr": 15.51,
+      "se": 0.57,
+      "p": 0.0
+    },
+    {
+      "name": "YAKUTAT",
+      "lat": 59.55,
+      "lon": -139.73,
+      "vlm_mm_yr": 17.27,
+      "se": 0.42,
+      "p": 0.0
+    },
+    {
+      "name": "ELFIN COVE, PORT ALTHORP",
+      "lat": 58.2,
+      "lon": -136.35,
+      "vlm_mm_yr": 21.28,
+      "se": 0.74,
+      "p": 0.0
+    },
+    {
+      "name": "SKAGWAY",
+      "lat": 59.45,
+      "lon": -135.33,
+      "vlm_mm_yr": 21.53,
+      "se": 0.53,
+      "p": 0.0
+    }
+  ],
+  "quake_steps": [
+    {
+      "name": "KO TAPHAO NOI",
+      "quake": "Sumatra 2004",
+      "step_mm": 64.6,
+      "vlm_mm_yr": -8.5
+    },
+    {
+      "name": "OMAEZAKI II",
+      "quake": "Tohoku 2011",
+      "step_mm": 8.1,
+      "vlm_mm_yr": -5.1
+    },
+    {
+      "name": "SHIMIZU-MINATO",
+      "quake": "Tohoku 2011",
+      "step_mm": 11.4,
+      "vlm_mm_yr": -3.2
+    },
+    {
+      "name": "TIMARU HARBOUR",
+      "quake": "Kaikoura 2016",
+      "step_mm": 57.3,
+      "vlm_mm_yr": -2.8
+    },
+    {
+      "name": "YAIZU",
+      "quake": "Tohoku 2011",
+      "step_mm": 34.2,
+      "vlm_mm_yr": -2.6
+    },
+    {
+      "name": "TAGO",
+      "quake": "Tohoku 2011",
+      "step_mm": 13.1,
+      "vlm_mm_yr": -2.0
+    },
+    {
+      "name": "KAMAISI II",
+      "quake": "Tohoku 2011",
+      "step_mm": -402.3,
+      "vlm_mm_yr": -1.9
+    },
+    {
+      "name": "NELSON",
+      "quake": "Kaikoura 2016",
+      "step_mm": -41.7,
+      "vlm_mm_yr": -1.8
+    },
+    {
+      "name": "PORT LYTTELTON",
+      "quake": "Kaikoura 2016",
+      "step_mm": 42.6,
+      "vlm_mm_yr": -1.6
+    },
+    {
+      "name": "VALPARAISO",
+      "quake": "Chile 2010",
+      "step_mm": 34.0,
+      "vlm_mm_yr": -1.4
+    },
+    {
+      "name": "MIYAKO II",
+      "quake": "Tohoku 2011",
+      "step_mm": 180.9,
+      "vlm_mm_yr": -0.9
+    },
+    {
+      "name": "WELLINGTON HARBOUR",
+      "quake": "Kaikoura 2016",
+      "step_mm": 44.5,
+      "vlm_mm_yr": -0.8
+    },
+    {
+      "name": "AWA SIMA",
+      "quake": "Tohoku 2011",
+      "step_mm": 31.2,
+      "vlm_mm_yr": -0.6
+    },
+    {
+      "name": "YOKOSUKA",
+      "quake": "Tohoku 2011",
+      "step_mm": 46.6,
+      "vlm_mm_yr": -0.5
+    },
+    {
+      "name": "PULAU LANGKAWI",
+      "quake": "Sumatra 2004",
+      "step_mm": 23.0,
+      "vlm_mm_yr": -0.0
+    },
+    {
+      "name": "NEZUGASEKI",
+      "quake": "Tohoku 2011",
+      "step_mm": -0.6,
+      "vlm_mm_yr": 0.4
+    },
+    {
+      "name": "SOMA",
+      "quake": "Tohoku 2011",
+      "step_mm": -660.2,
+      "vlm_mm_yr": 0.5
+    },
+    {
+      "name": "ABURATSUBO",
+      "quake": "Tohoku 2011",
+      "step_mm": 38.9,
+      "vlm_mm_yr": 0.9
+    },
+    {
+      "name": "KASHIWAZAKI",
+      "quake": "Tohoku 2011",
+      "step_mm": 46.8,
+      "vlm_mm_yr": 1.0
+    },
+    {
+      "name": "UCHIURA",
+      "quake": "Tohoku 2011",
+      "step_mm": 8.6,
+      "vlm_mm_yr": 1.2
+    },
+    {
+      "name": "CHOSHI-GYOKO",
+      "quake": "Tohoku 2011",
+      "step_mm": -9.2,
+      "vlm_mm_yr": 1.6
+    },
+    {
+      "name": "ASAMUSHI",
+      "quake": "Tohoku 2011",
+      "step_mm": 76.9,
+      "vlm_mm_yr": 1.9
+    },
+    {
+      "name": "OGI",
+      "quake": "Tohoku 2011",
+      "step_mm": 80.9,
+      "vlm_mm_yr": 1.9
+    },
+    {
+      "name": "CORRAL II",
+      "quake": "Chile 2010",
+      "step_mm": -12.5,
+      "vlm_mm_yr": 2.0
+    },
+    {
+      "name": "TAPPI",
+      "quake": "Tohoku 2011",
+      "step_mm": 66.8,
+      "vlm_mm_yr": 2.2
+    },
+    {
+      "name": "MERA",
+      "quake": "Tohoku 2011",
+      "step_mm": 20.5,
+      "vlm_mm_yr": 2.4
+    },
+    {
+      "name": "TALCAHUANO",
+      "quake": "Chile 2010",
+      "step_mm": 74.7,
+      "vlm_mm_yr": 2.5
+    },
+    {
+      "name": "OGA",
+      "quake": "Tohoku 2011",
+      "step_mm": 27.2,
+      "vlm_mm_yr": 4.0
+    },
+    {
+      "name": "OKADA",
+      "quake": "Tohoku 2011",
+      "step_mm": 7.6,
+      "vlm_mm_yr": 4.2
+    },
+    {
+      "name": "TOKYO III",
+      "quake": "Tohoku 2011",
+      "step_mm": 33.5,
+      "vlm_mm_yr": 4.3
+    },
+    {
+      "name": "HAKODATE I",
+      "quake": "Tohoku 2011",
+      "step_mm": 57.9,
+      "vlm_mm_yr": 4.5
+    },
+    {
+      "name": "KATSUURA",
+      "quake": "Tohoku 2011",
+      "step_mm": 35.5,
+      "vlm_mm_yr": 5.6
+    },
+    {
+      "name": "ITO II",
+      "quake": "Tohoku 2011",
+      "step_mm": -19.8,
+      "vlm_mm_yr": 8.9
+    },
+    {
+      "name": "ONAHAMA",
+      "quake": "Tohoku 2011",
+      "step_mm": -365.2,
+      "vlm_mm_yr": 12.6
+    }
+  ],
+  "station: MANILA, S. HARBOR": {
+    "vlm_mm_yr": -8.617209564373283,
+    "se": 0.622907748721191,
+    "p": 3.9124473350448244e-23,
+    "step_mm": null
+  },
+  "station: FORT PHRACHULA CHOMKLAO (POM PHRACHUN)": {
+    "vlm_mm_yr": -3.6193225415371315,
+    "se": 0.4427374849125501,
+    "p": 3.36365792497032e-14,
+    "step_mm": null
+  },
+  "station: ONAHAMA": {
+    "vlm_mm_yr": 12.629047768042016,
+    "se": 3.201545276259751,
+    "p": 0.0004362522212031482,
+    "step_mm": -365.24679033615445
+  },
+  "station: JUNEAU": {
+    "vlm_mm_yr": 15.505833273371586,
+    "se": 0.5714419717991778,
+    "p": 4.3790152895332883e-67,
+    "step_mm": null
+  },
+  "station: GALVESTON II, PIER 21, TX": {
+    "vlm_mm_yr": -4.021658738806079,
+    "se": 0.408974692490213,
+    "p": 3.770975226735317e-18,
+    "step_mm": null
+  },
+  "station: STOCKHOLM": {
+    "vlm_mm_yr": 5.262561605524418,
+    "se": 0.33759791166020126,
+    "p": 3.8940143287488356e-41,
+    "step_mm": null
+  }
+}

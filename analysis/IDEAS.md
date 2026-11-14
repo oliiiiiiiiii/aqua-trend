@@ -4,12 +4,12 @@
 |---|---|---|---|---|---|
 | I01 | NCP reversal is driven by policy (water diversion) not just rain: rainfall over NCP 2014–2026 vs storage | GPCP/IMERG + GRACE | 2-panel: storage vs cumulative rain anomaly | low | done (tasks 21/23) |
 | I02 | NW India loss slowed after 2016 because of monsoon rains or pumping limits? | GPCP + GRACE | piecewise trend plot | low | done (task 21: GW loss halved; task 22: stronger monsoon inflow) |
-| I03 | Caspian Sea level fall confirmed by satellite altimetry | G-REALM/DAHITI lake level | GRACE vs altimetry overlay | med | todo |
+| I03 | Caspian Sea level fall confirmed by satellite altimetry | GWM lake level | GRACE vs altimetry overlay | med | done (task 55: r=0.999) |
 | I04 | Lake Victoria rise matches rainfall surge (2019–2020, 2023–24) | GPCP | rain anomaly vs storage | low | done (task 22: convergence +0.50 mm/day/dec) |
 | I05 | Groundwater-only trend = GRACE TWS − GLDAS (soil+snow+canopy) | GLDAS Noah (needs GES DISC approval) | groundwater map | med | done (task 21) |
 | I06 | Opposite-sign pair: Sahel/East Africa wetting vs Middle East drying (same circulation shift?) | GRACE + GPCP | split map | low | done (task 25 ENSO maps) |
-| I07 | Arctic sea-ice "pause" since 2012: is the 2012–2026 trend significantly different from 1979–2011? (segmented regression / Chow test) | NSIDC | two-segment plot | low | todo |
-| I08 | Antarctic collapse coincides with Southern Ocean SST warming (OISST around Antarctica) | OISST | SST anomaly vs ice anomaly | low | todo |
+| I07 | Arctic sea-ice "pause" since 2012: is the 2012–2026 trend significantly different from 1979–2011? (segmented regression / Chow test) | NSIDC | two-segment plot | low | done (task 61: 3% pre-chosen vs 41% anywhere; hinge p=0.08) |
+| I08 | Antarctic collapse coincides with Southern Ocean SST warming (OISST around Antarctica) | OISST | SST anomaly vs ice anomaly | low | done (task 61: annual r=−0.47, surrogate p=0.08) |
 | I09 | Sea-ice concentration maps: 1980s vs 2020s September extent outline (GeoTIFF) | NSIDC G02135 geotiff | before/after map | low | done (task 09b) |
 | I10 | Taiwan drying? GPCP says −16 %/decade since 2002 — verify with IMERG 0.1° (land-only Taiwan), split typhoon season (Jul–Oct) vs plum-rain (May–Jun) vs winter | IMERG (GES DISC) / GHCN stations | seasonal bar + map | med | partly (task 24 + robustness: suggestive) |
 | I11 | Typhoon-rain decline near Taiwan: count of months with extreme rainfall (>p95) per decade | GPCP/IMERG | decadal bar chart | low | done (task 24) |
@@ -47,6 +47,9 @@
 | I43 | Reservoir drought fingerprint: do reservoir level anomalies track GRACE/SPI drought across basins (Kariba, Mead, Brazil hydropower)? | GWM + GRACE + GPCP | per-reservoir lag correlation | med | todo |
 | I44 | Mekong flood pulse (Tonle Sap) vs upstream dams, rain-controlled | GWM + GPCP + GRACE | multi-panel | low | done (task 57: −1.04 m/dec rain-adjusted, GRACE confirms) |
 | I45 | Other dammed rivers' downstream lakes/wetlands: Inner Niger Delta, Sudd, Okavango, Pantanal — flood-pulse amplitude from GRACE + altimetry | GWM, GRACE, GPCP | pulse amplitude series | med | done (task 59: Pantanal step 2019 + fires ×1.8; Niger delta/Lake Chad +12–13 cm/dec) |
+| I46 | Vertical land motion from tide gauges minus altimetry (global) | PSMSL + NASA-SSH | VLM map | low | done (task 60: 230 sinking / 184 rising; Manila −8.6 mm/yr) |
+| I47 | Relative sea-level rise felt at each coast = altimetry rise + land sinking: which cities face the fastest relative rise? | PSMSL + NASA-SSH | ranked map | low | todo |
+| I48 | Taiwan land subsidence (Yunlin/Changhua) — needs InSAR (OPERA DISP-S1 / Sentinel-1) since PSMSL lacks modern Taiwan gauges | OPERA DISP | subsidence map | high | todo |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |
