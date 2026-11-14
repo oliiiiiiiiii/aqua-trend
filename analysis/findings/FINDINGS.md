@@ -240,6 +240,15 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - Smoothing inflates the apparent correlation (r = −0.53 with an effective n of about 2).
 - Visual: `results/61_seaice_pause_flip/seaice_pause_and_flip.png`.
 
+## W27. The sea level people feel: at the worst-hit coasts the land sinks faster than the ocean rises — **Robust**
+- 648 tide gauges, 1993–2025: the median relative rise is +3.5 mm/yr, the same as the ocean.
+- 4% of gauges exceed twice the global rate.
+  - **Manila +12.5 mm/yr** (3.9 ocean + 8.6 land sinking).
+  - Daesan +11.6, Pago Pago +10.5.
+  - The Louisiana and Texas Gulf coast +8–9, Venice +8.1, Chennai +8.0.
+- Relative sea level is falling at 68 gauges where ice-age rebound wins (Scandinavia, Alaska).
+- Visual: `results/62_relative_sea_level/relative_sea_level.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

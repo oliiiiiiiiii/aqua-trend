@@ -48,7 +48,7 @@
 | I44 | Mekong flood pulse (Tonle Sap) vs upstream dams, rain-controlled | GWM + GPCP + GRACE | multi-panel | low | done (task 57: −1.04 m/dec rain-adjusted, GRACE confirms) |
 | I45 | Other dammed rivers' downstream lakes/wetlands: Inner Niger Delta, Sudd, Okavango, Pantanal — flood-pulse amplitude from GRACE + altimetry | GWM, GRACE, GPCP | pulse amplitude series | med | done (task 59: Pantanal step 2019 + fires ×1.8; Niger delta/Lake Chad +12–13 cm/dec) |
 | I46 | Vertical land motion from tide gauges minus altimetry (global) | PSMSL + NASA-SSH | VLM map | low | done (task 60: 230 sinking / 184 rising; Manila −8.6 mm/yr) |
-| I47 | Relative sea-level rise felt at each coast = altimetry rise + land sinking: which cities face the fastest relative rise? | PSMSL + NASA-SSH | ranked map | low | todo |
+| I47 | Relative sea-level rise felt at each coast = altimetry rise + land sinking: which cities face the fastest relative rise? | PSMSL + NASA-SSH | ranked map | low | done (task 62: Manila +12.5 mm/yr; 4% of gauges > 2x global) |
 | I48 | Taiwan land subsidence (Yunlin/Changhua) — needs InSAR (OPERA DISP-S1 / Sentinel-1) since PSMSL lacks modern Taiwan gauges | OPERA DISP | subsidence map | high | todo |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")

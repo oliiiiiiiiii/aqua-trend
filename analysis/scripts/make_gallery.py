@@ -72,6 +72,7 @@ HERO = [
     ("W39_wetlands_extremes", "results/59_wetlands_extremes/wetlands_extremes.png", "Wetlands at the extremes: the Pantanal dries and burns, the Sahel's wetlands refill"),
     ("W40_land_sinking", "results/60_land_sinking/land_sinking_map.png", "Where the land sinks: tide gauges minus altimetry (Manila −9 mm/yr, Alaska +20)"),
     ("W41_seaice_traps", "results/61_seaice_pause_flip/seaice_pause_and_flip.png", "Two sea-ice traps: a cherry-picked Arctic pause and the Antarctic collapse"),
+    ("W42_relative_sea_level", "results/62_relative_sea_level/relative_sea_level.png", "The sea level people feel: Manila +12.5 mm/yr (ocean 3.9 + sinking 8.6)"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

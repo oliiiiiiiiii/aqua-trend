@@ -1,0 +1,171 @@
+{
+  "n": 648,
+  "median_relative": 3.4900433184827957,
+  "median_ocean": 3.4875036216465904,
+  "frac_relative_faster_than_ocean": 0.5462962962962963,
+  "frac_relative_over_2x_global": 0.041666666666666664,
+  "frac_land_sinking_bigger_than_ocean_rise": 0.05092592592592592,
+  "top20": [
+    {
+      "name": "MANILA, S. HARBOR",
+      "lat": 14.58,
+      "lon": 120.97,
+      "relative_mm_yr": 12.51,
+      "ocean_mm_yr": 3.89,
+      "land_mm_yr": -8.62
+    },
+    {
+      "name": "DAESAN",
+      "lat": 37.01,
+      "lon": 126.35,
+      "relative_mm_yr": 11.64,
+      "ocean_mm_yr": 3.96,
+      "land_mm_yr": -7.68
+    },
+    {
+      "name": "PAGO PAGO",
+      "lat": -14.28,
+      "lon": -170.69,
+      "relative_mm_yr": 10.48,
+      "ocean_mm_yr": 3.2,
+      "land_mm_yr": -7.29
+    },
+    {
+      "name": "APIA B",
+      "lat": -13.83,
+      "lon": -171.76,
+      "relative_mm_yr": 9.71,
+      "ocean_mm_yr": 3.53,
+      "land_mm_yr": -6.18
+    },
+    {
+      "name": "NORFOLK ISLAND",
+      "lat": -29.06,
+      "lon": 167.95,
+      "relative_mm_yr": 9.62,
+      "ocean_mm_yr": 2.21,
+      "land_mm_yr": -7.41
+    },
+    {
+      "name": "NEWPORT",
+      "lat": 51.55,
+      "lon": -2.99,
+      "relative_mm_yr": 9.46,
+      "ocean_mm_yr": 2.04,
+      "land_mm_yr": -7.42
+    },
+    {
+      "name": "GRAND ISLE",
+      "lat": 29.26,
+      "lon": -89.96,
+      "relative_mm_yr": 9.36,
+      "ocean_mm_yr": 4.5,
+      "land_mm_yr": -4.86
+    },
+    {
+      "name": "KO LAK",
+      "lat": 11.8,
+      "lon": 99.82,
+      "relative_mm_yr": 9.24,
+      "ocean_mm_yr": 3.98,
+      "land_mm_yr": -5.27
+    },
+    {
+      "name": "SUVA-B",
+      "lat": -18.13,
+      "lon": 178.43,
+      "relative_mm_yr": 8.79,
+      "ocean_mm_yr": 4.24,
+      "land_mm_yr": -4.55
+    },
+    {
+      "name": "SABINE PASS NORTH",
+      "lat": 29.73,
+      "lon": -93.87,
+      "relative_mm_yr": 8.64,
+      "ocean_mm_yr": 4.51,
+      "land_mm_yr": -4.13
+    },
+    {
+      "name": "ROCKPORT",
+      "lat": 28.02,
+      "lon": -97.05,
+      "relative_mm_yr": 8.49,
+      "ocean_mm_yr": 4.0,
+      "land_mm_yr": -4.49
+    },
+    {
+      "name": "CORPUS CHRISTI, GULF MEXICO, TX",
+      "lat": 27.58,
+      "lon": -97.22,
+      "relative_mm_yr": 8.48,
+      "ocean_mm_yr": 4.66,
+      "land_mm_yr": -3.82
+    },
+    {
+      "name": "WHITBY",
+      "lat": 54.49,
+      "lon": -0.62,
+      "relative_mm_yr": 8.46,
+      "ocean_mm_yr": 3.15,
+      "land_mm_yr": -5.31
+    },
+    {
+      "name": "GALVESTON II, PIER 21, TX",
+      "lat": 29.31,
+      "lon": -94.79,
+      "relative_mm_yr": 8.34,
+      "ocean_mm_yr": 4.32,
+      "land_mm_yr": -4.02
+    },
+    {
+      "name": "CROMER",
+      "lat": 52.93,
+      "lon": 1.3,
+      "relative_mm_yr": 8.2,
+      "ocean_mm_yr": 3.14,
+      "land_mm_yr": -5.06
+    },
+    {
+      "name": "SIBONEY",
+      "lat": 23.1,
+      "lon": -82.47,
+      "relative_mm_yr": 8.19,
+      "ocean_mm_yr": 4.27,
+      "land_mm_yr": -3.92
+    },
+    {
+      "name": "VENEZIA II",
+      "lat": 45.42,
+      "lon": 12.43,
+      "relative_mm_yr": 8.12,
+      "ocean_mm_yr": 2.37,
+      "land_mm_yr": -5.75
+    },
+    {
+      "name": "HANASAKI II",
+      "lat": 43.28,
+      "lon": 145.57,
+      "relative_mm_yr": 8.08,
+      "ocean_mm_yr": 3.46,
+      "land_mm_yr": -4.62
+    },
+    {
+      "name": "LIVERPOOL (GLADSTONE DOCK)",
+      "lat": 53.45,
+      "lon": -3.02,
+      "relative_mm_yr": 8.05,
+      "ocean_mm_yr": 2.71,
+      "land_mm_yr": -5.34
+    },
+    {
+      "name": "CHENNAI",
+      "lat": 13.1,
+      "lon": 80.3,
+      "relative_mm_yr": 7.99,
+      "ocean_mm_yr": 3.26,
+      "land_mm_yr": -4.73
+    }
+  ],
+  "falling_relative": 68
+}

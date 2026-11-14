@@ -131,3 +131,6 @@
 | 2026-11-15 01:57 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |
 | 2026-11-15 01:58 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |
 | 2026-11-15 01:58 | 60_land_sinking | done | 682 gauges: 230 sinking, 184 rising; Manila -8.6 mm/yr |
+| 2026-11-15 02:00 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
+| 2026-11-15 02:01 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
+| 2026-11-15 02:01 | 62_relative_sea_level | done | 648 gauges: median relative +3.5 mm/yr; 4% > 2x global |
