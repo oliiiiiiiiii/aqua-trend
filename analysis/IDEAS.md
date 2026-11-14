@@ -73,4 +73,4 @@
 | N17 | Mount Pinatubo-style check for smaller eruptions: MLS/OMPS volcanic SO₂ and stratospheric aerosol since 2004 (Raikoke 2019, Ruang 2024) | MLS SO2, OMPS LP | event series | med | todo |
 | N18 | Earth's energy imbalance (CERES TOA net), decomposition SW/LW and cloud/clear | CERES EBAF | series + bars + map | low | done (task 64: 0.67→1.65 W/m², ASR +0.88/dec accelerating) |
 | N19 | Low-cloud decline in the NE Pacific & marine heatwaves ("the Blob"): CERES cloud SW vs OISST, 2013–2025 | CERES EBAF + OISST | lagged correlation map | med | todo |
-| N20 | Arctic darkening: CERES clear-sky absorbed SW vs NSIDC sea-ice concentration loss (ice-albedo feedback strength, W/m² per % ice) | CERES + NSIDC | scatter + map | med | todo |
+| N20 | Arctic darkening: CERES clear-sky absorbed SW vs NSIDC sea-ice concentration loss (ice-albedo feedback strength, W/m² per % ice) | CERES + NSIDC | scatter + map | med | done (task 65: 15.5 W/m² per Mkm², r=−0.96; clouds mask ~49%) |

@@ -249,6 +249,13 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Relative sea level is falling at 68 gauges where ice-age rebound wins (Scandinavia, Alaska).
 - Visual: `results/62_relative_sea_level/relative_sea_level.png`.
 
+## W28. Arctic darkening: the ice-albedo feedback measured from space — **Robust (NSIDC + CERES)**
+- Summer Arctic sea ice: −0.50 M km² per decade.
+- Every million km² of ice lost adds **+15.5 W m⁻² of absorbed sunlight** under clear skies (r = −0.96; detrended −0.92) and +8.3 W m⁻² after clouds.
+- 99.9% of 3,224 Arctic cells show the inverse relationship (median r = −0.89).
+- Clouds hide about half the effect.
+- Visual: `results/65_arctic_darkening/arctic_darkening.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

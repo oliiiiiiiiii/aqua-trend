@@ -32,6 +32,7 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | W24 | The Pantanal dried out after 2019 and fires nearly doubled; the Sahel's Inner Niger Delta and Lake Chad refill (+12–13 cm/decade). | Robust |
 | W25 | Where the land sinks: 682 tide gauges minus altimetry — Manila −8.6 mm/yr (groundwater), Alaska +20 (ice-age rebound), Tohoku −0.4 m quake drop. | Robust pattern |
 | W26 | Two sea-ice traps: the Arctic 'pause' since 2012 is cherry-picked (41% chance anywhere); the Antarctic collapse coincides with ocean warming but p = 0.08. | Teaching |
+| W28 | Arctic darkening: each million km² of summer sea ice lost adds 15.5 W/m² of absorbed sunlight (r = −0.96; NSIDC + CERES). | Robust |
 | N1 | Earthquakes are not increasing. Small-quake counts rise +22%/decade from better detection. Large quakes (M≥6, M≥7, GCMT Mw≥6) show no trend since 1983. Starting in 1973 shows a false +5%/decade, created by a magnitude-scale switch. | Robust null + artefact |
 | N2 | Human-made earthquakes: wastewater injection raised Oklahoma ×779 (887 M≥3 quakes in 2015) and the Permian Basin ×325. Regulation halved the rate every 1.2 years. The natural New Madrid zone is flat. | Robust |
 | N3 | Water and ice steer the North Pole: GRACE mass change predicts the post-2000 drift change (5.0 vs 5.1 mas/yr, 10° apart). Groundwater pumping pushes the pole toward India. Record short day: −1.65 ms on 5 Jul 2024. | Robust (2 independent systems) |

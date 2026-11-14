@@ -75,6 +75,7 @@ HERO = [
     ("W42_relative_sea_level", "results/62_relative_sea_level/relative_sea_level.png", "The sea level people feel: Manila +12.5 mm/yr (ocean 3.9 + sinking 8.6)"),
     ("N26_asia_brightening", "results/63_asia_brightening/asia_brightening.png", "Clearing skies over East Asia: CERES reflection tracks haze (r = 0.96)"),
     ("N27_energy_imbalance", "results/64_energy_imbalance/energy_imbalance.png", "Earth's energy imbalance more than doubled: 0.67 → 1.65 W/m² (CERES)"),
+    ("W43_arctic_darkening", "results/65_arctic_darkening/arctic_darkening.png", "Arctic darkening: +15.5 W/m² of sunlight absorbed per million km² of summer ice lost"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

@@ -139,3 +139,6 @@
 | 2026-11-15 02:14 | 63_asia_brightening | done | E China TOA clear-sky SW -2.17 W/m2/dec (r with AOD +0.96); IGP -0.33 |
 | 2026-11-15 02:16 | 64_energy_imbalance | done | EEI 0.67 -> 1.65 W/m2; trend +0.45/dec p=7e-10 |
 | 2026-11-15 02:16 | 64_energy_imbalance | done | EEI 0.67 -> 1.65 W/m2; trend +0.45/dec p=7e-10 |
+| 2026-11-15 02:20 | 65_arctic_darkening | done | 15.5 W/m2 per Mkm2 (clear), 8.3 (all-sky); cloud masking 49% |
+| 2026-11-15 02:21 | 65_arctic_darkening | done | 15.5 W/m2 per Mkm2 (clear), 8.3 (all-sky); cloud masking 49% |
+| 2026-11-15 02:21 | 65_arctic_darkening | done | 15.5 W/m2 per Mkm2 (clear), 8.3 (all-sky); cloud masking 49% |
