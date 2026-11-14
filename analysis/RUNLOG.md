@@ -46,3 +46,7 @@
 | 2026-11-14 10:05 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
 | 2026-11-14 10:06 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
 | 2026-11-14 10:09 | 35_record_map | done | record low now 32% of land, high 23% (chance 15%) |
+| 2026-11-14 10:11 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
+| 2026-11-14 10:12 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
+| 2026-11-14 10:13 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |
+| 2026-11-14 10:14 | 36_amazon_moisture_budget | done | JAS P -0.22, E -0.26, C -0.56 mm/day/dec; TNA explains 101% |

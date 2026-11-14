@@ -93,7 +93,7 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - No pixel has a significant trend in annual counts: 25 years of mostly-zero counts give little statistical power.
 - Visual: `results/32_compound_hot_dry/map_2023_25_compound_event.png` (map), `calendar_compound_hot_dry.png` (every month since 2001; 2023–25 is the darkest band).
 
-## W15. The southern Amazon's dry season is getting drier and longer — **Robust (3 rain datasets agree)**
+## W15. The southern Amazon's dry season is getting drier and longer, and a warming Atlantic explains why — **Robust (3 rain datasets; attribution quantitatively consistent)**
 - **Jul–Sep rain** over the southern Amazon / deforestation arc (70–50°W, 15–5°S):
   - GPCP **-10%/decade** over 1979–2025 (p = 3e-04);
   - IMERG **-17%** (p = 0.01);
@@ -104,6 +104,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - **Caveat:** the three rain products share some gauge input (GPCC), though gauges are sparse in the Amazon so the satellite and model parts dominate. The physics fits published work on dry-season lengthening in the southern Amazon (deforestation plus warming of the tropical North Atlantic).
 - **Also robust in all three datasets:** the Sahel wet season is getting wetter: GPCP +7%/decade, IMERG +6%, MERRA-2 +26%. Southern Africa, Ganges and Mekong dry-season trends appear only in GPCP and are not robust.
 - Visual: `results/33_seasonal_swing/amazon_dry_season.png`.
+- **Why (task 36): a warming tropical North Atlantic accounts for the trend.**
+  - Year to year, a warmer tropical North Atlantic means a drier southern Amazon dry season: detrended r = -0.48 (p = 0.001), sensitivity -0.68 mm/day per °C. The sensitivity is stable, at -0.71 from 1982–2010 data alone.
+  - The Atlantic warmed +0.27 °C/decade. That predicts **-0.18 ± 0.10 mm/day per decade, against the observed -0.18** (GPCP 1982–2025).
+  - After removing Atlantic and ENSO influence, the residual trend is +0.001 (p = 0.98).
+  - Mechanism: the rain belt shifts north toward the warmer Atlantic. MERRA-2 moisture-flow changes point north over the Amazon. 2005, 2010, 2023 and 2024 are all warm-Atlantic dry years.
+  - The MERRA-2 dry-season budget shows rain -0.22, evaporation -0.26 and total inflow -0.26 mm/day per decade, with the recycling ratio falling. But the budget residual trends by +0.60, so the reanalysis cannot separate local (deforestation) from remote causes.
+  - This doesn't exclude a deforestation contribution; it shows the ocean driver alone is enough to explain the size of the trend.
+  - Visual: `results/36_amazon_moisture_budget/amazon_moisture_budget.png`.
 
 ## W16. Rain is replacing snow on the world's snowy land — **Significant (one reanalysis, physically consistent; weak GLDAS support)**
 - MERRA-2, 1980–2025: on snowy land (56 million km² with at least 5% snow), the share of precipitation falling as snow went from **35.2% (1980s) to 31.3% (2016–25)**, -1.14 percentage points per decade (p < 1e-6, Mann-Kendall agrees).
