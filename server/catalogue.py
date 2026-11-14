@@ -412,7 +412,7 @@ class Catalogue:
 
     def _call_model(self, query):
         if not self.model or not self.model_url:
-            raise SelectorError("selector_unavailable", "This query needs a language model. Configure the selector or choose a saved catalogue plan.", True)
+            raise SelectorError("selector_unavailable", "Custom descriptions need a language model, which is not configured. Choose a prepared topic to run with your current region and dates.", True)
         context = {"entries":list(self.links.values()), "recipes":[{"id":k,"phenomenon_id":v["phenomenon_id"],
                    "required_variables":v["required_variables"],"applicability":v["phenomenon_applicability"]} for k,v in self.recipes.items()],
                    "limitations":self.limitations}

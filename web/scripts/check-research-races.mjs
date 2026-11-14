@@ -184,11 +184,19 @@ try {
     assert.equal(request.path, "/api/research/selector-2");
     return json(route, complete("selector-2", retryRequests[1]));
   }, async (page) => {
+    await page.setViewportSize({ width: 390, height: 700 });
     await page.locator("#phenomenon").fill("自訂乾旱與積雪研究");
     await setMonth(page, "Start", "2007-02");
     await setMonth(page, "End", "2017-11");
     await page.getByRole("button", { name: "Start research", exact: true }).click();
     await page.getByRole("alert").filter({ hasText: "The selector is temporarily unavailable." }).waitFor();
+    const alert = page.locator("form").getByRole("alert");
+    await alert.waitFor();
+    assert.ok(await alert.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return box.top >= 0 && box.top < window.innerHeight;
+    }), "The submission error must be in the mobile viewport without scrolling");
+    await page.getByRole("combobox", { name: "Choose a prepared topic" }).waitFor();
     assert.equal(await page.locator("#phenomenon").inputValue(), "自訂乾旱與積雪研究");
     assert.equal(await getMonth(page, "Start"), "2007-02");
     assert.equal(await getMonth(page, "End"), "2017-11");

@@ -70,6 +70,8 @@ export default function ResearchWorkspace() {
   const boundPreset = useRef<PresetRef | null>(null);
   const appliedId = useRef<string | null>(null);
   const currentRequest = useRef<ResearchRequest | null>(null);
+  const noticeRef = useRef<HTMLDivElement>(null);
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null);
   const { job, busy, error, start, retry, cancel, discard } = useResearchJob();
   const result = job?.result;
   const selected = geo?.byId.get(regionId ?? "") ?? null;
@@ -136,6 +138,11 @@ export default function ResearchWorkspace() {
       /* History remains available for this session. */
     }
   }, [result]);
+
+  useEffect(() => {
+    if (result) resultHeadingRef.current?.focus();
+    else if (error) noticeRef.current?.focus();
+  }, [result, error]);
 
   function fieldChanged() {
     discard();
@@ -210,7 +217,7 @@ export default function ResearchWorkspace() {
     boundPreset.current = null;
     setMonths(window);
     run(phenomenon, regionId, window);
-    document.getElementById("study-progress")?.scrollIntoView({ block: "center" });
+    noticeRef.current?.scrollIntoView({ block: "nearest" });
   }
   function openPreset(preset: Preset) {
     const query = preset.phenomenon_query || phenomenon;
@@ -362,14 +369,58 @@ export default function ResearchWorkspace() {
                 </p>
               )}
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button className="research-primary" type="submit" disabled={busy}>
-                  Start research
+                <button id="start-research" className="research-primary" type="submit" disabled={busy}>
+                  {busy ? "Running research…" : "Start research"}
                 </button>
                 {busy && (
                   <button type="button" className="research-button" onClick={() => void cancel()}>
                     Cancel study
                   </button>
                 )}
+              </div>
+              <div ref={noticeRef} tabIndex={-1} id="study-progress">
+                {busy && (
+                  <p role="status" className="form-hint mt-2">
+                    {words(job?.stage || "starting_study")}
+                    {job?.total != null && job.total > 1 && ` · ${job.completed ?? 0} of ${job.total}`}
+                  </p>
+                )}
+                {error && (
+                  <div className="research-notice">
+                    <div role="alert">
+                      <strong>{error.code === "selector_unavailable" ? "Couldn’t select variables for this topic" : words(error.code)}</strong>
+                      <p>{error.message}</p>
+                    </div>
+                    {error.code === "selector_unavailable" && !!catalogue?.curated_phenomena?.length && (
+                      <label className="mt-3 block">
+                        Choose a prepared topic
+                        <select
+                          className="research-button mt-1 block"
+                          value=""
+                          onChange={(e) => {
+                            fieldChanged();
+                            setPhenomenon(e.target.value);
+                            document.getElementById("start-research")?.focus();
+                          }}
+                        >
+                          <option value="" disabled>Select a topic</option>
+                          <optgroup label="Phenomena">
+                            {catalogue.curated_phenomena.map((topic) => <option key={topic}>{topic}</option>)}
+                          </optgroup>
+                          <optgroup label="Measurements">
+                            {catalogue.variables.map((v) => <option key={v.variable_id}>{v.label}</option>)}
+                          </optgroup>
+                        </select>
+                      </label>
+                    )}
+                    {error.evidence_family && (
+                      <RecordDetails title="Searched candidates and exclusions" value={error.evidence_family} />
+                    )}
+                    {error.retryable && <button type="button" className="text-button mt-2" onClick={retry}>Retry study</button>}
+                  </div>
+                )}
+                {job?.status === "cancelled" && <p className="form-hint mt-2" role="status">Study cancelled. Your input is ready for another run.</p>}
+                {result && <p className="form-hint mt-2" role="status">Study ready. <a className="text-button" href="#results-heading">View results</a></p>}
               </div>
             </form>
             {(apiFailure || geoFailure) && (
@@ -420,41 +471,11 @@ export default function ResearchWorkspace() {
           </div>
         </div>
       </section>
-      <div id="study-progress" className="research-width">
-        {(busy || error || job?.status === "cancelled") && (
-          <div className="research-notice" role={error ? "alert" : "status"}>
-            {busy && (
-              <>
-                <strong>{words(job?.stage || "creating_study")}</strong>
-                {job?.total != null && job.total > 0 && (
-                  <p>
-                    {job.completed ?? 0} of {job.total}
-                  </p>
-                )}
-              </>
-            )}
-            {error && (
-              <>
-                <h2 className="text-xl">{words(error.code)}</h2>
-                <p>{error.message}</p>
-                {error.evidence_family && (
-                  <RecordDetails title="Searched candidates and exclusions" value={error.evidence_family} />
-                )}
-                {error.retryable && (
-                  <button type="button" className="text-button" onClick={retry}>
-                    Retry study
-                  </button>
-                )}
-              </>
-            )}
-            {job?.status === "cancelled" && <p>Study cancelled. Your input is ready for another run.</p>}
-          </div>
-        )}
-      </div>
       {result && (
         <StudyResults
           key={result.identity.id}
           result={result}
+          headingRef={resultHeadingRef}
           onApply={applyPeriod}
           onPreset={openPreset}
           keepRegion={chooseRegion}

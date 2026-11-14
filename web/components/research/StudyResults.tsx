@@ -1,5 +1,5 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState, type Ref, type ReactNode } from "react";
 import {
   numberText,
   periodText,
@@ -159,12 +159,14 @@ const roles: Record<string, string> = {
   response: "Possible responses",
 };
 export function StudyResults({
+  headingRef,
   result,
   onApply,
   onPreset,
   keepRegion,
   keepPeriod,
 }: {
+  headingRef: Ref<HTMLHeadingElement>;
   result: ResearchResult;
   onApply: (p: Period) => void;
   onPreset: (p: Preset) => void;
@@ -187,7 +189,7 @@ export function StudyResults({
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <p className="text-sm font-semibold text-link">{words(identity.status)} study</p>
-            <h2 id="results-heading" className="mt-1 text-3xl sm:text-4xl">
+            <h2 ref={headingRef} id="results-heading" tabIndex={-1} className="mt-1 text-3xl sm:text-4xl">
               {selection?.phenomenon || request?.phenomenon_query || "Study results"}
             </h2>
           </div>

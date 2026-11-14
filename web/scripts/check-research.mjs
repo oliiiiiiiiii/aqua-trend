@@ -24,6 +24,7 @@ try {
   await page.getByRole("button", { name: "Start research" }).click();
   const exportLink = page.getByRole("link", { name: "Export JSON" });
   await exportLink.waitFor({ timeout: 120000 });
+  await page.waitForFunction(() => document.activeElement?.id === "results-heading");
   async function snapshot() {
     const path = await exportLink.getAttribute("href");
     const response = await page.request.get(new URL(path, root).href);
