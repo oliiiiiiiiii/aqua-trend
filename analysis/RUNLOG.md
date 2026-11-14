@@ -45,3 +45,4 @@
 | 2026-11-14 10:05 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
 | 2026-11-14 10:05 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
 | 2026-11-14 10:06 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
+| 2026-11-14 10:09 | 35_record_map | done | record low now 32% of land, high 23% (chance 15%) |

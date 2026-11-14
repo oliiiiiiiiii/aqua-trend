@@ -38,4 +38,4 @@
 | I34 | Time of emergence for water-storage trends: where GRACE trends are already detectable, and where 10+ more years are needed | GRACE + trendlib.years_to_detect | years-to-detect map | low | todo |
 | I35 | Independent check of rain→snow shift: MODIS snow-cover duration (MOD10CM, LP DAAC/NSIDC) trend 2001–2025 vs MERRA-2 snow share | MODIS snow cover | snow-days trend map | med | todo |
 | I36 | Amazon: link dry-season drying to moisture inflow (task 22 boundary fluxes, JAS) and to MODIS NDVI/fire along the arc | MERRA-2 INT + MODIS | inflow vs rain series | low | todo |
-| I37 | Global “record map”: for each pixel, which year of 2002–2025 had the lowest GRACE storage — where are we at record lows *now*? | GRACE | year-of-minimum map | low | todo |
+| I37 | Global “record map”: for each pixel, which year of 2002–2025 had the lowest GRACE storage — where are we at record lows *now*? | GRACE | year-of-minimum map | low | done (task 35: 32 % of land at record low, 23 % record high) |

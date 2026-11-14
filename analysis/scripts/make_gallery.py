@@ -35,6 +35,8 @@ HERO = [
     ("W28_amazon_dry_season", "results/33_seasonal_swing/amazon_dry_season.png", "Southern Amazon dry season: drier and longer in 3 rain datasets"),
     ("W29_rain_replacing_snow", "results/34_rain_replacing_snow/map_snow_fraction_trend.png", "Rain replacing snow: snow share of precipitation falling across snowy land"),
     ("W30_snow_water_towers", "results/34_rain_replacing_snow/bars_regions_snow_share.png", "Water towers losing snow share (HMA 49%→41%, Alps 20%→14%)"),
+    ("W31_record_low_high_now", "results/35_record_map/map_record_low_high_now.png", "Where land water is at a record low/high right now (32% / 23% of land)"),
+    ("W32_year_of_lowest_storage", "results/35_record_map/map_year_of_lowest_storage.png", "When each place hit its driest point of the satellite era"),
     ("W22_water_memory", "results/29_water_memory/map_water_memory_lag.png", "Water memory: months from rain to peak storage"),
     ("W23_VPD_sign_flip", "results/20_et_correlations/corr_ET_vs_VPD.png", "ET vs air dryness: opposite signs in wet vs dry lands"),
     ("W15_enso_water_storage", "results/25_teleconnections/map_ENSO_water_storage.png", "One ocean signal, opposite water effects (ENSO)"),

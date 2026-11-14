@@ -121,6 +121,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - The MERRA-2 convective share of rain has mixed trends (+ on 13%, − on 10% of land). That's model physics, so this is not a finding.
 - Visual: `results/34_rain_replacing_snow/map_snow_fraction_trend.png`, `bars_regions_snow_share.png`.
 
+## W17. A world splitting into record-dry and record-wet: 32% of land is at its lowest water storage of the GRACE era — **Significant (GRACE; vs 15% by chance)**
+- 12-month mean storage (seasons removed), 2003–2026: for **32% of land the lowest value occurred in the last three years** (Oct 2023 – Sep 2026), and for 23% the highest did. A stationary climate would put about 15% in each.
+- 38% of land reached its driest point of the satellite era in 2022 or later.
+- **Record low now** (share of each country's area): Syria 100%, Romania 100%, Tunisia 100%, Kyrgyzstan 100%, Poland 100%, Iran 94%, Saudi Arabia 94%, Afghanistan 93%, Sweden 93%, Iraq 88%. These fall in a belt across the Middle East, Central Asia, eastern Europe and Scandinavia, plus Mexico and the western US, the southern Amazon and Patagonia.
+- **Record high now:** Burkina Faso 100%, Ghana 100%, Senegal 100%, Ethiopia 100%, Somaliland 100%, Uganda 100%, S. Sudan 97%, Tanzania 97%. The Sahel and East Africa are getting wetter, matching W8 (more moisture convergence) and the Lake Victoria rise.
+- **Caveat:** under a trend, records naturally cluster at the end of the series, so this map is a vivid way of showing the trends plus recent extremes (2023–25 droughts, see W14). The most recent GRACE-FO months may still be revised.
+- Visual: `results/35_record_map/map_record_low_high_now.png`, `map_year_of_lowest_storage.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **"Wet seasons wetter, dry seasons drier" over time is not a global pattern (task 33).**
   - Classes from GPCP 1979–2025: amplifying 17%, damping 17%, wetter all year 34%, drier all year 32%.
