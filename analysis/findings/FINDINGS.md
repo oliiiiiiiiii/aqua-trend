@@ -191,6 +191,24 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - ⚠ GLDAS-2.1 PET/ET *trends* drift (Quebec ET doubles with flat T and radiation). MERRA-2 cross-check: ET rises significantly on 42 % of land in GLDAS vs 19.5 % in MERRA-2; **both agree on only 12 %** (`map_ET_trend_models_agree.png`). Basin runoff ratios: GLDAS 59 down / 10 up vs MERRA-2 8 down / 65 up (r = 0.20) → **no robust basin runoff trend**; teaching case on model spread.
 
 ---
+# 🌍 BEYOND WATER (Nov 14): earthquakes, atmosphere and Earth rotation, held to the same standard
+
+## N1. Is the Earth shaking more? No. Only small-quake detection is rising, and a 1983 magnitude switch fakes a trend. **Robust null + artefact (teaching case)**
+- **USGS M≥4.5 counts: +22 %/decade** (p = 2e-52). The excess vanishes by M≈5.5, and the ratio of M≥4.5 to M≥6 rose from 20 to 27 (p = 3e-8).
+  - Per 10° cell, small quakes rose significantly in 49% of cells. Large quakes changed significantly in 0%.
+  - This is network growth, not tectonics.
+- **Large quakes have no trend** after declustering, in the moment-magnitude era (1983–2025), in either catalogue:
+  - USGS M≥6: −1.5 %/decade (p = 0.29).
+  - M≥7: +1.0 %/decade (p = 0.78).
+  - GCMT Mw≥6: +2.4 %/decade (p = 0.13).
+- **The trap.** USGS magnitudes switched from mb/Ms to Mw in 1982–83, so the M≥6 count steps from 65 to 93 per year (Pettitt p = 0.002).
+  - Starting in 1973 gives a "significant" **+4.8 %/decade (p = 0.001)** that is entirely the scale change.
+  - It is a seismic twin of W6 (the Terra LST orbit drift).
+- **Great-quake burst 2004–12** (5 of the 6 M≥8.5 since 1973 within 8 years): scan statistic with Monte Carlo p = 0.02 (USGS) / 0.03 (GCMT).
+  - Borderline, because the threshold was chosen after the burst was noticed.
+- Visuals: `results/40_global_earthquakes/global_quake_counts.png`, `map_big_quakes_timeline.png`, `map_quake_rate_change.png`, `detection_fmd_by_decade.png`.
+
+---
 ## 1. The Arctic's summer ice cap has shrunk by an area ≈ 68 × Taiwan — **Robust**
 - September sea-ice extent: **−11.6 % per decade** (vs 1981–2010), p = 3e-12; 2.45 million km² of September ice lost between 1979–88 and 2017–26.
 - Hero visual: `results/09b_sea_ice_maps/before_after_N_09.png` (1980s ice edge drawn on today's ice).

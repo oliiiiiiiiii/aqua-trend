@@ -37,6 +37,9 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W28b](#w28b) | Why the Amazon dry season dries: a warming tropical Atlantic accounts for the trend | `results/36_amazon_moisture_budget/amazon_moisture_budget.png` |
 | [W33](#w33) | East Asia extremes ranked: Yangtze 2022 record-low storage, Henan 2021, Taiwan 2021 | `results/37_eastasia_extremes/eastasia_extremes.png` |
 | [W34](#w34) | Turning points: where land water trends reversed after 2014 (45% of land changed) | `results/39_turning_points/map_turning_points.png` |
+| [N01](#n01) | Earthquakes aren't increasing: only small-quake detection is (and a 1983 magnitude-scale trap) | `results/40_global_earthquakes/global_quake_counts.png` |
+| [N02](#n02) | Four decades of large earthquakes + the 2004–2012 great-quake burst test | `results/40_global_earthquakes/map_big_quakes_timeline.png` |
+| [N03](#n03) | Where the small-quake 'increase' lives: network growth, not tectonics | `results/40_global_earthquakes/map_quake_rate_change.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -253,6 +256,24 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/39_turning_points/map_turning_points.png`</sub>
 
 ![Turning points: where land water trends reversed after 2014 (45% of land changed)](figures/W34_turning_points.png)
+
+### N01
+**Earthquakes aren't increasing: only small-quake detection is (and a 1983 magnitude-scale trap)**  
+<sub>source: `results/40_global_earthquakes/global_quake_counts.png`</sub>
+
+![Earthquakes aren't increasing: only small-quake detection is (and a 1983 magnitude-scale trap)](figures/N01_quakes_detection.png)
+
+### N02
+**Four decades of large earthquakes + the 2004–2012 great-quake burst test**  
+<sub>source: `results/40_global_earthquakes/map_big_quakes_timeline.png`</sub>
+
+![Four decades of large earthquakes + the 2004–2012 great-quake burst test](figures/N02_quakes_map.png)
+
+### N03
+**Where the small-quake 'increase' lives: network growth, not tectonics**  
+<sub>source: `results/40_global_earthquakes/map_quake_rate_change.png`</sub>
+
+![Where the small-quake 'increase' lives: network growth, not tectonics](figures/N03_quakes_where.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

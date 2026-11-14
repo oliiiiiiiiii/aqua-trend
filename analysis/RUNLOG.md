@@ -58,3 +58,9 @@
 | 2026-11-14 10:28 | 38_whiplash | done | GPCP x0.86 (p=0.009), MERRA-2 x1.04 (p=0.29); map agree 57% |
 | 2026-11-14 10:30 | 39_turning_points | done | sig change 45% of land; loss->gain 12%, gain->loss 10% |
 | 2026-11-14 10:33 | 39_turning_points | done | sig change 45% of land; loss->gain 12%, gain->loss 10% |
+| 2026-11-14 16:40 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks +5%/dec p=0.00; great-quake burst p=0.02 |
+| 2026-11-14 16:50 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
+| 2026-11-14 16:52 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
+| 2026-11-14 16:54 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
+| 2026-11-14 16:56 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
+| 2026-11-14 16:58 | 40_global_earthquakes | done | M>=4.5 all +22%/dec (detection); M>=6 mainshocks -1%/dec p=0.29; great-quake burst p=0.02 |
