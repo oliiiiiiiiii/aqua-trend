@@ -1,0 +1,60 @@
+# ===== 帳號密碼 / 金鑰（絕對不要上傳） =====
+.env
+.env.*
+!.env.example
+.netrc
+_netrc
+.urs_cookies
+.dodsrc
+*.pem
+*.key
+
+# ===== 衛星資料（檔案太大，不放 git） =====
+data/raw/
+data/interim/
+data/cache/
+*.nc
+*.nc4
+*.hdf
+*.HDF
+*.h5
+*.he5
+*.hdf5
+*.grib
+*.grib2
+*.zarr/
+*.tif
+*.tiff
+*.zip
+*.tar.gz
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+build/
+.next/
+.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== 編輯器 / 系統 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
