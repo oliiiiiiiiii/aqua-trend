@@ -54,3 +54,4 @@
 | 2026-11-14 10:18 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
 | 2026-11-14 10:19 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
 | 2026-11-14 10:20 | 37_eastasia_extremes | done | Yangtze basin: -10.5 cm rank 1; North China Plain: +1.1 cm rank 125; Pearl River: -8.6 cm rank 11 |
+| 2026-11-14 10:25 | 34b_modis_snow_cover | done | MAM cover sig down 0% / up 0%; agree with MERRA-2 62% |

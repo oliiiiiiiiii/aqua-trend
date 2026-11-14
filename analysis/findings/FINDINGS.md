@@ -113,7 +113,7 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - This doesn't exclude a deforestation contribution; it shows the ocean driver alone is enough to explain the size of the trend.
   - Visual: `results/36_amazon_moisture_budget/amazon_moisture_budget.png`.
 
-## W16. Rain is replacing snow on the world's snowy land — **Significant (one reanalysis, physically consistent; weak GLDAS support)**
+## W16. Rain is replacing snow on the world's snowy land — **Robust in aggregate and for the Alps, eastern Europe, Japan & Korea (MERRA-2 + MODIS); High Mountain Asia model-only**
 - MERRA-2, 1980–2025: on snowy land (56 million km² with at least 5% snow), the share of precipitation falling as snow went from **35.2% (1980s) to 31.3% (2016–25)**, -1.14 percentage points per decade (p < 1e-6, Mann-Kendall agrees).
 - Spatially: a significant loss of snow share on **26% of snowy land and a significant gain on 0%**. 89% of snowy land has a negative trend.
 - Water towers:
@@ -128,6 +128,12 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
   - GLDAS March snowpack falls on 64% of snowy land, but its sign agrees with the MERRA-2 snow-share trend on only 60% of land (2001–25).
   - The MERRA-2 convective share of rain has mixed trends (+ on 13%, − on 10% of land). That's model physics, so this is not a finding.
 - Visual: `results/34_rain_replacing_snow/map_snow_fraction_trend.png`, `bars_regions_snow_share.png`.
+- **Independent satellite check (task 34b, MODIS/Terra snow cover, 2001–2025).**
+  - Spring (Mar–May) snow cover on snowy land fell from 62.8% (2001–05) to 59.9% (2021–25), -1.27 pp/decade (p = 0.018, Mann-Kendall p = 0.021). 66% of snowy land has a negative trend.
+  - Regional declines: Japan & Korea -5.6 pp/decade (p = 0.004), eastern Europe and western Russia -5.5 (p = 0.04), Alps -4.0 (p = 0.02).
+  - **But High Mountain Asia (+0.5, n.s.) and the Rockies (+1.3, n.s.) show no decline in snow cover.** The MERRA-2 phase shift there is not seen by the satellite.
+  - Pixel-level sign agreement with MERRA-2 is 62% (pattern r = 0.26). Single pixels don't pass FDR over 25 years.
+  - Visual: `results/34_rain_replacing_snow/map_modis_spring_snow_cover_trend.png`.
 
 ## W17. A world splitting into record-dry and record-wet: 32% of land is at its lowest water storage of the GRACE era — **Significant (GRACE; vs 15% by chance)**
 - 12-month mean storage (seasons removed), 2003–2026: for **32% of land the lowest value occurred in the last three years** (Oct 2023 – Sep 2026), and for 23% the highest did. A stationary climate would put about 15% in each.

@@ -36,3 +36,34 @@
 **Files.**
 - Figures: `map_snow_fraction_trend.png`, `bars_regions_snow_share.png`, `map_snowfall_amount_trend.png`, `map_convective_share_trend.png`.
 - Data: `regions.csv`, `snowy_land_snow_fraction_pct.csv`, `stats.json`.
+
+## 34b — Independent check with MODIS/Terra snow cover (MOD10CM v61, 2001–2025)
+
+**Method.**
+- Data: 0.05° monthly snow cover, averaged to 0.5°, keeping cells with at least 50% valid sub-pixels. Night, cloud and water codes are set to NaN.
+- Metric: the March–May mean, over land where spring cover is at least 10%.
+- Trend test: OLS-AR1 and Mann-Kendall, then FDR.
+
+**Results.**
+- Snowy-land spring cover: 62.8% → 59.9%, -1.27 pp/decade (p = 0.018).
+- Pixel FDR: significant decline on 0.02% and increase on 0.01% of snowy land. The pixel level has too little power.
+- Same sign as MERRA-2 2001–25 snow-share trends on 62% of snowy land; pattern r = 0.26.
+
+| Region | Spring cover 2001–05 | 2021–25 | pp/decade | p |
+|---|---|---|---|---|
+| Japan & Korea | 31.3 | 21.8 | -5.63 | 0.004 |
+| Eastern Europe & W Russia | 42.4 | 29.9 | -5.46 | 0.038 |
+| NE China & Mongolia | 30.3 | 24.8 | -4.40 | 0.068 |
+| Alps | 42.2 | 34.7 | -4.01 | 0.021 |
+| Scandinavia | 63.6 | 60.9 | -1.69 | 0.302 |
+| Siberia | 80.2 | 76.8 | -1.48 | 0.307 |
+| High Mountain Asia | 37.9 | 36.2 | +0.52 | 0.681 |
+| Rockies | 33.6 | 39.2 | +1.25 | 0.565 |
+| Canadian Prairies & boreal | 57.2 | 59.7 | +1.48 | 0.506 |
+| Andes (south) | 25.8 | 30.7 | +2.07 | 0.240 |
+
+**Verdict.**
+- The aggregate decline and the Alps, eastern Europe and Japan & Korea are confirmed by an independent satellite.
+- High Mountain Asia and the Rockies are not, so the MERRA-2 phase-shift signal there stays model-only.
+
+**Files.** `map_modis_spring_snow_cover_trend.png`, `modis_regions_spring_snow_cover.csv`, `modis_snow_stats.json`, `modis_snowy_land_mam_cover_pct.csv`.
