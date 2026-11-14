@@ -18,6 +18,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import os as _os
@@ -262,7 +263,7 @@ div = viz.div_cmap("redblue")
 # A. ozone agreement
 fig = plt.figure(figsize=(13, 6.4), dpi=170)
 ax = fig.add_axes([0.01, 0.15, 0.56, 0.66], projection=ccrs.Robinson())
-im = gmap(ax, cA["r"], seq, 0, 1)
+im = gmap(ax, cA["r"], seq, 0.5, 1)
 cbar(fig, im, [0.12, 0.10, 0.34, 0.022], "correlation of monthly anomalies, AIRS vs OMI total ozone")
 ax2 = fig.add_axes([0.64, 0.17, 0.33, 0.6])
 ax2.plot(ant_a.index, ant_a.values, color=viz.SERIES[0], lw=2.2, marker="o", ms=4, label="AIRS (infrared)")
@@ -272,12 +273,14 @@ for sp_ in ("top", "right"):
 ax2.grid(color=viz.GRID, lw=0.6); ax2.tick_params(length=0, labelsize=8.5)
 ax2.set_ylabel("Sep–Oct mean total ozone south of 60°S (DU)", color=viz.INK2, fontsize=9)
 ax2.legend(frameon=False, fontsize=8.5, loc="upper left")
+ax2.xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(5))
 ax2.set_title(f"The ozone hole seen by both: r = {res['ozone']['antarctic_SO_r']:.2f}", fontsize=10, loc="left", color=viz.INK)
 o_ = res["ozone"]
 fig.text(0.01, 0.965, "Two sensors, two kinds of light, one ozone layer", fontsize=15, fontweight="bold", va="top")
 sub = (f"AIRS measures ozone from infrared heat emission, OMI from ultraviolet sunlight. Their month-to-month anomalies agree (median r = {o_['median_r']:.2f}; "
        f"{o_['median_r_extratropics']:.2f} outside the tropics, {o_['median_r_tropics']:.2f} in the tropics where variability is small). AIRS reads "
-       f"{o_['mean_bias_airs_minus_omi_60S60N']:+.0f} DU higher, and the gap drifts {o_['drift_DU_per_decade']:+.1f} DU/decade, a reminder to check a second sensor.")
+       f"{o_['mean_bias_airs_minus_omi_60S60N']:+.0f} DU higher between 60°S and 60°N and the gap drifts {o_['drift_DU_per_decade']:+.1f} DU/decade; agreement drops over the "
+       f"Sahara and Arabia, where desert surfaces confuse infrared retrievals. A reminder to check a second sensor.")
 fig.text(0.01, 0.915, "\n".join(textwrap.wrap(sub, 175)), fontsize=9.5, color=viz.INK2, va="top")
 fig.text(0.99, 0.01, SRC, fontsize=7, color=viz.MUTED, ha="right")
 fig.savefig(f"{out}/ozone_airs_vs_omi.png"); plt.close(fig)
@@ -300,12 +303,12 @@ fig.savefig(f"{out}/map_fire_smoke_correlation.png"); plt.close(fig)
 
 # B2. Canada 2023
 EXT = [-170, 40, 25, 80]
-fig = plt.figure(figsize=(13, 7.4), dpi=170)
+fig = plt.figure(figsize=(13, 5.9), dpi=170)
 pr = ccrs.LambertConformal(central_longitude=-60, central_latitude=55, standard_parallels=(40, 65))
 c23 = res["canada_2023"]
 for k, (fld, vmax, ttl, lab) in enumerate(((co23, 40, f"Carbon monoxide at 500 hPa (AIRS): JJA 2023, rank {c23['co_JJA_rank']} of {c23['n_years']} over Canada", "ppbv vs 2005–22 summer mean"),
                                          (ai23, 1.2, f"UV aerosol index (OMI): JJA 2023, rank {c23['ai_JJA_rank']} of {c23['n_years']} over Canada", "index vs 2005–22 summer mean"))):
-    ax = fig.add_axes([0.01 + k * 0.495, 0.16, 0.48, 0.62], projection=pr)
+    ax = fig.add_axes([0.01 + k * 0.495, 0.15, 0.48, 0.64], projection=pr)
     ax.set_extent(EXT, ccrs.PlateCarree())
     ax.add_feature(cfeature.LAND.with_scale("110m"), facecolor="#ecebe6", zorder=0)
     im = ax.pcolormesh(lon1, lat1, fld, cmap=div, vmin=-vmax, vmax=vmax, transform=ccrs.PlateCarree(), shading="nearest", zorder=1)
@@ -315,20 +318,19 @@ for k, (fld, vmax, ttl, lab) in enumerate(((co23, 40, f"Carbon monoxide at 500 h
     ax.scatter(lon1[xx], lat1[yy], s=np.clip(fr23[yy, xx] / 300, 1, 30), facecolors="none", edgecolors=viz.INK, linewidths=0.5,
                transform=ccrs.PlateCarree(), zorder=4)
     ax.set_title(ttl, fontsize=9.5, loc="left", color=viz.INK)
-    cbar(fig, im, [0.07 + k * 0.495, 0.10, 0.36, 0.02], lab)
+    cbar(fig, im, [0.07 + k * 0.495, 0.09, 0.36, 0.02], lab)
 fig.text(0.01, 0.965, "Canada's 2023 fire season, seen from two satellites at once", fontsize=15, fontweight="bold", va="top")
 sub = (f"Summer (Jun–Aug) 2023 anomalies. Circles: one-degree cells with ≥300 MODIS fire detections; Canadian detections were "
        f"×{c23['fires_JJA_ratio_vs_mean']:.1f} the 2005–25 average. The CO and smoke plumes stretch downwind over the Atlantic toward Europe. Year to year, "
        f"Canadian summer fire counts track AIRS CO (r = {c23['r_fire_co_interannual']:.2f}) and OMI aerosol (r = {c23['r_fire_ai_interannual']:.2f}).")
-fig.text(0.01, 0.915, "\n".join(textwrap.wrap(sub, 175)), fontsize=9.5, color=viz.INK2, va="top")
+fig.text(0.01, 0.9, "\n".join(textwrap.wrap(sub, 175)), fontsize=9.5, color=viz.INK2, va="top")
 fig.text(0.99, 0.01, SRC, fontsize=7, color=viz.MUTED, ha="right")
 fig.savefig(f"{out}/map_canada_2023_smoke.png"); plt.close(fig)
 
 # C1. NO2 trend map
-fig = plt.figure(figsize=(13, 6.9), dpi=180)
-ax = fig.add_axes([0.01, 0.15, 0.98, 0.66], projection=ccrs.Robinson(central_longitude=40))
-im = gmap(ax, pctN, div, -60, 60, sig=trN["sig_both"] & poll, lon=lon05, lat=lat05)
-ax.set_extent([-130, 150, -40, 62], ccrs.PlateCarree())
+fig = plt.figure(figsize=(13, 6.6), dpi=180)
+ax = fig.add_axes([0.01, 0.15, 0.98, 0.66], projection=ccrs.PlateCarree())
+im = gmap(ax, pctN, div, -60, 60, sig=trN["sig_both"] & poll, lon=lon05, lat=lat05, extent=[-128, 150, -38, 60])
 for nm, (x0, x1, y0, y1) in REG.items():
     ax.plot([x0, x1, x1, x0, x0], [y0, y0, y1, y1, y0], color=viz.INK, lw=0.7, transform=ccrs.PlateCarree(), zorder=4)
 cbar(fig, im, [0.3, 0.10, 0.4, 0.022], "tropospheric NO₂ trend 2005–2025 (% per decade; faded = not significant; only where NO₂ ≥ 1×10¹⁵ molec/cm²)")
@@ -380,7 +382,7 @@ cbar(fig, im, [0.3, 0.10, 0.4, 0.022], "% more water vapour per 1 K warmer (mont
 fig.text(0.02, 0.965, "Warmer air, wetter air: how much water vapour each degree adds (AIRS)", fontsize=15, fontweight="bold", va="top")
 sub = (f"Physics (Clausius–Clapeyron) says saturated air holds ~7% more water per °C. Over the oceans AIRS finds {wv['ocean_pixel_mean_pct_per_K']:.1f}%/K month to month "
        f"({wv['ocean_annual_global_pct_per_K']:.1f}%/K for the ocean-mean year-to-year); dry continents add less because there is less water to evaporate. "
-       f"Ocean water vapour {wv['ocean_TPW_trend_pct_per_decade']:+.1f}%/decade since 2003 (p={wv['ocean_TPW_trend_p']:.1g}).")
+       f"Blank: deep tropics and deserts, where humidity follows the winds rather than local temperature (r < 0.2).")
 fig.text(0.02, 0.915, "\n".join(textwrap.wrap(sub, 160)), fontsize=9.5, color=viz.INK2, va="top")
 fig.text(0.98, 0.01, "Data: NASA AIRS/Aqua L3 v7 monthly (AIRS3STM, daytime node), 2002–2026.", fontsize=7, color=viz.MUTED, ha="right")
 fig.savefig(f"{out}/map_water_vapour_per_K.png"); plt.close(fig)

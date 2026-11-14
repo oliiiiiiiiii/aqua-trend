@@ -232,6 +232,23 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Cross-check from task 42: AIRS (infrared) and OMI (UV) Antarctic spring ozone agree year to year.
 - Visual: `results/46_ozone_hole/ozone_hole_hinge.png`.
 
+## N5. AIRS × OMI: two sensors, one atmosphere. Ozone agrees, smoke is seen by both, and the pollution map is redrawn. **Robust (cross-sensor)**
+- **Ozone:** AIRS (infrared) vs OMI (UV) anomalies give r = 0.92, and Antarctic spring ozone r = 0.994.
+  - AIRS reads +3 DU higher, and the gap drifts −1.7 DU/decade, so the trend magnitudes differ. That argues for a second sensor.
+- **Smoke:** Canada 2023 summer fires were ×4.9 normal, and AIRS CO and OMI aerosol were both **rank 1 of 22**.
+  - Year to year, Canadian fires track aerosol at r = 0.94 and CO at r = 0.76.
+- **NO₂ 2005–25:** Eastern US −27%/decade, Western Europe −22%, Japan & Korea −24%, East China −18% (−42% since its 2011 peak), Taiwan −15%. North India +13% and the Persian Gulf +10% are at record highs.
+  - COVID Feb–Apr 2020: −29 to −34% in China, the US and Europe.
+  - AIRS CO is falling globally (−2.9%/decade).
+- **Water link:** AIRS water vapour rises 6.0% per K over the oceans, close to the ≈7%/K physics predicts.
+- Visuals: `results/42_airs_omi/map_no2_trend.png`, `map_canada_2023_smoke.png`, `regional_no2_vs_co.png`, `ozone_airs_vs_omi.png`, `map_fire_smoke_correlation.png`, `map_water_vapour_per_K.png`.
+
+## N6. Taiwan's great earthquakes: Chi-Chi 1999 and Hualien 2024 aftershocks fade at the same Omori rate. **Robust**
+- Omori p = 0.95 [0.88–1.02] and 0.96 [0.90–1.05].
+- Hualien had 391 M≥4 aftershocks in its first year (Chi-Chi 205), partly because of better detection.
+  - Island-wide, M≥4 counts rise +9%/decade (p = 0.006), but M≥5 are flat (p = 0.93).
+- Visual: `results/47_taiwan_aftershocks/taiwan_aftershocks.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.

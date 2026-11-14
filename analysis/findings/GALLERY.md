@@ -46,6 +46,13 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N07](#n07) | The Earth spins faster: record short days in the 2020s, while melting ice lengthens the day | `results/43_earth_rotation/length_of_day.png` |
 | [N08](#n08) | The ozone hole stopped growing in 1993 (p=4e-10); recovery not yet significant | `results/46_ozone_hole/ozone_hole_hinge.png` |
 | [N09](#n09) | Null: seasonal water load does not detectably modulate earthquakes | `results/44_quake_seasonality/seasonal_quakes_vs_water_load.png` |
+| [N10](#n10) | OMI NO₂ 2005–25: US/Europe/East Asia cleaner, India & Gulf at records | `results/42_airs_omi/map_no2_trend.png` |
+| [N11](#n11) | Canada 2023 fires seen by AIRS (CO) and OMI (aerosol): rank 1 of 22 in both | `results/42_airs_omi/map_canada_2023_smoke.png` |
+| [N12](#n12) | Combustion fingerprints: OMI NO₂ vs AIRS CO by region | `results/42_airs_omi/regional_no2_vs_co.png` |
+| [N13](#n13) | AIRS (infrared) vs OMI (UV) ozone: r = 0.92; Antarctic spring r = 0.99 | `results/42_airs_omi/ozone_airs_vs_omi.png` |
+| [N14](#n14) | Where fires burn, AIRS CO and OMI aerosol follow | `results/42_airs_omi/map_fire_smoke_correlation.png` |
+| [N15](#n15) | Warmer air, wetter air: AIRS water vapour 6%/K over oceans | `results/42_airs_omi/map_water_vapour_per_K.png` |
+| [N16](#n16) | Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95) | `results/47_taiwan_aftershocks/taiwan_aftershocks.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -316,6 +323,48 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/44_quake_seasonality/seasonal_quakes_vs_water_load.png`</sub>
 
 ![Null: seasonal water load does not detectably modulate earthquakes](figures/N09_quake_seasonality.png)
+
+### N10
+**OMI NO₂ 2005–25: US/Europe/East Asia cleaner, India & Gulf at records**  
+<sub>source: `results/42_airs_omi/map_no2_trend.png`</sub>
+
+![OMI NO₂ 2005–25: US/Europe/East Asia cleaner, India & Gulf at records](figures/N10_no2_trend.png)
+
+### N11
+**Canada 2023 fires seen by AIRS (CO) and OMI (aerosol): rank 1 of 22 in both**  
+<sub>source: `results/42_airs_omi/map_canada_2023_smoke.png`</sub>
+
+![Canada 2023 fires seen by AIRS (CO) and OMI (aerosol): rank 1 of 22 in both](figures/N11_canada_smoke.png)
+
+### N12
+**Combustion fingerprints: OMI NO₂ vs AIRS CO by region**  
+<sub>source: `results/42_airs_omi/regional_no2_vs_co.png`</sub>
+
+![Combustion fingerprints: OMI NO₂ vs AIRS CO by region](figures/N12_no2_vs_co.png)
+
+### N13
+**AIRS (infrared) vs OMI (UV) ozone: r = 0.92; Antarctic spring r = 0.99**  
+<sub>source: `results/42_airs_omi/ozone_airs_vs_omi.png`</sub>
+
+![AIRS (infrared) vs OMI (UV) ozone: r = 0.92; Antarctic spring r = 0.99](figures/N13_ozone_two_sensors.png)
+
+### N14
+**Where fires burn, AIRS CO and OMI aerosol follow**  
+<sub>source: `results/42_airs_omi/map_fire_smoke_correlation.png`</sub>
+
+![Where fires burn, AIRS CO and OMI aerosol follow](figures/N14_fire_smoke_corr.png)
+
+### N15
+**Warmer air, wetter air: AIRS water vapour 6%/K over oceans**  
+<sub>source: `results/42_airs_omi/map_water_vapour_per_K.png`</sub>
+
+![Warmer air, wetter air: AIRS water vapour 6%/K over oceans](figures/N15_water_vapour_per_K.png)
+
+### N16
+**Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95)**  
+<sub>source: `results/47_taiwan_aftershocks/taiwan_aftershocks.png`</sub>
+
+![Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95)](figures/N16_taiwan_aftershocks.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

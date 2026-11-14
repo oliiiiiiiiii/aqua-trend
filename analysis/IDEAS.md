@@ -43,3 +43,18 @@
 | I39 | Turning points: where did GRACE water-storage trends reverse (depletion → recovery, or the reverse) between 2002–13 and 2014–26? | GRACE | trend-change class map | low | done (task 39: 45 % of land changed; NCP reversal, Central Europe/Caspian worse) |
 | I40 | Ocean salinity as a rain gauge: SMAP sea-surface salinity 2015–2026 — salty regions saltier (evaporation) and fresh regions fresher (rain)? | SMAP SSS (PO.DAAC) | SSS trend vs mean-SSS map | med | todo (short record) |
 | I41 | Lake Victoria & East African lakes record high: GRACE + IMERG + moisture convergence + MODIS shoreline (NDVI water) | GRACE, IMERG, MERRA-2, MODIS | multi-panel | low | todo |
+
+## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
+| id | idea | data | output | cost | status |
+|---|---|---|---|---|---|
+| N01 | Global earthquake rates: real change vs detection | USGS ComCat M≥4.5 + GCMT | counts by magnitude, rate-change map, great-quake burst test | low | done (task 40: small-quake rise is detection; M≥6 flat since 1983; 1983 magnitude-scale trap) |
+| N02 | Induced seismicity from wastewater injection | USGS M≥3 central US | three-era map + regional counts vs natural control | low | done (task 41: Oklahoma ×779, Permian ×325, regulation halves the rate every 1.2 yr) |
+| N03 | AIRS × OMI: ozone cross-check, smoke (CO vs aerosol vs fires), NO₂ vs CO combustion fingerprints, water vapour per K | AIRS3STM v7, OMTO3d, OMNO2d, FIRMS | 6 figures | med | done (task 42: ozone r=0.92, Canada 2023 rank 1 in CO & AI, NO₂ redrawn) |
+| N04 | Polar motion & length of day vs GRACE mass excitation | IERS C04 + GRACE mascons | pole path, drift attribution, LOD | low | done (task 43: GRACE explains post-2000 drift change within 10°) |
+| N05 | Seasonal water-load modulation of earthquakes | USGS + GRACE | Schuster test per region and cell | low | done (task 44: null) |
+| N06 | Global fire trends: savanna decline vs boreal rise, Terra/Aqua cross-check | FIRMS MODIS C6.1 | trend map + regional series | low | next (task 45) |
+| N07 | Ozone hole recovery: hinge test | NASA Ozone Watch | hinge plot | low | done (task 46: break 1993, recovery n.s.) |
+| N08 | Methane surge 2020–22: AIRS CH₄ vs NOAA in situ; tropical wetland flooding (GRACE/IMERG) as the driver? | AIRS CH4_VMR, NOAA GML, GRACE | CH₄ growth vs wetland water map | med | todo (water link) |
+| N09 | Taiwan: Hualien 2024 M7.4 aftershock decay (Omori–Utsu) vs Chi-Chi 1999; b-value | USGS M≥4 | Omori fit + map | low | done (task 47: p≈0.95 both; M≥4 rise is detection) |
+| N10 | Volcanic SO₂ and the Hunga Tonga 2022 stratospheric water injection | OMI SO2 (OMSO2e), MLS H2O | event maps + series | med | todo |
+| N11 | Saharan dust trend from OMI aerosol index vs Sahel greening and rain | OMTO3d UVAI + GPCP + NDVI | trend/correlation maps | low | todo |
