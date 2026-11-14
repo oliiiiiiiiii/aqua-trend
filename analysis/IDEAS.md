@@ -54,7 +54,11 @@
 | N05 | Seasonal water-load modulation of earthquakes | USGS + GRACE | Schuster test per region and cell | low | done (task 44: null) |
 | N06 | Global fire trends: savanna decline vs boreal rise, Terra/Aqua cross-check | FIRMS MODIS C6.1 | trend map + regional series | low | done (task 45: global −11%/dec both satellites; savanna/steppe/E China/Indonesia down; boreal n.s.) |
 | N07 | Ozone hole recovery: hinge test | NASA Ozone Watch | hinge plot | low | done (task 46: break 1993, recovery n.s.) |
-| N08 | Methane surge 2020–22: AIRS CH₄ vs NOAA in situ; tropical wetland flooding (GRACE/IMERG) as the driver? | AIRS CH4_VMR, NOAA GML, GRACE | CH₄ growth vs wetland water map | med | todo (water link) |
+| N08 | Methane surge 2020–22: AIRS CH₄ vs NOAA in situ; tropical wetland flooding (GRACE/IMERG) as the driver? | AIRS CH4_VMR, NOAA GML, GRACE | CH₄ growth vs wetland water map | med | done (task 48: null — correlation is shared trend; surrogate & detrended tests fail) |
 | N09 | Taiwan: Hualien 2024 M7.4 aftershock decay (Omori–Utsu) vs Chi-Chi 1999; b-value | USGS M≥4 | Omori fit + map | low | done (task 47: p≈0.95 both; M≥4 rise is detection) |
-| N10 | Volcanic SO₂ and the Hunga Tonga 2022 stratospheric water injection | OMI SO2 (OMSO2e), MLS H2O | event maps + series | med | todo |
-| N11 | Saharan dust trend from OMI aerosol index vs Sahel greening and rain | OMTO3d UVAI + GPCP + NDVI | trend/correlation maps | low | todo |
+| N10 | Volcanic SO₂ and the Hunga Tonga 2022 stratospheric water injection | MSAQSO2L4 point sources, MLS H2O | event maps + series | med | done (task 49: China −92%, India +103%, 4 satellites agree; task 50: Hunga +13% strat. water, e-fold 4.5 yr) |
+| N11 | Saharan dust trend from OMI aerosol index vs Sahel greening and rain | OMTO3d UVAI + GPCP + NDVI | trend/correlation maps | low | done (task 51: dust down 9–17%/dec, MERRA-2 & OMI agree; greener years cleaner, 89% of land) |
+| N12 | Hunga Tonga aftermath: stratospheric cooling and ozone response | MLS T, O3 (ML3DZT, ML3DZO3) | time–height anomaly sections | low | todo |
+| N13 | East Asia "brightening": sulfate AOD drop (MERRA-2) vs surface sunshine (CERES) | M2TMNXAER SUEXTTAU, CERES EBAF | trend maps + China series | med | todo |
+| N14 | SO₂/NO₂ ratio as a coal-vs-traffic fingerprint per city | MSAQSO2L4 + OMNO2d | scatter by city/year | low | todo |
+| N15 | Taiwan & SE Asia air: Vietnam's SO₂ ×4.6 vs Taiwan −78% — does it reach Taiwan? (MERRA-2 sulfate AOD, back-trajectory proxy via winds) | M2TMNXAER, MERRA-2 winds | regional series | med | todo |

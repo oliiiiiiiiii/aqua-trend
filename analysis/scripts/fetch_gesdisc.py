@@ -5,6 +5,7 @@ keys:
   gldas   GLDAS_NOAH025_M 2.1 (2000-01 ->): global 0.5 deg (block mean of 0.25) + East Asia 0.25 subset
   m2int   MERRA2 M2TMNXINT (UFLXQV, VFLXQV, DQVDT_DYN, ...) native 0.5x0.625
   m2flx   MERRA2 M2TMNXFLX (EVAP, PRECTOT, PRECTOTCORR) native 0.5x0.625
+  m2aer   MERRA2 M2TMNXAER aerosol optical depth by species (dust, sea salt, sulfate, BC, OC, total) + dust surface mass
   imerg   GPM_3IMERGM V07 precipitation: global 0.5 deg + East Asia 0.1 subset (mm/day)
 Outputs: data/processed/gesdisc/<key>/<var>_<grid>.npy (+ times.json, done.json, grid json)
 """
@@ -38,6 +39,8 @@ CFG = {
     "m2lnd": dict(short_name="M2TMNXLND", version="5.12.4", start="2000-01-01",
                   vars=["EVLAND", "GWETROOT", "GWETTOP", "SWLAND", "LWLAND", "PRECTOTLAND", "RUNOFF", "BASEFLOW", "TSURF", "LHLAND", "SHLAND"],
                   kind="merra"),
+    "m2aer": dict(short_name="M2TMNXAER", version="5.12.4", start="1980-01-01",
+                  vars=["DUEXTTAU", "TOTEXTTAU", "SSEXTTAU", "SUEXTTAU", "BCEXTTAU", "OCEXTTAU", "DUSMASS"], kind="merra"),
     "imerg": dict(short_name="GPM_3IMERGM", version="07", start="1998-01-01", vars=["precipitation"], kind="imerg"),
 }
 

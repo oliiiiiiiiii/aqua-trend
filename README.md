@@ -30,6 +30,9 @@ NASA Space Apps 2026, *Be An Earth System Trend Detective!*. This branch (`analy
 | N3 | Water and ice steer the North Pole: GRACE mass change predicts the post-2000 drift change (5.0 vs 5.1 mas/yr, 10° apart). Groundwater pumping pushes the pole toward India. Record short day: −1.65 ms on 5 Jul 2024. | Robust (2 independent systems) |
 | N5 | AIRS × OMI: ozone agrees (r = 0.92); Canada 2023 smoke was rank 1 of 22 in both AIRS CO and OMI aerosol; NO₂ fell −15 to −27%/decade in the US, Europe, East Asia and Taiwan, but rose in North India (+13%) and the Persian Gulf (+10%). | Robust (cross-sensor) |
 | N7 | The world is burning less: fire detections −11%/decade in both MODIS satellites (savannas, steppe, E China, Indonesia). | Robust |
+| N8 | SO₂ moved from China (−92%) to India (+103%) and the Gulf; four satellites agree. | Robust |
+| N9 | Hunga Tonga added +13% to stratospheric water (9σ); half is still there after four years. | Robust |
+| N10 | Less dust over the Sahel (−9%/dec) and Iraq–Syria (−17%/dec); greener years are cleaner years. | Robust |
 | N4 | The ozone hole stopped growing in 1993 (p = 4e-10); recovery since 2001 is not yet significant. | Robust break / Suggestive recovery |
 | W2 | Taiwan rain decline: depends on the dataset and pixel choice and needs gauge verification. | Suggestive |
 
@@ -41,6 +44,7 @@ The **negative results** are also recorded:
 - No global "wet seasons wetter" amplification.
 - No robust whiplash trend.
 - No detectable seasonal water-load modulation of earthquakes.
+- Methane's 2020–22 surge vs tropical wetland water: r = +0.63, but it is a shared trend (surrogate p = 0.11; detrended r = +0.14).
 
 They show why a trend needs a second dataset.
 

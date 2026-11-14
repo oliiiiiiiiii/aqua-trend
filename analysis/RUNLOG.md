@@ -86,3 +86,17 @@
 | 2026-11-14 17:30 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |
 | 2026-11-14 17:32 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |
 | 2026-11-14 17:32 | 45_fire_trends | done | robust down 25% / up 6% of burning land; global Aqua -11%/dec |
+| 2026-11-14 19:28 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |
+| 2026-11-14 19:29 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |
+| 2026-11-14 19:29 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |
+| 2026-11-14 19:29 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |
+| 2026-11-14 19:32 | 50_hunga_tonga_water | done | peak +202 Tg (+15%), z=8; e-fold 7.3 yr |
+| 2026-11-14 19:32 | 50_hunga_tonga_water | done | peak +167 Tg (+13%), z=9; e-fold 4.6 yr |
+| 2026-11-14 19:33 | 50_hunga_tonga_water | done | peak +170 Tg (+13%), z=9; e-fold 4.5 yr |
+| 2026-11-14 19:38 | 48_methane | done | CH4 growth 2021 17.7 ppb record, 2025 4.8; E Africa TWS r=+0.63 (surrogate p=0.11, detrended r=+0.14) |
+| 2026-11-14 19:40 | 48_methane | done | CH4 growth 2021 17.7 ppb record, 2025 4.8; E Africa TWS r=+0.63 (surrogate p=0.11, detrended r=+0.14) |
+| 2026-11-14 19:44 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
+| 2026-11-14 19:46 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
+| 2026-11-14 19:48 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
+| 2026-11-14 19:49 | 51_dust_greening | done | Sahel dust -9%/dec, Middle East -17%/dec; OMI-NDVI detrended r<0 on 89% (FDR 29%) |
+| 2026-11-14 19:51 | 49_so2_sources | done | China -92%, India +103% (passes China 2017); global anthropogenic -52% |

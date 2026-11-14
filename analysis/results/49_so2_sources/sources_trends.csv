@@ -1,0 +1,781 @@
+name,country,type,lat,lon,region,pct_per_yr,p,e0,e1,ratio
+Nickel,Russia,Smelter,69.415,30.254,Russia,-12.762,0.005,64.033,3.567,0.07
+Norilsk,Russia,Smelter,69.36,88.133,Russia,-2.025,0.0,1971.967,1243.4,0.631
+Severonikel,Russia,Smelter,67.915,32.838,Russia,2.68,0.469,24.5,18.133,0.75
+Severnyy Vorkuta,Russia,Power Plant,67.61,64.083,Russia,3.941,0.546,17.5,18.533,1.056
+East Lambeishor,Russia,Oil and Gas,66.764,56.192,Russia,10.564,0.001,18.767,97.4,4.978
+Bajandyskaya,Russia,Oil and Gas,66.432,56.6,Russia,18.342,0.0,4.867,149.7,25.688
+Kostomuksha,Russia,Smelter,64.647,30.746,Russia,3.061,0.022,37.4,57.433,1.522
+Reykjanes Peninsula,Iceland,Volcano,63.89,-22.27,Rest of world,16.991,0.002,16.733,200.867,11.383
+Spurr,USA,Volcano,61.296,-152.251,USA,-11.24,0.139,26.333,3.6,0.168
+Redoubt,USA,Volcano,60.485,-152.749,USA,0.0,0.952,3.667,4.9,1.264
+Augustine,USA,Volcano,59.345,-153.453,USA,0.577,0.88,61.933,4.767,0.092
+Narva,Estonia,Power Plant,59.281,27.929,Europe & Turkey,-17.713,0.0,65.167,5.133,0.093
+Cherepovetskaya,Russia,Power Plant,59.23,37.13,Russia,-4.959,0.156,35.267,17.833,0.519
+Severstal,Russia,Smelter,59.146,37.847,Russia,-0.27,0.904,54.0,46.5,0.864
+Krasnouralsk,Russia,Smelter,58.347,60.074,Russia,3.422,0.075,110.9,123.8,1.115
+Perm,Russia,Oil and Gas,57.916,56.13,Russia,0.026,1.0,10.833,29.6,2.586
+Yaroslavl,Russia,Power Plant,57.654,39.835,Russia,0.342,0.928,22.133,25.667,1.153
+Kirovograd,Russia,Smelter,57.415,60.082,Russia,-1.544,0.264,115.267,92.4,0.803
+Chiginagak,USA,Volcano,57.135,-156.99,USA,-7.863,0.035,89.6,12.533,0.149
+Reftinskaya,Russia,Power Plant,57.112,61.703,Russia,-1.516,0.116,109.1,82.333,0.757
+Mildred Lake,Canada,Oil and Gas,57.04,-111.619,Rest of world,-3.806,0.002,60.733,38.467,0.639
+Middle-Ural,Russia,Smelter,56.852,59.907,Russia,-6.752,0.04,67.433,21.5,0.329
+Shiveluch,Russia,Volcano,56.644,161.343,Russia,5.664,0.007,103.933,302.2,2.889
+Veniaminof,USA,Volcano,56.17,-159.38,USA,-15.969,0.043,86.067,2.733,0.043
+Kliuchevskoi,Russia,Volcano,56.057,160.638,Russia,2.995,0.45,207.867,278.9,1.34
+Ufaleynikel,Russia,Smelter,56.047,60.255,Russia,-22.862,0.0,67.333,1.367,0.035
+Thompson,Canada,Smelter,55.714,-97.856,Rest of world,-15.861,0.0,120.933,9.3,0.084
+Moscow,Russia,Power Plant,55.634,37.816,Russia,-3.464,0.506,54.9,13.167,0.253
+Niznekamsk,Russia,Power Plant,55.6,51.944,Russia,4.654,0.156,28.467,54.3,1.877
+Novopolotsk,Belarus,Oil and Gas,55.52,28.545,Europe & Turkey,-8.838,0.002,68.867,9.7,0.153
+Karabash,Russia,Smelter,55.467,60.204,Russia,-11.625,0.002,84.467,18.533,0.229
+Pavlof,USA,Volcano,55.414,-161.89,USA,-4.665,0.469,27.267,0.233,0.044
+Chelyabinsk,Russia,Power Plant,55.155,61.496,Russia,4.795,0.319,5.433,17.167,2.824
+Kizimenk,Russia,Volcano,55.119,160.36,Russia,2.518,0.763,7.833,46.433,5.37
+Omsk,Russia,Oil and Gas,55.08,73.214,Russia,0.932,0.608,39.9,33.833,0.852
+Chebarkul,Russia,Power Plant,54.979,60.387,Russia,-8.128,0.075,13.233,11.2,0.857
+Ufa,Russia,Oil and Gas,54.933,56.056,Russia,-2.49,0.08,101.567,67.367,0.667
+Flin Flon,Canada,Smelter,54.771,-101.884,Rest of world,-25.729,0.008,132.4,3.267,0.032
+Shishaldin,USA,Volcano,54.756,-163.97,USA,-0.933,0.88,90.5,119.4,1.316
+Ryazan,Russia,Oil and Gas,54.564,39.763,Russia,-1.013,0.415,55.667,36.667,0.665
+Karymsky,Russia,Volcano,54.05,159.45,Russia,-7.34,0.007,218.567,67.167,0.31
+Troitsk,Russia,Power Plant,54.037,61.651,Russia,-17.392,0.0,30.167,1.367,0.076
+Ryazanskaja,Russia,Power Plant,54.034,39.78,Russia,-7.28,0.053,37.2,8.133,0.239
+Makushin,USA,Volcano,53.884,-166.932,USA,8.999,0.116,13.6,27.6,1.959
+Novokuznetsk,Russia,Power Plant,53.769,87.237,Russia,-1.194,0.174,68.833,37.067,0.545
+Drax,UK,Power Plant,53.737,-0.996,Europe & Turkey,-10.347,0.037,41.967,12.667,0.318
+Edmonton,Canada,Oil and Gas,53.55,-113.367,Rest of world,3.577,0.334,6.633,15.967,2.223
+Sundance,Canada,Power Plant,53.503,-114.557,Rest of world,-8.832,0.002,26.0,5.733,0.249
+Salavat,Russia,Power Plant,53.423,55.884,Russia,2.266,0.506,4.333,4.3,0.994
+Magnitogorsk,Russia,Smelter,53.419,59.084,Russia,-3.891,0.003,64.067,27.367,0.436
+Avachinsky,Russia,Volcano,53.254,158.831,Russia,-6.09,0.01,103.767,49.1,0.478
+Sayanogorskiy,Russia,Smelter,53.203,91.461,Russia,2.171,0.651,12.133,9.2,0.777
+Novokuybshevsk,Russia,Oil and Gas,53.087,49.931,Russia,-3.362,0.017,53.233,31.467,0.599
+Syzran,Russia,Oil and Gas,53.078,48.388,Russia,-3.714,0.174,24.067,9.167,0.406
+Rudny,Kazakhstan,Smelter,52.996,63.138,Rest of world,-3.248,0.116,39.033,21.5,0.562
+Tana,USA,Volcano,52.83,-169.77,USA,-4.138,0.251,84.6,19.1,0.235
+Lipetsk,Russia,Power Plant,52.557,39.6,Russia,5.42,0.0,21.4,37.0,1.696
+Angarsk,Russia,Power Plant,52.538,103.954,Russia,4.156,0.005,20.3,50.233,2.405
+Mutnovsky,Russia,Volcano,52.453,158.195,Russia,-2.154,0.415,182.767,167.833,0.919
+Korovin,USA,Volcano,52.381,-174.154,USA,0.0,0.928,90.0,31.833,0.361
+Patnow,Poland,Power Plant,52.302,18.237,Europe & Turkey,-15.759,0.264,146.367,2.133,0.021
+Pavlodar,Kazakhstan,Power Plant,52.118,76.872,Rest of world,0.359,0.365,98.067,104.933,1.069
+Ekibastuz,Kazakhstan,Power Plant,52.024,75.476,Rest of world,1.374,0.124,74.133,100.533,1.351
+Orenburg,Russia,Oil and Gas,51.873,54.76,Russia,0.046,0.976,102.333,90.5,0.885
+Gareloi,USA,Volcano,51.79,-178.794,USA,2.44,0.319,32.0,43.067,1.335
+Kozienice,Poland,Power Plant,51.668,21.463,Europe & Turkey,-13.673,0.0,57.367,8.7,0.166
+Dzhelandy,Russia,Oil and Gas,51.59,55.475,Russia,4.995,0.147,27.4,49.533,1.779
+Borodinsk,Russia,Oil and Gas,51.569,52.754,Russia,14.681,0.035,19.867,29.133,1.444
+Herne,Germany,Power Plant,51.551,7.188,Europe & Turkey,-5.634,0.011,44.567,16.733,0.389
+Saratov,Russia,Oil and Gas,51.457,45.936,Russia,6.346,0.061,3.533,16.067,3.765
+Mednogorsk,Russia,Smelter,51.441,57.573,Russia,-5.159,0.0,155.8,52.1,0.339
+Sheerness,Canada,Power Plant,51.44,-111.79,Rest of world,-9.743,0.251,16.967,0.967,0.109
+Karachaganak,Kazakhstan,Oil and Gas,51.325,53.331,Rest of world,-7.617,0.184,50.0,7.7,0.171
+Antwerpen,Belgium,Oil and Gas,51.269,4.327,Europe & Turkey,-3.35,0.349,78.567,26.267,0.343
+Belchatow,Poland,Power Plant,51.265,19.324,Europe & Turkey,-6.58,0.012,85.6,15.133,0.186
+Orsk,Russia,Smelter,51.26,58.56,Russia,-9.777,0.009,171.4,36.567,0.218
+Lippendorf,Germany,Power Plant,51.183,12.373,Europe & Turkey,-4.082,0.506,20.5,6.167,0.333
+Frimmersdorf,Germany,Power Plant,51.058,6.577,Europe & Turkey,-8.939,0.0,56.367,8.9,0.173
+Ebeko,Russia,Volcano,50.689,156.017,Russia,-2.477,0.216,116.2,33.333,0.293
+Most,Czech Republic,Power Plant,50.522,13.571,Europe & Turkey,-7.639,0.005,51.033,12.367,0.257
+Kiev,Ukraine,Power Plant,50.394,30.569,Europe & Turkey,3.654,0.349,11.733,30.367,2.463
+Chikurachki,Russia,Volcano,50.325,155.458,Russia,-2.554,0.526,299.533,69.6,0.235
+Katowice,Poland,Power Plant,50.274,18.715,Europe & Turkey,-9.843,0.0,129.033,16.867,0.137
+Dobrotvorsky,Ukraine,Power Plant,50.213,24.375,Europe & Turkey,0.609,0.856,15.967,14.733,0.927
+Temirtau,Kazakhstan,Power Plant,50.04,73.023,Rest of world,-0.21,0.695,74.767,63.0,0.845
+Ust-Kamenogors,Kazakhstan,Power Plant,49.985,82.616,Rest of world,0.541,0.526,49.833,75.633,1.508
+Zmiivska,Ukraine,Power Plant,49.585,36.523,Europe & Turkey,-11.849,0.005,49.4,7.833,0.175
+Le Havre,France,Power Plant,49.476,0.169,Europe & Turkey,-11.499,0.0,52.733,10.233,0.209
+Burshtynska,Ukraine,Power Plant,49.21,24.663,Europe & Turkey,-4.44,0.001,126.833,54.867,0.437
+Boundary Dam,Canada,Power Plant,49.1,-103.03,Rest of world,-3.395,0.02,33.933,20.6,0.618
+Luhansk,Ukraine,Power Plant,48.749,39.261,Europe & Turkey,-22.566,0.0,105.833,1.6,0.024
+Ladyzhinska,Ukraine,Power Plant,48.706,29.22,Europe & Turkey,-4.498,0.057,65.767,26.033,0.405
+Novaky,Slovakia,Power Plant,48.699,18.533,Europe & Turkey,-12.098,0.019,44.333,7.333,0.184
+Vuglegirska,Ukraine,Power Plant,48.465,38.206,Europe & Turkey,-9.564,0.0,193.733,23.7,0.127
+Prydniprovska,Ukraine,Power Plant,48.404,35.114,Europe & Turkey,-6.612,0.01,35.567,22.167,0.634
+Zhanazhol,Kazakhstan,Oil and Gas,48.307,57.395,Rest of world,-8.645,0.0,186.533,28.967,0.16
+Sarychev,Russia,Volcano,48.08,153.21,Russia,-7.665,0.027,38.367,17.667,0.474
+Kryvyi Rih,Ukraine,Smelter,48.07,33.38,Europe & Turkey,-3.71,0.024,42.2,22.767,0.55
+Kurakhovskaya,Ukraine,Power Plant,47.99,37.24,Europe & Turkey,-4.578,0.0,156.467,28.867,0.19
+Ulaanbaatar,Mongolia,Power Plant,47.894,106.804,Rest of world,7.606,0.002,3.833,24.667,5.31
+Starobeshivska,Ukraine,Power Plant,47.8,38.006,Europe & Turkey,-3.091,0.005,151.4,64.5,0.43
+Matra,Hungary,Power Plant,47.789,20.067,Europe & Turkey,70.029,0.001,0.0,14.5,15.5
+Zhezkazgan,Kazakhstan,Smelter,47.775,67.725,Rest of world,1.736,0.487,97.9,96.133,0.982
+Kryvorizka,Ukraine,Power Plant,47.541,33.658,Europe & Turkey,-7.966,0.007,99.633,36.067,0.368
+Zaporizhya,Ukraine,Power Plant,47.506,34.629,Europe & Turkey,-7.476,0.001,68.533,4.2,0.075
+Novocherkassk,Russia,Power Plant,47.4,40.231,Russia,-3.843,0.216,46.833,13.567,0.305
+Ketoy island,Russia,Volcano,47.34,152.48,Russia,-1.625,0.291,24.533,31.2,1.261
+Leland Olds,USA,Power Plant,47.281,-101.318,USA,-9.256,0.006,51.833,13.333,0.271
+Mariupol,Ukraine,Smelter,47.107,37.592,Europe & Turkey,-8.429,0.002,68.967,11.467,0.178
+Balqash,Kazakhstan,Smelter,46.832,74.945,Rest of world,-5.59,0.11,519.9,93.633,0.182
+Astrakhan,Russia,Oil and Gas,46.771,48.118,Russia,-0.666,0.239,91.467,90.2,0.986
+Kalatongke,China,Smelter,46.751,89.677,China,-14.013,0.0,53.067,6.233,0.134
+Sudbury,Canada,Smelter,46.479,-81.055,Rest of world,-7.613,0.0,100.767,27.733,0.282
+Copsa Mica,Romania,Smelter,46.117,24.224,Europe & Turkey,-3.847,0.45,28.733,8.667,0.325
+Medvezhia,Russia,Volcano,45.387,148.843,Russia,0.559,0.74,60.167,55.933,0.931
+Plomin,Croatia,Power Plant,45.138,14.164,Europe & Turkey,-4.988,0.11,36.067,12.7,0.37
+Brod,Croatia,Oil and Gas,45.13,17.985,Europe & Turkey,-2.226,0.672,5.767,4.633,0.833
+Prajila,Romania,Power Plant,45.039,24.289,Europe & Turkey,61.416,0.006,0.0,5.4,6.4
+Xinjiang,China,Power Plant,44.798,89.151,China,7.82,0.024,10.9,27.233,2.373
+Stanari,Bosnia and Herzegovina,Power Plant,44.755,17.792,Europe & Turkey,-0.811,0.833,18.067,15.333,0.857
+Kostolac,Serbia,Power Plant,44.731,21.212,Europe & Turkey,-3.481,0.05,80.033,54.867,0.689
+Nikola Tesla,Serbia,Power Plant,44.671,20.157,Europe & Turkey,1.059,0.174,126.467,159.7,1.261
+Turceni,Romania,Power Plant,44.668,23.407,Europe & Turkey,-13.437,0.0,358.933,36.767,0.105
+Tuzla,Bosnia and Herzegovina,Power Plant,44.52,18.604,Europe & Turkey,-2.169,0.174,92.033,71.733,0.782
+Dushanzi,China,Power Plant,44.35,84.829,China,-11.532,0.024,10.167,1.5,0.224
+Manasi,China,Power Plant,44.326,86.146,China,-7.865,0.003,32.2,15.0,0.482
+Wujiaqu,China,Power Plant,44.269,87.694,China,-8.266,0.0,51.833,15.4,0.31
+Kakanj,Bosnia and Herzegovina,Power Plant,44.089,18.114,Europe & Turkey,-2.683,0.381,20.4,17.033,0.843
+Bor,Serbia,Smelter,44.073,22.11,Europe & Turkey,-25.309,0.0,44.667,0.433,0.031
+Yining,China,Power Plant,44.062,81.188,China,4.899,0.11,1.433,7.4,3.452
+Jilin,China,Oil and Gas,43.968,126.482,China,-8.372,0.037,20.7,5.7,0.309
+Hongyanchi,China,Power Plant,43.723,87.634,China,-20.745,0.0,58.9,1.4,0.04
+Bu Bulakesi,China,Power Plant,43.714,83.285,China,7.742,0.103,1.467,6.033,2.851
+Kumul Runda Energy,China,Power Plant,43.703,94.984,China,13.474,0.001,5.567,26.533,4.193
+As Pontes,Spain,Power Plant,43.441,-7.862,Europe & Turkey,-11.574,0.002,309.333,10.233,0.036
+Tokachi,Japan,Volcano,43.416,142.69,Rest of world,7.331,0.02,41.7,84.4,2.0
+Lacq,France,Oil and Gas,43.41,-0.63,Europe & Turkey,-5.205,0.131,32.667,8.233,0.274
+Marseilles,France,Oil and Gas,43.394,5.11,Europe & Turkey,-8.083,0.003,73.6,12.4,0.18
+Soto de Ribera,Spain,Power Plant,43.31,-5.873,Europe & Turkey,-4.473,0.124,96.7,34.8,0.366
+Almaty,Kazakhstan,Power Plant,43.293,76.799,Rest of world,1.103,0.786,15.967,14.067,0.888
+Varna,Bulgaria,Power Plant,43.188,27.66,Europe & Turkey,-8.051,0.147,30.1,10.833,0.38
+Gacko,Bosnia and Herzegovina,Power Plant,43.173,18.514,Europe & Turkey,3.744,0.526,7.8,7.2,0.932
+Nanticoke,Canada,Power Plant,42.799,-80.046,Rest of world,-16.407,0.001,59.567,6.367,0.122
+Lambton,Canada,Power Plant,42.796,-82.47,Rest of world,-6.906,0.0,99.267,23.4,0.243
+Toksun Mahatma,China,Power Plant,42.73,88.621,China,-6.53,0.001,31.6,11.8,0.393
+Compostilla,Spain,Power Plant,42.612,-6.564,Europe & Turkey,-6.833,0.131,44.567,11.4,0.272
+Yuanbaoshan,China,Power Plant,42.302,119.326,China,-9.315,0.0,64.667,14.533,0.237
+Bobov Dol,Bulgaria,Power Plant,42.285,23.035,Europe & Turkey,-0.114,0.928,48.567,38.133,0.79
+Shymkent,Kazakhstan,Smelter,42.26,69.65,Rest of world,0.041,1.0,11.9,11.1,0.938
+Marica,Bulgaria,Power Plant,42.153,26.0,Europe & Turkey,-11.136,0.0,696.333,74.533,0.108
+Zestafoni,Georgia,Smelter,42.119,43.018,Rest of world,2.409,0.381,21.0,25.267,1.194
+Monroe,USA,Power Plant,41.891,-83.346,USA,-16.83,0.0,117.733,2.067,0.026
+Shenyang,China,Power Plant,41.731,123.194,China,-7.387,0.0,127.333,34.167,0.274
+Eastlake,USA,Power Plant,41.672,-81.444,USA,-19.552,0.0,68.867,2.1,0.044
+Will County,USA,Power Plant,41.634,-88.064,USA,-9.837,0.0,54.8,8.667,0.173
+Yangjiazhangzi,China,Smelter,41.479,123.59,China,-9.733,0.0,157.933,21.133,0.139
+Karabuk,Turkey,Smelter,41.174,32.633,Europe & Turkey,-4.531,0.156,8.667,5.0,0.621
+Liaoyang,China,Power Plant,41.135,123.096,China,-6.821,0.0,143.967,36.7,0.26
+Tarragona,Spain,Oil and Gas,41.104,1.186,Europe & Turkey,-0.642,0.88,55.3,28.467,0.523
+Alaverdi,Armenia,Smelter,41.102,44.661,Rest of world,-11.877,0.001,20.433,2.7,0.173
+Montour,USA,Power Plant,41.07,-76.666,USA,-12.013,0.156,86.6,3.6,0.053
+Novatsi,Macedonia (FYROM),Power Plant,41.057,21.483,Europe & Turkey,1.964,0.174,31.5,33.333,1.056
+Tuanjie,China,Power Plant,41.054,107.004,China,5.858,0.091,20.133,14.467,0.732
+Jinzhou,China,Oil and Gas,41.052,120.983,China,-0.672,0.786,66.633,36.467,0.554
+Teruel-Andorra,Spain,Power Plant,40.995,-0.383,Europe & Turkey,-16.2,0.0,139.767,6.233,0.051
+Almalyk,Uzbekistan,Smelter,40.857,69.528,Rest of world,-0.047,0.976,199.967,226.633,1.133
+Derince,Turkey,Oil and Gas,40.748,29.768,Europe & Turkey,-3.704,0.365,27.3,7.7,0.307
+Tuannan,China,Power Plant,40.746,120.807,China,1.372,0.566,65.7,33.933,0.524
+Chagan Hada,China,Power Plant,40.67,108.74,China,-11.118,0.0,37.5,4.167,0.134
+Baotou,China,Power Plant,40.66,109.76,China,-11.143,0.0,203.267,31.4,0.159
+Zhangjiakou,China,Power Plant,40.66,114.944,China,-12.663,0.0,56.233,3.9,0.086
+Yingkou,China,Power Plant,40.619,122.343,China,8.897,0.061,7.9,23.633,2.768
+Ballsh,Albania,Power Plant,40.605,19.752,Europe & Turkey,-0.584,0.786,31.133,7.967,0.279
+Ed Edwards,USA,Power Plant,40.595,-89.663,USA,-8.947,0.043,36.967,5.667,0.176
+Sannis,USA,Power Plant,40.532,-80.633,USA,-17.564,0.002,180.933,4.5,0.03
+Homer City,USA,Power Plant,40.514,-79.197,USA,-18.118,0.0,238.267,7.3,0.035
+Ilva,Italy,Oil and Gas,40.503,17.214,Europe & Turkey,-6.088,0.165,26.9,6.833,0.281
+Bekirli,Turkey,Power Plant,40.4,27.05,Europe & Turkey,5.822,0.165,3.333,26.033,6.238
+Aghios Dimitrios,Greece,Power Plant,40.393,21.925,Europe & Turkey,-18.293,0.0,49.133,2.933,0.078
+Dalate,China,Power Plant,40.363,109.998,China,-11.41,0.0,134.833,18.4,0.143
+Tuoketuo,China,Power Plant,40.195,111.356,China,-8.999,0.091,71.767,5.2,0.085
+Conesville,USA,Power Plant,40.185,-81.88,USA,-13.822,0.103,48.267,4.567,0.113
+Kyzyl Kum,Uzbekistan,Oil and Gas,40.178,62.919,Rest of world,13.31,0.02,4.6,33.033,6.077
+Brunner Island,USA,Power Plant,40.098,-76.696,USA,-15.0,0.0,63.2,6.3,0.114
+Cayirhan,Turkey,Power Plant,40.097,31.695,Europe & Turkey,-16.309,0.0,89.067,2.667,0.041
+Datong,China,Power Plant,40.031,113.292,China,-15.313,0.0,191.7,7.733,0.045
+Biga,Turkey,Power Plant,40.023,26.977,Europe & Turkey,8.229,0.037,0.0,34.7,35.7
+Orhaneli,Turkey,Power Plant,39.95,28.87,Europe & Turkey,-1.382,0.695,19.167,29.633,1.519
+Cayuga,USA,Power Plant,39.923,-87.429,USA,-16.669,0.027,78.7,1.533,0.032
+Beijing,China,Power Plant,39.886,116.531,China,0.0,0.833,69.633,4.3,0.075
+Hatfields Ferry,USA,Power Plant,39.855,-79.927,USA,-20.133,0.002,237.367,3.233,0.018
+Mitchell,USA,Power Plant,39.832,-80.813,USA,-20.01,0.0,202.933,3.167,0.02
+Jiayuguan,China,Power Plant,39.807,98.298,China,-2.072,0.003,28.633,22.567,0.795
+Douhe,China,Power Plant,39.773,118.273,China,-13.271,0.0,333.133,40.333,0.124
+Luan,China,Smelter,39.75,118.82,China,-11.341,0.001,211.4,43.2,0.208
+Kirikkale,Turkey,Oil and Gas,39.745,33.46,Europe & Turkey,-5.801,0.165,8.8,3.967,0.507
+Harding Street,USA,Power Plant,39.712,-86.195,USA,-16.466,0.0,54.1,2.867,0.07
+Suancigou,China,Power Plant,39.71,111.2,China,-9.385,0.035,53.733,3.5,0.082
+Muskingum River,USA,Power Plant,39.59,-81.681,USA,-20.714,0.0,183.867,4.4,0.029
+Pukchang,North Korea,Power Plant,39.586,126.3,Rest of world,39.407,0.0,1.9,48.633,17.115
+Seyitomer,Turkey,Power Plant,39.572,29.878,Europe & Turkey,-2.639,0.046,79.1,49.233,0.627
+Pego,Portugal,Power Plant,39.469,-8.11,Europe & Turkey,-6.279,0.037,19.667,5.067,0.294
+Shizuishan,China,Power Plant,39.436,106.723,China,-10.948,0.0,404.7,66.833,0.167
+Chonnae,North Korea,Power Plant,39.384,127.224,Rest of world,9.722,0.003,12.1,50.7,3.947
+Shuozhou,China,Power Plant,39.363,112.533,China,-16.728,0.0,131.567,5.167,0.047
+Jeffrey,USA,Power Plant,39.289,-96.131,USA,-13.088,0.013,57.1,5.733,0.116
+Beijiang,China,Power Plant,39.22,117.93,China,-14.094,0.0,351.4,32.567,0.095
+Fugu-Qingshuichuan,China,Power Plant,39.205,111.118,China,0.0,0.976,26.067,7.9,0.329
+Wangtan,China,Power Plant,39.2,118.974,China,-7.418,0.043,74.2,19.3,0.27
+Soma,Turkey,Power Plant,39.195,27.636,Europe & Turkey,6.956,0.027,5.8,22.933,3.52
+Mubarek,Uzbekistan,Oil and Gas,39.186,65.292,Rest of world,1.275,0.566,98.3,96.433,0.981
+Wagner,USA,Power Plant,39.18,-76.54,USA,-12.549,0.001,71.7,5.467,0.089
+Miami Fort,USA,Power Plant,39.113,-84.804,USA,-12.619,0.0,154.133,14.467,0.1
+Kangal,Turkey,Power Plant,39.076,37.297,Europe & Turkey,5.071,0.002,32.6,59.9,1.812
+Junliangcheng,China,Power Plant,39.054,117.411,China,-16.615,0.0,331.1,17.167,0.055
+Dalian,China,Power Plant,39.015,121.724,China,-11.449,0.001,212.133,22.633,0.111
+Dianta,China,Power Plant,38.974,110.452,China,0.558,0.786,26.0,20.067,0.78
+Saman-Depe,Turkmenistan,Oil and Gas,38.948,64.139,Rest of world,1.382,0.381,31.767,41.833,1.307
+Kyger Creek,USA,Power Plant,38.92,-82.127,USA,-11.061,0.0,185.733,23.067,0.129
+Pingluo,China,Power Plant,38.919,106.437,China,-8.217,0.0,164.6,50.467,0.311
+Sioux,USA,Power Plant,38.916,-90.291,USA,-18.96,0.001,59.233,1.933,0.049
+Aliaga Kardemir,Turkey,Oil and Gas,38.803,26.94,Europe & Turkey,-1.992,0.349,83.7,37.533,0.455
+Stromboli,Italy,Volcano,38.788,15.215,Europe & Turkey,-2.138,0.291,47.733,38.667,0.814
+Clifty Creek,USA,Power Plant,38.74,-85.42,USA,-14.18,0.0,103.233,13.5,0.139
+Qarshi,Uzbekistan,Power Plant,38.684,65.954,Rest of world,-0.32,0.88,19.967,29.867,1.472
+Puertollano,Spain,Power Plant,38.648,-4.123,Europe & Turkey,-7.433,0.0,41.367,11.1,0.286
+Stuart,USA,Power Plant,38.636,-83.694,USA,-17.691,0.003,137.067,2.967,0.029
+Labadie,USA,Power Plant,38.564,-90.837,USA,-3.169,0.124,49.0,23.4,0.488
+Jinchang,China,Power Plant,38.5,102.204,China,-16.737,0.0,173.967,11.267,0.07
+John Atmos,USA,Power Plant,38.473,-81.823,USA,-15.728,0.001,134.8,8.833,0.072
+Gibson,USA,Power Plant,38.371,-87.767,USA,-17.301,0.0,144.467,4.267,0.036
+Morgantown,USA,Power Plant,38.358,-76.979,USA,-14.338,0.01,90.933,3.867,0.053
+Afsin Elbistan,Turkey,Power Plant,38.345,36.98,Europe & Turkey,-0.309,0.717,116.567,136.167,1.167
+Huangha,China,Power Plant,38.31,117.88,China,-7.904,0.131,69.633,8.9,0.14
+Gallagher,USA,Power Plant,38.263,-85.838,USA,-18.574,0.0,67.233,8.433,0.138
+Ningdong,China,Power Plant,38.211,106.549,China,-1.732,0.45,38.3,47.467,1.233
+Yulin-Yuheng,China,Power Plant,38.135,109.537,China,13.457,0.002,2.533,21.7,6.425
+Yulin,China,Power Plant,38.071,108.994,China,71.441,0.0,0.0,15.067,16.067
+Shangan,China,Power Plant,38.057,114.196,China,-16.966,0.0,632.0,26.033,0.043
+Tabriz,Iran,Oil and Gas,38.057,46.158,Middle East,5.887,0.216,4.067,26.367,5.401
+Keratsini,Greece,Power Plant,37.95,23.61,Europe & Turkey,-1.555,0.349,48.467,33.667,0.701
+Sines,Portugal,Power Plant,37.932,-8.804,Europe & Turkey,-10.602,0.001,85.533,11.667,0.146
+Rockport,USA,Power Plant,37.93,-87.04,USA,-16.976,0.0,150.033,4.767,0.038
+Deba,China,Power Plant,37.903,105.932,China,-6.799,0.002,68.133,29.9,0.447
+Gudong,China,Oil and Gas,37.88,119.037,China,-13.351,0.004,161.967,17.167,0.111
+Taiyuan,China,Power Plant,37.781,112.48,China,-17.806,0.0,321.4,12.467,0.042
+Yangguan,China,Power Plant,37.774,113.626,China,-21.355,0.009,165.5,3.6,0.028
+Etna,Italy,Volcano,37.734,15.004,Europe & Turkey,0.104,0.976,732.5,483.633,0.661
+Dezhou,China,Power Plant,37.452,116.243,China,-17.018,0.0,197.033,10.167,0.056
+Megalopolis,Greece,Power Plant,37.418,22.109,Europe & Turkey,-25.072,0.0,246.6,2.333,0.013
+Chesterfield,USA,Power Plant,37.38,-77.382,USA,-16.608,0.0,79.733,1.267,0.028
+Silopi,Turkey,Power Plant,37.31,42.59,Europe & Turkey,9.23,0.012,6.933,30.7,3.996
+Guohua Shouguang,China,Power Plant,37.269,118.905,China,-16.808,0.0,572.3,30.1,0.054
+Paradise,USA,Power Plant,37.26,-86.983,USA,-16.304,0.0,43.933,2.133,0.07
+Yeongheung,South Korea,Power Plant,37.237,126.439,Rest of world,-5.004,0.053,20.033,11.667,0.602
+Shawnee,USA,Power Plant,37.15,-88.78,USA,-6.969,0.007,36.633,10.567,0.307
+Shilpu,China,Power Plant,37.088,111.845,China,-10.669,0.001,277.767,34.9,0.129
+Mary,Turkmenistan,Power Plant,37.039,62.42,Rest of world,34.105,0.0,14.2,475.867,31.373
+Kemerkoy,Turkey,Power Plant,37.034,27.901,Europe & Turkey,-1.046,0.74,325.967,121.867,0.376
+Xingtai,China,Power Plant,37.008,114.486,China,-13.807,0.0,308.8,22.867,0.077
+Pyeongtaek,South Korea,Power Plant,37.007,126.794,Rest of world,8.895,0.075,0.0,18.0,19.0
+Swedieh,Syria,Power Plant,37.002,42.07,Middle East,6.132,0.0,19.2,43.0,2.178
+Duhok,Iraq,Power Plant,36.944,42.782,Middle East,23.829,0.0,2.567,86.6,24.561
+Aliabad,Iran,Power Plant,36.94,54.89,Middle East,-4.795,0.004,20.067,12.1,0.622
+Clinch River,USA,Power Plant,36.933,-82.199,USA,0.0,0.88,5.633,0.933,0.291
+Qiaotou,China,Power Plant,36.904,101.716,China,-7.445,0.009,26.267,8.333,0.342
+Taean,South Korea,Power Plant,36.903,126.232,Rest of world,-6.43,0.037,23.7,9.467,0.424
+Zouping,China,Power Plant,36.897,117.782,China,-18.629,0.0,1178.333,42.5,0.037
+Neka,Iran,Power Plant,36.837,53.259,Middle East,3.234,0.027,26.567,69.3,2.55
+San Juan,USA,Power Plant,36.803,-108.429,USA,-7.902,0.001,17.333,3.9,0.267
+Bahadre,Iraq,Power Plant,36.753,43.245,Middle East,40.85,0.0,0.867,219.633,118.196
+Isdemir,Turkey,Power Plant,36.739,36.199,Europe & Turkey,-2.306,0.131,22.0,19.133,0.875
+Wuan,China,Power Plant,36.732,114.095,China,-14.14,0.0,719.0,63.933,0.09
+Xining,China,Power Plant,36.585,101.492,China,-0.335,0.74,24.167,23.833,0.987
+Baiyin,China,Smelter,36.552,104.205,China,-4.702,0.0,129.567,34.233,0.27
+Liancheng 2,China,Power Plant,36.518,102.869,China,18.453,0.003,1.9,9.533,3.632
+Matou,China,Power Plant,36.487,114.424,China,-16.002,0.0,695.267,44.967,0.066
+Roxboro,USA,Power Plant,36.48,-79.07,USA,-10.156,0.007,104.667,9.167,0.096
+Sovetabad,Turkmenistan,Oil and Gas,36.48,61.62,Rest of world,2.405,0.075,47.567,91.5,1.905
+Liaocheng,China,Power Plant,36.47,115.912,China,-16.295,0.009,218.167,17.567,0.085
+Khangiran,Iran,Oil and Gas,36.467,60.847,Middle East,-2.745,0.057,139.233,53.4,0.388
+Toos,Iran,Power Plant,36.446,59.414,Middle East,7.41,0.003,3.067,25.9,6.615
+Asama,Japan,Volcano,36.403,138.526,Rest of world,-3.302,0.487,161.667,114.0,0.707
+John Sevier,USA,Power Plant,36.376,-82.963,USA,-8.477,0.053,17.767,3.367,0.233
+Zhangze,China,Power Plant,36.32,113.08,China,-4.628,0.305,34.567,4.433,0.153
+Belews Creek,USA,Power Plant,36.282,-80.059,USA,-14.351,0.006,73.867,6.4,0.099
+Neishabour,Iran,Power Plant,36.282,58.78,Middle East,14.45,0.001,1.367,12.067,5.521
+Aleppo,Syria,Power Plant,36.174,37.44,Middle East,-9.426,0.103,72.367,28.0,0.395
+Shahid Rajaee,Iran,Power Plant,36.16,50.3,Middle East,0.183,0.904,22.233,30.833,1.37
+Linfen,China,Power Plant,36.153,111.484,China,-4.18,0.45,58.633,9.4,0.174
+Laicheng,China,Power Plant,36.13,117.68,China,-20.345,0.0,764.267,23.067,0.031
+Lanzhou Xigu,China,Power Plant,36.128,103.623,China,-6.312,0.0,64.4,20.3,0.326
+Johnsonville,USA,Power Plant,36.031,-87.985,USA,-15.533,0.0,43.733,3.267,0.095
+Erbil,Iraq,Power Plant,36.008,43.917,Middle East,11.691,0.0,19.667,183.0,8.903
+Al-Mashraq,Iraq,Oil and Gas,35.985,43.317,Middle East,15.928,0.0,9.8,168.8,15.722
+Kashima,Japan,Power Plant,35.921,140.697,Rest of world,-8.65,0.001,51.9,16.0,0.321
+Kingston,USA,Power Plant,35.898,-84.52,USA,-9.434,0.08,48.967,4.7,0.114
+Hebi-Fenghe,China,Power Plant,35.851,114.179,China,-18.342,0.0,566.467,21.467,0.04
+Tehran,Iran,Power Plant,35.64,51.43,Middle East,-8.53,0.0,62.133,16.367,0.275
+Hejin,China,Power Plant,35.597,110.556,China,-14.301,0.0,341.967,21.567,0.066
+Marshall,USA,Power Plant,35.597,-80.966,USA,-10.612,0.11,63.133,1.667,0.042
+Kirkuk,Iraq,Oil and Gas,35.53,44.34,Middle East,-1.454,0.075,77.967,79.367,1.018
+Higashi-Ogu,Japan,Power Plant,35.479,139.728,Rest of world,-1.159,0.587,24.133,22.467,0.934
+Bakersfield,USA,Power Plant,35.456,-119.0,USA,8.88,0.017,3.6,14.067,3.275
+Ulsan,South Korea,Oil and Gas,35.446,129.346,Rest of world,-5.5,0.017,42.167,20.733,0.503
+Xinxiang-Baoshan,China,Power Plant,35.327,113.492,China,-17.329,0.0,433.767,26.6,0.063
+Zouxian,China,Power Plant,35.324,116.928,China,-19.08,0.0,502.2,17.133,0.036
+Harrington,USA,Power Plant,35.299,-101.748,USA,-5.481,0.08,13.533,5.567,0.452
+Muhradah,Syria,Power Plant,35.264,36.585,Middle East,-8.265,0.0,86.833,20.967,0.25
+Kherbet Al-Sansel,Syria,Power Plant,35.171,35.928,Middle East,-6.736,0.0,97.867,38.067,0.395
+Qinbei,China,Power Plant,35.168,112.716,China,-22.325,0.0,275.933,12.233,0.048
+Haizhou,China,Power Plant,35.155,119.349,China,-4.141,0.11,35.067,21.267,0.617
+Chengcheng,China,Power Plant,35.151,109.932,China,-16.924,0.0,282.933,14.533,0.055
+Shahid Mofateh,Iran,Power Plant,35.12,48.85,Middle East,47.036,0.0,0.867,27.3,15.161
+Bayji,Iraq,Power Plant,35.04,43.559,Middle East,-9.06,0.003,71.633,36.733,0.52
+Nagoya,Japan,Smelter,35.026,136.864,Rest of world,-3.04,0.124,37.233,15.5,0.432
+Al-Zara,Syria,Power Plant,34.959,36.661,Middle East,-3.978,0.264,60.833,29.067,0.486
+Gwangyang,South Korea,Power Plant,34.919,127.769,Rest of world,-2.223,0.291,36.067,47.433,1.307
+Colbert,USA,Power Plant,34.744,-87.85,USA,-10.313,0.004,21.9,6.967,0.348
+Xinan,China,Power Plant,34.74,112.056,China,-22.087,0.0,346.067,11.467,0.036
+Luoyang,China,Power Plant,34.732,112.755,China,-20.995,0.0,604.0,16.333,0.029
+Moni,Cyprus,Power Plant,34.711,33.182,Europe & Turkey,-8.501,0.013,20.6,7.6,0.398
+Qom,Iran,Power Plant,34.579,50.755,Middle East,5.313,0.07,7.067,11.1,1.5
+Fushuizhen,China,Power Plant,34.532,109.936,China,-18.761,0.0,327.133,12.0,0.04
+Deir Aamar,Lebanon,Power Plant,34.465,35.894,Middle East,-10.941,0.002,24.433,1.867,0.113
+Sangan,Iran,Smelter,34.446,60.384,Middle East,78.707,0.0,0.0,41.7,42.7
+Weihe,China,Power Plant,34.429,108.911,China,-15.557,0.0,203.967,12.267,0.065
+Ychuan,China,Power Plant,34.414,112.499,China,-19.33,0.0,370.467,11.6,0.034
+Liguozhen,China,Power Plant,34.377,117.176,China,-21.532,0.0,523.267,8.133,0.017
+Dengfeng,China,Power Plant,34.375,113.055,China,-19.347,0.0,481.0,17.367,0.038
+Bisotun Kermanshah,Iran,Power Plant,34.348,47.357,Middle East,21.806,0.001,0.0,20.033,21.033
+Skhira,Tunisia,Oil and Gas,34.347,10.151,Rest of world,3.421,0.184,19.5,23.1,1.176
+Bowen,USA,Power Plant,34.125,-84.922,USA,-9.783,0.097,185.1,11.9,0.069
+Miyake-jima,Japan,Volcano,34.079,139.529,Rest of world,-53.94,0.0,790.333,0.0,0.001
+Huxian,China,Power Plant,34.076,108.618,China,-17.381,0.0,98.5,2.967,0.04
+Arak,Iran,Oil and Gas,34.003,49.488,Middle East,1.899,0.139,32.0,57.433,1.771
+Zouk,Lebanon,Power Plant,33.962,35.606,Middle East,-7.556,0.216,16.067,3.267,0.25
+Yaomeng,China,Power Plant,33.737,113.24,China,-19.54,0.0,212.533,5.0,0.028
+Chovar,Iran,Oil and Gas,33.714,46.294,Middle East,-13.255,0.239,0.0,0.167,1.167
+Mohammedia,Morocco,Power Plant,33.682,-7.435,Rest of world,-4.942,0.001,71.0,43.333,0.616
+Jieh,Lebanon,Power Plant,33.649,35.402,Middle East,-2.61,0.139,14.367,9.0,0.651
+Gorgas,USA,Power Plant,33.648,-87.201,USA,-13.505,0.035,123.7,8.567,0.077
+Bagdad,Iraq,Oil and Gas,33.49,44.35,Middle East,3.074,0.012,72.533,175.5,2.4
+Teshereen,Syria,Power Plant,33.419,36.686,Middle East,0.0,0.809,1.533,1.267,0.895
+Dakhni,Pakistan,Oil and Gas,33.408,71.941,Rest of world,-7.886,0.194,6.433,1.367,0.318
+Wansley,USA,Power Plant,33.407,-85.036,USA,-26.76,0.0,155.7,1.9,0.019
+Georgetown,USA,Power Plant,33.34,-79.34,USA,-6.782,0.194,35.167,4.1,0.141
+Ernest Gaston,USA,Power Plant,33.242,-86.453,USA,-20.149,0.0,127.033,7.233,0.064
+Harllee Branch,USA,Power Plant,33.194,-83.299,USA,-25.033,0.0,105.567,1.133,0.02
+Mianxian,China,Smelter,33.13,106.66,China,2.646,0.45,6.533,1.467,0.327
+Jorf Lasfar,Morocco,Power Plant,33.105,-8.637,Rest of world,0.678,0.74,78.567,94.833,1.204
+Monticello,USA,Power Plant,33.09,-95.038,USA,-12.586,0.0,66.6,9.2,0.151
+Scherer,USA,Power Plant,33.06,-83.807,USA,-20.834,0.0,85.133,2.133,0.036
+Aso,Japan,Volcano,32.881,131.106,Rest of world,1.123,0.526,105.933,91.433,0.864
+Tripoli,Lybia,Power Plant,32.853,12.236,Rest of world,11.597,0.04,1.733,10.767,4.305
+Al-Mussaib,Iraq,Power Plant,32.839,44.275,Middle East,3.874,0.001,80.633,164.833,2.031
+Isfahan,Iran,Oil and Gas,32.787,51.511,Middle East,-5.56,0.139,76.4,40.333,0.534
+Zubaydiah,Iraq,Power Plant,32.773,45.083,Middle East,12.791,0.0,27.7,193.967,6.793
+Pingwei,China,Power Plant,32.688,116.903,China,-17.644,0.0,179.267,5.167,0.034
+Dehloran,Iran,Oil and Gas,32.5,47.21,Middle East,3.011,0.08,121.133,184.2,1.516
+Hadera,Israel,Power Plant,32.47,34.889,Middle East,-9.889,0.0,63.567,9.867,0.168
+Al-Khairat,Iraq,Power Plant,32.429,44.279,Middle East,11.481,0.0,30.633,204.433,6.494
+Zarinshahr,Iran,Smelter,32.423,51.317,Middle East,-3.768,0.057,49.033,31.867,0.657
+Yangzhou,China,Power Plant,32.269,119.419,China,-18.455,0.0,320.567,8.867,0.031
+Martin Lake,USA,Power Plant,32.259,-94.571,USA,-6.239,0.027,48.9,9.733,0.215
+Safi,Morocco,Power Plant,32.222,-9.249,Rest of world,-2.581,0.216,53.6,29.333,0.556
+Nanjing,China,Power Plant,32.185,118.74,China,-15.737,0.0,288.4,16.233,0.06
+Zhangjiagang,China,Power Plant,31.989,120.688,China,-15.309,0.0,418.067,26.3,0.065
+Ligang,China,Power Plant,31.941,120.079,China,-17.111,0.0,431.0,18.667,0.046
+Maysan,Iraq,Power Plant,31.9,47.14,Middle East,6.154,0.01,23.867,57.067,2.335
+Big Brown,USA,Power Plant,31.821,-96.056,USA,-17.213,0.0,74.3,2.933,0.052
+Maanshan-Wenergy,China,Power Plant,31.751,118.48,China,-12.377,0.0,201.567,23.967,0.123
+Sheikhupura,Pakistan,Power Plant,31.69,74.08,Rest of world,1.024,0.365,18.633,30.467,1.603
+Ashkelon,Israel,Power Plant,31.629,34.522,Middle East,-16.374,0.0,29.733,2.133,0.102
+Chiniot,Pakistan,Power Plant,31.61,72.761,Rest of world,5.95,0.0,11.267,27.767,2.345
+Sakura-jima,Japan,Volcano,31.585,130.657,Rest of world,5.505,0.065,101.433,437.933,4.285
+Shanghai,China,Power Plant,31.35,121.6,China,-17.11,0.001,477.633,22.533,0.049
+Lahore,Pakistan,Power Plant,31.326,74.262,Rest of world,-0.829,0.695,19.567,21.133,1.076
+Ahvaz,Iran,Oil and Gas,31.293,49.121,Middle East,-6.537,0.001,97.0,50.1,0.521
+Khouzestan,Iran,Smelter,31.27,48.732,Middle East,-3.555,0.024,87.9,73.833,0.842
+Wuh-Huadian,China,Power Plant,31.238,118.15,China,-11.503,0.007,71.133,12.433,0.186
+Rupnagar,India,Power Plant,31.043,76.581,India,-12.539,0.003,25.967,5.333,0.235
+Barry,USA,Power Plant,31.006,-88.014,USA,-9.315,0.0,58.633,11.0,0.201
+Nasiriyah,Iraq,Oil and Gas,30.994,46.224,Middle East,-0.31,0.786,57.1,44.967,0.791
+Tongling-Wenergy,China,Power Plant,30.884,117.762,China,-9.498,0.024,68.8,9.633,0.152
+Kikai,Japan,Volcano,30.789,130.308,Rest of world,0.46,0.546,198.8,214.867,1.08
+Zarand,Iran,Smelter,30.76,56.66,Middle East,-6.278,0.147,6.867,3.067,0.517
+Big Cajun,USA,Power Plant,30.729,-91.37,USA,-8.966,0.0,44.933,7.767,0.191
+Yangluo,China,Power Plant,30.695,114.542,China,-18.452,0.0,369.067,9.433,0.028
+Jiaxing,China,Power Plant,30.628,121.145,China,-21.194,0.0,337.933,14.233,0.045
+Sandow,USA,Power Plant,30.566,-97.06,USA,-15.495,0.027,40.1,0.867,0.045
+Rajpura,India,Power Plant,30.557,76.577,India,9.727,0.002,3.333,15.967,3.915
+Guangan,China,Power Plant,30.527,106.824,China,-25.163,0.0,179.467,2.2,0.018
+Sonora,Mexico,Smelter,30.493,-109.633,Rest of world,-2.171,0.227,27.6,12.1,0.458
+Bandar Imam,Iran,Oil and Gas,30.439,49.083,Middle East,-9.262,0.0,220.433,51.133,0.235
+Abadan,Iran,Oil and Gas,30.35,48.28,Middle East,-0.79,0.566,63.633,62.067,0.976
+Kerman,Iran,Power Plant,30.21,56.78,Middle East,-11.517,0.0,17.067,1.867,0.159
+Xisaishang,China,Power Plant,30.202,115.181,China,-15.295,0.0,194.933,12.5,0.069
+Zhangjin,China,Power Plant,30.192,112.604,China,-11.08,0.0,74.933,9.867,0.143
+Shatt Al-Basra,Iraq,Power Plant,30.186,47.837,Middle East,4.129,0.006,70.4,120.133,1.697
+Kot Addu,Pakistan,Power Plant,30.173,70.993,Rest of world,-12.017,0.0,52.4,3.567,0.086
+Bidoo,Iran,Oil and Gas,30.155,50.425,Middle East,0.0,1.0,0.0,4.633,5.633
+Cairo,Egypt,Power Plant,30.123,31.237,Rest of world,-3.851,0.001,107.467,59.1,0.554
+Qianqingzhen,China,Power Plant,30.118,120.409,China,-18.274,0.001,136.533,7.933,0.065
+Khatunabad,Iran,Smelter,30.079,55.394,Middle East,-3.251,0.002,235.633,126.133,0.537
+Sarcheshmeh,Iran,Smelter,29.979,55.857,Middle East,-4.538,0.0,300.733,132.1,0.441
+Zhenhai,China,Oil and Gas,29.977,121.687,China,-11.24,0.11,148.6,19.433,0.137
+Suez,Egypt,Power Plant,29.952,32.504,Rest of world,-3.813,0.085,25.6,17.233,0.685
+Talwandi Sabo,India,Power Plant,29.924,75.237,India,21.243,0.0,0.633,43.6,27.306
+Puerto Libertad,Mexico,Power Plant,29.907,-112.693,Rest of world,-30.3,0.004,47.267,0.4,0.029
+Changshou,China,Power Plant,29.788,107.039,China,-15.622,0.0,124.133,10.867,0.095
+El-Tebeen,Egypt,Power Plant,29.767,31.312,Rest of world,-5.441,0.0,98.733,41.3,0.424
+Renshou,China,Power Plant,29.711,104.309,China,71.839,0.001,0.0,7.533,8.533
+Suwanose-jima,Japan,Volcano,29.635,129.716,Rest of world,0.831,0.45,238.9,295.833,1.237
+Sabiya,Kuwait,Power Plant,29.567,48.169,Middle East,-2.165,0.043,303.933,134.333,0.444
+Neijiang,China,Power Plant,29.527,105.013,China,-11.232,0.139,85.767,3.433,0.051
+Parish,USA,Power Plant,29.48,-95.632,USA,-3.813,0.065,67.533,31.533,0.475
+Huaneng,China,Power Plant,29.451,113.163,China,-14.23,0.001,53.533,7.067,0.148
+Panipat,India,Power Plant,29.396,76.878,India,-8.952,0.0,79.2,26.1,0.338
+Aqaba,Jordan,Power Plant,29.376,34.976,Middle East,-7.621,0.003,22.667,8.033,0.382
+Al Doha,Kuwait,Power Plant,29.365,47.788,Middle East,-2.589,0.002,394.6,138.5,0.353
+Khedar,India,Power Plant,29.348,75.858,India,7.562,0.116,1.767,18.9,7.193
+Luohuang,China,Power Plant,29.347,106.434,China,-16.267,0.0,237.3,16.0,0.071
+Saindakn,Pakistan,Smelter,29.236,61.611,Rest of world,-1.448,0.174,36.167,38.333,1.058
+Khark Island,Iran,Oil and Gas,29.218,50.319,Middle East,-14.709,0.0,801.3,67.733,0.086
+Suratgarh,India,Power Plant,29.183,74.019,India,0.08,1.0,31.033,40.833,1.306
+Daping,China,Power Plant,29.158,107.146,China,-18.955,0.0,80.7,4.1,0.062
+Golgohar,Iran,Smelter,29.136,55.357,Middle East,21.611,0.0,2.8,108.7,28.868
+Crystal River,USA,Power Plant,28.96,-82.7,USA,-14.626,0.0,73.4,5.067,0.082
+Huangjiaxiang,China,Power Plant,28.89,118.866,China,-9.064,0.002,19.367,4.2,0.255
+Luzhou,China,Power Plant,28.781,105.293,China,6.456,0.277,10.033,9.767,0.976
+Az Zour South,Kuwait,Power Plant,28.706,48.372,Middle East,-7.14,0.0,395.4,73.3,0.187
+Fuxi,China,Power Plant,28.666,104.69,China,0.0,0.415,55.467,3.3,0.076
+La Palma,Spain,Volcano,28.615,-17.86,Europe & Turkey,12.279,0.057,3.467,3.233,0.948
+Dadri,India,Power Plant,28.598,77.61,India,-5.525,0.001,46.867,21.367,0.467
+Fereidoon,Saudi Arabia,Oil and Gas,28.5,49.8,Middle East,-2.848,0.0,517.2,328.167,0.635
+Indira Gandhi,India,Power Plant,28.485,76.375,India,-0.679,0.717,19.8,15.367,0.787
+Almasif,Saudi Arabia,Power Plant,28.47,36.518,Middle East,4.618,0.022,7.967,17.267,2.037
+Carbon,Mexico,Power Plant,28.465,-100.681,Rest of world,-9.404,0.0,176.733,32.933,0.191
+Guddo,Pakistan,Power Plant,28.425,69.7,Rest of world,0.312,0.629,2.5,6.767,2.219
+Jiangxi,China,Smelter,28.332,117.226,China,-5.355,0.002,67.9,18.233,0.279
+Fengcheng,China,Power Plant,28.194,115.708,China,-11.892,0.0,122.7,17.267,0.148
+Khetri,India,Smelter,28.076,75.814,India,-25.58,0.0,41.7,0.5,0.035
+Harduaganj,India,Power Plant,28.018,78.129,India,67.148,0.0,0.0,13.4,14.4
+Guaymas,Mexico,Power Plant,27.937,-110.863,Rest of world,-12.659,0.037,21.433,3.433,0.198
+Xupu,China,Power Plant,27.873,110.373,China,0.0,0.976,24.933,1.9,0.112
+Zhuzhou,China,Power Plant,27.859,113.106,China,-17.351,0.0,231.567,9.7,0.046
+Rosa,India,Power Plant,27.819,79.937,India,20.272,0.005,0.0,15.2,16.2
+Xinyu,China,Power Plant,27.777,114.914,China,-8.651,0.001,68.733,17.833,0.27
+Tonbak,Iran,Oil and Gas,27.724,52.184,Middle East,14.859,0.0,110.533,1267.767,11.376
+Jinzhushan,China,Power Plant,27.631,111.48,China,-14.286,0.0,81.833,5.2,0.075
+Zagroz,Iran,Oil and Gas,27.549,52.561,Middle East,12.908,0.0,127.533,937.267,7.3
+Qianbei,China,Power Plant,27.476,106.256,China,-19.811,0.0,471.967,11.633,0.027
+Hail,Saudi Arabia,Power Plant,27.465,41.741,Middle East,-0.796,0.629,10.533,8.967,0.864
+Dalong,China,Power Plant,27.295,109.013,China,-19.015,0.01,55.767,4.867,0.103
+Nishinoshima,Japan,Volcano,27.25,140.874,Rest of world,47.497,0.002,1.333,336.7,144.729
+Iranshar,Iran,Power Plant,27.224,60.493,Middle East,-5.782,0.001,24.833,10.267,0.436
+Walidia,Egypt,Power Plant,27.21,31.16,Rest of world,-0.95,0.566,13.367,10.967,0.833
+Bandar Abbas,Iran,Power Plant,27.147,56.116,Middle East,10.464,0.002,27.467,110.667,3.923
+Jubail,Saudi Arabia,Oil and Gas,27.073,49.568,Middle East,4.512,0.003,64.1,153.133,2.368
+Monlova,Mexico,Smelter,26.888,-101.46,Rest of world,-2.969,0.319,11.4,1.067,0.167
+Yizi,China,Smelter,26.813,102.053,China,-5.871,0.008,18.633,7.3,0.423
+Ningde Coal,China,Power Plant,26.76,119.74,China,26.785,0.0,0.0,11.967,12.967
+Nayong,China,Power Plant,26.652,105.182,China,-24.974,0.0,211.9,2.567,0.017
+Panzhihua,China,Power Plant,26.6,101.5,China,-11.12,0.0,95.8,16.367,0.179
+Tanda,India,Power Plant,26.594,82.597,India,12.448,0.001,7.067,32.367,4.136
+Al Shaheen,Qatar,Oil and Gas,26.593,52.004,Middle East,-1.881,0.11,81.967,58.7,0.72
+Qiandongnan,China,Power Plant,26.582,107.95,China,-24.164,0.0,170.2,1.4,0.014
+Qingzhen,China,Smelter,26.523,106.474,China,-23.702,0.0,680.967,12.3,0.02
+Salakati,India,Power Plant,26.445,90.363,India,10.478,0.001,2.367,21.1,6.564
+Shree,India,Power Plant,26.299,74.126,India,-6.893,0.061,6.933,4.967,0.752
+Anshun,China,Power Plant,26.218,105.687,China,-22.277,0.0,404.133,7.9,0.022
+Buraydah,Saudi Arabia,Power Plant,26.203,44.015,Middle East,-1.349,0.239,24.0,19.833,0.833
+Dongchuan,China,Smelter,26.165,103.133,China,-3.397,0.085,15.267,10.167,0.686
+Alba,Saudi Arabia,Power Plant,26.094,50.6,Middle East,-5.457,0.0,124.067,55.167,0.449
+Bangar Nagar,India,Power Plant,26.075,74.385,India,-9.998,0.04,9.133,1.433,0.24
+Unchahar,India,Power Plant,25.913,81.327,India,-2.733,0.124,21.067,18.3,0.875
+Laffan,Qatar,Oil and Gas,25.91,51.556,Middle East,-6.274,0.0,249.767,78.033,0.315
+Bhadresh,India,Power Plant,25.892,71.327,India,8.488,0.027,0.0,19.267,20.267
+Qujing,China,Power Plant,25.662,104.066,China,-15.296,0.0,150.7,8.967,0.066
+Topolobampo,Mexico,Power Plant,25.608,-109.053,Rest of world,-17.301,0.001,28.967,1.033,0.068
+Cadereyta,Mexico,Oil and Gas,25.588,-99.938,Rest of world,-0.349,0.786,43.033,39.5,0.92
+Paricha,India,Power Plant,25.513,78.758,India,0.0,1.0,7.033,7.167,1.017
+Al Hofuf,Saudi Arabia,Oil and Gas,25.495,49.374,Middle East,-5.67,0.0,131.2,58.633,0.451
+Ciudad Juarez,Mexico,Power Plant,25.493,-103.571,Rest of world,-6.004,0.0,44.633,12.9,0.305
+Barh,India,Power Plant,25.486,85.745,India,20.803,0.0,5.167,78.167,12.838
+Gandhi Nagar,India,Power Plant,25.318,74.54,India,5.413,0.003,7.467,21.2,2.622
+Kalalgaon,India,Power Plant,25.239,87.266,India,2.716,0.156,13.667,42.433,2.961
+Meghalaya,India,Power Plant,25.204,92.38,India,12.687,0.008,11.9,24.1,1.946
+Diandong,China,Power Plant,25.2,104.682,China,-19.274,0.0,152.8,6.6,0.049
+Bara,India,Power Plant,25.196,81.659,India,13.941,0.005,14.0,45.433,3.096
+Uthmaniya,Saudi Arabia,Power Plant,25.187,49.31,Middle East,-6.729,0.0,114.4,41.667,0.37
+Das Island,United Arab Emirates,Oil and Gas,25.15,52.877,Middle East,-0.172,0.88,428.767,458.333,1.069
+Kota,India,Power Plant,25.13,75.884,India,-0.1,0.88,32.033,29.967,0.937
+Kunming,China,Power Plant,25.015,102.333,China,-13.238,0.0,63.333,5.4,0.099
+Dariba,India,Smelter,24.967,74.121,India,2.945,0.432,7.1,13.433,1.782
+Yangzonghai,China,Power Plant,24.962,103.028,China,-16.526,0.0,106.0,4.467,0.051
+Chanderia,India,Smelter,24.962,74.663,India,0.545,0.398,17.1,23.9,1.376
+Karachi,Pakistan,Power Plant,24.906,66.694,Rest of world,-7.571,0.0,87.133,29.7,0.348
+Mesaieed,Qatar,Oil and Gas,24.895,51.545,Middle East,-8.364,0.017,175.1,23.367,0.138
+Lalitpur,India,Power Plant,24.797,78.646,India,78.439,0.0,0.0,22.567,23.567
+Bin Qasim,Pakistan,Power Plant,24.782,67.36,Rest of world,0.206,0.717,59.4,44.1,0.747
+Farakka,India,Power Plant,24.774,87.894,India,1.181,0.365,39.2,42.767,1.089
+Hechi,China,Smelter,24.71,108.03,China,-18.394,0.0,117.967,4.8,0.049
+Nabinagar,India,Power Plant,24.705,84.089,India,45.112,0.0,4.2,76.2,14.846
+Chowki Motipura,India,Power Plant,24.62,77.04,India,41.497,0.0,0.0,48.267,49.267
+Shaogua,China,Power Plant,24.59,113.58,China,-9.216,0.003,55.867,8.567,0.168
+Jhalawar,India,Power Plant,24.53,76.099,India,26.441,0.0,0.0,30.967,31.967
+Riyad,Saudi Arabia,Oil and Gas,24.52,46.87,Middle East,-0.277,0.672,61.067,58.967,0.966
+Liuzhou,China,Smelter,24.381,109.38,China,-12.872,0.0,192.8,10.633,0.06
+Sagardighi,India,Power Plant,24.372,88.104,India,9.675,0.0,10.7,54.967,4.783
+Majan,Oman,Smelter,24.305,56.425,Middle East,-26.439,0.002,53.233,0.733,0.032
+La Paz,Mexico,Power Plant,24.199,-110.256,Rest of world,2.8,0.065,18.4,19.467,1.055
+Vindhyachal,India,Power Plant,24.09,82.68,India,3.192,0.0,235.533,369.167,1.565
+Haradh,Saudi Arabia,Oil and Gas,24.052,49.2,Middle East,0.0,0.904,2.667,5.767,1.845
+Summit Gazipur,Bangladesh,Power Plant,23.992,90.338,Rest of world,20.355,0.0,2.967,30.833,8.025
+Yanbu,Saudi Arabia,Oil and Gas,23.947,38.31,Middle East,4.114,0.043,94.267,188.7,1.991
+Habshan,United Arab Emirates,Oil and Gas,23.846,53.646,Middle East,-11.76,0.016,183.467,20.1,0.114
+Honghe,China,Power Plant,23.839,103.198,China,-15.923,0.0,235.267,11.933,0.055
+Heshan,China,Power Plant,23.828,108.869,China,-28.164,0.0,303.8,0.333,0.004
+Chandrapura,India,Power Plant,23.738,86.127,India,1.154,0.381,50.6,60.933,1.2
+Kutch,India,Power Plant,23.664,68.784,India,-1.948,0.526,88.467,64.3,0.73
+Dhaka,Bangladesh,Power Plant,23.63,90.45,Rest of world,11.072,0.005,5.733,20.733,3.228
+Raghunathpur,India,Power Plant,23.622,86.661,India,4.799,0.0,42.833,105.133,2.421
+Durgapur,India,Power Plant,23.577,87.209,India,5.929,0.0,39.7,118.0,2.924
+Xinguang,China,Power Plant,23.472,103.276,China,-13.025,0.0,198.667,19.3,0.102
+Birsinghpur,India,Power Plant,23.306,81.065,India,-1.178,0.398,28.233,25.3,0.9
+Xinfa,China,Power Plant,23.266,106.377,China,-17.955,0.227,0.0,0.967,1.967
+Gandhi Nagar,India,Power Plant,23.245,72.674,India,-3.063,0.01,47.267,25.1,0.541
+Mazatlan,Mexico,Power Plant,23.189,-106.356,Rest of world,-9.146,0.0,85.533,16.533,0.203
+Guiteras,Cuba,Power Plant,23.071,-81.537,Rest of world,-2.403,0.001,119.067,73.7,0.622
+Laharpur,India,Power Plant,23.066,81.786,India,1.723,0.587,9.933,8.1,0.832
+Mariel,Cuba,Power Plant,23.02,-82.75,Rest of world,-0.357,0.695,63.367,56.967,0.901
+Bateen Liwa,United Arab Emirates,Oil and Gas,22.915,53.955,Middle East,69.331,0.011,0.0,8.867,9.867
+Wanakbori,India,Power Plant,22.875,73.362,India,1.261,0.305,32.733,31.1,0.952
+Mundra,India,Power Plant,22.823,69.553,India,8.676,0.012,33.167,198.767,5.847
+Morbi,India,Power Plant,22.8,70.901,India,9.33,0.0,32.167,229.767,6.958
+Tata,India,Power Plant,22.785,86.2,India,3.409,0.002,22.933,49.467,2.109
+Foshan,China,Power Plant,22.75,113.67,China,-15.591,0.0,547.5,23.567,0.045
+Binaiki,India,Power Plant,22.736,79.912,India,22.277,0.005,0.0,11.8,12.8
+Barrackpore,India,Power Plant,22.732,88.37,India,-6.654,0.013,34.3,9.3,0.292
+Rabigh,Saudi Arabia,Power Plant,22.666,39.032,Middle East,5.495,0.006,134.433,311.767,2.309
+Moubhandar,India,Smelter,22.595,86.452,India,-2.503,0.075,29.333,25.133,0.862
+Linhai,Taiwan,Oil and Gas,22.535,120.359,Rest of world,-7.089,0.0,60.133,13.2,0.232
+Kolaghat,India,Power Plant,22.415,87.873,India,-0.889,0.566,36.567,34.8,0.953
+Korba,India,Power Plant,22.393,82.743,India,4.451,0.0,108.1,278.733,2.564
+Gujarat,India,Oil and Gas,22.371,73.12,India,-2.984,0.174,23.667,13.367,0.582
+Essar,India,Oil and Gas,22.333,69.752,India,-0.932,0.566,86.933,78.033,0.899
+Chittagong,Bangladesh,Oil and Gas,22.281,91.809,Rest of world,38.742,0.0,0.233,9.833,8.784
+Tampico,Mexico,Oil and Gas,22.27,-97.81,Rest of world,0.269,0.976,89.2,80.7,0.906
+Cienfuegos,Cuba,Power Plant,22.188,-80.519,Rest of world,-2.317,0.174,40.3,16.4,0.421
+Sipat,India,Power Plant,22.132,82.292,India,7.669,0.0,53.567,254.6,4.684
+Satpura,India,Power Plant,22.112,78.172,India,-13.124,0.0,42.9,5.2,0.141
+Dongaliya,India,Power Plant,22.103,76.536,India,39.319,0.0,0.0,43.5,44.5
+Tamnar,India,Power Plant,22.099,83.451,India,11.038,0.0,28.667,359.8,12.162
+Tamuin,Mexico,Power Plant,22.071,-98.846,Rest of world,50.595,0.016,0.0,2.267,3.267
+Baradarha,India,Power Plant,21.911,83.189,India,18.196,0.0,5.2,227.867,36.914
+Villa De Reyes,Mexico,Power Plant,21.832,-100.936,Rest of world,-12.911,0.0,38.7,0.333,0.034
+Sterlite,India,Power Plant,21.785,84.055,India,15.141,0.0,0.233,323.3,262.946
+Ambetha,India,Power Plant,21.686,72.584,India,3.151,0.097,56.6,68.967,1.215
+Maoming,China,Oil and Gas,21.68,110.88,China,-4.418,0.075,71.733,16.433,0.24
+Haziar,India,Power Plant,21.583,72.223,India,5.958,0.043,37.767,63.367,1.66
+Nuevitas,Cuba,Power Plant,21.566,-77.273,Rest of world,0.365,0.695,48.7,42.233,0.87
+Raikheda,India,Power Plant,21.45,81.852,India,8.836,0.0,19.467,94.8,4.681
+Jeddah,Saudi Arabia,Oil and Gas,21.443,39.181,Middle East,-4.589,0.0,264.7,128.733,0.488
+Tirora,India,Power Plant,21.413,79.967,India,24.098,0.0,3.033,106.733,26.711
+Surat,India,Power Plant,21.398,73.107,India,0.38,0.291,39.667,44.167,1.111
+Koradi,India,Power Plant,21.248,79.1,India,7.362,0.0,55.667,142.233,2.528
+Ukai,India,Power Plant,21.209,73.557,India,-1.929,0.365,13.833,6.967,0.537
+Bhilai,India,Power Plant,21.184,81.423,India,1.53,0.415,24.567,40.367,1.618
+Xiashan,China,Oil and Gas,21.17,110.38,China,2.263,0.717,73.7,11.6,0.169
+Hazira,India,Power Plant,21.165,72.661,India,0.035,1.0,35.833,35.2,0.983
+Talcher,India,Power Plant,21.096,85.076,India,2.714,0.0,142.667,218.667,1.529
+Nandgaonpeth,India,Power Plant,21.078,77.901,India,21.634,0.001,7.7,40.5,4.77
+Bhusawal,India,Power Plant,21.048,75.846,India,4.584,0.001,15.6,30.3,1.886
+Hoang Thach,Vietnam,Power Plant,21.039,106.59,Rest of world,6.584,0.004,36.467,74.4,2.012
+Tuxpan,Mexico,Power Plant,21.016,-97.333,Rest of world,-3.865,0.009,260.067,123.233,0.476
+Quang Ninh,Vietnam,Power Plant,21.012,107.13,Rest of world,17.694,0.0,4.2,73.733,14.372
+Duburi,India,Power Plant,20.967,86.012,India,10.221,0.0,10.567,66.833,5.865
+Ambujanagar,India,Power Plant,20.838,70.689,India,-2.944,0.251,24.3,10.5,0.455
+Paras,India,Power Plant,20.715,76.795,India,-2.609,0.381,5.5,8.2,1.415
+Nicaro,Cuba,Smelter,20.693,-75.546,Rest of world,-3.802,0.009,74.4,50.967,0.689
+Che Guevara,Cuba,Smelter,20.639,-74.88,Rest of world,-0.589,0.651,43.467,44.433,1.022
+Shaiba,Saudi Arabia,Power Plant,20.627,39.556,Middle East,-1.655,0.02,337.267,232.0,0.689
+Salamanca,Mexico,Power Plant,20.57,-101.17,Rest of world,-3.848,0.11,61.767,29.867,0.492
+Wadi al-Dawasir,Saudi Arabia,Power Plant,20.393,45.208,Middle East,0.086,1.0,11.2,9.3,0.844
+Paradeep,India,Power Plant,20.314,86.666,India,21.115,0.0,6.067,99.2,14.179
+Tula,Mexico,Oil and Gas,20.052,-99.28,Rest of world,-5.161,0.0,267.133,102.233,0.385
+Chandrapur,India,Power Plant,20.007,79.289,India,-0.878,0.08,128.0,106.333,0.832
+Antonio Maceo,Cuba,Power Plant,19.995,-75.871,Rest of world,4.654,0.061,16.433,30.5,1.807
+Nasik,India,Power Plant,19.982,73.89,India,-10.405,0.0,32.5,6.0,0.209
+Cantarell,Mexico,Oil and Gas,19.44,-92.02,Rest of world,-1.713,0.085,334.667,428.2,1.279
+Kilauea,USA,Volcano,19.42,-155.29,USA,-10.329,0.014,666.033,242.367,0.365
+Tihama,Saudi Arabia,Power Plant,19.289,41.744,Middle East,0.0,0.264,0.0,0.0,1.0
+Tihama,Saudi Arabia,Power Plant,19.099,41.156,Middle East,11.93,0.07,0.0,6.133,7.133
+Manzanillo,Mexico,Power Plant,19.083,-104.282,Rest of world,-17.042,0.0,363.967,20.233,0.058
+Popocatepetl,Mexico,Volcano,19.023,-98.622,Rest of world,1.553,0.381,308.5,583.6,1.889
+Trombay,India,Power Plant,19.003,72.897,India,-2.888,0.085,80.567,41.6,0.522
+Parli,India,Power Plant,18.868,76.525,India,-2.816,0.012,22.067,14.9,0.689
+Ramagundam,India,Power Plant,18.755,79.46,India,1.478,0.057,75.5,88.2,1.166
+Itabo 2,Dominican Republic,Power Plant,18.41,-70.03,Rest of world,-3.166,0.025,25.667,15.967,0.636
+Chelpur,India,Power Plant,18.384,79.826,India,7.753,0.003,4.9,21.533,3.819
+Birba Gathering,Oman,Oil and Gas,18.318,55.102,Middle East,-2.308,0.165,18.2,8.9,0.516
+Mae Moh,Thailand,Power Plant,18.296,99.753,Rest of world,-2.364,0.131,21.3,12.9,0.623
+Pagan,Northern Mariana Islands,Volcano,18.138,145.787,Rest of world,-8.219,0.156,60.567,46.9,0.778
+Manchester,Jamaica,Smelter,18.081,-77.476,Rest of world,-7.487,0.001,74.733,13.533,0.192
+Rabab Harwell-2,Oman,Oil and Gas,18.006,54.57,Middle East,10.99,0.046,7.5,31.533,3.827
+Central Costa Sur,Puerto Rico,Power Plant,18.005,-66.747,Rest of world,-4.016,0.11,11.967,6.067,0.545
+Petacalco,Mexico,Power Plant,17.983,-102.117,Rest of world,3.375,0.014,87.633,172.233,1.954
+Minatitlan,Mexico,Oil and Gas,17.978,-94.53,Rest of world,5.719,0.05,45.933,79.633,1.718
+Kingston,Jamaica,Oil and Gas,17.974,-76.818,Rest of world,-3.975,0.002,59.6,29.1,0.497
+Guayama,Puerto Rico,Power Plant,17.946,-66.16,Rest of world,9.283,0.035,6.3,8.2,1.26
+Reforma,Mexico,Oil and Gas,17.894,-93.186,Rest of world,15.101,0.0,30.667,490.033,15.506
+Ciudad,Mexico,Oil and Gas,17.886,-92.492,Rest of world,11.397,0.0,34.7,249.633,7.021
+Shuqaiq,Saudi Arabia,Power Plant,17.66,42.077,Middle East,25.924,0.0,10.333,325.233,28.785
+Kothagudem,India,Power Plant,17.622,80.697,India,0.393,0.695,36.433,48.933,1.334
+Najran,Saudi Arabia,Power Plant,17.6,44.34,Middle East,-3.939,0.02,13.633,7.067,0.551
+Simhadri,India,Power Plant,17.595,83.09,India,2.875,0.001,70.933,116.6,1.635
+Xan,Guatemala,Oil and Gas,17.532,-90.786,Rest of world,-0.779,0.695,39.433,28.9,0.739
+Jaigarh,India,Power Plant,17.297,73.212,India,26.069,0.0,0.933,24.567,13.224
+Wadi,India,Power Plant,17.059,76.979,India,6.858,0.165,1.667,7.967,3.363
+Jazan,Saudi Arabia,Power Plant,16.939,42.633,Middle East,35.185,0.003,2.967,56.667,14.538
+Soufriere Hills,Montserrat (UK),Volcano,16.72,-62.18,Rest of world,-14.576,0.0,691.033,53.567,0.079
+Vijayawada,India,Power Plant,16.6,80.536,India,1.394,0.091,38.333,57.8,1.495
+Kudgi,India,Power Plant,16.5,75.833,India,68.755,0.0,0.0,34.9,35.9
+Raichur,India,Power Plant,16.353,77.344,India,1.946,0.019,34.233,58.4,1.686
+Anatahan,Northern Mariana Islands,Volcano,16.35,145.67,Rest of world,-13.082,0.184,1383.967,7.633,0.006
+Salina Cruz,Mexico,Oil and Gas,16.206,-95.178,Rest of world,-0.702,0.264,128.333,122.267,0.953
+Sual,Philippines,Power Plant,16.124,120.101,Rest of world,1.914,0.277,7.7,12.967,1.605
+Choloma,Honduras,Power Plant,15.596,-87.937,Rest of world,3.715,0.027,15.533,29.1,1.821
+Masinloc,Philippines,Power Plant,15.565,119.923,Rest of world,-4.634,0.194,7.267,1.233,0.27
+Jebel at Tair,Yemen,Volcano,15.55,41.83,Middle East,0.0,0.587,115.933,0.467,0.013
+Torangallu,India,Power Plant,15.184,76.662,India,7.536,0.0,13.0,79.933,5.781
+Santa Maria,Guatemala,Volcano,14.756,-91.552,Rest of world,-0.209,0.928,95.633,113.433,1.184
+Rayala Seema,India,Power Plant,14.703,78.458,India,4.74,0.006,4.4,33.2,6.333
+Dakar,Snengal,Power Plant,14.689,-17.432,Rest of world,2.072,0.546,31.1,27.833,0.898
+Thap Kwang,Thailand,Power Plant,14.634,101.077,Rest of world,9.627,0.097,15.267,11.933,0.795
+Mariveles,Philippines,Volcano,14.52,120.47,Rest of world,1.91,0.381,24.4,34.233,1.387
+Fuego,Guatemala,Volcano,14.473,-90.88,Rest of world,3.352,0.005,98.933,111.967,1.13
+Nelatur,India,Power Plant,14.326,80.122,India,94.295,0.0,0.0,109.667,110.667
+Taai,Philippines,Volcano,14.002,120.993,Rest of world,22.563,0.003,25.8,789.667,29.502
+Tha Tum,Thailand,Power Plant,13.931,101.586,Rest of world,10.483,0.027,4.467,16.3,3.165
+Santa Ana,El Salvador,Volcano,13.853,-89.63,Rest of world,7.512,0.11,88.033,24.167,0.283
+Erta Ale,Ethiopia,Volcano,13.6,40.67,Rest of world,3.974,0.037,16.367,69.933,4.084
+Usulutan,El Salvador,Volcano,13.418,-88.469,Rest of world,22.666,0.057,3.933,12.4,2.716
+Mayon,Philippines,Volcano,13.257,123.685,Rest of world,-1.042,0.763,210.5,168.433,0.801
+North Chennai,India,Power Plant,13.25,80.33,India,1.441,0.075,88.967,110.333,1.237
+Lanco Udupi,India,Power Plant,13.16,74.8,India,3.701,0.085,24.767,44.733,1.775
+Bulusan,Philippines,Volcano,12.768,124.053,Rest of world,-3.585,0.349,155.133,38.167,0.251
+San Cristobal,Nicaragua,Volcano,12.702,-87.004,Rest of world,-3.445,0.165,175.833,121.567,0.693
+Map Ta Phut,Thailand,Power Plant,12.658,101.16,Rest of world,-0.917,0.432,49.567,29.867,0.61
+Valero,Aruba,Oil and Gas,12.43,-69.9,Rest of world,-16.123,0.0,310.8,19.067,0.064
+Momotombo,Nicaragua,Volcano,12.424,-86.54,Rest of world,-0.085,0.904,82.033,72.133,0.881
+Barren Island,India,Volcano,12.278,93.858,India,-16.234,0.035,195.233,24.167,0.128
+Isla,Curacao,Oil and Gas,12.133,-68.932,Rest of world,-14.511,0.0,146.1,8.933,0.068
+Masaya,Nicaragua,Volcano,11.984,-86.161,Rest of world,-0.651,0.786,304.167,188.0,0.619
+Mettur,India,Power Plant,11.772,77.815,India,0.319,0.74,30.233,29.067,0.963
+Paraguana,Venezuela,Oil and Gas,11.75,-70.2,Rest of world,-8.495,0.0,160.967,46.567,0.294
+Neyveli,India,Power Plant,11.555,79.444,India,1.59,0.01,304.3,399.4,1.311
+Vinh Tan,Vietnam,Power Plant,11.317,108.807,Rest of world,21.965,0.0,1.4,43.767,18.653
+Syama,Mali,Smelter,10.793,-6.064,Rest of world,13.091,0.0,1.5,39.6,16.24
+Tablazo,Venezuela,Oil and Gas,10.76,-71.53,Rest of world,-11.525,0.065,12.5,0.133,0.084
+Tacoa,Venezuela,Oil and Gas,10.587,-67.08,Rest of world,-24.869,0.001,44.7,1.1,0.046
+Moron,Venezuela,Power Plant,10.495,-68.155,Rest of world,-4.305,0.001,40.767,19.533,0.492
+Arenal,Costa Rica,Volcano,10.463,-84.703,Rest of world,-0.874,0.74,78.033,178.667,2.273
+Kanlaon,Philippines,Volcano,10.412,123.132,Rest of world,72.004,0.0,89.5,345.1,3.824
+Mamonal,Colombia,Oil and Gas,10.325,-75.497,Rest of world,12.765,0.001,2.3,12.0,3.939
+Point-a-Pierre,Trinidad,Oil and Gas,10.316,-61.448,Rest of world,-5.738,0.017,30.167,9.6,0.34
+Jose,Venezuela,Oil and Gas,10.076,-64.875,Rest of world,4.213,0.01,70.933,171.5,2.398
+Turrialba,Costa Rica,Volcano,10.025,-83.767,Rest of world,-6.156,0.291,39.467,43.633,1.103
+Kochi,India,Oil and Gas,9.97,76.376,India,0.175,0.952,27.0,19.333,0.726
+Tuticorin,India,Power Plant,8.763,78.171,India,0.651,0.608,60.833,67.0,1.1
+Gecelca,Venezuela,Power Plant,7.992,-75.594,Rest of world,64.868,0.002,0.0,15.8,16.8
+Barrancabermeja,Colombia,Oil and Gas,7.071,-73.878,Rest of world,-6.978,0.0,30.1,9.733,0.345
+Sapugaskanda,Shi Lanka,Oil and Gas,6.966,79.958,Rest of world,-6.561,0.012,26.8,7.8,0.317
+Nevado del Ruiz,Colombia,Volcano,4.895,-75.322,Rest of world,9.966,0.349,50.967,349.8,6.75
+Janamanjung,Malaysia,Power Plant,4.159,100.642,Rest of world,12.329,0.0,9.0,50.1,5.11
+Sinabung,Indonesia,Volcano,3.17,98.392,Rest of world,5.162,0.334,5.4,33.167,5.339
+Kapar,Malaysia,Power Plant,3.116,101.321,Rest of world,-4.308,0.184,26.5,15.7,0.607
+Nevado del Huila,Colombia,Volcano,2.93,-76.03,Rest of world,-10.877,0.006,74.667,22.2,0.307
+Karangetang,Indonesia,Volcano,2.78,125.4,Rest of world,1.218,0.381,123.067,161.033,1.306
+Jimah Power,Malaysia,Power Plant,2.592,101.725,Rest of world,4.305,0.216,7.933,33.667,3.881
+Dukono,Indonesia,Volcano,1.68,127.88,Rest of world,3.485,0.006,405.633,775.5,1.91
+Lokon-Empung,Indonesia,Volcano,1.358,124.792,Rest of world,-15.013,0.04,19.767,8.5,0.457
+Singapore,Singapore,Oil and Gas,1.28,103.71,Rest of world,-7.426,0.0,292.2,83.0,0.286
+Galeras,Colombia,Volcano,1.201,-77.391,Rest of world,-32.02,0.0,81.167,0.167,0.014
+Perawang,Indonesia,Power Plant,0.685,101.62,Rest of world,5.904,0.003,27.0,64.067,2.324
+Koerintji,Indonesia,Power Plant,0.441,101.896,Rest of world,1.493,0.365,24.8,38.633,1.536
+Reventador,Ecuador,Volcano,-0.077,-77.656,Rest of world,-5.657,0.11,134.633,41.0,0.31
+Padang,Indonesia,Volcano,-0.39,100.46,Rest of world,8.273,0.566,28.6,169.967,5.776
+Sierra Negra,Ecuador,Volcano,-0.83,-91.17,Rest of world,4.87,0.11,9.867,25.233,2.414
+Nyamuragira,Democratic Republic of Congo,Volcano,-1.408,29.2,Rest of world,-9.123,0.037,1137.867,1264.833,1.111
+Tungurahua,Ecuador,Volcano,-1.467,-78.442,Rest of world,-14.518,0.007,253.067,25.9,0.106
+Kerinci,Indonesia,Volcano,-1.697,101.264,Rest of world,-3.053,0.057,125.8,21.433,0.177
+Sangay,Ecuador,Volcano,-2.0,-78.341,Rest of world,12.868,0.131,67.9,107.333,1.572
+Stardust,Indonesia,Power Plant,-2.011,121.43,Rest of world,1.53,0.546,7.4,21.233,2.647
+Soroako,Indonesia,Smelter,-2.57,121.379,Rest of world,-4.424,0.043,50.633,21.833,0.442
+Labota,Indonesia,Power Plant,-2.829,122.161,Rest of world,55.862,0.0,8.267,259.9,28.155
+Kadovar,Papua New Guinea,Volcano,-3.608,144.588,Rest of world,-2.413,0.131,568.8,184.8,0.326
+Delong,Indonesia,Power Plant,-3.875,122.405,Rest of world,43.713,0.0,3.967,51.067,10.483
+Manam,Papua New Guinea,Volcano,-4.08,145.037,Rest of world,-2.807,0.014,857.6,308.9,0.361
+Tavurvur,Papua New Guinea,Volcano,-4.24,152.21,Rest of world,-34.188,0.004,596.367,1.267,0.004
+Ulawun,Papua New Guinea,Volcano,-5.05,151.33,Rest of world,-2.355,0.381,165.167,110.267,0.67
+Langila,Papua New Guinea,Volcano,-5.525,148.42,Rest of world,-1.238,0.651,424.867,233.633,0.551
+Suralaya,Indonesia,Power Plant,-5.888,106.03,Rest of world,1.606,0.02,134.8,167.033,1.237
+Krakatau,Indonesia,Volcano,-6.106,105.424,Rest of world,5.611,0.043,50.1,149.733,2.95
+Bagana,Papua New Guinea,Volcano,-6.14,155.195,Rest of world,-4.595,0.0,1196.667,494.633,0.414
+Tanjung,Indonesia,Power Plant,-6.445,110.743,Rest of world,17.615,0.0,4.667,69.633,12.465
+Pelabuhan Ratu,Indonesia,Power Plant,-7.024,106.546,Rest of world,75.182,0.0,0.0,18.2,19.2
+Slamet,Indonesia,Volcano,-7.242,109.208,Rest of world,-4.099,0.264,80.467,38.833,0.489
+Merapi,Indonesia,Volcano,-7.556,110.44,Rest of world,12.638,0.08,24.233,18.0,0.753
+Cilacap,Indonesia,Oil and Gas,-7.704,109.001,Rest of world,-1.121,0.546,107.3,75.633,0.708
+Paiton,Indonesia,Power Plant,-7.715,113.583,Rest of world,-0.764,0.856,130.533,130.2,0.997
+Arjuno-Welirang,Indonesia,Volcano,-7.733,112.575,Rest of world,0.481,0.88,107.167,126.933,1.183
+Tengger Caldera,Indonesia,Volcano,-7.942,112.95,Rest of world,0.871,0.526,270.133,356.0,1.317
+Ijen,Indonesia,Volcano,-8.058,114.242,Rest of world,-4.31,0.032,344.1,146.967,0.429
+Sangeang Api,Indonesia,Volcano,-8.209,119.066,Rest of world,11.947,0.239,0.167,2.8,3.257
+Lewotolo,Indonesia,Volcano,-8.272,123.505,Rest of world,-4.872,0.007,245.8,193.133,0.787
+Paluweh,Indonesia,Volcano,-8.32,121.708,Rest of world,10.815,0.124,4.467,38.267,7.183
+Agung,Indonesia,Volcano,-8.343,115.508,Rest of world,0.0,0.506,0.0,0.0,1.0
+Abreu,Brazil,Oil and Gas,-8.381,-35.026,Rest of world,10.892,0.003,8.567,34.2,3.679
+Rinjani,Indonesia,Volcano,-8.42,116.47,Rest of world,0.0,0.88,0.0,0.167,1.167
+Sirung,Indonesia,Volcano,-8.509,124.127,Rest of world,1.419,0.365,132.533,162.533,1.225
+Ebulobo,Indonesia,Volcano,-8.82,121.18,Rest of world,-1.728,0.432,5.6,13.167,2.146
+Tinakula,Santa Cruz Islands,Volcano,-10.38,165.8,Rest of world,0.094,0.976,149.0,122.0,0.82
+Sergipe,Brazil,Oil and Gas,-10.643,-37.093,Rest of world,3.682,0.334,1.8,10.767,4.202
+La Oroya,Peru,Smelter,-11.525,-75.898,Rest of world,-32.078,0.0,332.467,0.6,0.005
+Copperbelt,Zambia,Smelter,-12.534,28.236,Rest of world,-11.199,0.0,100.5,15.767,0.165
+Camacari,Brazil,Smelter,-12.62,-38.369,Rest of world,-0.913,0.381,39.533,26.267,0.673
+Gaua,Vanuatu,Volcano,-14.27,167.5,Rest of world,4.925,0.194,38.4,156.767,4.004
+Aoba,Vanuatu,Volcano,-15.4,167.83,Rest of world,-3.547,0.487,742.933,603.767,0.813
+Sabancaya,Peru,Volcano,-15.795,-71.86,Rest of world,54.771,0.001,0.0,92.2,93.2
+Ambrym,Vanuatu,Volcano,-16.25,168.12,Rest of world,-17.292,0.057,1609.533,29.167,0.019
+Ubinas,Peru,Volcano,-16.34,-70.9,Rest of world,-7.058,0.334,123.867,33.5,0.276
+Ilo,Peru,Smelter,-17.5,-71.36,Rest of world,-2.452,0.469,960.233,173.633,0.182
+Selous,Zimbabwe,Power Plant,-18.033,30.433,Rest of world,2.803,0.194,13.067,18.567,1.391
+Hwange,Zimbabwe,Power Plant,-18.385,26.471,Rest of world,4.14,0.001,28.033,59.033,2.068
+Isluga,Chile,Volcano,-19.15,-68.83,Rest of world,9.408,0.365,5.567,33.767,5.294
+Tsumeb,Namibia,Smelter,-19.227,17.727,Rest of world,-15.129,0.002,32.3,5.367,0.191
+Yasur,Vanuatu,Volcano,-19.53,169.442,Rest of world,6.373,0.0,276.8,807.267,2.91
+Tofua,Tonga Islands,Volcano,-19.75,-175.07,Rest of world,-1.639,0.487,88.8,100.633,1.132
+Mt Isa,Australia,Smelter,-20.729,139.481,Rest of world,-0.929,0.139,204.933,171.8,0.839
+Reunuin,"Reunion Island, France",Volcano,-21.231,55.713,Rest of world,-7.45,0.349,79.033,12.9,0.174
+Phikwe,Botswana,Smelter,-21.945,27.86,Rest of world,-34.377,0.0,273.167,0.6,0.006
+Chuquicamata,Chile,Smelter,-22.314,-68.887,Rest of world,-6.904,0.001,68.933,26.667,0.396
+Morpule,Botswana,Power Plant,-22.52,27.05,Rest of world,-23.97,0.001,63.667,0.7,0.026
+Duke,Brazil,Oil and Gas,-22.719,-43.254,Rest of world,-1.374,0.45,53.633,34.567,0.651
+Lascar,Chile,Volcano,-23.368,-67.68,Rest of world,-4.454,0.264,33.0,20.8,0.641
+Stanwell,Australia,Power Plant,-23.51,150.32,Rest of world,-0.849,0.74,14.567,15.833,1.081
+Matimba,South Africa,Power Plant,-23.705,27.564,Rest of world,2.616,0.001,231.6,297.933,1.285
+Noranda,Chile,Smelter,-23.8,-70.33,Rest of world,-7.614,0.004,38.4,13.933,0.379
+Gladstone,Australia,Power Plant,-23.85,151.21,Rest of world,-4.03,0.0,47.367,26.467,0.568
+Santos,Brazil,Oil and Gas,-23.869,-46.424,Rest of world,-3.765,0.001,55.267,32.267,0.591
+Palabora,South Africa,Smelter,-23.985,31.159,Rest of world,-9.099,0.0,69.8,12.7,0.194
+Lastarria,Argentina,Volcano,-25.17,-68.5,Rest of world,-2.251,0.01,78.9,49.8,0.636
+Kriel,South Africa,Power Plant,-26.25,29.18,Rest of world,-4.215,0.0,847.4,387.167,0.458
+Potrerillos,Chile,Smelter,-26.438,-69.48,Rest of world,-11.057,0.0,42.933,7.967,0.204
+Lethabo,South Africa,Power Plant,-26.744,27.975,Rest of world,-2.663,0.0,230.3,146.4,0.637
+Tarong,Australia,Power Plant,-26.782,151.918,Rest of world,-3.82,0.001,27.133,13.5,0.515
+Kogan Creek,Australia,Power Plant,-26.924,150.754,Rest of world,-0.1,0.952,2.5,7.033,2.295
+Majuba,South Africa,Power Plant,-27.101,29.77,Rest of world,-4.255,0.002,183.233,124.467,0.681
+Millmerran,Australia,Power Plant,-27.961,151.279,Rest of world,-1.49,0.291,16.3,11.733,0.736
+Jorge Lacerda,Brazil,Power Plant,-28.44,-48.95,Rest of world,-2.146,0.012,157.8,111.2,0.707
+Triumph,Brazil,Oil and Gas,-29.874,-51.388,Rest of world,-2.965,0.469,15.767,15.6,0.99
+Gidji,Australia,Smelter,-30.59,121.46,Rest of world,-13.502,0.0,166.6,16.667,0.105
+Bayswater,Australia,Power Plant,-32.394,150.949,Rest of world,-4.59,0.0,102.3,40.0,0.397
+Eraring,Australia,Power Plant,-33.062,151.522,Rest of world,-1.641,0.05,82.967,53.6,0.65
+Port Pirie,Australia,Smelter,-33.17,138.01,Rest of world,-6.998,0.0,57.133,13.333,0.247
+Wallerawing,Australia,Power Plant,-33.4,150.082,Rest of world,-6.675,0.001,37.133,13.667,0.385
+Muja,Australia,Power Plant,-33.446,116.307,Rest of world,-3.087,0.001,50.533,28.533,0.573
+Ankerlig,South Africa,Power Plant,-33.591,18.461,Rest of world,-3.92,0.239,16.233,9.867,0.631
+Caletones,Chile,Smelter,-34.11,-70.45,Rest of world,-13.419,0.0,156.933,15.067,0.102
+Peteroa,Argentina,Volcano,-35.271,-70.574,Rest of world,0.0,0.205,0.0,3.2,4.2
+White Island,New Zealand,Volcano,-37.52,177.181,Rest of world,3.732,0.007,57.2,98.5,1.71
+Copahue,Argentina,Volcano,-37.856,-71.16,Rest of world,-1.169,0.809,25.9,19.267,0.753
+Loy Yang,Australia,Power Plant,-38.253,146.575,Rest of world,-2.511,0.002,110.8,62.967,0.572
+Villarrica,Chile,Volcano,-39.42,-71.93,Rest of world,-3.252,0.239,104.433,75.367,0.724
+Michael,South Sandwich Isl. (UK),Volcano,-57.8,-26.488,Rest of world,-4.789,0.002,138.267,47.0,0.345
+Montagu,South Sandwich Isl. (UK),Volcano,-58.42,-26.33,Rest of world,-7.61,0.022,131.633,7.8,0.066
+Erebus,Antarctica,Volcano,-77.528,167.167,Rest of world,3.164,0.037,15.433,24.667,1.562

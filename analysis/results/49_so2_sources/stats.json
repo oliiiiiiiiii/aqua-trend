@@ -1,0 +1,393 @@
+{
+  "China": {
+    "pct_per_yr": -13.895382952472367,
+    "p_mk": 1.1483747690363972e-08,
+    "p_mk_hamed_rao": 6.909332843640925e-07,
+    "mean_2005_07": 26118.000009735424,
+    "mean_2023_25": 2168.999995713433,
+    "change_pct": -91.69538251433899
+  },
+  "India": {
+    "pct_per_yr": 3.791233064201438,
+    "p_mk": 4.612320517865586e-08,
+    "p_mk_hamed_rao": 4.612320525509972e-08,
+    "mean_2005_07": 3157.8666499058404,
+    "mean_2023_25": 6423.500028905769,
+    "change_pct": 103.41264344070073
+  },
+  "USA": {
+    "pct_per_yr": -13.33092857996565,
+    "p_mk": 6.002352376719685e-10,
+    "p_mk_hamed_rao": 0.0002326038533875252,
+    "mean_2005_07": 4975.333338896434,
+    "mean_2023_25": 383.0333325838049,
+    "change_pct": -92.3013533668326
+  },
+  "Russia": {
+    "pct_per_yr": -1.6721604118313915,
+    "p_mk": 0.005997465713712104,
+    "p_mk_hamed_rao": 0.005997465713712069,
+    "mean_2005_07": 4069.2999637325606,
+    "mean_2023_25": 2874.3666901191077,
+    "change_pct": -29.364590574871308
+  },
+  "Middle East": {
+    "pct_per_yr": 0.3704039549052629,
+    "p_mk": 0.12354986589680401,
+    "p_mk_hamed_rao": 0.12352054238239951,
+    "mean_2005_07": 7961.733290354411,
+    "mean_2023_25": 8645.233340501785,
+    "change_pct": 8.584814703293686
+  },
+  "Europe & Turkey": {
+    "pct_per_yr": -5.77905052691039,
+    "p_mk": 3.899528409216368e-09,
+    "p_mk_hamed_rao": 1.3148057624423615e-05,
+    "mean_2005_07": 5910.299985965093,
+    "mean_2023_25": 1861.400002817313,
+    "change_pct": -68.50582868488078
+  },
+  "Rest of world": {
+    "pct_per_yr": -2.126313814045566,
+    "p_mk": 2.8614411315858127e-06,
+    "p_mk_hamed_rao": 4.994536973557118e-06,
+    "mean_2005_07": 13138.16664086779,
+    "mean_2023_25": 8994.099972476562,
+    "change_pct": -31.542199012003913
+  },
+  "Anthropogenic total": {
+    "pct_per_yr": -4.296221283280488,
+    "p_mk": 2.3178413109211134e-08,
+    "p_mk_hamed_rao": 0.00010359231022838422,
+    "mean_2005_07": 65330.699879457556,
+    "mean_2023_25": 31350.633363117773,
+    "change_pct": -52.012402406581906
+  },
+  "Volcanoes": {
+    "pct_per_yr": -2.2885769727496896,
+    "p_mk": 0.0027943875916635556,
+    "p_mk_hamed_rao": 0.04025597808037151,
+    "mean_2005_07": 20609.999973932903,
+    "mean_2023_25": 14885.366640051207,
+    "change_pct": -27.775998743920884
+  },
+  "india_exceeds_china_from": 2017,
+  "mideast_exceeds_china_from": 2016,
+  "largest_named_region_2025": "Middle East",
+  "india_share_2025": 0.1931962792585956,
+  "china_share_2005": 0.3793142838409295,
+  "country_Taiwan": {
+    "n_sources": 1,
+    "y2005_07": 60.13333384195963,
+    "y2023_25": 13.200000127156576
+  },
+  "country_South Korea": {
+    "n_sources": 5,
+    "y2005_07": 121.9666649500529,
+    "y2023_25": 107.30000066757202
+  },
+  "country_Japan": {
+    "n_sources": 3,
+    "y2005_07": 113.26666800181071,
+    "y2023_25": 53.966666062672935
+  },
+  "country_Vietnam": {
+    "n_sources": 3,
+    "y2005_07": 42.06666564941406,
+    "y2023_25": 191.89999771118164
+  },
+  "sources": {
+    "n_anthropogenic": 672,
+    "sig_down": 314,
+    "sig_up": 136,
+    "emission_weighted_share_down": 0.767010507121698
+  },
+  "top_rising": [
+    {
+      "name": "Tonbak",
+      "country": "Iran",
+      "type": "Oil and Gas",
+      "e0": 110.5,
+      "e1": 1267.8,
+      "pct_per_yr": 14.9
+    },
+    {
+      "name": "Zagroz",
+      "country": "Iran",
+      "type": "Oil and Gas",
+      "e0": 127.5,
+      "e1": 937.3,
+      "pct_per_yr": 12.9
+    },
+    {
+      "name": "Reforma",
+      "country": "Mexico",
+      "type": "Oil and Gas",
+      "e0": 30.7,
+      "e1": 490.0,
+      "pct_per_yr": 15.1
+    },
+    {
+      "name": "Mary",
+      "country": "Turkmenistan",
+      "type": "Power Plant",
+      "e0": 14.2,
+      "e1": 475.9,
+      "pct_per_yr": 34.1
+    },
+    {
+      "name": "Neyveli",
+      "country": "India",
+      "type": "Power Plant",
+      "e0": 304.3,
+      "e1": 399.4,
+      "pct_per_yr": 1.6
+    },
+    {
+      "name": "Vindhyachal",
+      "country": "India",
+      "type": "Power Plant",
+      "e0": 235.5,
+      "e1": 369.2,
+      "pct_per_yr": 3.2
+    },
+    {
+      "name": "Tamnar",
+      "country": "India",
+      "type": "Power Plant",
+      "e0": 28.7,
+      "e1": 359.8,
+      "pct_per_yr": 11.0
+    },
+    {
+      "name": "Shuqaiq",
+      "country": "Saudi Arabia",
+      "type": "Power Plant",
+      "e0": 10.3,
+      "e1": 325.2,
+      "pct_per_yr": 25.9
+    },
+    {
+      "name": "Sterlite",
+      "country": "India",
+      "type": "Power Plant",
+      "e0": 0.2,
+      "e1": 323.3,
+      "pct_per_yr": 15.1
+    },
+    {
+      "name": "Rabigh",
+      "country": "Saudi Arabia",
+      "type": "Power Plant",
+      "e0": 134.4,
+      "e1": 311.8,
+      "pct_per_yr": 5.5
+    },
+    {
+      "name": "Matimba",
+      "country": "South Africa",
+      "type": "Power Plant",
+      "e0": 231.6,
+      "e1": 297.9,
+      "pct_per_yr": 2.6
+    },
+    {
+      "name": "Korba",
+      "country": "India",
+      "type": "Power Plant",
+      "e0": 108.1,
+      "e1": 278.7,
+      "pct_per_yr": 4.5
+    }
+  ],
+  "top_falling": [
+    {
+      "name": "Norilsk",
+      "country": "Russia",
+      "type": "Smelter",
+      "e0": 1972.0,
+      "e1": 1243.4,
+      "pct_per_yr": -2.0
+    },
+    {
+      "name": "Zouping",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 1178.3,
+      "e1": 42.5,
+      "pct_per_yr": -18.6
+    },
+    {
+      "name": "Kriel",
+      "country": "South Africa",
+      "type": "Power Plant",
+      "e0": 847.4,
+      "e1": 387.2,
+      "pct_per_yr": -4.2
+    },
+    {
+      "name": "Khark Island",
+      "country": "Iran",
+      "type": "Oil and Gas",
+      "e0": 801.3,
+      "e1": 67.7,
+      "pct_per_yr": -14.7
+    },
+    {
+      "name": "Laicheng",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 764.3,
+      "e1": 23.1,
+      "pct_per_yr": -20.3
+    },
+    {
+      "name": "Wuan",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 719.0,
+      "e1": 63.9,
+      "pct_per_yr": -14.1
+    },
+    {
+      "name": "Marica",
+      "country": "Bulgaria",
+      "type": "Power Plant",
+      "e0": 696.3,
+      "e1": 74.5,
+      "pct_per_yr": -11.1
+    },
+    {
+      "name": "Matou",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 695.3,
+      "e1": 45.0,
+      "pct_per_yr": -16.0
+    },
+    {
+      "name": "Qingzhen",
+      "country": "China",
+      "type": "Smelter",
+      "e0": 681.0,
+      "e1": 12.3,
+      "pct_per_yr": -23.7
+    },
+    {
+      "name": "Shangan",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 632.0,
+      "e1": 26.0,
+      "pct_per_yr": -17.0
+    },
+    {
+      "name": "Luoyang",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 604.0,
+      "e1": 16.3,
+      "pct_per_yr": -21.0
+    },
+    {
+      "name": "Guohua Shouguang",
+      "country": "China",
+      "type": "Power Plant",
+      "e0": 572.3,
+      "e1": 30.1,
+      "pct_per_yr": -16.8
+    }
+  ],
+  "cross_instrument_2018_2025": {
+    "China": {
+      "OMI": {
+        "pct_per_yr": -8.445271085354555,
+        "p": 0.0008366271311193044
+      },
+      "OMPS-NPP": {
+        "pct_per_yr": -7.405272870242097,
+        "p": 0.018741136789596692
+      },
+      "TROPOMI": {
+        "pct_per_yr": -7.594795499476903,
+        "p": 0.001981789437809924
+      },
+      "OMPS-NOAA20": {
+        "pct_per_yr": -6.722283553198649,
+        "p": 0.035447892552460766
+      }
+    },
+    "India": {
+      "OMI": {
+        "pct_per_yr": 4.980567642315803,
+        "p": 0.10776229039192149
+      },
+      "OMPS-NPP": {
+        "pct_per_yr": 1.6733346762294987,
+        "p": 0.1735462217878534
+      },
+      "TROPOMI": {
+        "pct_per_yr": 2.2380353903473704,
+        "p": 0.1735462217878534
+      },
+      "OMPS-NOAA20": {
+        "pct_per_yr": 5.131411065250369,
+        "p": 0.035447892552460766
+      }
+    },
+    "Anthropogenic total": {
+      "OMI": {
+        "pct_per_yr": -0.11943593122384355,
+        "p": 0.7105230229164895
+      },
+      "OMPS-NPP": {
+        "pct_per_yr": -1.4009784470408682,
+        "p": 0.10776229039192149
+      },
+      "TROPOMI": {
+        "pct_per_yr": -0.9383483633498613,
+        "p": 0.018741136789596692
+      },
+      "OMPS-NOAA20": {
+        "pct_per_yr": 0.7347295609284377,
+        "p": 0.10776229039192149
+      }
+    },
+    "Middle East": {
+      "OMI": {
+        "pct_per_yr": 1.1178281518001487,
+        "p": 0.10776229039192149
+      },
+      "OMPS-NPP": {
+        "pct_per_yr": -0.040832763757059354,
+        "p": 1.0
+      },
+      "TROPOMI": {
+        "pct_per_yr": 1.285475876138964,
+        "p": 0.7105230229164895
+      },
+      "OMPS-NOAA20": {
+        "pct_per_yr": 2.2118918769503892,
+        "p": 0.004434008303100652
+      }
+    },
+    "USA": {
+      "OMI": {
+        "pct_per_yr": -3.837760823526437,
+        "p": 0.2655103889538737
+      },
+      "OMPS-NPP": {
+        "pct_per_yr": -4.386878827272589,
+        "p": 0.10776229039192149
+      },
+      "TROPOMI": {
+        "pct_per_yr": -8.560789483517418,
+        "p": 0.004434008303100652
+      },
+      "OMPS-NOAA20": {
+        "pct_per_yr": 0.4856707198304777,
+        "p": 0.9015386266571278
+      }
+    }
+  }
+}

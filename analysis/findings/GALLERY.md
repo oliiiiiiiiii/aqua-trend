@@ -55,6 +55,10 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N16](#n16) | Chi-Chi 1999 vs Hualien 2024: same Omori decay (p ≈ 0.95) | `results/47_taiwan_aftershocks/taiwan_aftershocks.png` |
 | [N17](#n17) | The world is burning less: fire detections −11%/decade (Terra & Aqua agree) | `results/45_fire_trends/map_fire_trend.png` |
 | [N18](#n18) | Fire regions year by year, Terra vs Aqua | `results/45_fire_trends/regional_fire_series.png` |
+| [N19](#n19) | SO₂ moved from China to India and the Gulf: 780 sources, four satellites | `results/49_so2_sources/so2_sources_map.png` |
+| [N20](#n20) | Hunga Tonga added 13% to stratospheric water; half remains | `results/50_hunga_tonga_water/hunga_tonga_stratospheric_water.png` |
+| [N21](#n21) | Less dust over the Sahel and Middle East; greener years are cleaner | `results/51_dust_greening/dust_trends_and_greening.png` |
+| [N22](#n22) | Methane surge vs wetland water: a correlation that is only shared trend | `results/48_methane/methane_vs_wetland_water.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -379,6 +383,30 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/45_fire_trends/regional_fire_series.png`</sub>
 
 ![Fire regions year by year, Terra vs Aqua](figures/N18_fire_regions.png)
+
+### N19
+**SO₂ moved from China to India and the Gulf: 780 sources, four satellites**  
+<sub>source: `results/49_so2_sources/so2_sources_map.png`</sub>
+
+![SO₂ moved from China to India and the Gulf: 780 sources, four satellites](figures/N19_so2_sources.png)
+
+### N20
+**Hunga Tonga added 13% to stratospheric water; half remains**  
+<sub>source: `results/50_hunga_tonga_water/hunga_tonga_stratospheric_water.png`</sub>
+
+![Hunga Tonga added 13% to stratospheric water; half remains](figures/N20_hunga_tonga_water.png)
+
+### N21
+**Less dust over the Sahel and Middle East; greener years are cleaner**  
+<sub>source: `results/51_dust_greening/dust_trends_and_greening.png`</sub>
+
+![Less dust over the Sahel and Middle East; greener years are cleaner](figures/N21_dust_greening.png)
+
+### N22
+**Methane surge vs wetland water: a correlation that is only shared trend**  
+<sub>source: `results/48_methane/methane_vs_wetland_water.png`</sub>
+
+![Methane surge vs wetland water: a correlation that is only shared trend](figures/N22_methane_null.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

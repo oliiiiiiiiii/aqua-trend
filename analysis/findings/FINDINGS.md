@@ -257,11 +257,54 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Punjab: the satellites disagree (Terra −41%/decade, Aqua flat), though both show the collapse after 2021.
 - Visuals: `results/45_fire_trends/map_fire_trend.png`, `regional_fire_series.png`.
 
+## N8. Sulfur pollution moved from China to India and the Gulf: 780 smokestacks, four satellites. **Robust (4 independent instruments)**
+- Point-source SO₂ (NASA MEaSUREs catalogue), 2005–07 vs 2023–25:
+  - Falling: China −92% (−14%/yr), USA −92%, Europe & Turkey −69%, the whole world −52%.
+  - Rising: India +103% (+3.8%/yr).
+  - Middle East: +9%, not significant.
+- India has out-emitted China since 2017, and the Middle East has led the named regions since 2016.
+- OMI, OMPS-NPP, TROPOMI and OMPS-NOAA20 agree on 2018–25 trends: China −7 to −8%/yr, India +2 to +5%/yr.
+- Of 672 industrial sources, 314 fell and 136 rose (FDR).
+- Taiwan's one detectable source (Linhai, Kaohsiung) fell from 60 to 13 kt/yr; Vietnam's sources rose ×4.6.
+- Visual: `results/49_so2_sources/so2_sources_map.png`.
+
+## N9. Hunga Tonga watered the stratosphere: +13%, 9σ, still half there after four years. **Robust**
+- Aura MLS: +170 Mt of extra water at 100–1 hPa (peak Jan 2023), after removing the instrument's slow drift.
+- All 46 months since Feb 2022 exceed the largest pre-eruption value.
+- The plume rose from 20–40 hPa to 1–5 hPa and spread pole to pole.
+- E-folding decay time 4.5 yr (95% CI 3.0–8.5); 53% remained at the end of 2025.
+- Caveat: MLS sampling dropped to ~50% of days in 2024 and ~30% in 2025.
+- Visual: `results/50_hunga_tonga_water/hunga_tonga_stratospheric_water.png`.
+
+## N10. Less dust over the Sahel, the Sahara's edge and the Middle East; greener years are cleaner years. **Robust (two independent records)**
+- Two records: MERRA-2 dust AOD and OMI's UV aerosol index (no drift over clean oceans).
+- Declines since 2005, from MERRA-2 with OMI agreeing:
+  - Sahel −9%/decade.
+  - Iraq–Syria −17%/decade.
+  - Arabia −9%/decade.
+- Trend signs agree on 86% of the dust belt.
+- Year to year, detrended: greener-than-trend years have less aerosol on 89% of vegetated dust-belt land (FDR-significant on 29%).
+  - Iraq–Syria and Arabia: r = −0.82.
+  - The 2008 Fertile Crescent drought is the dust peak; the wet 2019 is the low.
+- Taklimakan: the two records disagree, so it is not interpreted.
+- Visual: `results/51_dust_greening/dust_trends_and_greening.png`.
+
+## N11. ⚠ Methane's record surge does not follow the tropics' water once shared trends are removed. **Null (teaching case)**
+- NOAA: +17.7 ppb in 2021 (record), then +4.8 in 2025, the smallest rise since 2009. AIRS also has 2021 as its record year.
+- East African water storage (GRACE) correlates with methane growth at r = +0.63.
+  - Naive p = 0.001, but the surrogate test that preserves persistence gives p = 0.11.
+  - Detrended, r = +0.14; the basin stayed full while methane slowed.
+- Raw correlation maps show |r| > 0.4 on 48% of tropical land. After detrending, significance falls to chance (5%).
+- Tropical rain (r = −0.20) and El Niño (r = +0.03) show no link either.
+- Visual: `results/48_methane/methane_vs_wetland_water.png`.
+
 ## N-nulls. Non-water nulls
 - **Seasonal water load does not detectably modulate earthquakes (task 44).**
   - Schuster p: California 0.96 (17k mainshocks), Japan 0.31, Himalaya 0.14 (winter peak as published, but only 434 events), Taiwan 0.83.
   - No 1° cell passes FDR. The signal needs complete local catalogues.
 - **Global M≥6 rate since 1983** (task 40): no trend in either catalogue (see N1).
+- **Methane growth vs tropical wetland water, rain and ENSO** (task 48): naive correlations vanish under surrogate and detrended tests (see N11).
+- **GLDAS wind as a dust driver** (task 51): its monthly anomalies do not track dust (r ≈ 0), and its forcing winds trend spuriously.
 
 ---
 ## 1. The Arctic's summer ice cap has shrunk by an area ≈ 68 × Taiwan — **Robust**

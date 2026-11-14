@@ -3,6 +3,7 @@
 products
   airs    AIRS3STM v7.0 monthly (AIRS-only), ascending (13:30 LT) + descending (01:30) node:
           SurfAirTemp, TotH2OVap, TotO3, CO_VMR (600/500/400 hPa), CloudFrc
+  airs_ch4 AIRS3STM v7.0: CH4_VMR ascending + descending at 600/500/400/300/250 hPa (AIRS CH4 peak sensitivity ~200-400 hPa)
   omto3   OMTO3d v004 daily 1 deg: ColumnAmountO3, UVAerosolIndex -> monthly mean (>=5 valid days)
   omno2   OMNO2d v004 daily 0.25 deg: ColumnAmountNO2TropCloudScreened -> monthly mean at 0.25 deg (>=3 valid days)
 Outputs: data/processed/airs_omi/<product>/<var>.npy (time, lat, lon) south->north, -180..180; times.json; done.json
@@ -28,7 +29,11 @@ AIRS_VARS = {"SurfAirTemp_A": "/ascending/Data_Fields/SurfAirTemp_A", "SurfAirTe
              "CloudFrc_A": "/ascending/Data_Fields/CloudFrc_A",
              "CO_VMR_A": "/ascending/Data_Fields/CO_VMR_A[4:1:6][0:1:179][0:1:359]",
              "CO_VMR_D": "/descending/Data_Fields/CO_VMR_D[4:1:6][0:1:179][0:1:359]"}
+CH4_VARS = {"CH4_VMR_A": "/ascending/Data_Fields/CH4_VMR_A[4:1:8][0:1:179][0:1:359]",
+            "CH4_VMR_D": "/descending/Data_Fields/CH4_VMR_D[4:1:8][0:1:179][0:1:359]"}
+NLEV = {"CO_VMR_A": 3, "CO_VMR_D": 3, "CH4_VMR_A": 5, "CH4_VMR_D": 5}
 CFG = {
+    "airs_ch4": dict(short_name="AIRS3STM", version="7.0", start="2002-09-01", daily=False, vars=CH4_VARS),
     "airs": dict(short_name="AIRS3STM", version="7.0", start="2002-09-01", daily=False),
     "omto3": dict(short_name="OMTO3d", version="004", start="2004-10-01", daily=True, min_days=5,
                   vars={"ColumnAmountO3": "/HDFEOS/GRIDS/OMI_Column_Amount_O3/Data_Fields/ColumnAmountO3",
@@ -36,7 +41,7 @@ CFG = {
     "omno2": dict(short_name="OMNO2d", version="004", start="2004-10-01", daily=True, min_days=3,
                   vars={"NO2Trop": "/HDFEOS/GRIDS/ColumnAmountNO2/Data_Fields/ColumnAmountNO2TropCloudScreened"}),
 }
-SH = {"airs": (180, 360), "omto3": (180, 360), "omno2": (720, 1440)}
+SH = {"airs": (180, 360), "airs_ch4": (180, 360), "omto3": (180, 360), "omno2": (720, 1440)}
 io_lock = threading.Lock()
 
 
@@ -101,13 +106,13 @@ def main():
         vars_ = cfg["vars"]
     else:
         months = [d for d, _ in gr]
-        vars_ = AIRS_VARS
+        vars_ = cfg.get("vars", AIRS_VARS)
     n = len(months)
     print(f"{key}: {len(gr)} granules, {n} months {months[0].date()}..{months[-1].date()}", flush=True)
     json.dump([str(m.date()) for m in months], open(f"{pdir}/times.json", "w"))
     mm = {}
     for v in vars_:
-        shp = (n, 3) + SH[key] if v.startswith("CO_VMR") else (n,) + SH[key]
+        shp = (n, NLEV[v]) + SH[key] if v in NLEV else (n,) + SH[key]
         p = f"{pdir}/{v}.npy"
         mode = "r+" if os.path.exists(p) and np.load(p, mmap_mode="r").shape == shp else "w+"
         mm[v] = np.lib.format.open_memmap(p, mode=mode, dtype=np.float32, shape=shp)
