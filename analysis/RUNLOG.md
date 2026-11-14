@@ -42,3 +42,6 @@
 | 2026-11-14 09:59 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
 | 2026-11-14 10:01 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
 | 2026-11-14 10:02 | 33b_amazon_dry_season | done | JAS rain GPCP -10.3%/dec, IMERG -16.5, MERRA-2 -25.8; GRACE SON -2.0 cm/dec |
+| 2026-11-14 10:05 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
+| 2026-11-14 10:05 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |
+| 2026-11-14 10:06 | 34_rain_replacing_snow | done | snowy land snow share 35.2->31.3%; sig loss 26% / gain 0% |

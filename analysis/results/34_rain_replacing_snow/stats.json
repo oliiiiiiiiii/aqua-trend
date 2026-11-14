@@ -1,0 +1,122 @@
+{
+  "snowy_land_mkm2": 55.976226481872175,
+  "frac_sig_less_snow_share": 0.2628808648687865,
+  "frac_sig_more_snow_share": 0.0,
+  "frac_any_less": 0.8923708920054545,
+  "snowfall_amount_sig_down": 0.02888231365820371,
+  "snowfall_amount_sig_up": 0.012532508523887365,
+  "mean_snow_frac_change_pp_per_decade": -1.1367355796649494,
+  "convective_share_sig_up": 0.12884433203723256,
+  "convective_share_sig_down": 0.09711241940754885,
+  "snowy_land_mean_fraction": {
+    "first_decade": 35.1512655188045,
+    "last_decade": 31.33730319893084,
+    "slope_pp_per_decade": -1.136736911621181,
+    "p": 5.55601168715248e-12,
+    "mk_p": 1.2078471556264958e-10
+  },
+  "regions": [
+    {
+      "region": "Alps",
+      "snow_frac_1980s": 20.231782581939406,
+      "snow_frac_2016_25": 14.333602020707042,
+      "pp_per_decade": -1.493642286531399,
+      "p": 0.0004777696771026762,
+      "mk_p": 0.00015231724817521552,
+      "snowfall_pct_per_decade": -5.343211000352531,
+      "snowfall_p": 0.019878506124018386
+    },
+    {
+      "region": "Scandinavia",
+      "snow_frac_1980s": 35.2015859057683,
+      "snow_frac_2016_25": 32.89858281300851,
+      "pp_per_decade": -1.1197787000370987,
+      "p": 0.0074348445389603845,
+      "mk_p": 0.002772143978136743,
+      "snowfall_pct_per_decade": -2.320601582312751,
+      "snowfall_p": 0.042840396992216326
+    },
+    {
+      "region": "Rockies",
+      "snow_frac_1980s": 37.32801432527554,
+      "snow_frac_2016_25": 33.58582232612664,
+      "pp_per_decade": -1.169825578146562,
+      "p": 0.00574694770822108,
+      "mk_p": 0.002772143978136743,
+      "snowfall_pct_per_decade": -0.5679434325421328,
+      "snowfall_p": 0.728283962899028
+    },
+    {
+      "region": "High Mountain Asia",
+      "snow_frac_1980s": 48.52617249858299,
+      "snow_frac_2016_25": 40.69069507843679,
+      "pp_per_decade": -2.0177611059437814,
+      "p": 5.985321616608313e-10,
+      "mk_p": 6.12000095046028e-09,
+      "snowfall_pct_per_decade": 5.116834867567836,
+      "snowfall_p": 0.14723792711987094
+    },
+    {
+      "region": "Andes (south)",
+      "snow_frac_1980s": 24.625410277803784,
+      "snow_frac_2016_25": 25.65986843911987,
+      "pp_per_decade": 0.16114578143467143,
+      "p": 0.7037718081462367,
+      "mk_p": 1.0,
+      "snowfall_pct_per_decade": -0.73595431777221,
+      "snowfall_p": 0.6618351192685843
+    },
+    {
+      "region": "Japan & Korea",
+      "snow_frac_1980s": 17.041047865525705,
+      "snow_frac_2016_25": 13.319138007269284,
+      "pp_per_decade": -0.6691691365956,
+      "p": 0.020315534793642624,
+      "mk_p": 0.011784638559516836,
+      "snowfall_pct_per_decade": -2.8435374555903907,
+      "snowfall_p": 0.10723725693793258
+    },
+    {
+      "region": "NE China & Mongolia",
+      "snow_frac_1980s": 18.36293869818406,
+      "snow_frac_2016_25": 13.190366338140374,
+      "pp_per_decade": -1.237368449862475,
+      "p": 0.0005564185434137951,
+      "mk_p": 0.0002060220416959524,
+      "snowfall_pct_per_decade": -5.417186822724669,
+      "snowfall_p": 0.018822360226600266
+    },
+    {
+      "region": "Eastern Europe & W Russia",
+      "snow_frac_1980s": 33.32793254634796,
+      "snow_frac_2016_25": 30.87599658755961,
+      "pp_per_decade": -0.6769872704009334,
+      "p": 0.08884672674632864,
+      "mk_p": 0.0782255004639072,
+      "snowfall_pct_per_decade": -0.5325770687114051,
+      "snowfall_p": 0.6512044023558239
+    },
+    {
+      "region": "Canadian Prairies & boreal",
+      "snow_frac_1980s": 35.422758214339794,
+      "snow_frac_2016_25": 32.95785680586339,
+      "pp_per_decade": -0.6893895891024044,
+      "p": 0.02408483853592657,
+      "mk_p": 0.023064990775640615,
+      "snowfall_pct_per_decade": 0.2969276860059247,
+      "snowfall_p": 0.8053641487140673
+    },
+    {
+      "region": "Siberia",
+      "snow_frac_1980s": 42.452214854270174,
+      "snow_frac_2016_25": 41.11602705288413,
+      "pp_per_decade": -0.7511515576600865,
+      "p": 0.035493535124454426,
+      "mk_p": 0.017033943423976572,
+      "snowfall_pct_per_decade": -0.8334286144111706,
+      "snowfall_p": 0.3887121773641903
+    }
+  ],
+  "gldas_swe_vs_merra_fraction_sign_agree_2001_2025": 0.6001472815827746,
+  "gldas_march_swe_trend_frac_down": 0.636165096197409
+}

@@ -30,6 +30,8 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [W26](#w26) | 2024: the most widespread hot-and-dry year (Amazon, southern Africa, Mexico) | `results/32_compound_hot_dry/map_2023_25_compound_event.png` |
 | [W27](#w27) | Every month since 2001: share of land hot AND dry | `results/32_compound_hot_dry/calendar_compound_hot_dry.png` |
 | [W28](#w28) | Southern Amazon dry season: drier and longer in 3 rain datasets | `results/33_seasonal_swing/amazon_dry_season.png` |
+| [W29](#w29) | Rain replacing snow: snow share of precipitation falling across snowy land | `results/34_rain_replacing_snow/map_snow_fraction_trend.png` |
+| [W30](#w30) | Water towers losing snow share (HMA 49%→41%, Alps 20%→14%) | `results/34_rain_replacing_snow/bars_regions_snow_share.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -204,6 +206,18 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/33_seasonal_swing/amazon_dry_season.png`</sub>
 
 ![Southern Amazon dry season: drier and longer in 3 rain datasets](figures/W28_amazon_dry_season.png)
+
+### W29
+**Rain replacing snow: snow share of precipitation falling across snowy land**  
+<sub>source: `results/34_rain_replacing_snow/map_snow_fraction_trend.png`</sub>
+
+![Rain replacing snow: snow share of precipitation falling across snowy land](figures/W29_rain_replacing_snow.png)
+
+### W30
+**Water towers losing snow share (HMA 49%→41%, Alps 20%→14%)**  
+<sub>source: `results/34_rain_replacing_snow/bars_regions_snow_share.png`</sub>
+
+![Water towers losing snow share (HMA 49%→41%, Alps 20%→14%)](figures/W30_snow_water_towers.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

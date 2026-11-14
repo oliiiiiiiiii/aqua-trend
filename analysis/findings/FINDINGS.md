@@ -105,6 +105,22 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - **Also robust in all three datasets:** the Sahel wet season is getting wetter: GPCP +7%/decade, IMERG +6%, MERRA-2 +26%. Southern Africa, Ganges and Mekong dry-season trends appear only in GPCP and are not robust.
 - Visual: `results/33_seasonal_swing/amazon_dry_season.png`.
 
+## W16. Rain is replacing snow on the world's snowy land — **Significant (one reanalysis, physically consistent; weak GLDAS support)**
+- MERRA-2, 1980–2025: on snowy land (56 million km² with at least 5% snow), the share of precipitation falling as snow went from **35.2% (1980s) to 31.3% (2016–25)**, -1.14 percentage points per decade (p < 1e-6, Mann-Kendall agrees).
+- Spatially: a significant loss of snow share on **26% of snowy land and a significant gain on 0%**. 89% of snowy land has a negative trend.
+- Water towers:
+  - High Mountain Asia 49% → 41% (-2.0 pp/decade);
+  - Alps 20% → 14%, where snowfall itself is also down -5.3%/decade (p = 0.02);
+  - NE China & Mongolia 18% → 13%;
+  - Rockies 37% → 34%.
+  - Only the southern Andes shows no change.
+- **Why it matters for water:** snow stores winter precipitation and releases it in spring and summer, when crops and cities need it. Rain runs off at once. A smaller snow share means less natural storage, even where total precipitation is unchanged; total snowfall amounts are mostly not significant.
+- **Caveats:**
+  - The rain/snow split comes from the reanalysis model, but its temperature is constrained by observations.
+  - GLDAS March snowpack falls on 64% of snowy land, but its sign agrees with the MERRA-2 snow-share trend on only 60% of land (2001–25).
+  - The MERRA-2 convective share of rain has mixed trends (+ on 13%, − on 10% of land). That's model physics, so this is not a finding.
+- Visual: `results/34_rain_replacing_snow/map_snow_fraction_trend.png`, `bars_regions_snow_share.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **"Wet seasons wetter, dry seasons drier" over time is not a global pattern (task 33).**
   - Classes from GPCP 1979–2025: amplifying 17%, damping 17%, wetter all year 34%, drier all year 32%.

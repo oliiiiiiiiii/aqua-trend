@@ -135,7 +135,7 @@ def trend_map(lon, lat, field, sig, out, title, subtitle="", cbar_label="", vmax
                 ax.text(lon0 + 0.02 * (lon1 - lon0) + 0.1, lat1 - 0.1, b[4], fontsize=8, color=INK,
                         transform=ccrs.PlateCarree(), ha="left", va="top", clip_on=True,
                         bbox=dict(boxstyle="round,pad=0.15", fc=SURFACE, ec="none", alpha=0.8))
-    wrapw = int(13.5 * figsize[0])  # characters per line at fontsize ~10.5
+    wrapw = int(11.5 * figsize[0])  # characters per line at fontsize ~10.5 (DejaVu ~0.55 em per char)
     fig.text(0.03, 0.955, title, fontsize=15, fontweight="bold", color=INK, ha="left", va="top")
     if subtitle:
         fig.text(0.03, 0.905, "\n".join(textwrap.wrap(subtitle, wrapw)), fontsize=10.5 if len(subtitle) < 2 * wrapw else 9.5,
