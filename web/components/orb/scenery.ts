@@ -48,7 +48,7 @@ export const SEABED_DEEP = "#3d9aa6";
 export const SNOWY = ["#f4f8fb", "#e8f0f6", "#fbfdff"];
 export const ICE_BLOCK = ["#f1faff", "#dcf0fb", "#c4e4f6", "#e6f6ff"];
 /** depth of the seabed below the waterline, scene units */
-export const SEABED_DEPTH = 0.12;
+export const SEABED_DEPTH = 0.18;
 /** neutral soil colours (sRGB) for bands that are not selected, and the deep part that GLDAS Noah does not cover */
 export const SOIL_NEUTRAL: Record<"top" | "root" | "deep", RGB> = { top: [0.5, 0.34, 0.23], root: [0.6, 0.43, 0.3], deep: [0.46, 0.43, 0.4] };
 export const WOOD = { light: "#a8754a", dark: "#7a5232", ring: "#c99a63" };
