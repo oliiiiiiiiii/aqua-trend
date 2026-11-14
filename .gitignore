@@ -132,3 +132,7 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# Earthdata Login token
+.edl.token
+*.token

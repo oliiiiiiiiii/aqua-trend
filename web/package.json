@@ -1,0 +1,37 @@
+{
+  "name": "aqua-trend-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prep": "node scripts/prep-data.mjs",
+    "predev": "node scripts/prep-data.mjs --if-missing",
+    "prebuild": "node scripts/prep-data.mjs --if-missing",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "d3-array": "^3.2.5",
+    "d3-scale": "^4.0.3",
+    "d3-shape": "^3.2.1",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/d3-array": "^3.2.2",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.2.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "playwright-core": "^1.65.1",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2"
+  }
+}
