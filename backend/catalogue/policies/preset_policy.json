@@ -1,0 +1,20 @@
+{
+  "version": "preset-1.0.0",
+  "note": "Product defaults (spec §8). Weights are tunable, not scientific constants.",
+  "candidate_region_layers": ["basin3", "named", "ice", "lme", "sea"],
+  "candidate_region_rule": "every catalogue region of these layers that has a prepared series for at least one selected variable; basin4 sub-basins and hex cells are reachable by user selection but are not searched automatically (hex has no series)",
+  "window_lengths_years": [10, 20, 30],
+  "window_step_years": 5,
+  "window_alignment": "calendar years: Jan of start year to Dec of end year, anchored on the last complete common year and stepped backwards",
+  "also_test_full_common_period": true,
+  "min_variables_fraction": 0.5,
+  "weights": {"relevance": 0.30, "effect": 0.30, "quality": 0.25, "stability": 0.15},
+  "missing_component_rule": "a missing component scores 0 and is listed in missing_components; weights are not renormalised",
+  "effect": {"definition": "abs(slope_per_decade) / sd of the fixed-baseline anomalies in the baseline period, squashed with x/(1+x)", "zero_variance_rule": "component is missing"},
+  "relevance": {"core_indicator": 1.0, "related_condition": 0.6, "response": 0.6, "aggregation": "role-weighted share of the selected variables that are analysable for the candidate"},
+  "quality": {"definition": "mean over variables of coverage inside the window times (1 if inference applicable else 0.5), reduced by 0.2 for a fallback product or a registered caveat"},
+  "stability": {"definition": "share of analysable variables whose first-half and second-half descriptive slopes have the same sign as the full-window slope"},
+  "aggregation": "fixed weighted mean across variables, so more variables do not raise the score by count",
+  "max_presets_returned": 12,
+  "tie_break": ["score desc", "region_id asc", "period.start asc"]
+}

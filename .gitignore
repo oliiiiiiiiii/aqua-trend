@@ -140,3 +140,7 @@ $RECYCLE.BIN/
 # 可重新產生的大檔
 data/gldas_1deg/
 data/hub_export/
+
+# Backend runtime state and environment
+backend/var/
+backend/.venv/

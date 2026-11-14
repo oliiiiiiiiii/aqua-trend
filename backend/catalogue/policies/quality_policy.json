@@ -1,0 +1,7 @@
+{
+  "version": "quality-1.0.0",
+  "series_min_region_coverage": 0.30,
+  "product_applicable": {"min_coverage_in_period": 0.80, "must_overlap_period": true},
+  "baseline": {"min_samples_per_calendar_month_fraction": 0.8},
+  "comparison": {"min_common_years": 10}
+}
