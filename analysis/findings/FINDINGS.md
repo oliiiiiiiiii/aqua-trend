@@ -172,6 +172,15 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - **Sensitivity:** NW India shows no change in this two-era split (-2.1 → -2.3, box 70–80°E). With W3b's box and three phases, GRACE total storage does slow (−4.1 → −3.0 → −1.7 cm/yr) while GLDAS soil + snow stays near zero. So that slowdown is real in GRACE, but depends on the breakpoints.
 - Visual: `results/39_turning_points/map_turning_points.png`.
 
+## W20. East Africa's lakes ratchet upward: each Indian Ocean Dipole flood adds water that doesn't drain away — **Robust (altimetry + GRACE + 2 rain datasets)**
+- NASA GWM radar altimetry, 1992–2026:
+  - Turkana **+6.7 m**, Rukwa **+5.7 m** and Naivasha **+4.3 m** above 2003–12. Each is at or near its highest level in 34 years.
+  - Lake Victoria rose +1.4 m after the 2019 short rains and +1.0 m after 2023, peaking at +2.3 m in May 2024.
+- On 6 of 8 lakes, the three largest wet-season rises came in **1997, 2019 and 2023**, the three strongest positive-IOD years.
+- Victoria's wet-season rise tracks the Oct–Dec short rains (r = 0.82, n = 34). The short rains follow the dipole (r = 0.70 GPCP / 0.77 IMERG; partial r given ENSO = 0.56).
+- Annual rain has no trend; the lakes rise in steps. GRACE: the Victoria basin holds +49 cm more water than in 2003–12.
+- Visual: `results/54_east_africa_lakes/east_africa_lakes.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**
   - Definition: a 3-month rain total below its 10th percentile followed within 3 months by one above its 90th, or the reverse.

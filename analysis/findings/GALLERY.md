@@ -61,6 +61,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N22](#n22) | Methane surge vs wetland water: a correlation that is only shared trend | `results/48_methane/methane_vs_wetland_water.png` |
 | [N23](#n23) | Asia's haze map redrawn: AERONET confirms clearer East Asia (Taipei −39%/dec), hazier India | `results/52_asia_haze/asia_haze_trends.png` |
 | [N24](#n24) | After Hunga Tonga: the wet stratosphere cooled 2 K and lost 3% ozone | `results/53_hunga_aftermath/hunga_aftermath_temperature_ozone.png` |
+| [W35](#w35) | East Africa's lakes ratchet upward in Indian Ocean Dipole years (Turkana +6.7 m) | `results/54_east_africa_lakes/east_africa_lakes.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -421,6 +422,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/53_hunga_aftermath/hunga_aftermath_temperature_ozone.png`</sub>
 
 ![After Hunga Tonga: the wet stratosphere cooled 2 K and lost 3% ozone](figures/N24_hunga_aftermath.png)
+
+### W35
+**East Africa's lakes ratchet upward in Indian Ocean Dipole years (Turkana +6.7 m)**  
+<sub>source: `results/54_east_africa_lakes/east_africa_lakes.png`</sub>
+
+![East Africa's lakes ratchet upward in Indian Ocean Dipole years (Turkana +6.7 m)](figures/W35_east_africa_lakes.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

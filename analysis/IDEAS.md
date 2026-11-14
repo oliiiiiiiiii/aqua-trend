@@ -42,7 +42,7 @@
 | I38 | Hydroclimate whiplash frequency (monthly SPI-like swings) | GPCP + MERRA-2 | rate series + ratio map | low | done (task 38: null — GPCP ↓, MERRA-2 ↑ n.s.) |
 | I39 | Turning points: where did GRACE water-storage trends reverse (depletion → recovery, or the reverse) between 2002–13 and 2014–26? | GRACE | trend-change class map | low | done (task 39: 45 % of land changed; NCP reversal, Central Europe/Caspian worse) |
 | I40 | Ocean salinity as a rain gauge: SMAP sea-surface salinity 2015–2026 — salty regions saltier (evaporation) and fresh regions fresher (rain)? | SMAP SSS (PO.DAAC) | SSS trend vs mean-SSS map | med | todo (short record) |
-| I41 | Lake Victoria & East African lakes record high: GRACE + IMERG + moisture convergence + MODIS shoreline (NDVI water) | GRACE, IMERG, MERRA-2, MODIS | multi-panel | low | todo |
+| I41 | Lake Victoria & East African lakes record high: GRACE + IMERG + moisture convergence + MODIS shoreline (NDVI water) | GRACE, IMERG, GWM altimetry | multi-panel | low | done (task 54: Turkana +6.7 m, Victoria gain~short rains r=0.82; top-3 rises = 1997/2019/2023 IOD years on 6/8 lakes) |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |

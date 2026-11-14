@@ -104,3 +104,7 @@
 | 2026-11-14 20:00 | 52_asia_haze | done | 27 AERONET sites: 16 down, 3 up; Taiwan sulfate -17%/dec, r(China SO2)=0.89 |
 | 2026-11-14 20:03 | 53_hunga_aftermath | done | 15-40 hPa 15-55S 2022-23: H2O +35%, T -0.7 K, O3 -0.7% |
 | 2026-11-14 20:04 | 53_hunga_aftermath | done | 15-40 hPa 15-55S first year: H2O +49%, T -1.6 K, O3 -2.8% |
+| 2026-11-15 00:11 | 54_east_africa_lakes | done | Victoria -7.18 m vs 2003-12 (rise 2019-21 -1.05 m); OND rain~DMI r=0.70 |
+| 2026-11-15 00:12 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +0.85 m); OND rain~DMI r=0.70 |
+| 2026-11-15 00:14 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +1.36 m); OND rain~DMI r=0.70 |
+| 2026-11-15 00:15 | 54_east_africa_lakes | done | Victoria +1.19 m vs 2003-12 (rise 2019-21 +1.36 m); OND rain~DMI r=0.70 |
