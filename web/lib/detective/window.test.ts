@@ -73,3 +73,11 @@ test("daily span of a weeks window, leap years included", () => {
   assert.deepEqual(dailySpan({ start: "2020-02", end: "2020-02" }, 2), { start: "2020-01-18", end: "2020-03-14", days: 57 });
   assert.equal(dailySpan({ start: "2021-02", end: "2021-05" }, 9).days, 120 + 70);
 });
+
+
+test("daily span and highlighted event band retain exact days", () => {
+  const event = { start: "2021-02-15", end: "2021-05-20" };
+  assert.deepEqual(eventDays(event), event);
+  assert.deepEqual(dailySpan(event, 1), { start: "2021-02-08", end: "2021-05-27", days: 109 });
+  assert.deepEqual(dailySpan({ start: "2020-02-29", end: "2020-02-29" }, 1), { start: "2020-02-22", end: "2020-03-07", days: 15 });
+});

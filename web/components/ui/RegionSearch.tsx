@@ -56,7 +56,6 @@ export function RegionSearch({ catalog, onSelect, autoFocus = false }: { catalog
         spellCheck={false}
         autoFocus={autoFocus}
         data-dialog-autofocus={autoFocus || undefined}
-        placeholder="e.g. Nile, Sahel, BRA"
         value={query}
         onChange={(e) => { setQuery(e.target.value); setActive(0); }}
         onKeyDown={onKeyDown}

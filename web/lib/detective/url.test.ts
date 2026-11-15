@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import type { DetectiveQuery } from "./contracts";
 import { suggestedTime } from "./keywords";
 import { LAB_TOOLS } from "./lab";
-import { TEST_IDS, decodeQuery, decodeState, encodeQuery, encodeState, formatRange, impliedWindow, suggestTime, urlCodec, windowOf } from "./url";
+import { TEST_IDS, decodeQuery, decodeState, encodeQuery, encodeState, formatRange, impliedWindow, isDay, parseDayRange, suggestTime, urlCodec, windowOf } from "./url";
 import { DEFAULT_WINDOW } from "./window";
 
 describe("suggestTime (T from E)", () => {
@@ -114,6 +114,41 @@ describe("URL codec", () => {
       layers: { aod: "aod", ozone: "to3_m2", vapor: "tqv", so2: "so2_emis", fire: "fire_count" },
     };
     assert.deepEqual(decodeQuery(encodeQuery(query)), query);
+  });
+});
+
+describe("exact event days (td)", () => {
+  const time = { start: "2021-02", end: "2021-05" };
+  const exactTime = { start: "2021-02-15", end: "2021-05-20" };
+
+  it("round-trips exact days alongside the unchanged monthly span", () => {
+    const query = { time, exactTime };
+    assert.equal(encodeState({ query }), "t=2021-02..2021-05&td=2021-02-15..2021-05-20");
+    assert.deepEqual(decodeQuery(encodeState({ query })), query);
+    assert.deepEqual(decodeState(encodeState({ query, draft: ["soil"] })).draft, ["soil"]);
+  });
+
+  it("omits exact days for full months, including leap February", () => {
+    assert.equal(encodeState({ query: { time, exactTime: { start: "2021-02-01", end: "2021-05-31" } } }), "t=2021-02..2021-05");
+    assert.equal(encodeState({ query: { time: { start: "2020-02", end: "2020-02" }, exactTime: { start: "2020-02-01", end: "2020-02-29" } } }), "t=2020-02..2020-02");
+    assert.deepEqual(decodeQuery("t=2021-02..2021-05&td=2021-02-01..2021-05-31"), { time });
+  });
+
+  it("keeps old links unchanged", () => {
+    const old = "e=Drought&t=2021-02..2021-05&r=b4-1&v=soil";
+    assert.equal(encodeState({ query: decodeQuery(old) }), old);
+    assert.equal(decodeQuery(old).exactTime, undefined);
+  });
+
+  it("rejects impossible, reversed, malformed or mismatched exact days", () => {
+    for (const td of ["2021-02-29..2021-05-20", "2021-02-30..2021-05-20", "2021-02-15..2021-02-14", "2021-02-15", "2021/02/15..2021/05/20", "2021-01-15..2021-05-20", "2021-02-15..2021-06-20", "junk"]) {
+      assert.deepEqual(decodeQuery(`t=2021-02..2021-05&td=${td}`), { time }, td);
+    }
+    assert.equal(decodeQuery("td=2021-02-15..2021-05-20").exactTime, undefined);
+    assert.equal(encodeState({ query: { time, exactTime: { start: "2021-01-15", end: "2021-05-20" } } }), "t=2021-02..2021-05");
+    assert.equal(isDay("2020-02-29"), true);
+    assert.equal(isDay("2021-02-29"), false);
+    assert.equal(parseDayRange("2021-02-15..2021-05-20..2021-06-01"), null);
   });
 });
 

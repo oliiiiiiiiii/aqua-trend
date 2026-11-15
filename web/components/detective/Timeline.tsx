@@ -5,7 +5,9 @@
 //   overview bar below            drag its window to pan      keys: arrows move the range, + - zoom, Shift+arrows resize the end
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { TimeRange } from "@/lib/detective/contracts";
-import { addMonths, ymFromIndex, ymIndex } from "@/lib/detective/url";
+import { ymFromIndex, ymIndex } from "@/lib/detective/url";
+import { eventDays } from "@/lib/detective/window";
+import { dayNumber, dayString } from "@/lib/detective/daily";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { COPY } from "./copy/input";
 
@@ -18,9 +20,13 @@ const OV_H = 20;
 
 interface View { lo: number; span: number }
 type Mode = "new" | "move" | "start" | "end";
-interface Session { mode: Mode; x0: number; view: View; s: number; e: number; moved: boolean; px: number }
+interface Session { mode: Mode; x0: number; view: View; s: number; e: number; moved: boolean; px: number; range?: TimeRange }
 
-export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; time: TimeRange | null; padMonths: number; onChange: (r: TimeRange) => void }) {
+const monthDays = (i: number) => Number(eventDays({ start: ymFromIndex(i), end: ymFromIndex(i) }).end.slice(8, 10));
+const dayIndex = (day: string, end = false) => ymIndex(day) + (Number(day.slice(8, 10)) - (end ? 0 : 1)) / monthDays(ymIndex(day));
+const sessionRange = (s: Session): TimeRange => s.range ?? { start: ymFromIndex(s.s), end: ymFromIndex(s.e) };
+
+export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: TimeRange; time: TimeRange | null; onChange: (r: TimeRange) => void; onPreviewChange: (r: TimeRange | null) => void }) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const a = ymIndex(bounds.start), b = ymIndex(bounds.end);
   const full = Math.max(1, b - a + 1);
@@ -70,7 +76,13 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
   const indexAt = (px: number) => view.lo + (px - PAD_X) / ppm;
 
   const sel = time ? { s: ymIndex(time.start), e: ymIndex(time.end) } : null;
-  const shown = sess ? { s: sess.s, e: sess.e } : sel;
+  const shownDays = sess ? eventDays(sessionRange(sess)) : time ? eventDays(time) : null;
+  const shown = shownDays ? { s: dayIndex(shownDays.start), e: dayIndex(shownDays.end, true) - 1 } : null;
+  const dayAt = (px: number) => {
+    const i = Math.max(a, Math.min(b + 1 - 1e-7, indexAt(px)));
+    const m = Math.floor(i);
+    return dayNumber(`${ymFromIndex(m)}-01`)! + Math.min(monthDays(m) - 1, Math.floor((i - m) * monthDays(m)));
+  };
 
   const zoomAt = useCallback((factor: number, anchorFrac: number) => {
     userView.current = true;
@@ -101,8 +113,8 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
   }, [ref, panBy, zoomAt]);
 
   const zoneAt = (px: number): Mode => {
-    if (sel) {
-      const sx = x(sel.s), ex = x(sel.e + 1);
+    if (shown) {
+      const sx = x(shown.s), ex = x(shown.e + 1);
       const dS = Math.abs(px - sx), dE = Math.abs(px - ex);
       if (Math.min(dS, dE) <= HIT) return dS < dE || (dS === dE && px < sx) ? "start" : "end";
       if (px > sx && px < ex) return "move";
@@ -110,7 +122,11 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     return "new";
   };
   const local = (e: PointerEvent<SVGSVGElement>) => e.clientX - e.currentTarget.getBoundingClientRect().left;
-  const begin = (s: Session) => { sessRef.current = s; setSess(s); };
+  const begin = (s: Session) => {
+    sessRef.current = s;
+    setSess(s);
+    onPreviewChange(sessionRange(s));
+  };
   const down = (e: PointerEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -118,7 +134,8 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     ref.current?.focus({ preventScroll: true });
     const mode = zoneAt(px);
     const month = Math.max(a, Math.min(b, Math.floor(indexAt(px))));
-    begin({ mode, x0: e.clientX, view: viewRef.current, s: mode === "new" ? month : sel!.s, e: mode === "new" ? month : sel!.e, moved: false, px });
+    const range = view.span <= 12 ? (mode === "new" ? { start: dayString(dayAt(px)), end: dayString(dayAt(px)) } : eventDays(time!)) : undefined;
+    begin({ mode, x0: e.clientX, view: viewRef.current, s: mode === "new" ? month : sel!.s, e: mode === "new" ? month : sel!.e, moved: false, px, range });
   };
   const move = (e: PointerEvent<SVGSVGElement>) => {
     const cur = sessRef.current;
@@ -128,7 +145,20 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     if (!moved) return;
     const dm = dx / ppm;
     let next: Session = { ...cur, moved };
-    if (cur.mode === "new") {
+    if (cur.range) {
+      const anchor = dayAt(cur.px), target = dayAt(local(e));
+      const original = time ? eventDays(time) : cur.range;
+      const s0 = dayNumber(original.start)!, e0 = dayNumber(original.end)!;
+      const lo = dayNumber(`${bounds.start}-01`)!, hi = dayNumber(eventDays(bounds).end)!;
+      let s = s0, end = e0;
+      if (cur.mode === "new") { s = Math.min(anchor, target); end = Math.max(anchor, target); }
+      else if (cur.mode === "move") {
+        const delta = Math.max(lo - s0, Math.min(hi - e0, target - anchor));
+        s += delta; end += delta;
+      } else if (cur.mode === "start") s = Math.max(lo, Math.min(e0, s0 + target - anchor));
+      else end = Math.min(hi, Math.max(s0, e0 + target - anchor));
+      next.range = { start: dayString(s), end: dayString(end) };
+    } else if (cur.mode === "new") {
       const anchor = Math.max(a, Math.min(b, Math.floor(cur.view.lo + (cur.px - PAD_X) / ppm)));
       const month = Math.max(a, Math.min(b, Math.floor(indexAt(local(e)))));
       next = { ...next, s: Math.min(anchor, month), e: Math.max(anchor, month) };
@@ -145,17 +175,19 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     }
     sessRef.current = next;
     setSess(next);
+    onPreviewChange(sessionRange(next));
   };
   const up = () => {
     const cur = sessRef.current;
     sessRef.current = null;
     setSess(null);
+    onPreviewChange(null);
     if (!cur) return;
     if (cur.mode === "new" || cur.moved) {
-      onChange({ start: ymFromIndex(cur.s), end: ymFromIndex(cur.e) });
+      onChange(sessionRange(cur));
     }
   };
-  const cancel = () => { sessRef.current = null; setSess(null); };
+  const cancel = () => { sessRef.current = null; setSess(null); onPreviewChange(null); };
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
@@ -219,7 +251,7 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
   };
 
   const T = COPY.when;
-  const btn = "grid h-8 min-w-8 place-items-center rounded-ctl border border-stage-line px-2 text-sm text-on-stage hover:bg-on-stage/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40";
+  const btn = "grid h-6 min-w-6 place-items-center rounded-ctl px-1 text-sm text-on-stage hover:bg-on-stage/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40";
   const sxs = shown ? x(shown.s) : 0;
   const exs = shown ? x(shown.e + 1) : 0;
   const barW = Math.max(4, exs - sxs);
@@ -248,19 +280,7 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
           onPointerCancel={cancel}
         >
           <rect x={PAD_X} y={14} width={inner} height={14} rx={7} fill="var(--well)" stroke="var(--line)" />
-          {shown && (
-            <>
-              <rect
-                x={x(Math.max(a, ymIndex(addMonths(ymFromIndex(shown.s), -padMonths))))}
-                y={14}
-                width={Math.max(2, x(Math.min(b, ymIndex(addMonths(ymFromIndex(shown.e), padMonths))) + 1) - x(Math.max(a, ymIndex(addMonths(ymFromIndex(shown.s), -padMonths)))))}
-                height={14}
-                fill="var(--water)"
-                opacity={0.3}
-              />
-              <rect x={sxs} y={11} width={barW} height={20} rx={3} fill="var(--viz-orange)" />
-            </>
-          )}
+          {shown && <rect x={sxs} y={11} width={barW} height={20} rx={3} fill="var(--viz-orange)" />}
           {ticks.map((t) => (
             <g key={t.key}>
               <line x1={x(t.i)} x2={x(t.i)} y1={t.year ? 28 : 28} y2={t.year ? 40 : 34} stroke="var(--on-stage-2)" strokeOpacity={t.year ? 0.9 : 0.55} />
@@ -294,17 +314,11 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
           onPointerCancel={() => setOvDrag(null)}
         >
           <rect x={PAD_X} y={7} width={inner} height={6} rx={3} fill="var(--well)" stroke="var(--line)" />
-          {sel && <rect x={ox(sel.s)} y={5} width={Math.max(2, ox(sel.e + 1) - ox(sel.s))} height={10} rx={2} fill="var(--viz-orange)" />}
+          {shown && <rect x={ox(shown.s)} y={5} width={Math.max(2, ox(shown.e + 1) - ox(shown.s))} height={10} rx={2} fill="var(--viz-orange)" />}
           <rect x={ox(view.lo)} y={1} width={Math.max(8, view.span * oppm)} height={18} rx={4} fill="var(--on-stage)" fillOpacity={0.12} stroke="var(--on-stage)" strokeWidth={1.5} style={{ cursor: ovDrag ? "grabbing" : "grab" }} />
         </svg>
       )}
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-on-stage-2">
-        <p className="flex flex-wrap gap-x-4">
-          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--viz-orange)" }} aria-hidden="true" />{T.legendEvent}</span>
-          <span className="inline-flex items-center gap-1.5" title={T.legendBaselineTitle(padMonths)}>
-            <span className="h-2.5 w-4 rounded-sm bg-water opacity-30" aria-hidden="true" />{T.legendBaseline} (±{padMonths} mo)
-          </span>
-        </p>
+      <div className="mt-1 flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-xs text-on-stage-2">
         <span className="inline-flex items-center gap-1.5" role="group" aria-label={T.zoom}>
           <button type="button" className={btn} aria-label={T.zoomOut} title={T.zoomOut} disabled={zoomedOut} onClick={() => zoomAt(1 / 0.6, 0.5)}>−</button>
           <button type="button" className={btn} aria-label={T.zoomIn} title={T.zoomIn} disabled={view.span <= Math.min(MIN_SPAN, full) + 0.01} onClick={() => zoomAt(0.6, 0.5)}>+</button>

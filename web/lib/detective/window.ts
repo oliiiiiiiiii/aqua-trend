@@ -116,15 +116,19 @@ function lastDay(m: YearMonth): string {
   return dayStr(Date.UTC(y, mo, 1) / DAY_MS - 1);
 }
 
-/** Inclusive day range of a weeks window: [first day of the event − 7n, last day of the event + 7n] (UTC, "YYYY-MM-DD"). */
+/** Inclusive weeks window: [event start day − 7n, event end day + 7n] (UTC, "YYYY-MM-DD"). */
 export function dailySpan(event: TimeRange, weeks: number): { start: string; end: string; days: number } {
   const n = Math.max(WINDOW_LIMITS.week.min, Math.min(WINDOW_LIMITS.week.max, Math.round(weeks)));
-  const s = dayNum(firstDay(event.start)) - 7 * n;
-  const e = dayNum(lastDay(event.end)) + 7 * n;
+  const days = eventDays(event);
+  const s = dayNum(days.start) - 7 * n;
+  const e = dayNum(days.end) + 7 * n;
   return { start: dayStr(s), end: dayStr(e), days: e - s + 1 };
 }
 
-/** The event's own days (first of start month … last of end month). */
+/** Exact event days when supplied; legacy month ranges expand to their first/last days. */
 export function eventDays(event: TimeRange): { start: string; end: string } {
-  return { start: firstDay(event.start), end: lastDay(event.end) };
+  return {
+    start: event.start.length === 10 ? event.start : firstDay(event.start),
+    end: event.end.length === 10 ? event.end : lastDay(event.end),
+  };
 }

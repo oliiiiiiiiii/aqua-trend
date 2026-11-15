@@ -7,23 +7,23 @@
 // All state lives in the URL (lib/detective/url.ts): a link with r + t + v opens the tabs directly, a reload keeps
 // everything, Back returns from the tabs to the inputs. Other workstreams are reached only through ./wiring.ts.
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type {
-  CategoryId, Decomposition, DetectiveQuery, IntervalStats, LayerId, MonthlySeries, PresetEvent,
-  RegionId, SelectResponse, TimeRange, TrendStats,
+  CategoryId, DetectiveQuery, LayerId, RegionId, SelectResponse, TimeRange,
 } from "@/lib/detective/contracts";
 import { loadCatalog } from "@/lib/data";
 import {
-  CATEGORY_IDS, DEFAULT_PAD, PAD_MAX, PAD_MIN, decodeState, encodeState, formatRange,
-  sameRange, suggestTime, ymIndex, type DetectiveUrlState,
+  CATEGORY_IDS, DEFAULT_PAD, decodeState, formatRange, monthsOfDays,
+  suggestTime, ymIndex, type DetectiveUrlState,
 } from "@/lib/detective/url";
 import {
-  categoryAvailability, loadCountryNames, loadSeries, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
+  categoryAvailability, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
 } from "@/lib/detective/series";
 import { RetryButton, StatusCard } from "@/components/ui/StatusCard";
+import { StartProgress } from "./StartProgress";
 import { InputPanel } from "./InputPanel";
-import { CATEGORIES, PRESETS, requestVotes } from "./wiring";
+import { CATEGORIES, requestVotes } from "./wiring";
 import AnalysisView from "./AnalysisView";
 import { COPY } from "./copy/input";
 import { NO_LAYERS, msg, writeUrl } from "./appShared";
@@ -122,7 +122,6 @@ function InputStage({
   onRetryCatalog: () => void;
 }) {
   const q = url.query;
-  const [countryLoad] = useLoad(loadCountryNames);
 
   /* ---------------- E: typed locally, written to the URL after a pause */
   const urlEvent = q.event ?? "";
@@ -179,7 +178,7 @@ function InputStage({
 
   const onEventChange = (text: string) => {
     currentEvent.current = text.trim();
-    reasked.current = text.trim();
+    reasked.current = null;
     cancelRequest();
     setVote(null);
     setEventText(text);
@@ -191,7 +190,7 @@ function InputStage({
     const e = text.trim();
     synced.current = e;
     const auto = timeTouched.current ? null : suggestTime(e);
-    writeUrl((s) => ({ query: { ...s.query, event: e || undefined, time: auto ?? s.query.time }, draft: s.draft }));
+    writeUrl((s) => ({ ...s, query: { ...s.query, event: e || undefined, time: auto ?? s.query.time }, draft: s.draft }));
   }, []);
   useEffect(() => {
     if (eventText.trim() === (decodeState(window.location.search).query.event ?? "")) return;
@@ -211,7 +210,11 @@ function InputStage({
   }, [vc, q.time]);
   const onTimeChange = useCallback((next: TimeRange | ((current: TimeRange | null) => TimeRange)) => {
     timeTouched.current = true;
-    writeUrl((s) => ({ query: { ...s.query, time: typeof next === "function" ? next(s.query.time ?? null) : next }, draft: s.draft }));
+    writeUrl((s) => {
+      const range = typeof next === "function" ? next(s.query.exactTime ?? s.query.time ?? null) : next;
+      const exact = range.start.length === 10;
+      return { ...s, query: { ...s.query, time: exact ? monthsOfDays(range) : range, exactTime: exact ? range : undefined }, draft: s.draft };
+    });
   }, []);
 
   /* ---------------- L */
@@ -228,7 +231,7 @@ function InputStage({
     [catalog, index],
   );
   const onRegion = useCallback((r: Region) => {
-    writeUrl((s) => ({ query: { ...s.query, region: r.id }, draft: s.draft }));
+    writeUrl((s) => ({ ...s, query: { ...s.query, region: r.id }, draft: s.draft }));
   }, []);
   const noData = !!(q.region && layersHere && layersHere.size === 0);
   const regionNote = (
@@ -262,7 +265,7 @@ function InputStage({
       if (applyPicks && !picksTouched.current) {
         const picks = response.votes.filter((v) => v.selected).map((v) => v.category);
         const auto = !timeTouched.current && response.suggestedTime ? response.suggestedTime : null;
-        writeUrl((s) => ({ query: { ...s.query, event: e, time: auto ?? s.query.time }, draft: picks }));
+        writeUrl((s) => ({ ...s, query: { ...s.query, event: e, time: auto ?? s.query.time }, draft: picks }));
       }
     } catch {
       // aborted by a newer request or by leaving the page
@@ -271,29 +274,25 @@ function InputStage({
     }
   }, []);
 
-  const onFind = () => {
-    const e = eventText.trim();
-    if (!e) return;
-    commitEvent(e);
-    void ask(e, true);
-  };
-
-  // a reload (or Back) in Step 1 keeps the user's ticks from the URL; ask again only to show the probabilities
+  // A committed event starts suggestions automatically. Existing URL picks always win on reload/Back.
   useEffect(() => {
-    if (reasked.current === urlEvent || vote || finding || draft === null || !urlEvent || currentEvent.current !== urlEvent) return;
-    reasked.current = urlEvent;
-    void ask(urlEvent, false);
+    if (reasked.current === urlEvent || vote || finding || !urlEvent || currentEvent.current !== urlEvent) return;
+    const timer = window.setTimeout(() => {
+      reasked.current = urlEvent;
+      void ask(urlEvent, draft === null);
+    }, 250);
+    return () => window.clearTimeout(timer);
   }, [vote, finding, draft, urlEvent, ask]);
 
   const onPicks = (c: CategoryId[]) => {
     picksTouched.current = true;
-    writeUrl((s) => ({ query: s.query, draft: c }));
+    writeUrl((s) => ({ ...s, query: s.query, draft: c }));
   };
 
   const startable = (draft ?? []).filter((c) => !available || available[c]);
   const blocked = !eventText.trim()
-    ? COPY.find.needEvent
-    : finding
+    ? COPY.blocked.event
+    : finding && draft === null
       ? COPY.blocked.finding
       : !vc || !index
         ? COPY.blocked.loading
@@ -316,33 +315,27 @@ function InputStage({
     setStarting(false);
     if (blocked) return;
     if (eventText.trim() !== urlEvent) commitEvent(eventText);
-    writeUrl((s) => ({ query: { ...s.query, categories: startable, active: startable[0] }, draft: null }), "push");
+    writeUrl((s) => ({ ...s, query: { ...s.query, categories: startable, active: startable[0] }, draft: null }), "push");
     window.scrollTo({ top: 0 });
   };
 
-  const onPreset = (p: PresetEvent) => {
-    cancelRequest();
-    timeTouched.current = true;
-    if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
-    writeUrl(() => ({
-      query: {
-        event: p.event, time: p.time, region: p.region, categories: p.categories, layers: p.layers,
-        padMonths: p.padMonths, active: p.active ?? p.categories[0],
-      },
-      draft: null,
-    }), "push");
-    window.scrollTo({ top: 0 });
-  };
-
-  const showPicker = draft !== null || finding || !!vote;
   return (
     <div data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky">
+      {starting && <StartProgress
+        context={{
+          basin: regionOk?.name ?? q.region ?? "the basin",
+          variables: startable.length,
+          period: q.time ? formatRange(q.time) : "the event",
+          firstYear: startable.map((c) => { const layer = q.layers?.[c] ?? vc?.defaults[c]; return layer ? vc?.layers[layer]?.start : undefined; }).filter((s): s is NonNullable<typeof s> => !!s).sort()[0]?.slice(0, 4),
+        }}
+        onDone={startNow}
+        onCancel={() => setStarting(false)}
+      />}
       <InputPanel
         event={eventText}
         onEventChange={onEventChange}
-        presets={PRESETS}
-        onPreset={onPreset}
-        time={q.time ?? null}
+        onEventCommit={commitEvent}
+        time={q.exactTime ?? q.time ?? null}
         onTimeChange={onTimeChange}
         timeSuggestion={suggestTime(eventText)}
         bounds={bounds}
@@ -350,16 +343,10 @@ function InputStage({
         catalog={catalog}
         catalogError={catalogError}
         searchable={searchable}
-        countryNames={ready(countryLoad)}
         region={regionOk}
         regionNote={regionNote}
         onRegion={onRegion}
-        onFind={onFind}
-        finding={finding}
-        hasPicker={showPicker}
-        starting={starting}
-        onStartDone={startNow}
-        picker={showPicker ? {
+        picker={{
           categories: CATEGORIES,
           response: vote?.event === eventText.trim() ? vote.response : null,
           loading: finding,
@@ -369,7 +356,7 @@ function InputStage({
           unavailableReason: avail?.unavailableReason,
           onStart,
           blocked,
-        } : null}
+        }}
       />
     </div>
   );

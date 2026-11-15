@@ -1,25 +1,37 @@
+import type { CategoryId } from "@/lib/detective/contracts";
+
+// Compact tile names; the full measurement and definition remain in each tooltip.
+export const VARIABLE_LABELS: Partial<Record<CategoryId, string>> = {
+  et: "Evapotrans\u00adpiration",
+  tws: "Land water storage",
+  vpd: "Air dryness",
+  vapor: "Water vapour",
+  ndvi: "Greenness",
+  sst: "Sea temperature",
+  aod: "Aerosol depth",
+  ozone: "Ozone column",
+  so2: "SO₂ emissions",
+  fire: "Fire detections",
+};
+
 // Every user-visible string of the /detective input step (English only; translate here).
 export const COPY = {
   title: "Trend Detective",
-  intro: "What event do you want to investigate?",
+  needed: "Needed",
   formLabel: "Event, period and sub-basin",
-  steps: { what: "What", when: "When", where: "Where", variables: "Variables" },
+  steps: { what: "Event", when: "When", where: "Where", variables: "Variables" },
   what: {
-    placeholder: "e.g. Pakistan floods, July–September 2022",
-    hint: "Chinese input works too.",
+    edit: "Edit event",
     label: "What event do you want to investigate?",
   },
   when: {
-    choose: "Choose the event months",
+    choose: "Select months",
     from: "From",
     to: "To",
     month: "Month",
     year: "Year",
     useText: "Text says",
     use: "Use",
-    legendEvent: "Event",
-    legendBaseline: "Left out of baseline",
-    legendBaselineTitle: (pad: number) => `The ${pad} months before and after the event are left out when the normal range is computed.`,
     stripTitle: "Drag the top strip to select months; drag the range to move it or its ends to resize. Drag the bottom overview to pan. Scroll or use +/− to zoom.",
     stripLabel: "Timeline. Left and right arrows move the event range, Shift with the arrows resizes its end, plus and minus zoom. Enter selects a month if no range is set.",
     zoom: "Zoom the timeline",
@@ -29,7 +41,7 @@ export const COPY = {
     fitTitle: "Show the whole record",
   },
   where: {
-    none: "Click the globe or search",
+    none: "Click a basin on the globe",
     subBasin: "Sub-basin",
     loading: "Loading sub-basins…",
     placesInText: "In your text",
@@ -40,15 +52,14 @@ export const COPY = {
     retry: "Try again",
     globeLoading: "Loading the globe…",
     globeAria: "Globe sub-basin picker. Drag or use the arrow keys to turn the planet, scroll or press plus and minus to zoom, click or press Enter to select the sub-basin at the centre.",
-    hint: "Drag to turn · scroll to zoom · click a basin",
     hoverSelect: "click to select",
     pickLoading: "The sub-basin list is still loading. Try again in a moment.",
     lookup: (lat: string, lon: string) => `Looking up the sub-basin at ${lat}, ${lon}…`,
     noBasinAt: (lat: string, lon: string) => `No sub-basin at ${lat}, ${lon}. Basins cover land only; try nearby land or search.`,
     lookupFailed: (m: string) => `Could not look up sub-basins: ${m}. Search by name instead.`,
   },
-  find: { go: "Suggest", busy: "Suggesting…", again: "Suggest", needEvent: "Describe the event first." },
   blocked: {
+    event: "Name an event.",
     finding: "Waiting for suggestions.",
     loading: "Loading variables.",
     time: "Choose when.",
@@ -65,21 +76,20 @@ export const COPY = {
   picker: {
     heading: "Variables",
     group: "Variable categories",
-    close: "Close variables",
-    show: "Variables",
-    pickPlace: "Pick another place on the globe",
-    asking: "Asking the model…",
-    yours: "Your picks",
-    source: {
-      "local-model": "AI model · local",
-      "online-model": "AI model · online",
-      "keyword-fallback": "Keywords",
-    },
     suggested: "Suggested",
     others: "Others",
+    all: "All variables",
+    expand: "Expand variables",
+    collapse: "Collapse variables",
+    asking: "Suggesting…",
+    source: {
+      "local-model": "AI model",
+      "online-model": "AI model",
+      "keyword-fallback": "keywords",
+    },
     keyword: "keyword match",
     probability: (pct: number) => `Model probability that this is related: ${pct}%`,
     noData: "No data for this sub-basin",
-    analyse: (n: number) => (n === 1 ? "Analyse 1 variable" : n > 0 ? `Analyse ${n} variables` : "Analyse"),
+    analyse: (n: number) => (n === 1 ? "Analyse 1 variable" : `Analyse ${n} variables`),
   },
 } as const;

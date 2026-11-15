@@ -3,7 +3,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createContext, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type MouseEvent } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import { SubBasinGlobe } from "@/components/globe/StageGlobe";
-import { COPY } from "@/components/detective/copy/input";
 
 type Picker = { catalog: Catalog | null; region: Region | null; onRegion: (r: Region) => void };
 type Stage = {
@@ -146,19 +145,6 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
     return () => host.removeAttribute("data-stage-active");
   }, [root, visible, hasArea]);
 
-  const [question, setQuestion] = useState<string>(COPY.intro);
-  useEffect(() => {
-    if (!stage.entering) return;
-    const tick = () => {
-      const elapsed = performance.now() - stage.started;
-      const count = Math.floor(Math.max(0, Math.min(1, (elapsed - 200) / 560)) * COPY.intro.length);
-      setQuestion(COPY.intro.slice(0, count));
-    };
-    tick();
-    const timer = window.setInterval(tick, 16);
-    return () => window.clearInterval(timer);
-  }, [stage.entering, stage.started]);
-
   if (!visible) return null; // GlobeCanvas cleanup disposes the renderer and loses its WebGL context.
   const { area, clip, globe, copy } = positions;
   const move = travelling ? `${TRAVEL_MS}ms ${EASE}` : "0ms";
@@ -171,7 +157,7 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
           className="on-stage stage-sky pointer-events-none absolute -z-10 overflow-hidden"
           style={{ left: area.x, top: area.y, width: area.width, height: area.height }}
         >
-          {/* The planet is clipped to the visible part of its hero (the rising half-Earth) or to the whole input stage. */}
+          {/* Home includes the cases in its stage area, so the rising planet continues behind their glass. */}
           <div
             data-shared-clip
             className="absolute inset-0"
@@ -205,13 +191,11 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
         style={{
           width: copy?.width ?? 0,
           transform: `translate(${copy?.x ?? 0}px, ${copy?.y ?? 0}px)`,
-          visibility: copy ? "visible" : "hidden",
+          visibility: home && copy ? "visible" : "hidden",
           transition: `transform ${move}, width ${move}`,
         }}
       >
-        <h1 id="hero" className={`text-balance leading-tight ${home ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"}`} aria-label={home ? "Was it unusual?" : COPY.intro}>
-          {home ? "Was it unusual?" : stage.entering ? question || "\u00a0" : COPY.intro}
-        </h1>
+        <h1 id="hero" className="text-balance text-4xl leading-tight sm:text-6xl">Was it unusual?</h1>
       </div>
     </>
   );
