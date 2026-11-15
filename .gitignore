@@ -136,3 +136,6 @@ $RECYCLE.BIN/
 # Earthdata Login token
 .edl.token
 *.token
+# 可重新產生的大檔
+data/gldas_1deg/
+data/hub_export/
