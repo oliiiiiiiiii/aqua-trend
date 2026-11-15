@@ -67,6 +67,19 @@ def merra_sum(folder, varnames, scale=1.0, offset=0.0):
     return gen
 
 
+def ym_gldas(f):
+    return re.search(r"\.A(\d{4})(\d{2})\.", f).expand(r"\1-\2")
+
+
+def gldas_sum(varnames, scale=1.0, offset=0.0, folder="gesdisc/gldas"):
+    def gen():
+        for ym, f in monthly_files(folder, "GLDAS_*.nc4", ym_gldas):
+            with netCDF4.Dataset(f) as d:
+                a = sum(read(d, v) for v in varnames) * scale + offset
+                yield ym, R.to_half_degree(a, d["lat"][:], d["lon"][:])
+    return gen
+
+
 def modis_layer(folder, var, offset=0.0):
     def gen():
         for ym, f in monthly_files(folder, "*.nc4", ym_modis):
@@ -138,10 +151,17 @@ LAYERS = {
     "tsurf_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["TSURF"], 1.0, -273.15), meta=dict(
         name="地表溫度", category="tair", product="MERRA-2 M2TMNXLND TSURF", nasa=True, family=M2,
         unit="°C", visual="地表冷暖", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    # GLDAS Noah 0.25 deg: same product as existing layers, rebuilt only to validate the pipeline
+    "et_gldas_check": dict(gen=gldas_sum(["Evap_tavg"], 86400), meta=dict(name="check", unit="mm/day")),
+    "sm_root_check": dict(gen=gldas_sum(["RootMoist_inst"]), meta=dict(name="check", unit="mm")),
+    "runoff_check": dict(gen=gldas_sum(["Qs_acc", "Qsb_acc"], 8), meta=dict(name="check", unit="mm/day")),
+    "swe_check": dict(gen=gldas_sum(["SWE_inst"]), meta=dict(name="check", unit="mm")),
+    "tair_check": dict(gen=gldas_sum(["Tair_f_inst"], 1.0, -273.15), meta=dict(name="check", unit="°C")),
     # same product as the existing p_imerg layer: built only to validate this pipeline against it
     "p_imerg_check": dict(gen=imerg_layer(), meta=dict(
         name="降水", category="precip", product="GPM IMERG V07 月資料", nasa=True, family="IMERG",
         unit="mm/day", visual="向下雨滴粒子的密度", source_files="gesdisc/imerg/*.subset.nc4", caveat=None)),
+    "lst_day_check": dict(gen=modis_layer("modis/lst", "LST_Day_CMG", -273.15), meta=dict(name="check", unit="°C")),
     "lst_night": dict(gen=modis_layer("modis/lst", "LST_Night_CMG", -273.15), meta=dict(
         name="夜間地表溫度", category="tair", product="MODIS Terra MOD11C3 LST_Night（0.05°→0.25°→0.5°）",
         nasa=True, family="MODIS", unit="°C", visual="夜間地表冷暖", source_files="modis/lst/*.nc4",
