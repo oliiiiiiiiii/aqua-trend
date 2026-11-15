@@ -28,6 +28,12 @@ export interface StatsPanelProps {
   onToggle?: () => void;
   /** id of the expandable part, for aria-controls */
   moreId?: string;
+  /** the trigger is the one that opens the overlay drawer (aria-haspopup / aria-expanded) */
+  triggerRef?: React.Ref<HTMLButtonElement>;
+  /** false drops aria-live (the drawer repeats the verdict while the slim column is still on the page) */
+  live?: boolean;
+  /** aria-expanded of the More control when it opens an overlay (default: `expanded`) */
+  open?: boolean;
 }
 
 export default function StatsPanel(p: StatsPanelProps) {
@@ -43,7 +49,7 @@ export default function StatsPanel(p: StatsPanelProps) {
   return (
     <section aria-label={S.heading} className="min-w-0">
       {/* tier 1: verdict */}
-      <p aria-live="polite" className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+      <p aria-live={p.live === false ? undefined : "polite"} className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <VerdictMark d={d} polarity={p.polarity} size={14} className="self-center" />
         <span className="text-lg leading-tight font-semibold text-ink">{v.label}</span>
         <HypothesisChip expected={p.expected} d={d} />
@@ -66,7 +72,7 @@ export default function StatsPanel(p: StatsPanelProps) {
       </dl>
 
       {p.onToggle && (
-        <button type="button" onClick={p.onToggle} aria-expanded={full} aria-controls={p.moreId}
+        <button type="button" ref={p.triggerRef} onClick={p.onToggle} aria-expanded={p.open ?? full} aria-controls={p.moreId} aria-haspopup="dialog"
           className="mt-3 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
           {full ? S.less : S.more}
         </button>

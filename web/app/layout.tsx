@@ -9,6 +9,7 @@ import {
   Literata,
   Public_Sans,
 } from "next/font/google";
+import { SharedGlobeLayout } from "@/components/shell/HeroGlobe";
 import { PlaneCursor } from "@/components/shell/PlaneCursor";
 import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SiteHeader } from "@/components/shell/SiteHeader";
@@ -67,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <SiteHeader />
         <main id="main" tabIndex={-1} className="flex-1 outline-none">
-          {children}
+          <SharedGlobeLayout>{children}</SharedGlobeLayout>
         </main>
         <SiteFooter />
         <PlaneCursor />

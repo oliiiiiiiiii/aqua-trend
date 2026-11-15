@@ -102,6 +102,8 @@ export const COPY = {
     heading: "Statistics for the selection",
     more: "More statistics",
     less: "Fewer statistics",
+    close: "Close",
+    drawerLabel: "All statistics for the selection",
     meanAnomaly: "Mean anomaly",
     standardised: "Standardised",
     significance: "Significance",

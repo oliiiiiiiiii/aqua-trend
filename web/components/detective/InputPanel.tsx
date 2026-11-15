@@ -1,31 +1,16 @@
 "use client";
 // Event-led input step. DetectiveApp owns URL state and passes values and callbacks in.
-import dynamic from "next/dynamic";
-import { useCallback, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
-import type { GlobePoint } from "@/lib/contracts";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type { PresetEvent, TimeRange } from "@/lib/detective/contracts";
-import { loadGrid, rasterIndex } from "@/lib/data";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { addMonths, formatRange, ym, ymFromIndex, ymIndex } from "@/lib/detective/url";
 import { COPY } from "./copy/input";
-import { GlobeArrival } from "./input/GlobeArrival";
-
-const GlobeCanvas = dynamic(() => import("@/components/globe/GlobeCanvas"), {
-  ssr: false,
-  loading: () => (
-    <div className="grid h-full w-full place-items-center text-on-stage-2" role="status">
-      {COPY.where.globeLoading}
-    </div>
-  ),
-});
+import { useSharedStage } from "@/components/shell/HeroGlobe";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const fmtLat = (lat: number) => `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? "N" : "S"}`;
-const fmtLon = (lon: number) => `${Math.abs(lon).toFixed(1)}°${lon >= 0 ? "E" : "W"}`;
-
 export interface InputPanelProps {
   /* What */
   event: string;
@@ -65,22 +50,49 @@ export interface InputPanelProps {
 }
 
 export function InputPanel(p: InputPanelProps) {
+  const { setInput, entering, skip } = useSharedStage();
+  const panel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setInput({ catalog: p.catalog, region: p.region, onRegion: p.onRegion });
+  }, [setInput, p.catalog, p.region, p.onRegion]);
+  useEffect(() => () => setInput(null), [setInput]);
+  useEffect(() => {
+    if (!entering) panel.current?.querySelector("textarea")?.focus({ preventScroll: true });
+  }, [entering]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (entering && (e.isComposing || e.key === "Process")) {
+        skip();
+        panel.current?.querySelector("textarea")?.focus({ preventScroll: true });
+        return;
+      }
+      if (e.target instanceof Element && e.target.closest('[role="application"]')) return;
+      if (!entering || e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      skip();
+      if (!(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        p.onEventChange(p.event + e.key);
+        panel.current?.querySelector("textarea")?.focus({ preventScroll: true });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [entering, skip, p.event, p.onEventChange]);
   return (
     <div className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 pt-8 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,34rem)] lg:gap-8 lg:px-8 lg:pt-12">
-      <div className="order-2 lg:sticky lg:top-4 lg:order-1">
-        <GlobeArrival><SubBasinGlobe catalog={p.catalog} region={p.region} onRegion={p.onRegion} /></GlobeArrival>
+      <div className="order-2 lg:order-1">
+        <div data-stage-globe className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))]" />
       </div>
-      <div className="order-1 min-w-0 bg-paper px-5 py-6 text-ink sm:px-6 lg:order-2">
-        <p className="text-sm text-ink-3">{COPY.title}</p>
-        <h1 className="mt-2 text-2xl leading-tight sm:text-3xl">{COPY.intro}</h1>
+      <div ref={panel} className="order-1 min-w-0 text-on-stage lg:order-2">
+        <div data-stage-copy className="h-32 sm:h-36" />
         <form
-          className="mt-5"
+          className={`mt-5 transition-[opacity,transform] duration-300 motion-reduce:transition-none ${entering ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`}
           onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
           aria-label={COPY.formLabel}
         >
           <EventField {...p} />
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-5">
-            <p className="text-xs text-ink-3">{COPY.what.hint}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stage-line pb-5">
+            <p className="text-xs text-on-stage-2">{COPY.what.hint}</p>
             <button
               type="submit"
               disabled={!p.event.trim() || p.finding}
@@ -89,15 +101,15 @@ export function InputPanel(p: InputPanelProps) {
               {p.finding ? COPY.find.busy : p.hasPicker ? COPY.find.again : COPY.find.go}
             </button>
           </div>
-          <details className="group border-b border-line py-3">
-            <summary className="min-h-11 cursor-pointer py-2 text-sm text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+          <details className="group border-b border-stage-line py-3">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
               <span className="ml-1 font-semibold">{COPY.steps.when}</span>
               <span className="ml-3 tnum">{p.time ? formatRange(p.time) : COPY.when.choose}</span>
             </summary>
             <div className="pb-2"><TimeField {...p} /></div>
           </details>
-          <details className="group border-b border-line py-3">
-            <summary className="min-h-11 cursor-pointer py-2 text-sm text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+          <details className="group border-b border-stage-line py-3">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
               <span className="ml-1 font-semibold">{COPY.steps.where}</span>
               <span className="ml-3">{p.region ? p.region.name : COPY.where.none}</span>
             </summary>
@@ -113,6 +125,7 @@ export function InputPanel(p: InputPanelProps) {
 /* ------------------------------------------------------------------ What */
 
 function EventField({ event, onEventChange }: InputPanelProps) {
+  const { skip } = useSharedStage();
   const id = useId();
   return (
     <div>
@@ -121,12 +134,13 @@ function EventField({ event, onEventChange }: InputPanelProps) {
         id={`${id}-e`}
         rows={3}
         value={event}
-        onChange={(e) => onEventChange(e.target.value)}
+        onChange={(e) => { skip(); onEventChange(e.target.value); }}
+        onCompositionStart={skip}
         maxLength={300}
         autoComplete="off"
         placeholder={COPY.what.placeholder}
         aria-describedby={`${id}-hint`}
-        className="min-h-40 w-full resize-y rounded-ctl border border-line bg-paper px-4 py-4 font-display text-2xl leading-snug text-ink placeholder:text-ink-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus sm:text-3xl"
+        className="min-h-40 w-full resize-y rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-4 font-display text-2xl leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus sm:text-3xl"
       />
       <span id={`${id}-hint`} className="sr-only">{COPY.what.hint}</span>
     </div>
@@ -164,7 +178,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
     return (
       <fieldset className="flex min-w-0 items-center gap-1.5">
         <legend className="sr-only">{label}</legend>
-        <span className="text-sm text-ink-3" aria-hidden="true">{label}</span>
+        <span className="text-sm text-on-stage-2" aria-hidden="true">{label}</span>
         <select
           aria-label={`${label} month`}
           value={Number.isFinite(month) ? month : ""}
@@ -200,7 +214,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
             title={`${COPY.when.useText} ${formatRange(offer)}`}
             className="rounded-full border border-line px-3 py-1 text-sm hover:border-link"
           >
-            <span className="text-ink-3">{COPY.when.use}</span> <span className="font-semibold text-link tnum">{formatRange(offer)}</span>
+            <span className="text-on-stage-2">{COPY.when.use}</span> <span className="font-semibold text-link tnum">{formatRange(offer)}</span>
           </button>
         )}
       </div>
@@ -303,7 +317,7 @@ function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; ti
           })}
         </svg>
       )}
-      <p className="flex flex-wrap gap-x-4 text-xs text-ink-3">
+      <p className="flex flex-wrap gap-x-4 text-xs text-on-stage-2">
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--viz-orange)" }} aria-hidden="true" />{COPY.when.legendEvent}</span>
         <span className="inline-flex items-center gap-1.5" title={COPY.when.legendBaselineTitle(padMonths)}>
           <span className="h-2.5 w-4 rounded-sm bg-water opacity-30" aria-hidden="true" />{COPY.when.legendBaseline} (±{padMonths} mo)
@@ -324,14 +338,14 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
   const hints = useRegionHints(event, searchable, countryNames).filter((r) => r.id !== region?.id);
   return (
     <div role="group" aria-labelledby={`${id}-h`}>
-      <p id={`${id}-h`} className="text-xs text-ink-3">{region ? `${region.name} · ${formatArea(region.areaKm2)}` : COPY.where.subBasin}</p>
+      <p id={`${id}-h`} className="text-xs text-on-stage-2">{region ? `${region.name} · ${formatArea(region.areaKm2)}` : COPY.where.subBasin}</p>
       <div className="mt-2 [&_input]:mt-0 [&>div>label]:sr-only [&>div>p[id$=-hint]]:sr-only" >
         {subCatalog ? (
           <RegionSearch catalog={subCatalog} onSelect={onRegion} />
         ) : catalogError ? (
-          <p role="alert" className="py-2 text-ink-2">{catalogError}</p>
+          <p role="alert" className="py-2 text-on-stage-2">{catalogError}</p>
         ) : (
-          <p role="status" className="py-2 text-ink-3">{COPY.where.loading}</p>
+          <p role="status" className="py-2 text-on-stage-2">{COPY.where.loading}</p>
         )}
       </div>
       {regionNote}
@@ -345,7 +359,7 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
                 className="rounded-full border border-line px-3 py-1 text-left text-sm hover:border-link"
               >
                 <span className="font-semibold text-link">{r.name}</span>{" "}
-                <span className="text-ink-3 tnum">{formatArea(r.areaKm2)}</span>
+                <span className="text-on-stage-2 tnum">{formatArea(r.areaKm2)}</span>
               </button>
             </li>
           ))}
@@ -400,64 +414,4 @@ function useRegionHints(text: string, regions: Region[] | null, countryNames: Re
     for (const r of [...fromRivers.sort(byArea), ...fromCountries]) if (!out.includes(r)) out.push(r);
     return out.slice(0, 5);
   }, [text, index, regions, countryNames]);
-}
-
-/** The planet with sub-basin outlines only. A click selects the sub-basin under the pointer; the selection glows. */
-function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null; region: Region | null; onRegion: (r: Region) => void }) {
-  const [hover, setHover] = useState<Region | null>(null);
-  const [status, setStatus] = useState("");
-  const seq = useRef(0);
-  const catalogRef = useRef(catalog);
-  catalogRef.current = catalog;
-  const onRegionRef = useRef(onRegion);
-  onRegionRef.current = onRegion;
-
-  const onPick = useCallback(async ({ lon, lat }: GlobePoint & { zoom: number }) => {
-    const n = ++seq.current;
-    const cat = catalogRef.current;
-    if (!cat) { setStatus(COPY.where.pickLoading); return; }
-    setStatus(COPY.where.lookup(fmtLat(lat), fmtLon(lon)));
-    try {
-      const grid = await loadGrid("basin4");
-      if (n !== seq.current) return;
-      const g = grid[rasterIndex(lon, lat)];
-      const r = g ? cat.byGrid.basin4[g] : undefined;
-      if (!r) { setStatus(COPY.where.noBasinAt(fmtLat(lat), fmtLon(lon))); return; }
-      setStatus("");
-      onRegionRef.current(r);
-    } catch (e) {
-      if (n === seq.current) setStatus(COPY.where.lookupFailed(e instanceof Error ? e.message : String(e)));
-    }
-  }, []);
-  const onHover = useCallback((hit: (GlobePoint & { region: Region | null }) | null) => {
-    const r = hit?.region ?? null;
-    setHover((prev) => (prev?.id === r?.id ? prev : r));
-  }, []);
-
-  return (
-    <div className="on-stage flex min-w-0 flex-col gap-3">
-      <div className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))] min-w-0">
-        <GlobeCanvas
-          className="h-full w-full"
-          interactive
-          boundaryLayer="basin4"
-          selected={region}
-          onPick={onPick}
-          onHover={onHover}
-          ariaLabel={COPY.where.globeAria}
-        />
-      </div>
-      <p className="sr-only" aria-live="polite">{status}</p>
-      <p className="min-h-[1.5rem] text-center text-sm text-on-stage-2">
-        {status ||
-          (hover ? (
-            <>
-              <span className="font-semibold text-on-stage">{hover.name}</span> · {COPY.where.hoverSelect}
-            </>
-          ) : (
-            COPY.where.hint
-          ))}
-      </p>
-    </div>
-  );
 }

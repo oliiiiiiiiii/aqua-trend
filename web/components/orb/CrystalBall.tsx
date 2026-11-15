@@ -218,7 +218,6 @@ export default function CrystalBall({
   const legendW = legendPlacement === "side" ? "w-[20rem]" : legendPlacement === "below" ? "w-full" : "w-full @min-[44rem]:w-[20rem] @min-[44rem]:max-h-full @min-[44rem]:overflow-y-auto";
 
   const setAnchor = (n: AnchorName) => (el: HTMLElement | null) => { anchors.current[n] = el; };
-  const ctl = "grid h-9 w-9 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
   const chip = "rounded-ctl border border-line px-2 py-0.5 text-[0.75rem] font-semibold leading-tight text-ink whitespace-nowrap shadow-card";
 
   if (compact) {
@@ -262,19 +261,6 @@ export default function CrystalBall({
             onKeyDown={(e) => { if (e.target === e.currentTarget && sceneRef.current?.handleKey(e.nativeEvent)) e.preventDefault(); }}
             className={`relative w-full min-w-0 flex-1 select-none overflow-hidden focus-visible:outline-offset-[-3px] ${ballSize} ${gl === "ok" ? "cursor-grab" : ""}`}
           >
-            {gl === "ok" && !compact && (
-              <div className="absolute bottom-1 right-1 z-20 flex flex-col gap-1.5">
-                <button type="button" className={ctl} aria-label="Zoom in" onClick={() => sceneRef.current?.zoomBy(1.4)}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-                <button type="button" className={ctl} aria-label="Zoom out" onClick={() => sceneRef.current?.zoomBy(1 / 1.4)}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-                <button type="button" className={ctl} aria-label="Reset view" onClick={() => sceneRef.current?.resetView()}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="9" cy="9" r="6" /><path d="M9 1.5v3M9 13.5v3M1.5 9h3M13.5 9h3" /></svg>
-                </button>
-              </div>
-            )}
             {gl === "failed" && (
               <div className={`absolute inset-[8%] grid place-items-center rounded-full border border-dashed p-6 text-center text-sm ${fallbackTone}`}>
                 3D view unavailable in this browser

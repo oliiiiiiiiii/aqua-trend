@@ -12,7 +12,7 @@ export interface GlobeCanvasExtraProps {
   initialView?: View;
   /** override the accessible name of the interactive globe */
   ariaLabel?: string;
-  /** show the on-canvas zoom buttons (default true when interactive) */
+  /** @deprecated Visible controls have been removed; keyboard and gestures remain. */
   showControls?: boolean;
 }
 
@@ -45,7 +45,6 @@ export default function GlobeCanvas({
   onZoomChange,
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
-  showControls = true,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -123,8 +122,6 @@ export default function GlobeCanvas({
   useEffect(() => { engineRef.current?.setTheme(readTheme()); }, [themeId]);
 
   const live = interactive && status !== "error";
-  const btn =
-    "grid h-10 w-10 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
 
   return (
     <div data-plane-cursor className={`relative overflow-hidden ${className}`} aria-hidden={interactive ? undefined : true}>
@@ -163,23 +160,6 @@ export default function GlobeCanvas({
             <p className="mt-1 text-ink-2">{error}</p>
             <p className="mt-2 text-ink-2">You can still choose a region from the region list.</p>
           </div>
-        </div>
-      )}
-
-      {live && showControls && status === "ready" && (
-        <div className="absolute bottom-3 right-3 flex flex-col gap-2">
-          <button type="button" className={btn} aria-label="Zoom in" onClick={() => engineRef.current?.zoomBy(1.5)}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-          </button>
-          <button type="button" className={btn} aria-label="Zoom out" onClick={() => engineRef.current?.zoomBy(1 / 1.5)}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-          </button>
-          <button type="button" className={btn} aria-label="Reset view" onClick={() => engineRef.current?.resetView()}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <circle cx="9" cy="9" r="6" />
-              <path d="M9 1.5v3M9 13.5v3M1.5 9h3M13.5 9h3" />
-            </svg>
-          </button>
         </div>
       )}
 

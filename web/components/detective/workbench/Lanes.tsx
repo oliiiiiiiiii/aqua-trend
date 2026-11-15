@@ -1,9 +1,10 @@
 "use client";
 // The chosen variable's detail (the variable itself is picked in the VariableSelect dropdown above it): the layer and
-// product switches over the chart, a one-row legend under its time axis, the Tests under that, and on the right a
-// statistics drawer (crystal ball on top, the four live numbers, "More statistics" widens it to the full panel).
+// product switches over the chart, a one-row legend under its time axis, the Tests under that; the crystal ball in a
+// column on the left, a slim statistics column on the right (verdict and the four live numbers), and "More statistics"
+// opens the full panel as a drawer over the chart area (a bottom sheet on phones) so the chart never changes width.
 // In a weeks window the chart is the daily view (monthly chart as its fallback). No frames: a hairline edge at most.
-import { useId, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 import type { Catalog } from "@/lib/types";
 import type { CategoryId, LayerId } from "@/lib/detective/contracts";
 import { polarityIsArbitrary } from "@/lib/detective/polarity";
@@ -92,6 +93,7 @@ export function ExpandedLane(p: ExpandedProps) {
   const [layer, setLayer] = useState<ChartLayer>("anomaly");
   const [more, setMore] = useState(false);
   const moreId = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
   const analysis = useLabAnalysis(r.kind === "ready" ? r : null, shared.sel, p.lab?.test ?? "mean", p.lab?.whole ?? false);
   const overlay = layer === "anomaly" ? analysis?.run?.overlay ?? null : null;
   const L = COPY.lanes;
@@ -145,8 +147,24 @@ export function ExpandedLane(p: ExpandedProps) {
         </p>
       )}
 
-      {/* desktop: chart column | statistics drawer (ball on top). Phones: controls, chart, legend, statistics, tests, ball */}
-      <div className={`flex flex-col gap-y-4 lg:grid lg:items-start lg:gap-x-8 ${more ? "lg:grid-cols-[minmax(0,1fr)_26rem]" : "lg:grid-cols-[minmax(0,1fr)_17rem]"}`}>
+      {/* desktop: ball | chart (+ legend, Tests) | slim statistics, the drawer overlaying the chart area from the right.
+          Phones: controls, chart, legend, statistics, ball, Tests; the drawer is a bottom sheet */}
+      <div className="relative flex flex-col gap-y-4 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)_17rem] lg:items-start lg:gap-x-6">
+        <div className="order-4 mx-auto w-full max-w-[14rem] sm:max-w-[16rem] lg:order-none lg:mx-0 lg:max-w-none">
+          <VariableOrb
+            region={p.catalog?.byId.get(p.regionId) ?? null}
+            catalog={p.catalog}
+            category={lane.c}
+            layer={r.meta.layer}
+            name={r.meta.name}
+            unit={r.meta.unit}
+            d={r.d}
+            monthIndex={orbMonth(r, shared, lane)}
+            highReads={lane.polarity}
+            className="w-full"
+          />
+        </div>
+
         <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-y-3">
           <div className="order-1 flex min-w-0 flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             {!p.renderChart && <Segmented legend={COPY.chart.layers} hideLegend tone="paper" look="underline" options={LAYERS} value={layer} onChange={setLayer} />}
@@ -164,32 +182,71 @@ export function ExpandedLane(p: ExpandedProps) {
           )}
         </div>
 
-        {/* the drawer: a hairline edge on the page background, no card */}
-        <aside aria-label={COPY.stats.heading} className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-y-4 lg:border-l lg:border-line lg:pl-6">
-          <div className={`order-6 mx-auto w-full max-w-[14rem] sm:max-w-[16rem] lg:order-none lg:mx-0 ${more ? "lg:max-w-[13rem]" : "lg:max-w-none"}`}>
-            <VariableOrb
-              region={p.catalog?.byId.get(p.regionId) ?? null}
-              catalog={p.catalog}
-              category={lane.c}
-              layer={r.meta.layer}
-              name={r.meta.name}
-              unit={r.meta.unit}
-              d={r.d}
-              monthIndex={orbMonth(r, shared, lane)}
-              highReads={lane.polarity}
-              className="w-full"
-            />
-          </div>
-          <div className="order-3 min-w-0 border-t border-line pt-3 lg:order-none lg:border-t-0 lg:pt-0">
+        <aside aria-label={COPY.stats.heading} className="order-3 min-w-0 border-t border-line pt-3 lg:order-none lg:border-t-0 lg:pt-0">
+          <StatsPanel
+            d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} expanded={false} open={more} moreId={moreId}
+            onToggle={() => setMore(true)} triggerRef={trigger}
+            baseline={r.baseline} trend={r.trend} relation={p.relation}
+          />
+        </aside>
+
+        {more && (
+          <StatsDrawer id={moreId} trigger={trigger} onClose={() => setMore(false)}>
             <StatsPanel
-              d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} expanded={more} onToggle={() => setMore((m) => !m)} moreId={moreId}
+              d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} live={false}
               baseline={r.baseline} trend={r.trend} relation={p.relation} onCsv={p.onCsv}
               baselineControl={p.baselineControl}
             />
-          </div>
-        </aside>
+          </StatsDrawer>
+        )}
       </div>
     </section>
+  );
+}
+
+/**
+ * "More statistics": a non-modal dialog over the chart area (a bottom sheet on phones). Focus moves to its close button
+ * and returns to the trigger; Esc, the close button or a press outside close it. Hairline edge, paper background, no
+ * shadow or card.
+ */
+function StatsDrawer({ id, trigger, onClose, children }: {
+  id: string; trigger: React.RefObject<HTMLButtonElement | null>; onClose: () => void; children: ReactNode;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+  useEffect(() => {
+    const opener = trigger.current;
+    closeBtn.current?.focus();
+    const key = (e: globalThis.KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); close.current(); } };
+    const down = (e: PointerEvent) => {
+      const t = e.target as Node | null;
+      if (t && !box.current?.contains(t) && !opener?.contains(t)) close.current();
+    };
+    document.addEventListener("keydown", key);
+    document.addEventListener("pointerdown", down);
+    return () => {
+      document.removeEventListener("keydown", key);
+      document.removeEventListener("pointerdown", down);
+      opener?.focus();
+    };
+  }, [trigger]);
+  return (
+    <div
+      ref={box} id={id} role="dialog" aria-label={COPY.stats.drawerLabel}
+      className="fixed inset-x-0 bottom-0 z-30 max-h-[78vh] overflow-y-auto overscroll-contain border-t border-line bg-paper px-4 pt-3 pb-6 sm:px-6
+        lg:absolute lg:inset-x-auto lg:top-0 lg:right-0 lg:bottom-0 lg:max-h-none lg:w-[27rem] lg:max-w-full lg:border-t-0 lg:border-l lg:px-6 lg:pt-0 lg:pb-4"
+    >
+      <div className="mb-3 flex items-center justify-between lg:sticky lg:top-0 lg:z-10 lg:-mx-6 lg:bg-paper lg:px-6 lg:pt-1 lg:pb-2">
+        <h3 className="text-sm font-semibold text-ink">{COPY.stats.heading}</h3>
+        <button ref={closeBtn} type="button" onClick={onClose} aria-label={COPY.stats.close}
+          className="-mr-2 rounded-ctl px-2 py-1 text-sm font-semibold text-link hover:text-ink">
+          {COPY.stats.close} <span aria-hidden="true">✕</span>
+        </button>
+      </div>
+      {children}
+    </div>
   );
 }
 

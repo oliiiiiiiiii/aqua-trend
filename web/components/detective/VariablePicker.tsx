@@ -53,10 +53,10 @@ export function VariablePicker({ categories, response, loading, checked, onChang
           title={ok ? info.definition.en : `${info.name.en}: ${reason}`}
           className={`relative flex h-full items-center gap-2 rounded-ctl border px-2.5 py-2 text-sm has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[color:var(--link)] ${
             !ok
-              ? "cursor-not-allowed border-dashed border-line text-ink-3 opacity-55"
+              ? "cursor-not-allowed border-dashed border-stage-line text-on-stage-2 opacity-55"
               : checkedNow
-                ? "cursor-pointer border-link font-semibold text-ink"
-                : `cursor-pointer border-line hover:border-link ${quiet ? "text-ink-2" : "text-ink"}`
+                ? "cursor-pointer border-on-stage/60 bg-on-stage/10 font-semibold text-on-stage"
+                : `cursor-pointer border-stage-line hover:border-on-stage/60 ${quiet ? "text-on-stage-2" : "text-on-stage"}`
           }`}
         >
           <input
@@ -73,7 +73,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
           </span>
           <span className="min-w-0 flex-1 leading-tight">{info.name.en}</span>
           {checkedNow && (
-            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-link" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-on-stage" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
           )}
           {ok && pct !== null && !keyword && !quiet && (
             <span className="absolute inset-x-2 bottom-0.5 h-[3px] overflow-hidden rounded-full bg-line" title={T.probability(pct)} aria-hidden="true">
@@ -90,12 +90,12 @@ export function VariablePicker({ categories, response, loading, checked, onChang
   const grid = "grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-2";
 
   return (
-    <section aria-labelledby={`${id}-h`} className="text-ink">
+    <section aria-labelledby={`${id}-h`} className="text-on-stage">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id={`${id}-h`} className="flex items-center text-xl">
           {T.heading}
         </h2>
-        <p className="text-xs text-ink-3" role="status">
+        <p className="text-xs text-on-stage-2" role="status">
           {loading ? T.asking : response ? T.source[response.source] : T.yours}
         </p>
       </div>
@@ -105,7 +105,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
         {suggested.length > 0 && <ul className={grid}>{suggested.map((c) => chip(c, false))}</ul>}
         {others.length > 0 && (
           <>
-            {suggested.length > 0 && <p className="mt-3 mb-1.5 text-xs text-ink-3">{T.others}</p>}
+            {suggested.length > 0 && <p className="mt-3 mb-1.5 text-xs text-on-stage-2">{T.others}</p>}
             <ul className={grid}>{others.map((c) => chip(c, !!response))}</ul>
           </>
         )}
@@ -120,7 +120,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
         >
           {T.analyse(startable.length)}
         </button>
-        {blocked && <span className="text-sm text-ink-3">{blocked}</span>}
+        {blocked && <span className="text-sm text-on-stage-2">{blocked}</span>}
       </div>
     </section>
   );

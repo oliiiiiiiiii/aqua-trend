@@ -7,10 +7,9 @@
 // Tokens are the validated categorical steps in globals.css (light + night). --viz-cool / --viz-warm / --viz-red are
 // reserved for anomaly polarity and are not used here.
 //
-// Families in FAMILIES order pass the dataviz palette validator (adjacent pairs, CVD ΔE ≥ 8 and normal ΔE ≥ 15) on the
-// Atlas paper in both themes, and so do the pairs that meet in the presets: heat vs vegetation (drought, fire) and heat
-// vs air composition (volcanic aerosol). Orange heat beside green vegetation failed (protan ΔE 3.2 light, deutan 1.4
-// night) and no single swap fixed it (yellow beside green is protan 3.0 at night), hence yellow / magenta / green.
+// Colours follow intuition (water blue, heat orange, vegetation green), chosen by the product owner over colour-blind
+// separation (orange vs green is hard for protan/deutan viewers). Identity is never colour-only: every chip has its icon
+// and name beside it.
 import type { CategoryId } from "./contracts";
 import { CATEGORIES } from "./categories";
 
@@ -27,10 +26,10 @@ export interface FamilyInfo {
 export const FAMILIES: Record<FamilyId, FamilyInfo> = {
   "land-water": { id: "land-water", name: "Water on land", token: "--viz-blue" },
   "air-water": { id: "air-water", name: "Water in the air", token: "--viz-aqua" },
-  heat: { id: "heat", name: "Heat and radiation", token: "--viz-yellow" },
-  life: { id: "life", name: "Vegetation and fire", token: "--viz-magenta" },
+  heat: { id: "heat", name: "Heat and radiation", token: "--viz-orange" },
+  life: { id: "life", name: "Vegetation and fire", token: "--viz-green" },
   air: { id: "air", name: "Air composition", token: "--viz-violet" },
-  wind: { id: "wind", name: "Wind", token: "--viz-green" },
+  wind: { id: "wind", name: "Wind", token: "--viz-magenta" },
 };
 
 export const CATEGORY_FAMILY: Record<CategoryId, FamilyId> = {

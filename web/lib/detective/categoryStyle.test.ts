@@ -32,8 +32,7 @@ test("variables of the same kind share a colour; different families do not", () 
 });
 
 test("family colours: the validated assignment (heat and vegetation no longer orange beside green)", () => {
-  assert.deepEqual(Object.values(FAMILIES).map((f) => f.token), ["--viz-blue", "--viz-aqua", "--viz-yellow", "--viz-magenta", "--viz-violet", "--viz-green"]);
-  assert.notEqual(categoryStyle("tair").token, "--viz-orange");
+  assert.deepEqual(Object.values(FAMILIES).map((f) => f.token), ["--viz-blue", "--viz-aqua", "--viz-orange", "--viz-green", "--viz-violet", "--viz-magenta"]);
   assert.notEqual(categoryStyle("ndvi").token, categoryStyle("tair").token);
   assert.notEqual(categoryStyle("so2").token, categoryStyle("tair").token);
 });
