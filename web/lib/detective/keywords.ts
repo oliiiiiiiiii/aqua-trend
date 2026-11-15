@@ -42,7 +42,7 @@ export const KEYWORD_RULES: KeywordRule[] = [
   },
   {
     id: "flood",
-    zh: ["洪水", "水災", "水灾", "淹水", "洪災", "洪灾", "氾濫", "泛滥", "豪雨", "暴雨", "強降雨", "强降雨", "土石流", "泥石流", "潰堤", "溃堤"],
+    zh: ["洪水", "大水", "水災", "水灾", "淹水", "洪災", "洪灾", "氾濫", "泛滥", "豪雨", "暴雨", "強降雨", "强降雨", "土石流", "泥石流", "潰堤", "溃堤"],
     en: ["flood", "floods", "flooding", "inundation", "heavy rain", "torrential", "deluge", "extreme rainfall", "flash flood", "landslide"],
     categories: ["precip", "runoff", "soil", "tws"],
   },
@@ -93,6 +93,13 @@ export const KEYWORD_RULES: KeywordRule[] = [
     zh: ["海洋熱浪", "海洋热浪", "珊瑚白化", "海水暖化"],
     en: ["marine heatwave", "coral bleaching", "ocean warming", "blob"],
     categories: ["sst", "tair"],
+  },
+  {
+    // 加於 eval 之後：「Lake Mead 水位創新低」這類沒有災害名詞的說法原本只命中預設值。
+    id: "lake-level",
+    zh: ["水位", "湖泊", "水庫見底", "水库见底", "乾涸", "干涸"],
+    en: ["water level", "water levels", "lake level", "record low", "dried up", "drying up", "shrinking lake"],
+    categories: ["tws", "precip", "runoff"],
   },
   {
     id: "crop",
@@ -204,12 +211,18 @@ export function matchedRules(event: string): string[] {
     .map(({ rule }) => rule.id);
 }
 
-/** 關鍵字投票：命中的類別 p = 1，其餘 p = 0；都沒命中時勾 DEFAULT_CATEGORIES。 */
-export function keywordVotes(event: string): CategoryVote[] {
+/** 關鍵字表命中的類別（依 ALL_CATEGORIES 順序）；沒有命中任何規則時為空陣列。 */
+export function keywordCategories(event: string): CategoryId[] {
   const ids = new Set(matchedRules(event));
   const hit = new Set<CategoryId>();
   for (const rule of KEYWORD_RULES) if (ids.has(rule.id)) rule.categories.forEach((c) => hit.add(c));
-  const chosen = hit.size ? hit : new Set(DEFAULT_CATEGORIES);
+  return ALL_CATEGORIES.filter((c) => hit.has(c));
+}
+
+/** 關鍵字投票：命中的類別 p = 1，其餘 p = 0；都沒命中時勾 DEFAULT_CATEGORIES。 */
+export function keywordVotes(event: string): CategoryVote[] {
+  const hit = keywordCategories(event);
+  const chosen = new Set(hit.length ? hit : DEFAULT_CATEGORIES);
   return ALL_CATEGORIES.map((category) => {
     const on = chosen.has(category);
     return { category, p: on ? 1 : 0, selected: on };
@@ -273,6 +286,7 @@ const SEASONS: { zh: string[]; en: string[]; months: [number, number] }[] = [
  * - 數字：`2021-02..2021-05`、`2021-02 to 2021-05`、`2021/02`、`2021-02`
  * - 英文：`Feb–May 2021`、`February 2021`、`2021 February`、`Nov 2020 to Feb 2021`
  * - 年份區間：`2019–20`、`2019-2020`、`2019 到 2020 年`
+ * - 年代：`1990s`、`1990 年代` → 整個十年
  * - 單一年份（可帶季節，例如「2021 春季」→ 2021-03..2021-05）；無月份時為全年。
  * 解析不到年份時回傳 null。
  */
@@ -317,6 +331,10 @@ export function suggestedTime(event: string): TimeRange | null {
     const y2 = m[2].length === 2 ? Math.floor(y1 / 100) * 100 + Number(m[2]) : Number(m[2]);
     if (y2 > y1 && y2 - y1 <= 30) return { start: ym(y1, 1), end: ym(y2, 12) };
   }
+
+  // 年代：1990s、1990 年代 → 整個十年。
+  m = t.match(new RegExp(`${NB}((?:19|20)\\d0)\\s*(?:'?s(?![a-z])|年代)`, "i"));
+  if (m) return { start: ym(Number(m[1]), 1), end: ym(Number(m[1]) + 9, 12) };
 
   // 單一年份（＋季節）；多個年份取最早到最晚。
   const years = [...t.matchAll(new RegExp(`${NB}${YEAR}${NA}`, "g"))].map((x) => Number(x[1]));

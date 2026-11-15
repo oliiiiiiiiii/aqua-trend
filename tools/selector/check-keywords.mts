@@ -25,6 +25,9 @@ const cases: [string, string|null][] = [
  ["El Niño 2015 to 2016","2015-01..2016-12"],
  ["2011-12 drought","2011-12..2011-12"],
  ["２０２１年２月","2021-02..2021-02"],
+ ["The Aral Sea has been shrinking since the 1960s","1960-01..1969-12"],
+ ["1990 年代的乾旱","1990-01..1999-12"],
+ ["1998 長江大水","1998-01..1998-12"],
 ];
 let bad=0;
 for (const [e, want] of cases) { const r=suggestedTime(e); const got=r?`${r.start}..${r.end}`:"null"; if(got!==want){bad++;console.log("FAIL",e,got,"want",want);} }
