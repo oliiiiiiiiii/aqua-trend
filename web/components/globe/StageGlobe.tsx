@@ -42,9 +42,10 @@ export function SubBasinGlobe({ catalog, region, onRegion, interactive }: { cata
 
   return (
     <div className="on-stage flex min-w-0 flex-col gap-3">
-      <div className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))] min-w-0">
+      <div className="aspect-square w-full min-w-0">
         <GlobeCanvas
           className="h-full w-full"
+          renderPadding={0.06}
           interactive={interactive}
           boundaryLayer="basin4"
           selected={region}
@@ -54,7 +55,7 @@ export function SubBasinGlobe({ catalog, region, onRegion, interactive }: { cata
         />
       </div>
       <p className="sr-only" aria-live="polite">{status}</p>
-      <p className={`min-h-[1.5rem] text-center text-sm text-on-stage-2 ${interactive ? "" : "invisible"}`}>
+      <p className={`mt-[6%] min-h-[1.5rem] text-center text-sm text-on-stage-2 ${interactive ? "" : "hidden"}`}>
         {status ||
           (hover ? (
             <>

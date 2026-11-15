@@ -327,7 +327,7 @@ function InputStage({
 
   const showPicker = draft !== null || finding || !!vote;
   return (
-    <div className="on-stage stage-sky">
+    <div data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky">
       <InputPanel
         event={eventText}
         onEventChange={onEventChange}

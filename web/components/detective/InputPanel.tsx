@@ -50,7 +50,7 @@ export interface InputPanelProps {
 }
 
 export function InputPanel(p: InputPanelProps) {
-  const { setInput, entering, skip } = useSharedStage();
+  const { setInput, entering, formHidden, skip } = useSharedStage();
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setInput({ catalog: p.catalog, region: p.region, onRegion: p.onRegion });
@@ -79,14 +79,14 @@ export function InputPanel(p: InputPanelProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [entering, skip, p.event, p.onEventChange]);
   return (
-    <div className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 pt-8 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,34rem)] lg:gap-8 lg:px-8 lg:pt-12">
-      <div className="order-2 lg:order-1">
-        <div data-stage-globe className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))]" />
+    <div data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 pt-8 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,34rem)] lg:gap-12 lg:px-8 lg:pt-12">
+      <div data-stage-pass className="order-2 pb-14 lg:order-1">
+        <div data-stage-globe data-stage-pass className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))]" />
       </div>
-      <div ref={panel} className="order-1 min-w-0 text-on-stage lg:order-2">
+      <div ref={panel} className="pointer-events-auto order-1 min-w-0 text-on-stage lg:order-2">
         <div data-stage-copy className="h-32 sm:h-36" />
         <form
-          className={`mt-5 transition-[opacity,transform] duration-300 motion-reduce:transition-none ${entering ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`}
+          className={`mt-5 transition-[opacity,transform] duration-300 motion-reduce:transition-none ${formHidden ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`}
           onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
           aria-label={COPY.formLabel}
         >

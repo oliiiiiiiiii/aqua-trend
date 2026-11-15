@@ -1,8 +1,9 @@
 "use client";
 // The chosen variable's detail (the variable itself is picked in the VariableSelect dropdown above it): the layer and
 // product switches over the chart, a one-row legend under its time axis, the Tests under that; the crystal ball in a
-// column on the left, a slim statistics column on the right (verdict and the four live numbers), and "More statistics"
-// opens the full panel as a drawer over the chart area (a bottom sheet on phones) so the chart never changes width.
+// column on the left, a slim statistics column on the right (verdict and the four live numbers, one per row). A pull tab
+// on that column's left edge draws it out leftward over the chart like a curtain, revealing the other statistics, so the
+// chart never changes width (phones: a bottom sheet that slides up).
 // In a weeks window the chart is the daily view (monthly chart as its fallback). No frames: a hairline edge at most.
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 import type { Catalog } from "@/lib/types";
@@ -15,7 +16,7 @@ import VariableOrb from "../VariableOrb";
 import { COPY } from "./copy";
 import { AnomalyLegend } from "./bits";
 import LaneChart, { type ChartLayer } from "./LaneChart";
-import StatsPanel from "./StatsPanel";
+import StatsPanel, { StatsExtras, StatsMetrics } from "./StatsPanel";
 import type { Span } from "./model";
 import type { LaneModel, LaneReady } from "./types";
 import TestsPanel, { type LabControl } from "./lab/TestsPanel";
@@ -94,6 +95,7 @@ export function ExpandedLane(p: ExpandedProps) {
   const [more, setMore] = useState(false);
   const moreId = useId();
   const trigger = useRef<HTMLButtonElement>(null);
+  const closeMore = () => setMore(false);
   const analysis = useLabAnalysis(r.kind === "ready" ? r : null, shared.sel, p.lab?.test ?? "mean", p.lab?.whole ?? false);
   const overlay = layer === "anomaly" ? analysis?.run?.overlay ?? null : null;
   const L = COPY.lanes;
@@ -147,10 +149,10 @@ export function ExpandedLane(p: ExpandedProps) {
         </p>
       )}
 
-      {/* desktop: ball | chart (+ legend, Tests) | slim statistics, the drawer overlaying the chart area from the right.
+      {/* desktop: ball | chart (+ legend) | slim statistics; row 2: Tests full width | slim statistics, the drawer overlaying the chart area from the right.
           Phones: controls, chart, legend, statistics, ball, Tests; the drawer is a bottom sheet */}
       <div className="relative flex flex-col gap-y-4 lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)_17rem] lg:items-start lg:gap-x-6">
-        <div className="order-4 mx-auto w-full max-w-[14rem] sm:max-w-[16rem] lg:order-none lg:mx-0 lg:max-w-none">
+        <div className="order-4 mx-auto w-full max-w-[14rem] sm:max-w-[16rem] lg:order-none lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none">
           <VariableOrb
             region={p.catalog?.byId.get(p.regionId) ?? null}
             catalog={p.catalog}
@@ -165,7 +167,7 @@ export function ExpandedLane(p: ExpandedProps) {
           />
         </div>
 
-        <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-y-3">
+        <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:min-w-0 lg:flex-col lg:gap-y-3">
           <div className="order-1 flex min-w-0 flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             {!p.renderChart && <Segmented legend={COPY.chart.layers} hideLegend tone="paper" look="underline" options={LAYERS} value={layer} onChange={setLayer} />}
             {product}
@@ -174,50 +176,129 @@ export function ExpandedLane(p: ExpandedProps) {
             {p.renderChart ? p.renderChart(monthly) : monthly}
             {!p.renderChart && <Legend layer={layer} lane={lane} />}
           </div>
-          {p.lab && (
-            <div className="order-5 min-w-0 lg:mt-2">
-              <TestsPanel lab={p.lab} analysis={analysis} months={r.d.months} unit={r.meta.unit} polarity={lane.polarity}
-                onShowAnomaly={layer !== "anomaly" && !p.renderChart ? () => setLayer("anomaly") : undefined} />
-            </div>
-          )}
         </div>
 
-        <aside aria-label={COPY.stats.heading} className="order-3 min-w-0 border-t border-line pt-3 lg:order-none lg:border-t-0 lg:pt-0">
-          <StatsPanel
-            d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} expanded={false} open={more} moreId={moreId}
-            onToggle={() => setMore(true)} triggerRef={trigger}
-            baseline={r.baseline} trend={r.trend} relation={p.relation}
-          />
-        </aside>
+        {p.lab && (
+          <div className="order-5 min-w-0 lg:col-span-3 lg:row-start-2 lg:mt-1">
+            <TestsPanel lab={p.lab} analysis={analysis} months={r.d.months} unit={r.meta.unit} polarity={lane.polarity}
+              onShowAnomaly={layer !== "anomaly" && !p.renderChart ? () => setLayer("anomaly") : undefined} />
+          </div>
+        )}
 
-        {more && (
-          <StatsDrawer id={moreId} trigger={trigger} onClose={() => setMore(false)}>
-            <StatsPanel
-              d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} live={false}
-              baseline={r.baseline} trend={r.trend} relation={p.relation} onCsv={p.onCsv}
-              baselineControl={p.baselineControl}
+        {wide ? (
+          <aside aria-label={COPY.stats.heading} className="flex min-w-0 justify-end lg:col-start-3 lg:row-start-1">
+            <StatsCurtain
+              id={moreId} open={more} onToggle={() => setMore((m) => !m)} onClose={closeMore} trigger={trigger}
+              metrics={<StatsMetrics d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} />}
+              extras={<StatsExtras d={lane.detail} unit={r.meta.unit} baseline={r.baseline} trend={r.trend} relation={p.relation} onCsv={p.onCsv} baselineControl={p.baselineControl} polarity={lane.polarity} />}
             />
-          </StatsDrawer>
+          </aside>
+        ) : (
+          <>
+            <aside aria-label={COPY.stats.heading} className="order-3 min-w-0 border-t border-line pt-3">
+              <StatsPanel
+                d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} expanded={false} open={more} moreId={moreId}
+                onToggle={() => setMore(true)} triggerRef={trigger}
+                baseline={r.baseline} trend={r.trend} relation={p.relation}
+              />
+            </aside>
+            {more && (
+              <StatsSheet id={moreId} trigger={trigger} onClosed={closeMore}>
+                <StatsExtras d={lane.detail} unit={r.meta.unit} baseline={r.baseline} trend={r.trend} relation={p.relation} onCsv={p.onCsv} baselineControl={p.baselineControl} polarity={lane.polarity} />
+              </StatsSheet>
+            )}
+          </>
         )}
       </div>
     </section>
   );
 }
 
+const CURTAIN_MS = 280;
+
 /**
- * "More statistics": a non-modal dialog over the chart area (a bottom sheet on phones). Focus moves to its close button
- * and returns to the trigger; Esc, the close button or a press outside close it. Hairline edge, paper background, no
- * shadow or card.
+ * Desktop "More statistics": the statistics column with a pull tab on its left edge. Opening widens the column to the
+ * left over the chart (it overlays, the chart keeps its width) and reveals the extra statistics beside the four metrics.
+ * The tab (aria-expanded) toggles it; Esc or a press outside pushes it back. Hairline edge, paper background, no shadow.
  */
-function StatsDrawer({ id, trigger, onClose, children }: {
-  id: string; trigger: React.RefObject<HTMLButtonElement | null>; onClose: () => void; children: ReactNode;
+function StatsCurtain({ id, open, onToggle, onClose, trigger, metrics, extras }: {
+  id: string; open: boolean; onToggle: () => void; onClose: () => void;
+  trigger: React.RefObject<HTMLButtonElement | null>; metrics: ReactNode; extras: ReactNode;
 }) {
   const box = useRef<HTMLDivElement>(null);
-  const closeBtn = useRef<HTMLButtonElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
   useEffect(() => {
+    if (!open) return;
+    const key = (e: globalThis.KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); close.current(); trigger.current?.focus(); } };
+    const down = (e: PointerEvent) => {
+      const t = e.target as Node | null;
+      if (t && !box.current?.contains(t)) close.current();
+    };
+    document.addEventListener("keydown", key);
+    document.addEventListener("pointerdown", down);
+    return () => {
+      document.removeEventListener("keydown", key);
+      document.removeEventListener("pointerdown", down);
+    };
+  }, [open, trigger]);
+  const S = COPY.stats;
+  return (
+    <div
+      ref={box}
+      style={{ transitionDuration: `${CURTAIN_MS}ms` }}
+      className={`relative z-20 flex shrink-0 border-l border-line bg-paper transition-[width] ease-out motion-reduce:transition-none ${
+        open ? "w-[42rem] max-w-[calc(100vw-3rem)]" : "w-[17rem]"
+      }`}
+    >
+      <button
+        type="button" ref={trigger} onClick={onToggle} aria-expanded={open} aria-controls={id}
+        aria-label={open ? S.less : S.more} title={open ? S.less : S.more}
+        className="group flex w-6 shrink-0 cursor-pointer flex-col items-center gap-3 pt-3 text-ink-3 hover:bg-well hover:text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+          className={`transition-transform ease-out motion-reduce:transition-none ${open ? "rotate-180" : ""}`} style={{ transitionDuration: `${CURTAIN_MS}ms` }}>
+          <path d="M7.5 2L3.5 6l4 4" />
+        </svg>
+        <span aria-hidden="true" className="text-xs font-semibold tracking-wide [writing-mode:vertical-rl]">{open ? S.lessTab : S.moreTab}</span>
+      </button>
+      <div
+        id={id} role="region" aria-label={S.drawerLabel} inert={!open} aria-hidden={!open}
+        style={{ transitionDuration: "0s", transitionDelay: open ? "0s" : `${CURTAIN_MS}ms` }}
+        className={`min-w-0 flex-1 overflow-hidden transition-[max-height] ${open ? "max-h-[200rem]" : "max-h-0"}`}
+      >
+        <div className="w-[25rem] px-4 pb-4">
+          <h3 className="mb-2 font-[family-name:var(--font-body-active)] text-sm font-semibold text-ink">{S.moreHeading}</h3>
+          {extras}
+        </div>
+      </div>
+      <div className="w-[15.5rem] shrink-0 pr-0 pl-3">{metrics}</div>
+    </div>
+  );
+}
+
+/**
+ * Phone "More statistics": a bottom sheet that slides up (and back down) as a non-modal dialog. Focus moves to its close
+ * button and returns to the trigger; Esc, the close button or a press outside close it.
+ */
+function StatsSheet({ id, trigger, onClosed, children }: {
+  id: string; trigger: React.RefObject<HTMLButtonElement | null>; onClosed: () => void; children: ReactNode;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
+  const [shown, setShown] = useState(false);
+  const timer = useRef<number | null>(null);
+  const done = useRef(onClosed);
+  done.current = onClosed;
+  const close = useRef(() => {});
+  close.current = () => {
+    if (timer.current != null) return;
+    setShown(false);
+    timer.current = window.setTimeout(() => done.current(), CURTAIN_MS);
+  };
+  useEffect(() => {
     const opener = trigger.current;
+    const raf = requestAnimationFrame(() => setShown(true));
     closeBtn.current?.focus();
     const key = (e: globalThis.KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); close.current(); } };
     const down = (e: PointerEvent) => {
@@ -227,6 +308,8 @@ function StatsDrawer({ id, trigger, onClose, children }: {
     document.addEventListener("keydown", key);
     document.addEventListener("pointerdown", down);
     return () => {
+      cancelAnimationFrame(raf);
+      if (timer.current != null) window.clearTimeout(timer.current);
       document.removeEventListener("keydown", key);
       document.removeEventListener("pointerdown", down);
       opener?.focus();
@@ -235,12 +318,14 @@ function StatsDrawer({ id, trigger, onClose, children }: {
   return (
     <div
       ref={box} id={id} role="dialog" aria-label={COPY.stats.drawerLabel}
-      className="fixed inset-x-0 bottom-0 z-30 max-h-[78vh] overflow-y-auto overscroll-contain border-t border-line bg-paper px-4 pt-3 pb-6 sm:px-6
-        lg:absolute lg:inset-x-auto lg:top-0 lg:right-0 lg:bottom-0 lg:max-h-none lg:w-[27rem] lg:max-w-full lg:border-t-0 lg:border-l lg:px-6 lg:pt-0 lg:pb-4"
+      style={{ transitionDuration: `${CURTAIN_MS}ms` }}
+      className={`fixed inset-x-0 bottom-0 z-30 max-h-[78vh] overflow-y-auto overscroll-contain border-t border-line bg-paper px-4 pt-3 pb-6 transition-transform ease-out motion-reduce:transition-none sm:px-6 ${
+        shown ? "translate-y-0" : "translate-y-full"
+      }`}
     >
-      <div className="mb-3 flex items-center justify-between lg:sticky lg:top-0 lg:z-10 lg:-mx-6 lg:bg-paper lg:px-6 lg:pt-1 lg:pb-2">
-        <h3 className="text-sm font-semibold text-ink">{COPY.stats.heading}</h3>
-        <button ref={closeBtn} type="button" onClick={onClose} aria-label={COPY.stats.close}
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-[family-name:var(--font-body-active)] text-sm font-semibold text-ink">{COPY.stats.moreHeading}</h3>
+        <button ref={closeBtn} type="button" onClick={() => close.current()} aria-label={COPY.stats.close}
           className="-mr-2 rounded-ctl px-2 py-1 text-sm font-semibold text-link hover:text-ink">
           {COPY.stats.close} <span aria-hidden="true">✕</span>
         </button>

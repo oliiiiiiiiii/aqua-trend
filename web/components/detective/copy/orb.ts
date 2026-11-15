@@ -2,15 +2,11 @@
 import type { UnmappedReason } from "../orbMapping";
 
 export const COPY = {
-  switchLegend: "Show",
-  observed: "Observed",
-  normal: "Normal",
   noData: "No data",
   loading: "Loading the ball",
   ballName: (v: string, month: string) => `${v}, ${month}`,
   observedLabel: "Observed",
   normalLabel: "Normal",
-  normalShown: "Normal for the month",
   above: (amount: string) => `${amount} above normal`,
   below: (amount: string) => `${amount} below normal`,
   atNormal: "At normal",

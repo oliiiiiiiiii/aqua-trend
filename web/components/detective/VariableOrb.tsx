@@ -13,12 +13,14 @@ import type { Catalog, Region, VarId } from "@/lib/types";
 import type { OrbClimate } from "@/lib/contracts";
 import type { CategoryId, Decomposition, LayerId } from "@/lib/detective/contracts";
 import { climateOf, formatMonth } from "@/components/ui/regionUtils";
-import { Segmented } from "@/components/ui/Segmented";
 import { HATCH_CSS } from "@/components/orb/encoding";
 import { loadRegionSeries } from "@/lib/data";
 import { num } from "./format";
 import { COPY } from "./copy/orb";
-import { ballValue, gaugeOf, mapToBall, readMonth, type GaugeModel, type OrbMode } from "./orbMapping";
+import { ballValue, gaugeOf, mapToBall, readMonth, type GaugeModel } from "./orbMapping";
+
+/** the ball always shows the observed month */
+const MODE = "observed" as const;
 
 export interface VariableOrbProps {
   /** the sub-basin (basin4) being analysed; null while the region catalogue loads */
@@ -71,10 +73,10 @@ function useClimate(region: Region | null, catalog: Catalog | null) {
   return id != null && state?.id === id ? state : null;
 }
 
-function Gauge({ g, mode, highReads }: { g: GaugeModel | null; mode: OrbMode; highReads: "cool" | "warm" }) {
+function Gauge({ g, highReads }: { g: GaugeModel | null; highReads: "cool" | "warm" }) {
   const lowReads = highReads === "cool" ? "warm" : "cool";
   const missing = g == null || g.pos == null;
-  const colour = mode === "normal" || g?.sign == null || g.sign === "at" ? "var(--viz-mid)" : `var(--viz-${g.sign === "above" ? highReads : lowReads})`;
+  const colour = g?.sign == null || g.sign === "at" ? "var(--viz-mid)" : `var(--viz-${g.sign === "above" ? highReads : lowReads})`;
   return (
     <div aria-hidden="true" className="mt-3">
       <div className="relative h-3 rounded-full border border-line bg-well" style={missing ? { background: HATCH_CSS } : undefined}>
@@ -96,7 +98,6 @@ function Gauge({ g, mode, highReads }: { g: GaugeModel | null; mode: OrbMode; hi
 }
 
 export default function VariableOrb({ region, catalog, category, layer, name, unit, d, monthIndex, highReads, className = "" }: VariableOrbProps) {
-  const [mode, setMode] = useState<OrbMode>("observed");
   const loaded = useClimate(region, catalog);
 
   const mapping = useMemo(() => mapToBall(category, layer, unit), [category, layer, unit]);
@@ -105,15 +106,15 @@ export default function VariableOrb({ region, catalog, category, layer, name, un
   const monthText = month ? formatMonth(month) : "";
   const monthShort = month ? formatMonth(month, true) : "";
   const ch = mapping.channel;
-  const bv = ballValue(mapping, read, mode);
+  const bv = ballValue(mapping, read, MODE);
   const values = useMemo(() => (ch ? ({ [ch]: bv } as Partial<Record<VarId, number | null>>) : {}), [ch, bv]);
   const targets = useMemo<VarId[]>(() => (ch ? [ch] : []), [ch]);
-  const gauge = useMemo(() => (ch ? null : gaugeOf(d, read, mode)), [ch, d, read.observed, read.normal, mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  const gauge = useMemo(() => (ch ? null : gaugeOf(d, read, MODE)), [ch, d, read.observed, read.normal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fmt = (x: number | null) => (x == null ? COPY.noData : `${num(x)} ${unit}`);
   const anomaly = read.observed != null && read.normal != null ? read.observed - read.normal : null;
   const anomalyText = anomaly == null ? null : anomaly === 0 ? COPY.atNormal : (anomaly > 0 ? COPY.above : COPY.below)(`${num(Math.abs(anomaly))} ${unit}`);
-  const range = gaugeOf(d, read, mode);
+  const range = gaugeOf(d, read, MODE);
 
   return (
     <section aria-label={COPY.ballName(name, monthText)} className={`flex min-w-0 flex-col gap-3 ${className}`}>
@@ -138,30 +139,19 @@ export default function VariableOrb({ region, catalog, category, layer, name, un
       </div>
 
       <div className="border-t border-line pt-2 text-ink">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <h4 className="whitespace-nowrap text-[0.8125rem] font-semibold leading-tight tnum" title={monthText}>{monthShort}</h4>
-          <Segmented
-            legend={COPY.switchLegend}
-            hideLegend
-            tone="paper"
-            look="underline"
-            value={mode}
-            onChange={setMode}
-            options={[{ value: "observed", label: COPY.observed }, { value: "normal", label: COPY.normal, title: COPY.normalShown }]}
-          />
-        </div>
+        <h4 className="whitespace-nowrap text-[0.8125rem] font-semibold leading-tight tnum" title={monthText}>{monthShort}</h4>
         <dl className="mt-2 grid grid-cols-2 gap-x-3 text-sm tnum">
-          <div className={mode === "observed" ? "" : "text-ink-2"}>
+          <div>
             <dt className="text-[0.6875rem] text-ink-3">{COPY.observedLabel}</dt>
             <dd className={`font-semibold ${read.observed == null ? "text-ink-2" : ""}`}>{fmt(read.observed)}</dd>
           </div>
-          <div className={mode === "normal" ? "" : "text-ink-2"}>
+          <div>
             <dt className="text-[0.6875rem] text-ink-3">{COPY.normalLabel}</dt>
-            <dd className="font-semibold">{fmt(read.normal)}</dd>
+            <dd className="font-semibold text-ink-2">{fmt(read.normal)}</dd>
           </div>
         </dl>
         {anomalyText && <p className="mt-1 text-[0.8125rem] text-ink-2 tnum">{anomalyText}</p>}
-        {!ch && <Gauge g={gauge} mode={mode} highReads={highReads} />}
+        {!ch && <Gauge g={gauge} highReads={highReads} />}
         {!ch && range && <p className="mt-1.5 text-[0.6875rem] leading-tight text-ink-3 tnum">{COPY.range(num(range.lo), `${num(range.hi)} ${unit}`)}</p>}
         <p className="mt-1.5 text-[0.6875rem] leading-tight text-ink-3">
           {ch ? COPY.drives(COPY.channel[ch]) : [COPY.scenery, COPY.unmapped[mapping.reason]].filter(Boolean).map((t) => t.replace(/\.$/, "")).join(". ") + "."}

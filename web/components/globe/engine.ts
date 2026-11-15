@@ -105,7 +105,7 @@ export class GlobeEngine {
 
   constructor(
     private host: HTMLElement,
-    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors },
+    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors; renderPadding?: number },
   ) {
     this.interactive = opts.interactive;
     this.reduced = opts.reducedMotion;
@@ -114,6 +114,8 @@ export class GlobeEngine {
     this.tgt = { ...opts.initialView };
     this.lastReportedZoom = opts.initialView.zoom;
     this.theme = opts.theme;
+    // The larger transparent canvas keeps the same apparent planet size.
+    this.camera.zoom = 1 / (1 + 2 * (opts.renderPadding ?? 0));
 
     // a fresh canvas per engine: React strict mode remounts must not inherit a lost context
     const canvas = document.createElement("canvas");
@@ -142,12 +144,12 @@ export class GlobeEngine {
     this.io.observe(host);
     document.addEventListener("visibilitychange", this.onVisibility);
 
-    canvas.addEventListener("pointerdown", this.onPointerDown);
-    canvas.addEventListener("pointermove", this.onPointerMove);
-    canvas.addEventListener("pointerup", this.onPointerUp);
-    canvas.addEventListener("pointercancel", this.onPointerUp);
-    canvas.addEventListener("pointerleave", this.onPointerLeave);
-    canvas.addEventListener("wheel", this.onWheel, { passive: false });
+    host.addEventListener("pointerdown", this.onPointerDown);
+    host.addEventListener("pointermove", this.onPointerMove);
+    host.addEventListener("pointerup", this.onPointerUp);
+    host.addEventListener("pointercancel", this.onPointerUp);
+    host.addEventListener("pointerleave", this.onPointerLeave);
+    host.addEventListener("wheel", this.onWheel, { passive: false });
     this.resize();
   }
 
@@ -368,6 +370,9 @@ export class GlobeEngine {
     // whole planet plus its rim in view at zoom 1
     this.d1 = 1.1 / Math.sin(Math.min(halfV, halfH));
     this.camera.updateProjectionMatrix();
+    // Resizing clears the canvas and ResizeObserver runs after this frame's rAF: repaint now or a blank frame shows
+    // for every step of an animated resize (the home -> detective hand-off).
+    if (this.planet && this.running) this.render();
     this.dirty = true;
     this.kick();
   }
@@ -376,7 +381,7 @@ export class GlobeEngine {
 
   /** degrees of arc per screen pixel at the centre of the view */
   private degPerPx() {
-    return ((this.altitude(this.cur.zoom) * Math.tan(((FOV / 2) * Math.PI) / 180)) / (this.height / 2)) * (180 / Math.PI);
+    return ((this.altitude(this.cur.zoom) * Math.tan(((FOV / 2) * Math.PI) / 180)) / (this.camera.zoom * this.height / 2)) * (180 / Math.PI);
   }
 
   private hit(clientX: number, clientY: number): { lon: number; lat: number } | null {
@@ -395,7 +400,7 @@ export class GlobeEngine {
   private onPointerDown = (e: PointerEvent) => {
     if (!this.interactive) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    this.canvas.setPointerCapture?.(e.pointerId);
+    this.host.setPointerCapture?.(e.pointerId);
     this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (this.pointers.size === 1) {
       this.drag = { x: e.clientX, y: e.clientY, moved: false, lastT: performance.now() };
@@ -450,7 +455,7 @@ export class GlobeEngine {
   private onPointerUp = (e: PointerEvent) => {
     if (!this.pointers.has(e.pointerId)) return;
     this.pointers.delete(e.pointerId);
-    this.canvas.releasePointerCapture?.(e.pointerId);
+    this.host.releasePointerCapture?.(e.pointerId);
     if (this.pointers.size >= 1) return;
     const drag = this.drag;
     this.drag = null;
@@ -623,7 +628,7 @@ export class GlobeEngine {
     this.ro.disconnect();
     this.io.disconnect();
     document.removeEventListener("visibilitychange", this.onVisibility);
-    const c = this.canvas;
+    const c = this.host;
     c.removeEventListener("pointerdown", this.onPointerDown);
     c.removeEventListener("pointermove", this.onPointerMove);
     c.removeEventListener("pointerup", this.onPointerUp);
@@ -642,7 +647,7 @@ export class GlobeEngine {
     this.blank.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
-    c.remove();
+    this.canvas.remove();
   }
 }
 

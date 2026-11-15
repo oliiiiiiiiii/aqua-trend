@@ -13,7 +13,7 @@ export default function DetectivePage() {
     // DetectiveApp reads the URL (useSearchParams), so it renders on the client below this boundary
     <Suspense
       fallback={
-        <div className="on-stage stage-sky min-h-[70dvh]">
+        <div data-stage-through data-stage-pass className="on-stage stage-sky min-h-[70dvh]">
           <p role="status" className="mx-auto max-w-[90rem] px-4 py-8 text-on-stage-2 sm:px-6 lg:px-8">
             Loading the Trend Detective…
           </p>

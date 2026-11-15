@@ -86,7 +86,7 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
           <p role="note" className="mt-1 text-sm text-synthetic"><span aria-hidden="true">⚠ </span>{L.baselineWarn}</p>
         )}
 
-        <dl className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-3 tnum md:grid-cols-4">
+        <dl className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-3 tnum">
           {v.cells.map((c) => (
             <div key={c.label} className="min-w-0">
               <dt className="text-xs text-ink-3">{c.label}<TagNote tag={c.tag} /></dt>

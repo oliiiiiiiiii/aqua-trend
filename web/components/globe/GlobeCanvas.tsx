@@ -8,6 +8,8 @@ import { PLANET, parseCssColor } from "./palette";
 import TrendLegend from "./TrendLegend";
 
 export interface GlobeCanvasExtraProps {
+  /** Extra transparent render space on each side, outside the layout/hit area. */
+  renderPadding?: number;
   /** where the camera starts and where "Reset view" returns; default { lon: 15, lat: 18, zoom: 1 } */
   initialView?: View;
   /** override the accessible name of the interactive globe */
@@ -32,6 +34,9 @@ function readTheme(): ThemeColors {
   };
 }
 
+/** A zoomed-in planet is larger than its disc: fade it out in a circle just past the rim instead of cutting a square. */
+const DISC_MASK = "radial-gradient(circle closest-side, #000 93%, transparent 100%)";
+
 const reducedQuery = "(prefers-reduced-motion: reduce)";
 
 export default function GlobeCanvas({
@@ -45,6 +50,7 @@ export default function GlobeCanvas({
   onZoomChange,
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
+  renderPadding = 0,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -54,7 +60,7 @@ export default function GlobeCanvas({
   const [trend, setTrend] = useState<TrendInfo | null>(null);
   const [cursor, setCursor] = useState("");
   const themeId = useThemeId();
-  const initialRef = useRef({ interactive, initialView });
+  const initialRef = useRef({ interactive, initialView, renderPadding });
 
   useLayoutEffect(() => {
     cbRef.current = { onPick, onHover, onZoomChange };
@@ -71,6 +77,7 @@ export default function GlobeCanvas({
         reducedMotion: window.matchMedia(reducedQuery).matches,
         initialView: initialRef.current.initialView,
         theme: readTheme(),
+        renderPadding: initialRef.current.renderPadding,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -124,19 +131,34 @@ export default function GlobeCanvas({
   const live = interactive && status !== "error";
 
   return (
-    <div data-plane-cursor className={`relative overflow-hidden ${className}`} aria-hidden={interactive ? undefined : true}>
+    <div data-plane-cursor className={`pointer-events-none relative overflow-visible ${className}`} aria-hidden={interactive ? undefined : true}>
       <div
         ref={hostRef}
-        className="group absolute inset-0 rounded-card focus-visible:outline-offset-[-3px]"
+        className="group pointer-events-none absolute focus-visible:outline-offset-[-3px]"
         role={live ? "application" : undefined}
         aria-roledescription={live ? "globe" : undefined}
         aria-label={live ? ariaLabel : undefined}
         tabIndex={live ? 0 : -1}
-        style={{ cursor: live ? cursor || "grab" : "default" }}
+        style={{
+          inset: `${-renderPadding * 100}%`,
+          cursor: live ? cursor || "grab" : "default",
+          ...(renderPadding > 0 ? { maskImage: DISC_MASK, WebkitMaskImage: DISC_MASK } : null),
+        }}
         onKeyDown={(e) => {
           if (engineRef.current?.handleKey(e.nativeEvent)) e.preventDefault();
         }}
       >
+        {/* Only this circular target receives gestures; render overscan stays transparent to clicks. */}
+        <div
+          data-globe-hit-area
+          className="absolute"
+          style={{
+            inset: `${100 * renderPadding / (1 + 2 * renderPadding)}%`,
+            clipPath: "circle(50%)",
+            pointerEvents: live ? "auto" : "none",
+            touchAction: live ? "none" : "auto",
+          }}
+        />
         {live && status === "ready" && (
           <span
             aria-hidden="true"

@@ -73,9 +73,13 @@ export default async function Home() {
 
   return (
     <>
-      <section className="on-stage stage-sky overflow-hidden" aria-labelledby="hero">
-        <div className="mx-auto max-w-[90rem] px-4 pt-8 pb-10 sm:px-6 lg:px-8 lg:pt-12 lg:pb-14">
-          <InvestigationHero />
+      <section data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky overflow-hidden" aria-labelledby="hero">
+        <InvestigationHero />
+        <div className="pointer-events-auto mx-auto max-w-[90rem] px-4 pt-10 pb-10 sm:px-6 lg:px-8 lg:pb-14">
+          <p className="max-w-[60ch] text-on-stage-2">
+            Name an event, a river basin and its months. See which NASA variables departed from normal before, during and after it.
+            <span className="mt-2 block text-sm">Monthly records · 1,313 sub-basins · 17 variable categories</span>
+          </p>
           <div className="mt-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <h2 className="text-xl text-on-stage">Open a solved case</h2>
             {legendFits && <StripLegend className="text-sm text-on-stage-2" />}

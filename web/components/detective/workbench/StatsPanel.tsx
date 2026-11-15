@@ -1,6 +1,7 @@
 "use client";
 // Statistics for the selection, by importance: verdict → effect / σ / p / rank → shape → trend → method. Lives in the
-// drawer beside the chart: collapsed (expanded={false}) it shows the verdict and the four live numbers only.
+// curtain beside the chart: StatsMetrics (verdict and the four live numbers, one per row) stays in the column, StatsExtras
+// (shape, trend, method, CSV) is what the curtain reveals. StatsPanel puts both in one column.
 import type { ReactNode } from "react";
 import type { TrendStats } from "@/lib/detective/contracts";
 import type { BaselineInfo, IntervalDetail } from "@/lib/detective/intervalDetail";
@@ -36,40 +37,79 @@ export interface StatsPanelProps {
   open?: boolean;
 }
 
-export default function StatsPanel(p: StatsPanelProps) {
-  const { d, unit } = p;
+type PanelData = Pick<StatsPanelProps, "d" | "unit" | "polarity" | "expected" | "baseline" | "trend" | "relation" | "onCsv" | "baselineControl">;
+
+/** tier 1: the verdict, then one row per live number (label left, value right with its small sub-line) */
+export function StatsMetrics({ d, unit, polarity, expected, live = true }: Pick<StatsPanelProps, "d" | "unit" | "polarity" | "expected"> & { live?: boolean }) {
   const v = verdictView(d);
   const S = COPY.stats;
   const sel: Span | null = d ? toSpan(d.range) : null;
   const pctShown = d?.percentOfNormal != null && percentMakesSense(unit) ? d.percentOfNormal : null;
-  const missing = d ? d.months - d.n : 0;
-  const sameSign = d?.signConsistency != null ? Math.round(d.signConsistency * d.n) : null;
-  const full = p.expanded !== false;
-
   return (
-    <section aria-label={S.heading} className="min-w-0">
-      {/* tier 1: verdict */}
-      <p aria-live={p.live === false ? undefined : "polite"} className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-        <VerdictMark d={d} polarity={p.polarity} size={14} className="self-center" />
+    <div className="min-w-0">
+      <p aria-live={live ? "polite" : undefined} className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        <VerdictMark d={d} polarity={polarity} size={14} className="self-center" />
         <span className="text-lg leading-tight font-semibold text-ink">{v.label}</span>
-        <HypothesisChip expected={p.expected} d={d} />
+        <HypothesisChip expected={expected} d={d} />
       </p>
       {v.note && <p className="mt-0.5 text-sm text-ink-2 tnum">{v.note}</p>}
       <p className="mt-0.5 text-xs text-ink-3">{COPY.verdict.notCause}</p>
 
-      {/* tier 1: the live numbers */}
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 tnum">
-        <Cell label={S.meanAnomaly}
+      <dl className="mt-3 tnum">
+        <Row label={S.meanAnomaly}
           value={d?.meanAnomaly != null ? `${num(d.meanAnomaly, 2, true)} ${unit}` : "—"}
           sub={[pctShown != null ? S.ofNormal(num(pctShown, 2, true)) : null, d?.ci95 ? S.ci(num(d.ci95[0], 2, true), num(d.ci95[1], 2, true)) : null]} />
-        <Cell label={S.standardised} value={sigmaText(d?.meanZ, 2)} sub={[]} />
-        <Cell label={S.significance}
+        <Row label={S.standardised} value={sigmaText(d?.meanZ, 2)} sub={[]} />
+        <Row label={S.significance}
           value={d?.test ? `p ${pValue(d.test.p).startsWith("<") ? "" : "= "}${pValue(d.test.p)}` : "—"}
           sub={[d?.empirical ? S.windows(d.empirical.asExtreme, d.empirical.windows) : S.noWindows]} />
-        <Cell label={S.rank}
+        <Row label={S.rank}
           value={d?.seasonRank ? S.rankValue(d.seasonRank.position, d.seasonRank.of, d.seasonRank.direction) : S.noRank}
           sub={[d?.seasonRank && sel ? S.rankPeriods(monthAbbr(sel.s), monthAbbr(sel.e)) : S.noRankWhy]} />
       </dl>
+    </div>
+  );
+}
+
+/** tiers 2 and 3: shape of the selection, long-term trend, baseline and method, CSV */
+export function StatsExtras({ d, unit, baseline, trend, relation, onCsv, baselineControl }: PanelData) {
+  const S = COPY.stats;
+  const missing = d ? d.months - d.n : 0;
+  const sameSign = d?.signConsistency != null ? Math.round(d.signConsistency * d.n) : null;
+  return (
+    <div className="min-w-0">
+      {d && d.n > 0 && (
+        <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-sm text-ink-2 tnum">
+          {joinDots([
+            d.peak ? S.peak(formatYm(d.peak.month), sigmaText(d.peak.z)) : null,
+            S.beyond2(d.beyond2Sigma, d.n),
+            sameSign != null && d.direction ? S.sameSign(sameSign, d.n, d.direction) : null,
+            S.n(d.n, missing),
+            relation,
+          ])}
+        </p>
+      )}
+      <div className="mt-2">
+        <TrendDisclosure trend={trend} unit={unit} record={formatRange(baseline.record)} open />
+        <MethodDisclosure baseline={baseline} unit={unit} nEff={d?.test?.nEff ?? null} control={baselineControl} open />
+      </div>
+      {onCsv && (
+        <button type="button" onClick={onCsv} title={S.csvTitle}
+          className="mt-1 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
+          {S.csv}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** the whole panel in one column (tests, and the collapsed column on phones with its "More statistics" link) */
+export default function StatsPanel(p: StatsPanelProps) {
+  const S = COPY.stats;
+  const full = p.expanded !== false;
+  return (
+    <section aria-label={S.heading} className="min-w-0">
+      <StatsMetrics d={p.d} unit={p.unit} polarity={p.polarity} expected={p.expected} live={p.live !== false} />
 
       {p.onToggle && (
         <button type="button" ref={p.triggerRef} onClick={p.onToggle} aria-expanded={p.open ?? full} aria-controls={p.moreId} aria-haspopup="dialog"
@@ -80,41 +120,21 @@ export default function StatsPanel(p: StatsPanelProps) {
 
       {full && (
         <div id={p.moreId} className="mt-3 border-t border-line pt-3">
-          {/* tier 2: shape */}
-          {d && d.n > 0 && (
-            <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-sm text-ink-2 tnum">
-              {joinDots([
-                d.peak ? S.peak(formatYm(d.peak.month), sigmaText(d.peak.z)) : null,
-                S.beyond2(d.beyond2Sigma, d.n),
-                sameSign != null && d.direction ? S.sameSign(sameSign, d.n, d.direction) : null,
-                S.n(d.n, missing),
-                p.relation,
-              ])}
-            </p>
-          )}
-          {/* tier 3: trend and method */}
-          <div className="mt-2">
-            <TrendDisclosure trend={p.trend} unit={unit} record={formatRange(p.baseline.record)} open />
-            <MethodDisclosure baseline={p.baseline} unit={unit} nEff={d?.test?.nEff ?? null} control={p.baselineControl} open />
-          </div>
-          {p.onCsv && (
-            <button type="button" onClick={p.onCsv} title={S.csvTitle}
-              className="mt-1 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
-              {S.csv}
-            </button>
-          )}
+          <StatsExtras {...p} />
         </div>
       )}
     </section>
   );
 }
 
-function Cell({ label, value, sub }: { label: string; value: string; sub: (string | null)[] }) {
+function Row({ label, value, sub }: { label: string; value: string; sub: (string | null)[] }) {
   return (
-    <div className="min-w-0">
-      <dt className="text-xs text-ink-3">{label}</dt>
-      <dd className="text-lg leading-tight font-semibold text-ink">{value}</dd>
-      {sub.filter(Boolean).map((s) => <dd key={s} className="text-xs text-ink-2">{s}</dd>)}
+    <div className="flex items-baseline justify-between gap-x-3 border-t border-line py-2">
+      <dt className="shrink-0 text-sm text-ink-2">{label}</dt>
+      <dd className="min-w-0 text-right">
+        <span className="block text-base leading-tight font-semibold text-ink">{value}</span>
+        {sub.filter(Boolean).map((t) => <span key={t} className="block text-xs text-ink-3">{t}</span>)}
+      </dd>
     </div>
   );
 }
