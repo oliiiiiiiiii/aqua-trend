@@ -3,8 +3,9 @@
     .venv/bin/python -I eval.py --backend onejev --upstream http://127.0.0.1:8811 --prompt en
     .venv/bin/python -I eval.py --summary results/*.json     # threshold sweep + F1 over saved runs
 
-Each run writes results/<backend>-<prompt>.json. The keyword baseline is computed by
-check-keywords.mts / web/lib/detective/keywords.ts and copied into eval.md by hand.
+Saved truth labels cover the historical 12 categories only. Current model requests include all
+categories, but scores explicitly use only the labeled subset. New runs use a category-count suffix
+so the original evaluation files are not overwritten.
 """
 from __future__ import annotations
 
@@ -16,6 +17,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # -I drops the script dir; add it back explicitly
 from selector import CATEGORIES, PROMPTS, ask  # noqa: E402
+
+# The existing judgments never labeled aod, ozone, vapor, so2 or fire. Do not count them as negatives.
+EVALUATED_CATEGORIES = (
+    "precip", "et", "soil", "tws", "runoff", "snow",
+    "tair", "vpd", "energy", "wind", "ndvi", "sst",
+)
 
 # (id, event text as a student would type it, human judgment of relevant categories)
 EVENTS = [
@@ -37,9 +44,9 @@ def f1(selected: set[str], truth: set[str]) -> float:
     return 0.0 if tp == 0 else 2 * tp / (len(selected) + len(truth))
 
 
-def auc(rows: list[dict]) -> float:
-    pos = [r["p"][c] for r in rows for c in CATEGORIES if c in r["truth"]]
-    neg = [r["p"][c] for r in rows for c in CATEGORIES if c not in r["truth"]]
+def auc(rows: list[dict], categories: tuple[str, ...] = EVALUATED_CATEGORIES) -> float:
+    pos = [r["p"][c] for r in rows for c in categories if c in r["truth"]]
+    neg = [r["p"][c] for r in rows for c in categories if c not in r["truth"]]
     wins = sum((p > n) + 0.5 * (p == n) for p in pos for n in neg)
     return wins / (len(pos) * len(neg))
 
@@ -51,9 +58,10 @@ def run(args: argparse.Namespace) -> None:
         rows.append({"id": eid, "event": text, "truth": sorted(truth), "p": probs, "seconds": round(secs, 2)})
         top = ", ".join(f"{c} {p:.2f}" for c, p in sorted(probs.items(), key=lambda x: -x[1])[:6])
         print(f"{eid:12s} {secs:5.1f}s  {top}", flush=True)
-    out = Path(__file__).resolve().parent / "results" / f"{args.backend}-{args.prompt}.json"
+    out = Path(__file__).resolve().parent / "results" / f"{args.backend}-{args.prompt}-categories{len(CATEGORIES)}.json"
     out.parent.mkdir(exist_ok=True)
-    out.write_text(json.dumps({"backend": args.backend, "prompt": args.prompt, "rows": rows},
+    out.write_text(json.dumps({"backend": args.backend, "prompt": args.prompt,
+                              "categories": list(CATEGORIES), "scored_categories": EVALUATED_CATEGORIES, "rows": rows},
                               ensure_ascii=False, indent=1) + "\n")
     print("wrote", out)
 
@@ -61,12 +69,17 @@ def run(args: argparse.Namespace) -> None:
 def summary(paths: list[str]) -> None:
     for path in paths:
         data = json.loads(Path(path).read_text())
+        if not isinstance(data, dict) or "rows" not in data:
+            print(f"{path}: skipped (no probability rows)")
+            continue
         rows = [{**r, "truth": set(r["truth"])} for r in data["rows"]]
+        categories = tuple(data.get("scored_categories", EVALUATED_CATEGORIES))
+        selected = lambda r, threshold: {c for c in categories if r["p"][c] >= threshold}
         secs = [r["seconds"] for r in rows]
-        best = max((statistics.mean(f1({c for c, p in r["p"].items() if p >= t}, r["truth"]) for r in rows), t)
+        best = max((statistics.mean(f1(selected(r, t), r["truth"]) for r in rows), t)
                    for t in [x / 20 for x in range(4, 19)])
-        at50 = statistics.mean(f1({c for c, p in r["p"].items() if p >= 0.5}, r["truth"]) for r in rows)
-        print(f"{data['backend']:10s} {data['prompt']}  AUC {auc(rows):.3f}  F1@0.50 {at50:.3f}  "
+        at50 = statistics.mean(f1(selected(r, 0.5), r["truth"]) for r in rows)
+        print(f"{data['backend']:10s} {data['prompt']}  scored categories {len(categories)}  AUC {auc(rows, categories):.3f}  F1@0.50 {at50:.3f}  "
               f"best F1 {best[0]:.3f} @ {best[1]:.2f}  latency median {statistics.median(secs):.1f}s max {max(secs):.1f}s")
 
 

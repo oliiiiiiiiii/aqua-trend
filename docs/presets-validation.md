@@ -1,8 +1,9 @@
 # 預設事件驗證報告（工作線 E）
 
 > 對應 [`SPEC.md`](../SPEC.md) §5、[`INTEGRATION.md`](INTEGRATION.md) 工作線 E。
-> 資料：Release `data-v0`（`npm run setup` 下載的 `web/public/data/series/<區域>.json`，series-2）。驗證日期 2026-11-15。
+> 資料：Release `data-v1`（`npm run setup` 下載的 `web/public/data/series/<區域>.json`，series-2）。驗證日期 2026-11-15。
 > 腳本：[`tools/validate_presets.py`](../tools/validate_presets.py)。
+> 本報告的事件表與 Python／TS 比對表均已更新為 `data-v1`；只有下方明確標示 `data-v0` 的比較欄保留舊結果。
 
 ## 結論
 
@@ -15,6 +16,20 @@
 驗收目標：至少一個**預設資料層**的事件平均 z 滿足 |z| ≥ 2，且方向與 `expected` 一致。巴基斯坦、澳洲通過；台灣未達門檻。依已確認決策，台灣保留原訂 2–5 月與子流域，不採用縮短事件窗的建議。預設驗證指令因此以結束碼 **1** 回報，不能把它記為三案全數通過。
 
 **與工作線 A 的數值交叉驗證：通過。** Python 已改用與 A 相同的估計方法；29 個事件／資料層組合的 `meanZ` 與 `meanResidual` 最大相對差異均小於 0.00000000001%，名次全部相同。這是數值一致性通過，與上面的事件門檻判定分開。
+
+## data-v1 與 data-v0 的差別
+
+`data-v1` 將部分 MERRA-2 陸面序列延伸至 1980 年 1 月；本報告 29 組中有下列 5 組替代產品的基準期、平均 z 與歷史排名改變。三個預設事件使用的資料層數值、日期、子流域與變數選擇均未變，預設門檻判定也不變。
+
+| 事件 | 替代資料層 | data-v0 平均 z（歷史） | data-v1 平均 z（目前） | data-v1 名次 |
+| --- | --- | --- | --- | --- |
+| 台灣 2021 大旱 | `sm_m2` | −1.2317 | −1.4466 | 26/558 低 |
+| 巴基斯坦 2022 洪水 | `ro_m2` | +12.9158 | +17.3293 | 1/559 高 |
+| 巴基斯坦 2022 洪水 | `sm_m2` | +11.6886 | +14.8083 | 1/559 高 |
+| 澳洲 2019–20 野火 | `sm_m2` | −1.4779 | −1.3571 | 32/557 低 |
+| 澳洲 2019–20 野火 | `tsurf_m2` | +0.6699 | +0.8151 | 64/557 高 |
+
+F 新增的 AOD、臭氧柱總量、大氣可降水量與植被火熱點偵測數可由變數選擇器加入分析，本次沒有將它們加入三個預設事件。SO₂ 是年度點源排放，每年數值重複放入各月，介面與載入函式皆排除其月分析，不能以這些重複值計算月事件 z 或月趨勢顯著性。
 
 ## 方法
 
@@ -39,7 +54,7 @@ python3 -m venv /tmp/aqua-trend-presets
 
 以上三次預設驗證目前都會輸出 Taiwan `NO`、Pakistan／Australia `yes`，結束碼為 1；表格與 JSON 仍會完整產生。`(alt)` 是同類別的其他產品，只作參考；通過與否只看預設層。
 
-## 各事件 z 值表
+## 各事件 z 值表（data-v1）
 
 ### taiwan-2021-drought　`b4-4040046370`　2021-02..2021-05
 
@@ -51,7 +66,7 @@ python3 -m venv /tmp/aqua-trend-presets
 | soil | sm_root | low | 4/4 | −36.1 mm | −1.66 | 5/316 低 | 否 |
 | soil | sm_total (alt) | low | 4/4 | −42.7 mm | −1.59 | 5/316 低 | 否 |
 | soil | g1_soil_top (alt) | low | 4/4 | −2.94 mm | −1.92 | 4/316 低 | 否 |
-| soil | sm_m2 (alt) | low | 4/4 | −0.0882 fraction | −1.23 | 20/318 低 | 否 |
+| soil | sm_m2 (alt) | low | 4/4 | −0.104 fraction | −1.45 | 26/558 低 | 否 |
 | tws | tws | low | 4/4 | −1.55 cm | −1.26 | 7/201 低 | 否 |
 | ndvi | ndvi | low | 4/4 | −0.0169 NDVI | −1.51 | 16/318 低 | 否 |
 
@@ -78,11 +93,11 @@ python3 -m venv /tmp/aqua-trend-presets
 | precip | p_gpcp (alt) | high | 3/3 | +4.48 mm/day | +6.47 | 2/572 高 | 是 |
 | precip | p_m2 (alt) | high | 3/3 | +9.49 mm/day | +12.03 | 2/559 高 | 是 |
 | runoff | runoff | high | 3/3 | +1.05 mm/day | **+24.41** | 1/317 高 | 是 |
-| runoff | ro_m2 (alt) | high | 3/3 | +4.95 mm/day | +12.92 | 1/319 高 | 是 |
+| runoff | ro_m2 (alt) | high | 3/3 | +4.99 mm/day | +17.33 | 1/559 高 | 是 |
 | soil | sm_root | high | 3/3 | +66 mm | **+5.47** | 1/317 高 | 是 |
 | soil | sm_total (alt) | high | 3/3 | +125 mm | +5.37 | 2/317 高 | 是 |
 | soil | g1_soil_top (alt) | high | 3/3 | +9.09 mm | +3.48 | 1/317 高 | 是 |
-| soil | sm_m2 (alt) | high | 3/3 | +0.308 fraction | +11.69 | 1/319 高 | 是 |
+| soil | sm_m2 (alt) | high | 3/3 | +0.316 fraction | +14.81 | 1/559 高 | 是 |
 | tws | tws | high | 3/3 | +0.237 cm | +0.07 | 73/219 高 | 否 |
 
 `runoff` 的 z 極大是因為這個乾燥子流域平常幾乎沒有逕流，σ 很小；畫面上建議同時顯示原單位的殘差。名次欄的「2/331」表示 IMERG 1998 年以來同長度區間第 2 高。
@@ -99,9 +114,9 @@ python3 -m venv /tmp/aqua-trend-presets
 | soil | sm_root | low | 5/5 | −97.7 mm | **−2.31** | 1/315 低 | 是 |
 | soil | sm_total (alt) | low | 5/5 | −106 mm | −2.30 | 1/315 低 | 是 |
 | soil | g1_soil_top (alt) | low | 5/5 | −4.42 mm | −2.16 | 2/315 低 | 是 |
-| soil | sm_m2 (alt) | low | 5/5 | −0.0556 fraction | −1.48 | 16/317 低 | 否 |
+| soil | sm_m2 (alt) | low | 5/5 | −0.0573 fraction | −1.36 | 32/557 低 | 否 |
 | tair | tair | high | 5/5 | +0.171 °C | +0.20 | 115/315 高 | 否 |
-| tair | tsurf_m2 (alt) | high | 5/5 | +0.632 °C | +0.67 | 55/317 高 | 否 |
+| tair | tsurf_m2 (alt) | high | 5/5 | +0.792 °C | +0.82 | 64/557 高 | 否 |
 | ndvi | ndvi | low | 5/5 | −0.0762 NDVI | **−2.69** | 2/317 低 | 是 |
 
 降水名次是 1998 年以來同長度第 4 低，`sm_root` 第 1 低，但月平均氣溫（GLDAS `tair`）沒有異常：熱浪是幾天到幾週的極端，月平均把它們抹平；而且溫度有上升趨勢，扣掉趨勢後剩下的殘差不大。
@@ -118,9 +133,9 @@ python3 -m venv /tmp/aqua-trend-presets
 
 採用的子流域已通過，且涵蓋新南威爾斯南部沿海與東南高地（黑色夏季的主要火區之一），所以不換。若想要更強的植被與 VPD 訊號，可改用 `b4-5040070700`（新南威爾斯北部沿海，2019 年 9–11 月也有大火；`ndvi` −5.92、`vpd` +1.93）。
 
-## 與 A 的 TS 實作交叉驗證
+## 與 A 的 TS 實作交叉驗證（data-v1）
 
-比對 A 的 `web/lib/detective/analysis.ts`（工作線 A 來源 commit `36c7b15`，現已合併），以 `tsc` 編譯成 CommonJS 後在 Node **24.2.0** 執行。同一批 series-2、目前三個預設事件、pad = 12，逐層呼叫 `decompose(series, event.time, 12)` 與 `intervalStats(d, event.time)`，獨立比對 Python `--json /tmp/aqua-presets-python.json` 的輸出。
+比對目前合併後的 `web/lib/detective/analysis.ts` 與 `presets.ts`，以 `npx tsx` 在 Node **24.2.0** 執行。同一批 `data-v1` series-2、目前三個預設事件、pad = 12，逐層呼叫 `decompose(series, event.time, 12)` 與 `intervalStats(d, event.time)`，獨立比對 Python `--json /tmp/aqua-v1-presets.json` 的輸出。Python 仍以結束碼 1 回報台灣未達事件門檻，29 組數值交叉核對全部通過。
 
 差異 = |Python − TS| / |TS| × 100%；下表四捨五入到小數點後三位。29 組的最大 z 差異為 **7.736 × 10⁻¹²%**，最大殘差差異為 **7.723 × 10⁻¹²%**；29 組名次與有效月數均相同，滿足 < 1% 的核對要求。
 
@@ -132,18 +147,18 @@ python3 -m venv /tmp/aqua-trend-presets
 | `taiwan-2021-drought` | sm_root | −1.6600 | −1.6600 | 0.000% | 0.000% | 相同 |
 | `taiwan-2021-drought` | sm_total | −1.5863 | −1.5863 | 0.000% | 0.000% | 相同 |
 | `taiwan-2021-drought` | g1_soil_top | −1.9153 | −1.9153 | 0.000% | 0.000% | 相同 |
-| `taiwan-2021-drought` | sm_m2 | −1.2317 | −1.2317 | 0.000% | 0.000% | 相同 |
+| `taiwan-2021-drought` | sm_m2 | −1.4466 | −1.4466 | 0.000% | 0.000% | 相同 |
 | `taiwan-2021-drought` | tws | −1.2623 | −1.2623 | 0.000% | 0.000% | 相同 |
 | `taiwan-2021-drought` | ndvi | −1.5148 | −1.5148 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | p_imerg | +6.2541 | +6.2541 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | p_gpcp | +6.4712 | +6.4712 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | p_m2 | +12.0252 | +12.0252 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | runoff | +24.4101 | +24.4101 | 0.000% | 0.000% | 相同 |
-| `pakistan-2022-flood` | ro_m2 | +12.9158 | +12.9158 | 0.000% | 0.000% | 相同 |
+| `pakistan-2022-flood` | ro_m2 | +17.3293 | +17.3293 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | sm_root | +5.4698 | +5.4698 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | sm_total | +5.3700 | +5.3700 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | g1_soil_top | +3.4817 | +3.4817 | 0.000% | 0.000% | 相同 |
-| `pakistan-2022-flood` | sm_m2 | +11.6886 | +11.6886 | 0.000% | 0.000% | 相同 |
+| `pakistan-2022-flood` | sm_m2 | +14.8083 | +14.8083 | 0.000% | 0.000% | 相同 |
 | `pakistan-2022-flood` | tws | +0.0736 | +0.0736 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | p_imerg | −1.0440 | −1.0440 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | p_gpcp | −0.8853 | −0.8853 | 0.000% | 0.000% | 相同 |
@@ -151,14 +166,14 @@ python3 -m venv /tmp/aqua-trend-presets
 | `australia-2019-fire` | sm_root | −2.3121 | −2.3121 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | sm_total | −2.3023 | −2.3023 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | g1_soil_top | −2.1578 | −2.1578 | 0.000% | 0.000% | 相同 |
-| `australia-2019-fire` | sm_m2 | −1.4779 | −1.4779 | 0.000% | 0.000% | 相同 |
+| `australia-2019-fire` | sm_m2 | −1.3571 | −1.3571 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | tair | +0.1981 | +0.1981 | 0.000% | 0.000% | 相同 |
-| `australia-2019-fire` | tsurf_m2 | +0.6699 | +0.6699 | 0.000% | 0.000% | 相同 |
+| `australia-2019-fire` | tsurf_m2 | +0.8151 | +0.8151 | 0.000% | 0.000% | 相同 |
 | `australia-2019-fire` | ndvi | −2.6944 | −2.6944 | 0.000% | 0.000% | 相同 |
 
 舊版 Python 的交替擬合與 A 的聯合 OLS 在不合格年份存在時會有差異；巴基斯坦 `tws` 曾相差 1.223%，不符合 < 1% 要求。腳本現已改用 A 的方法，`tws` 平均 z = **+0.07357568**、平均殘差 = **+0.23740238 cm**，與 TS 相同。原始年份覆蓋判斷也與 A 一致，包含原本就缺值的事件月份。
 
-**A 的測試**：本次以 ES2022／CommonJS 編譯後，在 Node 24.2.0 執行 `analysis.test.ts`，22 個測試全部通過。編譯與執行指令（`web/`）：
+**A 的測試紀錄（data-v0 整合時）**：以 ES2022／CommonJS 編譯後，在 Node 24.2.0 執行 `analysis.test.ts`，22 個測試全部通過。這是先前的程式驗證紀錄；本次 `data-v1` 的數值驗證見上方 29 組比對。原編譯與執行指令（`web/`）：
 
 ```bash
 ./node_modules/.bin/tsc --ignoreConfig --target ES2022 --module commonjs --skipLibCheck --esModuleInterop --types node --outDir /tmp/aqua-presets-tests lib/detective/analysis.test.ts lib/detective/analysis.ts lib/detective/contracts.ts lib/stats.ts
@@ -169,4 +184,4 @@ node --test /tmp/aqua-presets-tests/detective/analysis.test.js
 
 
 - **給 A**：σ 用全年共用的基準期殘差，對季節性變異大的變數（台灣降水）會讓乾季異常顯得很小。目前照規格做；若之後想改成「各月份各自的 σ」，需要更新 SPEC 與 contracts。
-- **給 F**：野火事件目前只能以乾熱條件呈現。若 F 能把 FIRMS 火點數（`fire_count`）或 MERRA-2 AOD 加進 series-2，且 `b4-5040070710` 有該層，這個事件就能直接顯示「火」本身（需要新增類別，屬 contract change）。
+- **給 F**：`data-v1` 已提供 `b4-5040070710` 的 FIRMS 熱點偵測數（`fire_count`）與 MERRA-2 AOD，使用者可自行加入；原野火預設仍保留原變數。熱點偵測次數不是燃燒面積，Terra 軌道漂移等資料限制需與圖表一起呈現。

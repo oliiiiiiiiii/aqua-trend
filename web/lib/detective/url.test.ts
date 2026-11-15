@@ -105,6 +105,14 @@ describe("URL codec", () => {
   it("drops a layer override for a category that is not analysed", () => {
     assert.equal(encodeQuery({ ...taiwan, layers: { tair: "tsurf_m2", precip: "p_gpcp" } }).includes("tair"), false);
   });
+
+  it("round-trips F's atmospheric and fire categories with their actual product ids", () => {
+    const query: DetectiveQuery = {
+      ...taiwan, categories: ["aod", "ozone", "vapor", "so2", "fire"], active: "fire",
+      layers: { aod: "aod", ozone: "to3_m2", vapor: "tqv", so2: "so2_emis", fire: "fire_count" },
+    };
+    assert.deepEqual(decodeQuery(encodeQuery(query)), query);
+  });
 });
 
 describe("formatRange", () => {

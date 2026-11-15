@@ -1,4 +1,4 @@
-// 關鍵字表與時間解析的快速檢查：node tools/selector/check-keywords.mts（Node 22.6+ 會自動剝除型別）
+// 關鍵字表與時間解析的快速檢查：npx tsx tools/selector/check-keywords.mts
 import { suggestedTime, keywordSelect, matchedRules } from "../../web/lib/detective/keywords.ts";
 const cases: [string, string|null][] = [
  ["2021 台灣春季大旱","2021-01..2021-12"],

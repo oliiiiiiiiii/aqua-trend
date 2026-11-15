@@ -3,6 +3,7 @@ import { afterEach, describe, it } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { keywordSelect } from "../../lib/detective/keywords";
+import { CATEGORY_ORDER } from "../../lib/detective/categories";
 import { decodeQuery, encodeQuery } from "../../lib/detective/url";
 import { CATEGORIES, PRESETS, VariableTab, analysis, cleanSelectResponse, requestVotes } from "./wiring";
 
@@ -24,7 +25,7 @@ describe("selector integration", () => {
     assert.deepEqual(result.votes.filter((v) => v.selected).map((v) => v.category), ["soil"]);
     assert.equal(result.votes.find((v) => v.category === "precip")?.p, 0.8);
     assert.deepEqual(result.suggestedTime, { start: "2021-02", end: "2021-05" });
-    assert.equal(result.votes.length, 12);
+    assert.deepEqual(result.votes.map((v) => v.category), CATEGORY_ORDER);
   });
 
   it("uses D's complete browser fallback when a static host has no API", async () => {

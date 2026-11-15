@@ -1,7 +1,7 @@
 {
   "repo": "oliiiiiiiiii/aqua-trend",
-  "tag": "data-v0",
-  "asset": "aqua-trend-data-v0.tar.gz",
-  "sha256": "e54c6ed397de7c7212f4bff5925ecccada7a993d0befad40ea5aa42e7717db80",
-  "note": "v0 = last committed data (main@5f22f14: web/public/data + web/data). Workstream F publishes newer bundles and bumps this file."
+  "tag": "data-v1",
+  "asset": "aqua-trend-data-v1.tar.gz",
+  "sha256": "5b221380c35dec16f89fc70daea4b915dd1a612afbfdc8492e562c38951d4377",
+  "note": "v1 = data-v0 base plus F@9b7506e series/catalog: 32 layers, 17 categories, extended MERRA-2 records. Added temporal_resolution; annual SO2 is excluded from monthly analysis and its legacy missing-value limitation is documented. Generated data/gen and setup marker are omitted."
 }

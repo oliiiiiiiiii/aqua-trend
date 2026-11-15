@@ -8,7 +8,10 @@ export type YearMonth = string;
 /** 變數類別 id，對應 web/public/data/catalog/variables.json 的 category_default_layer 鍵。 */
 export type CategoryId =
   | "precip" | "et" | "soil" | "tws" | "runoff" | "snow"
-  | "tair" | "vpd" | "energy" | "wind" | "ndvi" | "sst";
+  | "tair" | "vpd" | "energy" | "wind" | "ndvi" | "sst"
+  // 工作線 F 新增（2026-11-15）：aod（MERRA-2 AOD）、ozone（MERRA-2 TO3）、
+  // vapor（MERRA-2 可降水量）、so2（MSAQSO2L4 點源年排放）、fire（MODIS FIRMS 火點數）
+  | "aod" | "ozone" | "vapor" | "so2" | "fire";
 
 /** 資料層 id，對應 variables.json 的 layers 鍵（例如 "p_imerg"、"sm_root"）。 */
 export type LayerId = string;

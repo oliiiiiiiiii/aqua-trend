@@ -1,9 +1,11 @@
 # tools/selector：本地 AI 選變數（工作線 D）
 
-`POST /api/select-variables`（`web/app/api/select-variables/route.ts`）預設會把事件文字送到這裡的本地服務。服務對 12 個變數類別各問一題是／否，問題用 SPEC §4 的淺白定義，由本地開源的 System One 決策模型回答。本地模式不需要 API key；權重與 tokenizer 已備妥時可離線推論。明確選擇 `openai` 或 `systemone` 時，事件文字會送到設定的服務位址。
+`POST /api/select-variables`（`web/app/api/select-variables/route.ts`）預設會把事件文字送到這裡的本地服務。服務對 17 個變數類別各問一題是／否，使用 `web/lib/detective/categories.ts` 的淺白定義，由本地開源的 System One 決策模型回答。本地模式不需要 API key；權重與 tokenizer 已備妥時可離線推論。明確選擇 `openai` 或 `systemone` 時，事件文字會送到設定的服務位址。
+
+F 新增 `aod`、`ozone`、`vapor`、`so2`、`fire`。臭氧是整柱總量，火點是衛星偵測次數、不是燃燒面積；SO₂ 是年度大型點源排放，沒有月變化，前端不允許把它送進月度分析。變數推薦與資料可用性分開判斷，前端會排除區域沒有月資料的類別。更新後須重新啟動舊選變數服務；只回 12 類的舊服務會被判定為不完整並退回關鍵字備案。
 
 - **選定模型：OneJev1.6-0.8B**（Q4_K_M GGUF，經 llama.cpp 在 CPU 上執行）。評估與理由見 [eval.md](eval.md)。
-- **預先勾選規則：由模型決定。** 模型可用時，勾選 p ≥ 0.5 的類別，機率條顯示模型的 p。（評估時試過「關鍵字優先」，見 eval.md；決定不採用，讓模型自己判斷，之後換更強的模型時效果才會跟著提升。）
+- **預先勾選規則：由模型決定。** 模型可用時，勾選 p ≥ 0.5 的類別，機率條顯示模型的 p。門檻沿用歷史 12 類設定；17 類尚未重跑模型或校準。評估時試過「關鍵字優先」但未採用，見 eval.md。
 - **後端選擇：** 環境變數 `SELECTOR_BACKEND`，預設 `local`。也可以接線上 API，見下方「線上 API（選用）」。
 - **備案：** 服務不存在、出錯或 5 秒內沒有回應 → route 回傳 `keyword-fallback`。模型關閉時實測約 0.03 秒回應。
 - **部署：** 目前使用 Next.js standalone Node 服務，保留這個 POST route。純靜態網站沒有選變數 API；若另行製作靜態版本，前端呼叫失敗時會在瀏覽器呼叫 `keywordSelect()`。不要把 `output: "export"` 當成會自動略過 POST route 的部署方式。
@@ -28,9 +30,9 @@
 
 - 線上後端逾時預設且最多 5 秒（`SELECTOR_ONLINE_TIMEOUT_MS`，可設為 1–5000 毫秒）；失敗、逾時或回傳格式不符都退回關鍵字表。
 - 回應的 `source` 為 `online-model`，前端要標示「線上模型」。
-- `openai` 後端會送出 `response_format: { type: "json_object" }`，服務必須接受此參數。回應可為純 JSON 或單一 ```` ```json ```` 區塊，必須包含完整 12 類別與 0–1 的數值；不會把 `null`、字串或布林值轉成機率。
+- `openai` 後端會送出 `response_format: { type: "json_object" }`，服務必須接受此參數。回應可為純 JSON 或單一 ```` ```json ```` 區塊，必須包含完整 17 類別與 0–1 的數值；不會把 `null`、字串或布林值轉成機率。
 - 程式在 `web/app/api/select-variables/online.ts`。四種後端有離線自動測試，涵蓋請求、回應格式、錯誤與逾時；實際關閉本地連接埠的測試檢查 1 秒內備案。尚未用真實線上模型跑 eval，也未驗證上述每一家服務的相容性。
-- 既有 OneJev 評估在 10 個事件上的平均 F1 為 0.48；0.91 是已放棄的「關鍵字優先」規則，不是目前模型決策流程的分數。模型最慢一次超過 5 秒，屆時會退回關鍵字表。這份小樣本評估不是獨立測試集，詳見 [eval.md](eval.md)。
+- 歷史 12 類 OneJev 評估在 10 個事件上的平均 F1 為 0.48；0.91 是已放棄的「關鍵字優先」規則。兩者都不能代表目前 17 類流程的分數；新增類別沒有人工標註或模型實測。歷史模型最慢一次超過 5 秒，屆時會退回關鍵字表。這份小樣本評估不是獨立測試集，詳見 [eval.md](eval.md)。
 
 ## 檔案
 
@@ -41,8 +43,10 @@
 | `start-onejev.sh` | 一次啟動 OneJev 模型伺服器與 `serve.py` |
 | `phocinae_serve.py` | 只供評估用：繞過 `phocinae-server` 0.1.8 丟掉題目文字的問題（見 eval.md） |
 | `eval.py` | 跑 10 個測試事件、彙整 AUC／F1／延遲 |
-| `check-keywords.mts` | 關鍵字表與時間解析的快速檢查（`node tools/selector/check-keywords.mts`） |
-| `dump-keywords.mts` | 把 10 個測試事件跑過關鍵字表，寫出 `results/keywords.json` |
+| `check-keywords.mts` | 關鍵字表與時間解析的快速檢查（`npx tsx tools/selector/check-keywords.mts`） |
+| `check-contract.mts` | 比對 Python 與前端的類別順序、中英文定義 |
+| `test_selector.py` | 三個 Python adapter 的離線契約測試與歷史評分相容性檢查 |
+| `dump-keywords.mts` | 把歷史 10 個事件跑過目前關鍵字表，另存 `results/keywords-categories17.json`；不覆寫原始結果 |
 | `results/` | 各模型、各問法的原始機率 |
 
 ## 安裝（一次）
@@ -81,10 +85,10 @@ curl -s localhost:3000/api/select-variables/ -H 'content-type: application/json'
 | `ONEJEV_GGUF` | （必填） | OneJev GGUF 檔路徑 |
 | `ONEJEV_PORT` / `SELECTOR_PORT` | 8811 / 8770 | 模型伺服器／選變數服務的連接埠，預設都綁 127.0.0.1 |
 | `SELECTOR_HOST` | `127.0.0.1` | 選變數服務的綁定位址；容器要連到主機服務時可改為 `0.0.0.0`，需限制在可信任網路，服務沒有驗證機制；模型仍只綁 loopback |
-| `ONEJEV_PARALLEL` | 4 | llama-server 平行槽數（12 題分給 4 槽，延遲約 5 s → 2.9 s） |
+| `ONEJEV_PARALLEL` | 4 | llama-server 平行槽數；歷史 12 題分給 4 槽，延遲約 5 s → 2.9 s，17 題尚未量測 |
 | `SELECTOR_URL`（Next 端） | `http://127.0.0.1:8770` | route 呼叫的服務位址；設成空字串會完全停用模型 |
 
-效能（Ryzen 5 7640U，CPU）：載入約 10 秒；每個事件中位數 2.9 秒。第一次請求或機器忙碌時可能超過 5 秒，這時會退回關鍵字表。同一事件第二次會命中快取（< 0.1 秒）。
+歷史 12 類效能（Ryzen 5 7640U，CPU）：載入約 10 秒；每個事件中位數 2.9 秒。17 類尚未量測；超過 5 秒時會退回關鍵字表。同一事件第二次可命中快取。
 
 ## 重跑評估
 
@@ -93,9 +97,12 @@ curl -s localhost:3000/api/select-variables/ -H 'content-type: application/json'
 ```sh
 cd web
 npx tsx --test app/api/select-variables/*.test.ts lib/detective/keywords.test.ts
+cd ..
+npx tsx tools/selector/check-contract.mts
+python3 -I -m unittest discover -s tools/selector -p 'test_*.py'
 ```
 
-以下是重新執行模型評估的步驟，需要另備權重；本次整合只跑上面的離線測試，沒有重跑模型。三個候選都裝在同一個 venv（torch 用 CPU 版）：
+以下是重新執行模型評估的步驟，需要另備權重；本次整合只跑上面的離線測試，沒有重跑模型。`eval.py` 的人工標註仍只涵蓋原始 12 類，分數會明列 `scored categories 12`，不把新增類別誤當成負例。未來的模型回應另存 `*-categories17.json`，不覆寫歷史結果；完整 17 類評估仍需新增人工標註。三個候選都裝在同一個 venv（torch 用 CPU 版）：
 
 ```sh
 VIRTUAL_ENV=.venv uv pip install --index-url https://download.pytorch.org/whl/cpu \
@@ -115,7 +122,7 @@ PHOC_MODEL_DIR=$PWD/models/largha .venv/bin/python -I phocinae_serve.py --port 8
 
 for p in en zh en-unusual; do .venv/bin/python -I eval.py --backend onejev --upstream http://127.0.0.1:8811 --prompt $p; done
 .venv/bin/python -I eval.py --summary results/*.json
-node dump-keywords.mts
+npx tsx dump-keywords.mts
 ```
 
 所有下載的程式都用 `python -I`（隔離模式）執行，不會從目前目錄載入模組；jev-style 會從自己的模型 repo 下載 runtime 檔案。

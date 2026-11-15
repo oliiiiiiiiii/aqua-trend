@@ -26,6 +26,30 @@ describe("keyword fallback", () => {
     assert.deepEqual(result.votes.filter((v) => v.selected).map((v) => v.category), DEFAULT_CATEGORIES);
     assert.equal(result.suggestedTime, null);
   });
+  it("includes wildfire detections and smoke, without implying burned area", () => {
+    for (const event of ["2019 澳洲野火", "Australian wildfire"]) {
+      assert.deepEqual(keywordCategories(event), ["precip", "soil", "tair", "vpd", "wind", "ndvi", "aod", "fire"]);
+    }
+    assert.deepEqual(keywordCategories("MODIS FIRMS 火點偵測"), ["fire"]);
+  });
+  it("recognizes each new atmospheric category in Chinese and English", () => {
+    for (const event of ["氣膠光學厚度", "aerosol optical depth", "smog"]) assert.deepEqual(keywordCategories(event), ["aod"]);
+    for (const event of ["南極臭氧洞", "ozone layer depletion"]) assert.deepEqual(keywordCategories(event), ["ozone"]);
+    for (const event of ["水氣", "precipitable water"]) assert.deepEqual(keywordCategories(event), ["vapor"]);
+    for (const event of ["二氧化硫年排放", "annual SO₂ emissions"]) assert.deepEqual(keywordCategories(event), ["so2"]);
+  });
+  it("does not confuse volcanic activity with vegetation fires or smog with ozone-column loss", () => {
+    assert.deepEqual(keywordCategories("volcanic eruption"), ["aod", "so2"]);
+    assert.deepEqual(keywordCategories("霧霾"), ["aod"]);
+    assert.ok(!keywordCategories("surface ozone pollution").includes("ozone"));
+  });
+  it("recognizes atmospheric rivers and returns every new category in the fallback contract", () => {
+    assert.deepEqual(keywordCategories("atmospheric river"), ["precip", "runoff", "vapor"]);
+    const result = keywordSelect("fire detections and aerosol optical depth");
+    for (const category of ["aod", "ozone", "vapor", "so2", "fire"]) {
+      assert.equal(result.votes.filter((vote) => vote.category === category).length, 1);
+    }
+  });
 });
 
 describe("suggested event time", () => {

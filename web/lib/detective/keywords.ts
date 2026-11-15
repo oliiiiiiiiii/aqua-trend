@@ -3,19 +3,17 @@
 // 規格：/SPEC.md §3 Step 1、/docs/INTEGRATION.md「D — AI 選變數」。
 
 import type { CategoryId, CategoryVote, SelectResponse, TimeRange } from "./contracts";
+import { CATEGORY_ORDER } from "./categories";
 
-/** 全部 12 個類別，順序同 SPEC §4。下方的型別檢查確保與 contracts 的 CategoryId 一致。 */
-export const ALL_CATEGORIES = [
-  "precip", "et", "soil", "tws", "runoff", "snow",
-  "tair", "vpd", "energy", "wind", "ndvi", "sst",
-] as const satisfies readonly CategoryId[];
+/** 共用類別順序；名稱與淺白定義由 categories.ts 維護。 */
+export const ALL_CATEGORIES = CATEGORY_ORDER;
 
 // 若 contracts 新增類別而這裡沒有加，這行會編譯失敗。
 type _MissingCategory = Exclude<CategoryId, (typeof ALL_CATEGORIES)[number]>;
 const _exhaustive: [_MissingCategory] extends [never] ? true : never = true;
 void _exhaustive;
 
-/** 模型機率 ≥ 門檻就預先勾選（eval.md 依 10 個測試事件調整）。 */
+/** 沿用歷史 12 類評估的門檻；新增類別尚未重跑模型校準。 */
 export const SELECT_THRESHOLD = 0.5;
 
 /** 一條規則：任一個樣式出現在事件文字中，就勾選這些類別。 */
@@ -56,7 +54,7 @@ export const KEYWORD_RULES: KeywordRule[] = [
     id: "wildfire",
     zh: ["野火", "山火", "森林火災", "森林火灾", "林火", "大火", "火災季", "黑色夏季"],
     en: ["wildfire", "wildfires", "bushfire", "bushfires", "forest fire", "fire season", "black summer", "megafire"],
-    categories: ["precip", "soil", "tair", "vpd", "wind", "ndvi"],
+    categories: ["precip", "soil", "tair", "vpd", "wind", "ndvi", "aod", "fire"],
   },
   {
     id: "blizzard",
@@ -111,7 +109,25 @@ export const KEYWORD_RULES: KeywordRule[] = [
     id: "dust",
     zh: ["沙塵暴", "沙尘暴", "沙塵", "沙尘"],
     en: ["dust storm", "dust bowl", "sandstorm", "haboob"],
-    categories: ["wind", "soil", "precip"],
+    categories: ["wind", "soil", "precip", "aod"],
+  },
+  {
+    id: "smoke-haze",
+    zh: ["煙霧", "烟雾", "霧霾", "雾霾", "空污", "空氣污染", "空气污染"],
+    en: ["smoke", "smog", "haze", "air pollution"],
+    categories: ["aod"],
+  },
+  {
+    id: "volcano",
+    zh: ["火山", "火山灰"],
+    en: ["volcano", "volcanoes", "volcanic eruption", "volcanic ash"],
+    categories: ["aod", "so2"],
+  },
+  {
+    id: "atmospheric-river",
+    zh: ["大氣河流", "大气河流"],
+    en: ["atmospheric river", "atmospheric rivers"],
+    categories: ["precip", "vapor"],
   },
   // ---- 變數名稱 ----
   {
@@ -185,6 +201,36 @@ export const KEYWORD_RULES: KeywordRule[] = [
     zh: ["海溫", "海温", "海表溫度", "海表温度", "海水溫度", "海面溫度", "海洋"],
     en: ["sea surface temperature", "sst", "ocean temperature", "ocean"],
     categories: ["sst"],
+  },
+  {
+    id: "v-aod",
+    zh: ["氣膠", "气溶胶", "光學厚度", "光学厚度"],
+    en: ["aod", "aerosol", "aerosols", "aerosol optical depth"],
+    categories: ["aod"],
+  },
+  {
+    id: "v-ozone",
+    zh: ["臭氧柱", "臭氧層", "臭氧层", "臭氧洞", "臭氧總量", "臭氧总量"],
+    en: ["ozone column", "total ozone", "column ozone", "ozone layer", "ozone hole", "ozone depletion"],
+    categories: ["ozone"],
+  },
+  {
+    id: "v-vapor",
+    zh: ["水氣", "水汽", "可降水量", "大氣含水", "大气含水"],
+    en: ["water vapor", "water vapour", "precipitable water", "atmospheric moisture", "tqv"],
+    categories: ["vapor"],
+  },
+  {
+    id: "v-so2",
+    zh: ["二氧化硫", "硫排放"],
+    en: ["so2", "so₂", "sulfur dioxide", "sulphur dioxide", "sulfur emissions", "sulphur emissions"],
+    categories: ["so2"],
+  },
+  {
+    id: "v-fire",
+    zh: ["火點", "火点", "植被火"],
+    en: ["fire detections", "fire count", "active fire", "firms", "vegetation fire"],
+    categories: ["fire"],
   },
 ];
 

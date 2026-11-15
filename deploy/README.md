@@ -22,7 +22,7 @@ docker compose up --build -d
 If you already have the pinned archive, replace `npm run setup` with:
 
 ```sh
-npm run setup -- --file /absolute/path/to/aqua-trend-data-v0.tar.gz
+npm run setup -- --file /absolute/path/to/aqua-trend-data-v1.tar.gz
 ```
 
 Open <http://localhost:8080/detective/>. To change only the published host port, use `PORT=8090 docker compose up --build -d`; the server still listens on 8080 inside the container. Ports are published on the host's network interfaces. Put HTTPS and request limits at a reverse proxy or hosting platform for public deployment.
@@ -45,7 +45,7 @@ curl -I http://localhost:8080/data/.bundle
 docker compose logs --tail=100 web
 ```
 
-Expected results are `ok` from health, successful data and page responses, 12 category votes with `source: "keyword-fallback"` from the default API, and HTTP 404 for the unknown route and `.bundle`. Invalid API input returns HTTP 400. The healthcheck probes `/healthz/` every 30 seconds; it checks the web server without requiring an optional model service.
+Expected results are `ok` from health, successful data and page responses, 17 category votes with `source: "keyword-fallback"` from the default API, and HTTP 404 for the unknown route and `.bundle`. Invalid API input returns HTTP 400. The healthcheck probes `/healthz/` every 30 seconds; it checks the web server without requiring an optional model service.
 
 Next.js retains `trailingSlash: true`: `/detective`, `/healthz`, and `/api/select-variables` redirect to their slash-ending paths. Use the trailing slash when posting to the API, or use a client that follows the HTTP 308 redirect while preserving the method and body. Hashed Next.js assets receive immutable caching; public data uses Next.js public-file caching with `max-age=0`.
 

@@ -3,7 +3,7 @@
 > 給人類與 agent。先讀 [`SPEC.md`](../SPEC.md)，再讀 [`web/lib/detective/contracts.ts`](../web/lib/detective/contracts.ts)。
 > 基底 branch：`main`。
 >
-> **主線整合狀態（2026-11-15）**：A、B、C、D、E 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器改用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。F 仍是獨立分支，資料維持 `data-v0`。台灣預設維持 2021-02..2021-05。
+> **主線整合狀態（2026-11-15）**：A、B、C、D、E、F 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器使用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。資料更新為 `data-v1`：32 層、17 類別；SO₂ 年資料不提供月分析。台灣預設維持 2021-02..2021-05。
 >
 > **開始前先取得網站資料**（資料不在 git 裡）：`cd web && npm i && npm run setup`。
 > repo 是私有的，下載需要已登入的 `gh`（`gh auth login`）或環境變數 `GITHUB_TOKEN`；也可以手動下載 Release 附件後執行 `npm run setup -- --file <檔案>`。`npm run dev` 會在資料不存在時自動執行 setup。
@@ -95,7 +95,7 @@
 
 規則：
 - 本地開源決策模型，無 API key。候選：`jev-style`（0.8B，`pip install "jev-style[torch]"`）、`Phocinae-Largha-150M`（中英文、CPU 可跑）。先實測兩者在 10 個測試事件上的表現，選一個寫進 `tools/selector/README.md`。安裝指令與介面以官方說明為準。
-- 對 12 類別各問一次是／否（問題文字用 SPEC §4 的淺白定義）。
+- 對 17 類別各問一次是／否（問題文字用 SPEC §4 的淺白定義，原 12 類加上 F 的 aod／ozone／vapor／so2／fire）。
 - 逾時 5 秒或模型不可用 → `keywords.ts` 中英文關鍵字表，`source: "keyword-fallback"`。
 - `suggestedTime` 用正規表示式從 E 抽取（可與 C 共用函式，放在 `keywords.ts` 匯出）。
 - 靜態部署時 API route 不存在：前端（C）收到錯誤時直接在瀏覽器端呼叫 `keywords.ts`。
@@ -110,7 +110,7 @@
 | | |
 | --- | --- |
 | 負責檔案 | `web/lib/detective/presets.ts`、`web/lib/detective/categories.ts`、`docs/presets-validation.md`、`README.md` |
-| 輸出 | `PresetEvent[]`；12 類別的名稱、淺白定義（中英）、預設層、圖示；驗證報告 |
+| 輸出 | `PresetEvent[]`；17 類別的名稱、淺白定義（中英）、預設層、圖示；驗證報告 |
 
 規則：
 - 資料本身（從分享站或 Giovanni 產生 series-2）由工作線 F 負責。E 需要某個變數做預設事件時（例如澳洲野火要 FIRMS 火點或 AOD），向 F 提出，不自己寫管線。
@@ -130,7 +130,7 @@
 | 輸入 | 官方資料來源（GES DISC、NOAA PSL、JPL、FIRMS、HydroSHEDS）、NASA Giovanni；開發時可參考分享站 http://meow1.csie.ntu.edu.tw:3266/ |
 | 輸出 | GitHub Release 上的資料 bundle（`web/public/data` + `web/data`，series-2 格式不變），以及更新後的 `web/data.lock.json` |
 
-**目前狀態**：Release `data-v0` 的 bundle 是 git 歷史中最後一版資料（`5f22f14` 的 `web/public/data` + `web/data`），讓其他工作線可以馬上開工。舊的管線腳本也在 `5f22f14`：`download_global.py`、`build_regions.py`、`fetch_regions.sh`、`analysis/hub_export.py`、`analysis/export_web2.py`、`data/masks/`。用 `git show 5f22f14:<路徑>` 取回，再改寫進 `pipeline/`。
+**目前狀態**：`data-v1` 在 `data-v0` 上合併 F `9b7506e` 的 32 層快照，新增六層並延長六個 MERRA-2 陸面替代產品。部署只依賴 GitHub Release；分享站產製的三層來源仍如實記在 metadata。管線、重跑依賴與已知限制見 [`pipeline/README.md`](../pipeline/README.md)。原始 `data-v0` 與舊管線仍可從 `5f22f14` 追溯。
 
 **發布流程**（每次更新資料）：
 1. 管線輸出到一個乾淨的目錄，結構是 `web/public/data/...` 與 `web/data/...`。
@@ -148,7 +148,7 @@
 - 優先順序：
   1. 分享站上已有檔案、而且 series-2 還沒有的子流域變數：FIRMS 火點數（`fire_count`）、OMI SO₂、MOD10CM 積雪覆蓋。
   2. 分享站補上 `gesdisc/`、`modis/` 後，重算或延長既有資料層；補上 `m2aer` 時加 AOD。
-  3. 官方來源下載太慢或不可行時，試 **NASA Giovanni**（見 DATA_SHARE.md「Giovanni」一節）。Giovanni 試不通就跳過，**繼續用 `data-v0` 的資料**，不要卡住。
+  3. 官方來源下載太慢或不可行時，試 **NASA Giovanni**（見 DATA_SHARE.md「Giovanni」一節）。Giovanni 試不通就跳過，**繼續用 lockfile 鎖定的 Release 資料**，不要卡住。
 - 新增類別時要改 `contracts.ts` 的 `CategoryId`，PR 標 `[contract change]`，並通知 D（關鍵字表）和 E（淺白定義）。
 - 每次更新資料，在 `docs/DATA_SHARE.md` 的「處理紀錄」補一行：日期、資料層、來源、涵蓋期間、子流域數量。
 
@@ -195,11 +195,15 @@ flowchart LR
 - [x] 375px 寬度無水平捲動；淺色與深色主題都可讀。
 - [x] `npm run typecheck` 與 `npm run build` 通過。
 
-2026-11-15 整合驗收：`cd web && npx tsx --test lib/detective/*.test.ts components/detective/*.test.ts app/api/select-variables/*.test.ts` 共 161 項通過；Docker 內的 production build 通過。正式容器以 UID 1000、唯讀根檔案系統啟動，健康檢查與 API 通過，缺少的路徑／資料及 `.env`、`data/.bundle` 回傳 404。
+2026-11-15 C／D 整合驗收：`cd web && npx tsx --test lib/detective/*.test.ts components/detective/*.test.ts app/api/select-variables/*.test.ts` 共 161 項通過；Docker 內的 production build 通過。正式容器以 UID 1000、唯讀根檔案系統啟動，健康檢查與 API 通過，缺少的路徑／資料及 `.env`、`data/.bundle` 回傳 404。
 
 Chrome／Playwright 在 1280px 與 375px 驗證三個預設事件、全部變數分頁、重新整理、分享 URL、搜尋與鍵盤操作、圖層、縮放、區間選取、pad 變更重設、趨勢面板、深淺主題及返回輸入頁。正式容器上的預設事件顯示時間為 0.22–1.07 秒（本機量測，非遠端效能保證），無頁面錯誤。另驗證地球選區、產品切換後的 NOAA caveat，以及遲到的模型回應不覆蓋新事件或手動勾選。
 
 模型介面與線上來源以假回應測試；本次整合未下載或執行真實模型。D 的既有模型評估仍見 [`tools/selector/eval.md`](../tools/selector/eval.md)。台灣事件未達 |z| ≥ 2 的科學驗收限制仍保留，與上述操作流程驗收分開。
+
+同日 F 整合後，上述 TypeScript 測試增至 168 項且全數通過，typecheck 與正式 Docker build 通過。另有 5 項 selector Python 測試、17 類中英定義一致性檢查及 9 項使用合成資料的管線回歸測試通過。`data-v1` 的 1,706 個序列檔通過 JSON、索引及有限數值檢查；29 組預設／替代產品統計與獨立 Python 重算的最大相對差異低於 1e-10%。這些檢查不代表已從原始觀測重新驗證 F 的所有科學數值。
+
+F 的正式容器也在 Chrome 1280px／375px 驗證：17 類選項、四個新增月類別的真實圖表與 caveat、重新整理與 URL 還原正常；SO₂ 年資料不能勾選，直接開其 URL 也不會產生月尺度 z、百分位或趨勢檢定。無頁面錯誤或水平溢出。原有三個預設事件與台灣事件範圍維持不變。
 
 真實資料截圖：[台灣](screenshots/taiwan-2021-drought.png)、[巴基斯坦](screenshots/pakistan-2022-flood.png)、[澳洲](screenshots/australia-2019-fire.png)。
 

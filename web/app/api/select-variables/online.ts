@@ -1,11 +1,12 @@
 // 線上選變數後端（選用，SELECTOR_BACKEND 設成 openai 或 systemone 時才用）。不綁定任何廠商：
 //   openai    任何 OpenAI 相容的 /chat/completions（OpenAI、OpenRouter、Groq、Together、vLLM、Ollama…）
 //   systemone 任何 Jev 風格的 /v1/systemone 端點（state + noul 問題 → 機率），例如遠端架的 OneJev
-// 兩者都回 12 類別各一個 0–1 機率，與本地模型同一形式；任何錯誤、逾時或格式不符都丟例外，
+// 兩者都回完整類別各一個 0–1 機率，與本地模型同一形式；任何錯誤、逾時或格式不符都丟例外，
 // 由 route.ts 退回關鍵字備案。金鑰只從環境變數讀，不可 commit。
 
 import type { CategoryId } from "@/lib/detective/contracts";
 import { ALL_CATEGORIES } from "@/lib/detective/keywords";
+import { CATEGORIES } from "@/lib/detective/categories";
 
 export type OnlineBackend = "openai" | "systemone";
 
@@ -23,21 +24,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-/** 類別淺白定義（同 tools/selector/selector.py 的英文版）。 */
-const DEFINITIONS: Record<CategoryId, string> = {
-  precip: "how much rain and snow falls from the sky",
-  et: "how much water the ground and plants send back into the air (evapotranspiration)",
-  soil: "how much water is in the soil layer where plant roots live",
-  tws: "the change in total water stored on land: surface water, soil water and groundwater",
-  runoff: "rain water that is not absorbed and flows into rivers (runoff)",
-  snow: "how much water the snowpack holds (snow water equivalent)",
-  tair: "the air temperature near the ground",
-  vpd: "how thirsty the air is (vapor pressure deficit); the higher it is, the faster it pulls water out of soil and plants",
-  energy: "the net radiation energy absorbed by the land surface",
-  wind: "the wind speed near the ground",
-  ndvi: "how green and lush the vegetation is",
-  sst: "the sea surface temperature",
-};
+function definition(category: CategoryId): string {
+  const text = CATEGORIES[category].definition.en.replace(/\.$/, "");
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
 
 const STATE = (event: string) => `A student wants to study this Earth event with NASA satellite data: ${event}`;
 
@@ -83,11 +73,12 @@ async function openaiProbabilities(event: string): Promise<Map<CategoryId, numbe
   const system = [
     "You help students investigate Earth events with NASA monthly, sub-basin-averaged data.",
     "For each category, give the probability (0 to 1) that the described event plausibly leaves a visible monthly anomaly in it.",
+    "Respect the temporal resolution in each definition: annual SO2 point-source emissions are not evidence for monthly weather or air-quality changes.",
     "Be selective: unrelated categories get low probabilities. The event may be written in Chinese or English.",
     `Reply with only a JSON object whose keys are exactly: ${ALL_CATEGORIES.join(", ")}; values are numbers from 0 to 1.`,
     "",
     "Categories:",
-    ...ALL_CATEGORIES.map((c) => `- ${c}: ${DEFINITIONS[c]}`),
+    ...ALL_CATEGORIES.map((c) => `- ${c}: ${definition(c)}`),
   ].join("\n");
   const data = await postJson(`${base}/chat/completions`, {
     model,
@@ -113,7 +104,7 @@ async function systemoneProbabilities(event: string): Promise<Map<CategoryId, nu
   if (!url) throw new Error("SELECTOR_SYSTEMONE_URL not set");
   const model = env("SELECTOR_SYSTEMONE_MODEL");
   const questions = Object.fromEntries(
-    ALL_CATEGORIES.map((c) => [c, { type: "noul", instructions: `Is this event related to ${DEFINITIONS[c]}?` }]),
+    ALL_CATEGORIES.map((c) => [c, { type: "noul", instructions: `Is this event related to ${definition(c)}?` }]),
   );
   const data = await postJson(url, {
     ...(model ? { model } : {}),

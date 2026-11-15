@@ -69,7 +69,7 @@ const FALLBACK_BOUNDS: TimeRange = { start: "2000-01", end: "2026-12" };
 /** the months the time picker offers: the span of the default layers (sea surface temperature aside) */
 function timeBounds(vc: VariableCatalog | null): TimeRange {
   if (!vc) return FALLBACK_BOUNDS;
-  const ls = CATEGORY_IDS.filter((c) => c !== "sst").map((c) => vc.defaults[c]).filter((l): l is LayerId => !!l).map((l) => vc.layers[l]);
+  const ls = CATEGORY_IDS.filter((c) => c !== "sst").map((c) => vc.defaults[c]).filter((l): l is LayerId => !!l).map((l) => vc.layers[l]).filter((l) => l.temporalResolution === "monthly");
   if (!ls.length) return FALLBACK_BOUNDS;
   const start = ls.reduce((m, l) => (ymIndex(l.start) < ymIndex(m) ? l.start : m), ls[0].start);
   const end = ls.reduce((m, l) => (ymIndex(l.end) > ymIndex(m) ? l.end : m), ls[0].end);
@@ -374,6 +374,7 @@ function InputStage({
             checked={draft ?? []}
             onChange={onPicks}
             available={available}
+            unavailableReason={avail?.unavailableReason}
             onStart={onStart}
             blocked={blocked}
           />
@@ -535,8 +536,9 @@ function AnalysisView({
 
       <div className="mx-auto max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8">
         {allNoData ? (
-          <StatusCard title="No data for this sub-basin" action={<button type="button" onClick={onEdit} className="rounded-ctl bg-action px-4 py-2 font-semibold text-on-action hover:bg-action-hover">Choose another sub-basin</button>}>
-            <p>{regionName} has no monthly series for the chosen variables.</p>
+          <StatusCard title="No monthly data for these variables" action={<button type="button" onClick={onEdit} className="rounded-ctl bg-action px-4 py-2 font-semibold text-on-action hover:bg-action-hover">Edit variables or sub-basin</button>}>
+            <p>{regionName} has no monthly series eligible for analysis among the chosen variables.</p>
+            {cats.map((c) => avail?.unavailableReason[c] && <p key={c}>{CATEGORIES[c].name.en}: {avail.unavailableReason[c]}</p>)}
           </StatusCard>
         ) : (
           <>
@@ -561,7 +563,7 @@ function AnalysisView({
                   >
                     {CATEGORIES[c].name.en}
                     {z != null && <span className="ml-2 text-xs text-ink-3 tnum">z {z >= 0 ? "+" : "−"}{Math.abs(z).toFixed(1)}</span>}
-                    {res.kind === "nodata" && <span className="ml-2 text-xs text-ink-3">no data</span>}
+                    {res.kind === "nodata" && <span className="ml-2 text-xs text-ink-3">no monthly data</span>}
                   </button>
                 );
               })}
@@ -587,7 +589,7 @@ function AnalysisView({
               {r.kind === "loading" && <StatusCard busy title={`Loading ${CATEGORIES[active].name.en.toLowerCase()}…`} />}
               {r.kind === "nodata" && (
                 <StatusCard title={`No ${CATEGORIES[active].name.en.toLowerCase()} series here`}>
-                  <p>{regionName} has no {CATEGORIES[active].name.en.toLowerCase()} data in the bundle. Missing data is not zero.</p>
+                  <p>{avail?.unavailableReason[active] ?? `${regionName} has no ${CATEGORIES[active].name.en.toLowerCase()} data in the bundle. Missing data is not zero.`}</p>
                 </StatusCard>
               )}
               {r.kind === "error" && (

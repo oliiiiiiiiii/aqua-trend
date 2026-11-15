@@ -3,7 +3,7 @@
     POST /select  {"event": "..."}  ->  {"votes": [{"category", "p"}], "threshold", "model", "backend", "seconds"}
     GET  /health                    ->  {"ok": true, "backend", "model"}
 
-It forwards one System One request (12 noul questions, see selector.py) to a model server that is
+It forwards one System One request (one noul question per category, see selector.py) to a model server that is
 already running (start-onejev.sh starts both). Binds to 127.0.0.1 by default. Standard library only.
 
     .venv/bin/python -I serve.py --backend onejev --upstream http://127.0.0.1:8811

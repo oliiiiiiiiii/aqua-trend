@@ -5,7 +5,7 @@ import { onlineProbabilities } from "./online";
 
 const realFetch = globalThis.fetch;
 const savedEnv = { ...process.env };
-const probabilities = () => Object.fromEntries(ALL_CATEGORIES.map((c, i) => [c, i / 11]));
+const probabilities = () => Object.fromEntries(ALL_CATEGORIES.map((c, i) => [c, i / (ALL_CATEGORIES.length - 1)]));
 const openaiReply = (content: unknown) => ({ choices: [{ message: { content } }] });
 
 describe("online selector adapters", () => {
@@ -35,6 +35,7 @@ describe("online selector adapters", () => {
       assert.deepEqual(body.response_format, { type: "json_object" });
       assert.equal(body.messages[1].role, "user");
       assert.ok(body.messages[1].content.endsWith("2021 drought"));
+      assert.match(body.messages[0].content, /annual SO2 point-source emissions are not evidence for monthly/);
       for (const category of ALL_CATEGORIES) assert.ok(body.messages[0].content.includes(`- ${category}:`));
       return Response.json(openaiReply(JSON.stringify(probabilities())));
     };
@@ -43,10 +44,10 @@ describe("online selector adapters", () => {
 
   it("accepts a single fenced JSON object", async () => {
     globalThis.fetch = async () => Response.json(openaiReply(`\n\u0060\u0060\u0060json\n${JSON.stringify(probabilities())}\n\u0060\u0060\u0060\n`));
-    assert.equal((await onlineProbabilities("openai", "drought")).size, 12);
+    assert.equal((await onlineProbabilities("openai", "drought")).size, ALL_CATEGORIES.length);
   });
 
-  it("sends twelve System One noul questions and parses its answer objects", async () => {
+  it("sends every System One noul question and parses its answer objects", async () => {
     process.env.SELECTOR_SYSTEMONE_MODEL = "test-system-one";
     globalThis.fetch = async (url, init) => {
       assert.equal(url, "http://model.invalid/v1/systemone");
@@ -59,6 +60,9 @@ describe("online selector adapters", () => {
         assert.equal(body.questions[category].type, "noul");
         assert.match(body.questions[category].instructions, /^Is this event related to .+\?$/);
       }
+      assert.match(body.questions.so2.instructions, /emit each year/);
+      assert.match(body.questions.ozone.instructions, /atmospheric column/);
+      assert.match(body.questions.fire.instructions, /detections/);
       return Response.json({ answers: Object.fromEntries(Object.entries(probabilities()).map(([c, p]) => [c, { noul: p }])) });
     };
     assert.deepEqual(Object.fromEntries(await onlineProbabilities("systemone", "洪水")), probabilities());
@@ -77,7 +81,8 @@ describe("online selector adapters", () => {
     it(`rejects ${backend} missing/extra categories and invalid response shapes`, async () => {
       const missing = probabilities();
       delete missing.precip;
-      for (const values of [null, [], missing, { ...probabilities(), extra: 0.5 }]) {
+      const legacy = Object.fromEntries(Object.entries(probabilities()).slice(0, 12));
+      for (const values of [null, [], missing, legacy, { ...probabilities(), extra: 0.5 }]) {
         globalThis.fetch = async () => Response.json(backend === "openai"
           ? openaiReply(JSON.stringify(values)) : { answers: values });
         await assert.rejects(onlineProbabilities(backend, "drought"));

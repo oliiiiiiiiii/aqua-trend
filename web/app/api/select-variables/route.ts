@@ -27,7 +27,7 @@ function isProbability(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
 }
 
-/** 向本地模型要 12 類別的機率；任何錯誤、逾時或格式不符都丟出例外。 */
+/** 向本地模型要完整類別的機率；任何錯誤、逾時或格式不符都丟出例外。 */
 async function localProbabilities(event: string): Promise<{ p: Map<CategoryId, number>; threshold: number }> {
   const url = (process.env.SELECTOR_URL ?? "http://127.0.0.1:8770").trim().replace(/\/+$/, "");
   if (!url) throw new Error("selector disabled");

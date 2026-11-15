@@ -38,7 +38,7 @@ describe("POST /api/select-variables", () => {
     process.env.SELECTOR_URL = " http://selector.invalid/ ";
     const modelVotes = votes();
     modelVotes[0].p = 0.69;
-    modelVotes[11].p = 0.7;
+    modelVotes.find((vote) => vote.category === "fire")!.p = 0.7;
     globalThis.fetch = async (url, init) => {
       assert.equal(url, "http://selector.invalid/select");
       assert.equal(init?.method, "POST");
@@ -69,6 +69,7 @@ describe("POST /api/select-variables", () => {
     ["null response", () => null],
     ["non-array votes", () => ({ votes: {} })],
     ["missing category", () => ({ votes: votes().slice(1) })],
+    ["legacy twelve-category reply", () => ({ votes: votes().slice(0, 12) })],
     ["extra vote", () => ({ votes: [...votes(), { category: "precip", p: 0.9 }] })],
     ["duplicate category", () => ({ votes: votes().map((v, i) => i === 1 ? { ...v, category: "precip" } : v) })],
     ["unknown category", () => ({ votes: votes().map((v, i) => i === 1 ? { ...v, category: "unknown" } : v) })],
@@ -133,14 +134,14 @@ describe("POST /api/select-variables", () => {
       process.env.SELECTOR_BACKEND = backend;
       process.env.SELECTOR_OPENAI_MODEL = "test-model";
       process.env.SELECTOR_SYSTEMONE_URL = "http://model.invalid/v1/systemone";
-      const probabilities = Object.fromEntries(ALL_CATEGORIES.map((c, i) => [c, i === 11 ? 0.5 : 0.1]));
+      const probabilities = Object.fromEntries(ALL_CATEGORIES.map((c) => [c, c === "fire" ? 0.5 : 0.1]));
       globalThis.fetch = async () => Response.json(backend === "openai"
         ? { choices: [{ message: { content: JSON.stringify(probabilities) } }] }
         : { answers: Object.fromEntries(Object.entries(probabilities).map(([c, p]) => [c, { noul: p }])) });
       const result = await (await POST(request({ event }))).json();
       assert.equal(result.source, "online-model");
-      assert.equal(result.votes.length, 12);
-      assert.deepEqual(result.votes.filter((v: { selected: boolean }) => v.selected), [{ category: "sst", p: 0.5, selected: true }]);
+      assert.equal(result.votes.length, ALL_CATEGORIES.length);
+      assert.deepEqual(result.votes.filter((v: { selected: boolean }) => v.selected), [{ category: "fire", p: 0.5, selected: true }]);
       globalThis.fetch = async () => { throw new Error("offline"); };
       assert.deepEqual(await (await POST(request({ event }))).json(), keywordSelect(event));
     });

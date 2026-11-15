@@ -15,15 +15,9 @@
 //
 // The time suggestion is shared with the API's keyword selector.
 import type { CategoryId, DetectiveQuery, LayerId, RegionId, TimeRange, UrlCodec, YearMonth } from "./contracts";
+import { CATEGORY_ORDER } from "./categories";
 
-/** the 12 categories in display order (mirror of the `CategoryId` type) */
-export const CATEGORY_IDS = [
-  "precip", "et", "soil", "tws", "runoff", "snow", "tair", "vpd", "energy", "wind", "ndvi", "sst",
-] as const satisfies readonly CategoryId[];
-// compile-time check that CATEGORY_IDS lists every CategoryId
-type MissingCategory = Exclude<CategoryId, (typeof CATEGORY_IDS)[number]>;
-const exhaustive: [MissingCategory] extends [never] ? true : false = true;
-void exhaustive;
+export const CATEGORY_IDS = CATEGORY_ORDER;
 
 export const DEFAULT_PAD = 12;
 export const PAD_MIN = 3;

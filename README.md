@@ -10,7 +10,7 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 
 給高中、大學學生與有科學背景的大眾使用。統計分析在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API；本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
 
-目前主線已整合 A、B、C、D、E。從 [`/detective`](http://localhost:3000/detective/) 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
+目前主線已整合 A、B、C、D、E、F。從 [`/detective`](http://localhost:3000/detective/) 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
 
 - 產品規格：[`SPEC.md`](SPEC.md)
 - 分工與整合：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)
@@ -50,7 +50,7 @@ repo 是私有的，下載需要下列其中一種：
 ## 使用流程
 
 1. **輸入**事件文字、期間（`YYYY-MM..YYYY-MM`）與 basin4 子流域（地球上點選或搜尋）；或按一個預設事件。
-2. **選變數**：本地開源模型對 12 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示。
+2. **選變數**：本地開源模型對 17 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示；沒有可分析月資料的類別不能勾選。
 3. **分析**：每個變數一個分頁，有結論卡、可縮放的數線（原始／季節／趨勢／殘差）、選取區間統計，以及長期趨勢面板。
 
 開發模式的選變數 API 預設連線至本地模型服務，服務未啟動時會使用關鍵字表；Compose 預設直接使用關鍵字表，可透過環境變數啟用模型。模型安裝、評估與選用線上端點見 [`tools/selector/README.md`](tools/selector/README.md)；Docker 連線與環境變數設定見 [`deploy/README.md`](deploy/README.md)。模型權重不包含在網站容器內。
@@ -67,7 +67,7 @@ repo 是私有的，下載需要下列其中一種：
 
 | 官方要求 | 對應功能 | 實作位置 |
 | --- | --- | --- |
-| **選擇變數**（variable selection） | 12 類別的淺白定義、模型投票或關鍵字備案、checkbox 與同類產品切換 | `web/lib/detective/categories.ts`、`components/detective/VariablePicker.tsx`、`app/api/select-variables/route.ts` |
+| **選擇變數**（variable selection） | 17 類別的淺白定義、模型投票或關鍵字備案、checkbox 與同類產品切換 | `web/lib/detective/categories.ts`、`components/detective/VariablePicker.tsx`、`app/api/select-variables/route.ts` |
 | **取得特定區域資料**（region） | 1,313 個 basin4 子流域，可用地球點選或文字搜尋；載入 bundle 中的月序列 | `web/components/detective/InputPanel.tsx`、`lib/detective/series.ts` |
 | **產生並視覺化時間序列**（time series） | 真實月序列數線，可縮放、拖曳選取、切換原始／季節／趨勢／殘差，並標記事件期間 | `web/components/detective/SeriesChart.tsx`、`VariableTab.tsx` |
 | **變化速率**（rate of change） | 長期趨勢面板：Sen's slope，以「原單位／十年」表示，附 95% 信賴區間；結論卡另顯示事件期間的平均異常 | `web/lib/detective/analysis.ts` 的 `trendStats`、`components/detective/TrendPanel.tsx` |
@@ -95,6 +95,8 @@ repo 是私有的，下載需要下列其中一種：
 | HydroBASINS（子流域邊界） | HydroSHEDS |
 
 各資料層的產品、單位、期間與注意事項（caveat）見 `web/public/data/catalog/variables.json`與 `web/public/data/README.md`（兩者都在 setup 後才有）。資料管線與發布流程見 [`docs/DATA_SHARE.md`](docs/DATA_SHARE.md)。
+
+目前鎖定 `data-v1`：32 個資料層，新增氣膠光學厚度、臭氧柱、可降水量、火點與積雪覆蓋，並延長六個 MERRA-2 替代產品至 1980 年。SO₂ 點源排放是年資料，保留在 bundle 但不參與月尺度分析；其既有快照的缺測處理限制記在 caveat。管線重跑與依賴見 [`pipeline/README.md`](pipeline/README.md)。三個預設事件的日期、區域與預設變數皆維持原設定。
 
 ## 授權
 

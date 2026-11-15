@@ -15,21 +15,26 @@ import json
 import time
 import urllib.request
 
-# Same order and wording as SPEC.md section 4. "zh" is the plain-language definition from the spec
-# (owned by workstream E); "en" is our English rendering of it.
+# Mirrors web/lib/detective/categories.ts. English text is lowercased at the start and has no final
+# period so it can be inserted into the question template. Covered by the keyword contract test.
 CATEGORIES: dict[str, dict[str, str]] = {
     "precip": {"zh": "從天上落下的雨和雪有多少", "en": "how much rain and snow falls from the sky"},
-    "et": {"zh": "地面和植物把水送回空氣中的量", "en": "how much water the ground and plants send back into the air (evapotranspiration)"},
-    "soil": {"zh": "植物根部所在土層裡有多少水", "en": "how much water is in the soil layer where plant roots live"},
-    "tws": {"zh": "地表、土壤、地下水加起來的總水量變化", "en": "the change in total water stored on land: surface water, soil water and groundwater"},
-    "runoff": {"zh": "下雨後沒被吸收、流進河裡的水", "en": "rain water that is not absorbed and flows into rivers (runoff)"},
-    "snow": {"zh": "積雪融化後等於多少水", "en": "how much water the snowpack holds (snow water equivalent)"},
-    "tair": {"zh": "地面附近的空氣溫度", "en": "the air temperature near the ground"},
-    "vpd": {"zh": "空氣有多「渴」，越大越容易把水吸走", "en": "how thirsty the air is (vapor pressure deficit); the higher it is, the faster it pulls water out of soil and plants"},
-    "energy": {"zh": "地表吸收的淨輻射能量", "en": "the net radiation energy absorbed by the land surface"},
-    "wind": {"zh": "近地面風速", "en": "the wind speed near the ground"},
-    "ndvi": {"zh": "植物有多綠、多茂盛", "en": "how green and lush the vegetation is"},
-    "sst": {"zh": "海表溫度", "en": "the sea surface temperature"},
+    "et": {"zh": "地面和植物把水送回空氣中的量", "en": "water that soil and plants send back into the air"},
+    "soil": {"zh": "植物根部所在土層裡有多少水", "en": "how much water is in the soil where plant roots grow"},
+    "tws": {"zh": "地表、土壤、地下水加起來的總水量變化", "en": "change in all water on land: surface, soil and groundwater"},
+    "runoff": {"zh": "下雨後沒被吸收、流進河裡的水", "en": "rain that the ground does not soak up and flows to rivers"},
+    "snow": {"zh": "地上的積雪融化後等於多少水", "en": "how much water the snow on the ground would melt into"},
+    "tair": {"zh": "地面附近的空氣溫度", "en": "temperature of the air near the ground"},
+    "vpd": {"zh": "空氣有多「渴」，越大越容易把水吸走", "en": "how thirsty the air is; higher pulls water out faster"},
+    "energy": {"zh": "地面從陽光和天空淨得到的熱能", "en": "heat energy the ground gains from sunlight and the sky"},
+    "wind": {"zh": "地面附近的風吹得多快", "en": "how fast the wind blows near the ground"},
+    "ndvi": {"zh": "植物有多綠、多茂盛", "en": "how green and leafy the plants are"},
+    "sst": {"zh": "海面的水有多溫暖", "en": "how warm the water at the sea surface is"},
+    "aod": {"zh": "整柱空氣中的粒子削弱光線的程度", "en": "how strongly particles in the atmospheric column block light"},
+    "ozone": {"zh": "從地面到高空整柱空氣中的臭氧總量", "en": "the total amount of ozone in the atmospheric column"},
+    "vapor": {"zh": "整柱空氣中的水蒸氣凝結後有多少水", "en": "how much water all the water vapour in the atmospheric column would make if condensed"},
+    "so2": {"zh": "區域內大型點源每年排放多少二氧化硫", "en": "how much sulfur dioxide large point sources emit each year"},
+    "fire": {"zh": "衛星每月偵測到的植被火熱點次數", "en": "how many vegetation-fire detections satellites record each month"},
 }
 
 # Question wording, one noul question per category. "zh" is SPEC section 3's literal question
@@ -67,9 +72,13 @@ def request_body(backend: str, event: str, prompt: str = DEFAULT_PROMPT) -> dict
 def parse_probabilities(backend: str, response: dict) -> dict[str, float]:
     if backend == "phocinae":
         scores = response["option_scores"]
-        return {cid: float(scores[cid][1]) for cid in CATEGORIES}
-    answers = response["answers"]
-    return {cid: float(answers[cid]["noul"]) for cid in CATEGORIES}
+        values = {cid: scores[cid][1] for cid in CATEGORIES}
+    else:
+        answers = response["answers"]
+        values = {cid: answers[cid]["noul"] for cid in CATEGORIES}
+    if any(type(p) not in (int, float) or not 0.0 <= p <= 1.0 for p in values.values()):
+        raise ValueError("invalid probability")
+    return {cid: float(p) for cid, p in values.items()}
 
 
 def ask(backend: str, upstream: str, event: str, prompt: str = DEFAULT_PROMPT, timeout: float = 30) -> tuple[dict[str, float], float]:

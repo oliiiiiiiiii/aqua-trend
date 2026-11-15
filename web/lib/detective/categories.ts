@@ -1,4 +1,4 @@
-// 12 個變數類別的名稱、淺白定義、預設資料層與圖示（工作線 E）。
+// 變數類別的名稱、淺白定義、預設資料層與圖示（工作線 E）。
 // 規格：/SPEC.md §4。中文名稱與 web/public/data/catalog/regions.json 的 categories 一致。
 //
 // - definition 給高中生看：一句話，中文不超過 30 字（含標點）。D 的 AI 投票也用中文定義當問題文字。
@@ -19,10 +19,15 @@ export interface CategoryInfo {
   icon: string;
 }
 
-export const CATEGORY_ORDER: readonly CategoryId[] = [
+export const CATEGORY_ORDER = [
   "precip", "et", "soil", "tws", "runoff", "snow",
   "tair", "vpd", "energy", "wind", "ndvi", "sst",
-];
+  "aod", "ozone", "vapor", "so2", "fire",
+] as const satisfies readonly CategoryId[];
+
+type MissingCategory = Exclude<CategoryId, (typeof CATEGORY_ORDER)[number]>;
+const exhaustive: [MissingCategory] extends [never] ? true : false = true;
+void exhaustive;
 
 export const CATEGORIES: Record<CategoryId, CategoryInfo> = {
   precip: {
@@ -120,6 +125,41 @@ export const CATEGORIES: Record<CategoryId, CategoryInfo> = {
     defaultLayer: "sst",
     // 波浪 + 溫度計
     icon: "M3 17c1.5-1.3 3-1.3 4.5 0s3 1.3 4.5 0 3-1.3 4.5 0 3 1.3 4.5 0 M3 21c1.5-1.3 3-1.3 4.5 0s3 1.3 4.5 0 3-1.3 4.5 0 3 1.3 4.5 0 M12 3v9 M10 12a2 2 0 1 0 4 0",
+  },
+  aod: {
+    id: "aod",
+    name: { zh: "氣膠光學厚度", en: "Aerosol optical depth" },
+    definition: { zh: "整柱空氣中的粒子削弱光線的程度", en: "How strongly particles in the atmospheric column block light." },
+    defaultLayer: "aod",
+    icon: "M3 7h18 M5 12h14 M3 17h18 M7 4v16 M12 4v16 M17 4v16",
+  },
+  ozone: {
+    id: "ozone",
+    name: { zh: "臭氧柱總量", en: "Total-column ozone" },
+    definition: { zh: "從地面到高空整柱空氣中的臭氧總量", en: "The total amount of ozone in the atmospheric column." },
+    defaultLayer: "to3_m2",
+    icon: "M3 18a9 9 0 0 1 18 0 M5 18a7 7 0 0 1 14 0 M8 18a4 4 0 0 1 8 0",
+  },
+  vapor: {
+    id: "vapor",
+    name: { zh: "大氣可降水量", en: "Atmospheric water vapour" },
+    definition: { zh: "整柱空氣中的水蒸氣凝結後有多少水", en: "How much water all the water vapour in the atmospheric column would make if condensed." },
+    defaultLayer: "tqv",
+    icon: "M7 4c3 2-3 4 0 6s-3 4 0 6 M12 4c3 2-3 4 0 6s-3 4 0 6 M17 4c3 2-3 4 0 6s-3 4 0 6 M4 21h16",
+  },
+  so2: {
+    id: "so2",
+    name: { zh: "SO₂ 年排放量", en: "Annual SO₂ emissions" },
+    definition: { zh: "區域內大型點源每年排放多少二氧化硫", en: "How much sulfur dioxide large point sources emit each year." },
+    defaultLayer: "so2_emis",
+    icon: "M4 21V11h5v10 M9 21V8h5v13 M14 21V4h5v17 M2 21h20",
+  },
+  fire: {
+    id: "fire",
+    name: { zh: "植被火熱點偵測數", en: "Vegetation-fire detections" },
+    definition: { zh: "衛星每月偵測到的植被火熱點次數", en: "How many vegetation-fire detections satellites record each month." },
+    defaultLayer: "fire_count",
+    icon: "M12 2c2 5 7 8 7 13a7 7 0 0 1-14 0c0-3 2-5 4-7 0 3 1 4 2 5 2-3 2-7 1-11Z",
   },
 };
 

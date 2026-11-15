@@ -28,6 +28,8 @@ const required = [
   "data/meta.json",
   "public/data/catalog/regions.json",
   "public/data/catalog/countries.json",
+  "public/data/catalog/variables.json",
+  "public/data/catalog/series_index.json",
   ...variables.flatMap((variable) => [`data/series/${variable}.i16`, `data/trends/${variable}.json`]),
   ...layers.map((layer) => `public/data/geo/${layer}.geojson`),
 ];
@@ -41,4 +43,25 @@ const missing = required.filter((file) => {
 });
 if (missing.length) fail(`Incomplete data bundle; missing or empty: ${missing.map((file) => `web/${file}`).join(", ")}.`);
 
-console.log(`[container-data] ${lock.tag}: matching bundle marker and all preprocessing inputs present.`);
+let regions;
+try {
+  regions = JSON.parse(fs.readFileSync(path.join(web, "public/data/catalog/series_index.json"), "utf8")).regions;
+} catch {
+  fail("The series index is not valid JSON.");
+}
+if (!regions || typeof regions !== "object" || Array.isArray(regions) || !Object.keys(regions).length) {
+  fail("The series index has no regions.");
+}
+for (const [id, entries] of Object.entries(regions)) {
+  if (!/^[a-z0-9][a-z0-9-]*$/i.test(id) || !Array.isArray(entries) || !entries.length) {
+    fail("The series index contains an invalid region entry.");
+  }
+  try {
+    const stat = fs.statSync(path.join(web, `public/data/series/${id}.json`));
+    if (!stat.isFile() || stat.size === 0) throw new Error("empty");
+  } catch {
+    fail(`Missing or empty monthly series file for ${id}.`);
+  }
+}
+
+console.log(`[container-data] ${lock.tag}: matching bundle marker, preprocessing inputs, and ${Object.keys(regions).length} regional series present.`);

@@ -40,6 +40,7 @@ export interface LayerInfo {
   nasa: boolean;
   family: string | null;
   unit: string;
+  temporalResolution: "monthly" | "annual";
   start: YearMonth;
   end: YearMonth;
   /** must be shown whenever it is not null (SPEC §4) */
@@ -57,6 +58,7 @@ export interface VariableCatalog {
 interface RawLayer {
   name?: string; category?: string; product?: string; nasa?: boolean; family?: string | null;
   unit?: string; start?: string; end?: string; caveat?: string | null;
+  temporal_resolution?: "monthly" | "annual";
 }
 
 export function loadVariableCatalog(): Promise<VariableCatalog> {
@@ -77,6 +79,8 @@ export function loadVariableCatalog(): Promise<VariableCatalog> {
         nasa: l.nasa !== false,
         family: l.family ?? null,
         unit: l.unit ?? "",
+        // F's original SO₂ bundle omitted this field although its yearly totals repeat in every month.
+        temporalResolution: id === "so2_emis" ? "annual" : l.temporal_resolution ?? "monthly",
         start: l.start,
         end: l.end,
         caveat: l.caveat ? l.caveat : null,
@@ -85,7 +89,7 @@ export function loadVariableCatalog(): Promise<VariableCatalog> {
     }
     const defaults: Partial<Record<CategoryId, LayerId>> = {};
     for (const [c, l] of Object.entries(raw.category_default_layer ?? {})) {
-      if (isCategory(c) && layers[l]) defaults[c] = l;
+      if (isCategory(c) && layers[l]?.category === c) defaults[c] = l;
     }
     return { defaults, layers, order };
   });
@@ -108,8 +112,8 @@ export function resolveLayer(
   available: ReadonlySet<LayerId>,
   requested?: LayerId,
 ): LayerId | null {
-  if (requested && vc.layers[requested]?.category === category && available.has(requested)) return requested;
-  return categoryLayers(vc, category).find((l) => available.has(l)) ?? null;
+  if (requested && vc.layers[requested]?.category === category && vc.layers[requested].temporalResolution === "monthly" && available.has(requested)) return requested;
+  return categoryLayers(vc, category).find((l) => available.has(l) && vc.layers[l].temporalResolution === "monthly") ?? null;
 }
 
 /* ------------------------------------------------------------------ series_index.json */
@@ -137,7 +141,11 @@ export interface CategoryAvailability {
   layer: Record<CategoryId, LayerId | null>;
   /** every layer of each category that the region has, default first */
   choices: Record<CategoryId, LayerId[]>;
+  /** Explanation when a region has this category only at an unsupported time resolution. */
+  unavailableReason: Partial<Record<CategoryId, string>>;
 }
+
+const ANNUAL_ONLY = "Annual data only; monthly analysis is unavailable.";
 
 export function categoryAvailability(
   vc: VariableCatalog,
@@ -146,11 +154,14 @@ export function categoryAvailability(
 ): CategoryAvailability {
   const layer = {} as Record<CategoryId, LayerId | null>;
   const choices = {} as Record<CategoryId, LayerId[]>;
+  const unavailableReason: Partial<Record<CategoryId, string>> = {};
   for (const c of CATEGORY_IDS) {
-    choices[c] = categoryLayers(vc, c).filter((l) => available.has(l));
+    const here = categoryLayers(vc, c).filter((l) => available.has(l));
+    choices[c] = here.filter((l) => vc.layers[l].temporalResolution === "monthly");
     layer[c] = resolveLayer(vc, c, available, requested[c]);
+    if (!choices[c].length && here.some((l) => vc.layers[l].temporalResolution === "annual")) unavailableReason[c] = ANNUAL_ONLY;
   }
-  return { layer, choices };
+  return { layer, choices, unavailableReason };
 }
 
 /** ISO code -> Chinese country name (catalog/countries.json), for reading a place from Chinese event text */
@@ -181,6 +192,9 @@ function loadSeriesFile(region: RegionId): Promise<RawSeriesFile> {
 /** One layer's monthly series for a region, unit from variables.json. Rejects when the region has no such layer. */
 export async function loadSeries(region: RegionId, layer: LayerId): Promise<MonthlySeries> {
   const [file, vc] = await Promise.all([loadSeriesFile(region), loadVariableCatalog()]);
+  if (layer === "so2_emis" || vc.layers[layer]?.temporalResolution === "annual") {
+    throw new Error(`${vc.layers[layer]?.product ?? layer}: ${ANNUAL_ONLY}`);
+  }
   const s = file.layers?.[layer];
   if (!s || !s.start || !isYearMonth(s.start) || !Array.isArray(s.values)) {
     throw new Error(`${region} has no ${layer} series.`);
