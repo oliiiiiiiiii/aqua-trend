@@ -7,7 +7,7 @@ from .catalogue_data.definitions import CONCEPTS, PHENOMENA
 
 
 DEFAULT_URL = "http://127.0.0.1:11434/api/chat"
-DEFAULT_MODEL = "qwen3:1.7b"
+DEFAULT_MODEL = "qwen3.5:0.8b-q8_0"
 PROMPT_VERSION = "local-catalogue-3"
 UNAVAILABLE = "Unavailable"
 # Contrast classes stop closely related, unmeasured quantities from being counted as observations.

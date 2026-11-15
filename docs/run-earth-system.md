@@ -11,7 +11,7 @@ Open [the explorer](http://localhost:3000/explore). Enter **drought**, **flood**
 
 ## Selection and data
 
-Free-text English and Chinese queries use a local **Qwen3 1.7B** selector through Ollama. Thinking is disabled. The selector reads prepared catalogue descriptions and returns a constrained selection. The research engine resolves the chosen variables and registered recipes, then computes the trends from the prepared series. Region and time come only from the form.
+Free-text English and Chinese queries use a local **Qwen3.5 0.8B** selector through Ollama. Thinking is disabled. The selector reads prepared catalogue descriptions and returns a constrained selection. The research engine resolves the chosen variables and registered recipes, then computes the trends from the prepared series. Region and time come only from the form.
 
 ### One-time local model setup
 
@@ -21,7 +21,7 @@ On a Mac with Homebrew, install Ollama and download the model once:
 brew install ollama
 ```
 
-With `ollama serve` running in one terminal, run `ollama pull qwen3:1.7b` in another. The model download is approximately 1.4 GB. Subsequent runs read the weights locally. Launch the project as above: it reuses an existing Ollama service or starts its own on loopback when the executable is present. The standalone `server.api` command expects your Ollama service to be running. The default model endpoint is `http://127.0.0.1:11434/api/chat`; use `AQUA_LOCAL_SELECTOR_URL` and `AQUA_LOCAL_SELECTOR_MODEL` to select a different local Ollama installation or tag.
+With `ollama serve` running in one terminal, run `ollama pull qwen3.5:0.8b-q8_0` in another. Use this exact tag for JSON-schema output. Its installed size is 1.02 GB. Subsequent runs read the weights locally. Launch the project as above: it reuses an existing Ollama service or starts its own on loopback when the executable is present. The standalone `server.api` command expects your Ollama service to be running. The default model endpoint is `http://127.0.0.1:11434/api/chat`; use `AQUA_LOCAL_SELECTOR_URL` and `AQUA_LOCAL_SELECTOR_MODEL` to select a different local Ollama installation or tag.
 
 Exact prepared topics and previously frozen study plans can be used without a fresh inference. Send `"reselect": true` through the research API to force new inference. An unavailable model or an unsupported phenomenon is surfaced in the study. To opt into a different provider, explicitly set `AQUA_SELECTOR_URL` (Chat Completions endpoint) and `AQUA_SELECTOR_MODEL`, plus `AQUA_SELECTOR_API_KEY` only when required.
 
@@ -60,6 +60,8 @@ npm run build --prefix web
 
 With the model installed and Ollama running, run `python3 -m server.check_local_selector` to exercise free-text selection through the research API. Each case starts a fresh selection in a temporary database. The check verifies the selected catalogue entries, structured region and dates, research results, JSON exports and explicit errors for unsupported questions.
 
+Pass `--model qwen3:1.7b` to repeat the same six cases with the previous model. In an additional check, the 0.6B candidate mapped ocean salinity to sea surface temperature. The selected 0.8B model correctly reported that salinity is unavailable. It did select root-zone soil water alongside vegetation greenness for a forest-canopy question that asked only about greenness.
+
 The browser regression test runs against an already-started server. It covers a Chinese phenomenon in the English UI, default resolution, changing the fitted window from a chart, exports, reopening a study and keyboard selection at mobile width. Set `CHROME_PATH` to an installed Chrome executable if Playwright's Chromium is unavailable.
 
 ```sh
@@ -72,7 +74,7 @@ AQUA_WEB_URL=http://127.0.0.1:3000 node web/scripts/check-research-races.mjs
 | Specification cases | Evidence on this branch | Outcome |
 | --- | --- | --- |
 | P01–P09, single region, manual presets, replay | Integration tests cover all four constraint combinations, exclusions, pinning, cancellation, preserved provenance, frozen plans, and version changes. | Passed with the included release. |
-| S01–S07 | Catalogue tests exercise English and Chinese aliases, invalid model output and provider failures. Six fresh Qwen3 1.7B studies cover natural drainage, drying conditions, a Chinese temperature question with embedded dates and geography, multiple measurements, and two unsupported topics. | All six local cases passed. Supported cases produced trends and reproducible JSON exports. Unsupported cases returned an explicit error. |
+| S01–S07 | Catalogue tests exercise English and Chinese aliases, invalid model output and provider failures. Six fresh studies with each of Qwen3 1.7B and Qwen3.5 0.8B cover natural drainage, drying conditions, a Chinese temperature question with embedded dates and geography, multiple measurements, and two unsupported topics. | Both models passed all six cases. The four supported questions selected the same variables and source products, with identical slopes and adjusted p-values. The other two returned an explicit unsupported-topic error. |
 | D01–D10 | The adapter checks the release index, region IDs, asset fingerprints, spatial support, approved alternatives and full product histories. | Passed. 39,670 eligible region–product series, with 63,805 missing monthly values retained. |
 | T01–T16 | Numeric tests cover seasonal references, known slopes, gaps, covariance, BY, the complete search family, non-significant evidence, distinct metrics and reproducible evidence versions. | Passed. For four held-out simulation settings with 200 replicates each, nominal 95% pointwise intervals covered 94.5–95.5%. |
 | E01–E12 | SPI scale and gamma-fit reference checks, source selection, event fixtures, partial coverage, deduplication, censoring and coarse dates. | Passed on prepared precipitation and controlled event records. Real recorded drought and flood rates remain pending data. |

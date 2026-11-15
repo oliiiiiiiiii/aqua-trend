@@ -19,6 +19,7 @@ from urllib.request import Request, urlopen
 
 from .api import Handler, ResearchHTTPServer
 from .catalogue import Catalogue
+from .local_selector import DEFAULT_MODEL, DEFAULT_URL
 from .research import ResearchEngine, ResearchService
 from .store import Store
 
@@ -160,8 +161,8 @@ def run_case(case, base, service, timeout, model):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--selector-url", type=local_url,
-                        default=os.getenv("AQUA_LOCAL_SELECTOR_URL", "http://127.0.0.1:11434/api/chat"))
-    parser.add_argument("--model", default=os.getenv("AQUA_LOCAL_SELECTOR_MODEL", "qwen3:1.7b"))
+                        default=os.getenv("AQUA_LOCAL_SELECTOR_URL", DEFAULT_URL))
+    parser.add_argument("--model", default=os.getenv("AQUA_LOCAL_SELECTOR_MODEL", DEFAULT_MODEL))
     parser.add_argument("--timeout", type=float, default=120, help="Maximum seconds per study (default: 120).")
     parser.add_argument("--report", type=Path, help="Also write the JSON report to this path.")
     args = parser.parse_args()
