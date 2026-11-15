@@ -647,7 +647,7 @@ export function gpSmooth(values: Series, start: number, end: number): GpResult |
   const xs: number[] = [], raw: number[] = [];
   for (let i = start; i <= end; i++) if (ok(values[i])) { xs.push(i); raw.push(values[i] as number); }
   const n = xs.length;
-  if (n < 12) return null;
+  if (n < 4) return null;
   const m0 = mean(raw), s0 = sd(raw) || 1;
   const y = raw.map((v) => (v - m0) / s0);
   const span = xs[n - 1] - xs[0] + 1;

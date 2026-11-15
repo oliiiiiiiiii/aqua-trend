@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Decomposition } from "@/lib/detective/contracts";
-import { autoRange, dailyAnomaly, dailyLevel, dailyNormal, daysOf, levelledNormal, estimateSeconds, needsConfirm, planPieces, runs, sameUnit, selectionSummary, splitRange } from "./plan";
+import { dailyAnomaly, dailyLevel, dailyNormal, daysOf, levelledNormal, estimateSeconds, missingPieces, runs, sameUnit, selectionSummary, splitRange } from "./plan";
 
 test("days of a range longer than a month, across a leap day", () => {
   const d = daysOf({ start: "2020-02-27", end: "2020-03-02" });
@@ -23,9 +23,7 @@ test("pieces of at most three days cover the range exactly", () => {
   assert.deepEqual(splitRange({ start: "2021-03-01", end: "2021-03-04" }), [{ start: "2021-03-01", end: "2021-03-03" }, { start: "2021-03-04", end: "2021-03-04" }]);
 });
 
-test("auto-load up to 62 days; about a minute per month", () => {
-  assert.equal(needsConfirm(62), false);
-  assert.equal(needsConfirm(63), true);
+test("about a minute per month of days", () => {
   assert.equal(Math.round(estimateSeconds(31)), 60);
   assert.equal(Math.round(estimateSeconds(124)), 240);
 });
@@ -133,32 +131,19 @@ test("units and runs", () => {
   assert.deepEqual(runs(0, () => true), []);
 });
 
-test("what loads by itself: the whole span up to 62 days, else the event's days when ≤ 31, else nothing", () => {
-  const ev = { start: "2021-03-01", end: "2021-03-31" };
-  // March ± 1 week = 45 days: everything
-  const short = { start: "2021-02-22", end: "2021-04-07" };
-  assert.deepEqual(autoRange(short, ev), short);
-  // March ± 5 weeks = 101 days: only March
-  const long = { start: "2021-01-25", end: "2021-05-05" };
-  assert.deepEqual(autoRange(long, ev), ev);
-  // Feb–May ± 1 week: the event alone is 120 days, so nothing loads without a click
-  assert.equal(autoRange({ start: "2021-01-25", end: "2021-06-07" }, { start: "2021-02-01", end: "2021-05-31" }), null);
-  // the event clipped to finished days
-  assert.deepEqual(autoRange({ start: "2021-01-25", end: "2021-03-20" }, ev), { start: "2021-01-25", end: "2021-03-20" });
-  assert.deepEqual(autoRange({ start: "2020-12-01", end: "2021-03-10" }, ev), { start: "2021-03-01", end: "2021-03-10" });
-  assert.equal(autoRange({ start: "2021-03-02", end: "2021-03-01" }, ev), null);
-});
-
-test("pieces never straddle the automatic part and cover the range in order", () => {
-  const range = { start: "2021-01-25", end: "2021-05-05" };
-  const ev = { start: "2021-03-01", end: "2021-03-31" };
-  const p = planPieces(range, ev);
-  assert.deepEqual(p.flatMap(daysOf), daysOf(range));
-  assert.ok(p.every((x) => daysOf(x).length <= 3));
-  const autoDays = p.filter((x) => x.auto).flatMap(daysOf);
-  assert.deepEqual(autoDays, daysOf(ev));
-  assert.equal(p.filter((x) => x.auto).length, 11);
-  // all automatic, or none
-  assert.ok(planPieces(ev, ev).every((x) => x.auto));
-  assert.ok(planPieces(range, null).every((x) => !x.auto));
+test("only the selected days not yet held are requested, in ≤ 3-day pieces", () => {
+  const sel = daysOf({ start: "2021-03-01", end: "2021-03-10" });
+  const all = missingPieces(sel, () => false);
+  assert.deepEqual(all.flatMap(daysOf), sel);
+  assert.ok(all.every((p) => daysOf(p).length <= 3));
+  // held days are skipped, never bridged
+  const held = new Set(["2021-03-03", "2021-03-07"]);
+  assert.deepEqual(missingPieces(sel, (d) => held.has(d)), [
+    { start: "2021-03-01", end: "2021-03-02" },
+    { start: "2021-03-04", end: "2021-03-06" },
+    { start: "2021-03-08", end: "2021-03-10" },
+  ]);
+  assert.deepEqual(missingPieces(sel, () => true), []);
+  // one day: one request
+  assert.deepEqual(missingPieces(["2021-03-05"], () => false), [{ start: "2021-03-05", end: "2021-03-05" }]);
 });

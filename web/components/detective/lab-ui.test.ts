@@ -40,18 +40,19 @@ describe("test grouping", () => {
 describe("availability", () => {
   const r = noise(60);
   it("disables tests short of months with the reason", () => {
-    const a = availability(r, 10, 13); // 4 months
+    const a = availability(r, 10, 11); // 2 months
     assert.equal(a.mean.ok, true);
     assert.equal(a.compare.ok, true);
     assert.equal(a.cusum.ok, true);
     assert.equal(a.mk.ok, false);
-    assert.equal(a.mk.reason, "Needs ≥ 10 months (4 in range)");
-    assert.equal(a.spectrum.need, 48);
+    assert.equal(a.mk.reason, "Needs ≥ 3 months (2 in range)");
+    assert.equal(a.spectrum.need, 4);
+    assert.equal(availability(r, 10, 10).cusum.ok, true); // a single month
   });
   it("counts observed months only; compare and spread need 12 months outside", () => {
     const gappy = r.map((v, i) => (i % 2 ? null : v));
-    assert.equal(availability(gappy, 0, 19).mk.ok, true); // 10 observed
-    assert.equal(availability(gappy, 0, 17).mk.ok, false); // 9 observed
+    assert.equal(availability(gappy, 0, 5).mk.ok, true); // 3 observed
+    assert.equal(availability(gappy, 0, 3).mk.ok, false); // 2 observed
     const all = availability(r, 0, 59);
     for (const t of ["compare", "variance"] as const) {
       assert.equal(all[t].ok, false);
@@ -60,8 +61,9 @@ describe("availability", () => {
     }
   });
   it("picks the remembered test of a group, else the first available", () => {
-    const a = availability(r, 10, 13);
+    const a = availability(r, 10, 10); // one month: no mean-group test, so the first; cusum is the first extremes test
     assert.equal(pickInGroup("mean", "wilcoxon", a), "mean");
+    assert.equal(pickInGroup("extremes", "runs", a), "cusum");
     assert.equal(pickInGroup("trend", null, availability(r, 0, 29)), "ols");
     assert.equal(pickInGroup("trend", "mk", availability(r, 0, 29)), "mk");
   });
@@ -83,7 +85,7 @@ describe("overlays", () => {
   it("Pettitt marks the first month after the break; nothing for an insufficient run or a figure-only test", () => {
     const o = ok(runLabTool("pettitt", d, 0, 47));
     assert.equal(overlayFor(o)!.breakAfter, 24);
-    assert.equal(overlayFor(runLabTool("mk", d, 0, 3)), null);
+    assert.equal(overlayFor(runLabTool("mk", d, 0, 1)), null);
     assert.equal(overlayFor(ok(runLabTool("acf", d, 0, 47))), null);
   });
 });
@@ -240,6 +242,10 @@ describe("the Tests area in days and weeks", () => {
     const a = availability(v, 0, 59, "day");
     assert.equal(a.monthly.ok, false);
     assert.equal(a.monthly.reason, "Monthly series only");
-    assert.equal(availability(v, 0, 1, "week").mean.reason, "Needs ≥ 3 weeks (2 in range)");
+    assert.equal(availability(v, 0, 0, "week").mean.reason, "Needs ≥ 2 weeks (1 in range)");
+    // a week of days is enough for the mean, a trend and the change-point tools
+    const week = availability(v, 0, 6, "day");
+    for (const t of ["mean", "ols", "mk", "wilcoxon", "pettitt", "cusum", "bocpd", "gp"] as const) assert.equal(week[t].ok, true, t);
+    assert.equal(availability(v, 3, 3, "day").cusum.ok, true); // a single day
   });
 });

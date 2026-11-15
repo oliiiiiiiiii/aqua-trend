@@ -1,44 +1,49 @@
 "use client";
-// Progressive daily loading for any span (the library client caps one query at a calendar month): the range is
-// clipped to finished UTC days, split into ≤ 3-day pieces and fetched one piece at a time through the existing
-// /api/daily-series route (requestDailySeries validates each piece). Pieces are cached per session, so Retry and
-// Resume continue where loading stopped and a revisit is instant.
+// Daily values over a span [start, end] (the chart's axis), fetching only the `fetch` days: the reader's selection.
+// Those days are clipped to finished UTC days, the ones not yet held (pieces.days, shared with the earlier-years
+// baseline) are grouped into ≤ 3-day pieces (plan.missingPieces) and fetched one piece at a time through
+// /api/daily-series (requestDailySeries validates each piece). Days of the span outside the selection show only if
+// they were fetched before.
 //
-// After 400 ms the automatic part loads by itself (plan.autoRange): the whole span up to 62 days, else the focus days
-// (the selection's own days) when they are ≤ 31; the rest waits for start() ("Load N more days").
+// Every change of the selection (or the variable) aborts the run in flight and starts again AUTO_DELAY_MS after the
+// last change, so dragging fires no requests and the newest selection always wins. Stop / Retry resume where loading
+// stopped; nothing waits for a click.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supportsDaily, type DailySeries } from "@/lib/detective/daily";
 import { DailyLoadError, completedDailyRange, requestDailySeries } from "@/lib/detective/daily-client";
-import { AUTO_DELAY_MS, autoRange, daysOf, estimateSeconds, needsConfirm, planPieces, type DayRange } from "./plan";
-import { pieceKey, pieces, remember } from "./pieces";
+import { AUTO_DELAY_MS, daysOf, estimateSeconds, missingPieces, type DayRange } from "./plan";
+import { dayKey, days, pieceKey, remember } from "./pieces";
 
 export type DailyPhase =
   | "unsupported" // the layer has no daily product
-  | "empty"       // no finished UTC day in the range
-  | "idle"        // waiting for start() (long span, nothing loads by itself)
-  | "waiting"     // debounce running before the automatic part loads
-  | "partial"     // the automatic part (the selection's days) is loaded; the rest waits for start()
+  | "empty"       // no finished UTC day in the selection
+  | "idle"        // (no longer produced: the selection always loads by itself)
+  | "waiting"     // debounce running before the selection loads
+  | "partial"     // (no longer produced)
   | "loading"
-  | "stopped"     // stop() during loading; start() resumes
+  | "stopped"     // stop() during loading; retry() resumes
   | "error"       // a piece failed; retry() resumes
-  | "done";
+  | "done";       // every selected day is held
 
 export interface DailyState {
   phase: DailyPhase;
-  /** finished-day range actually requested (clipped to yesterday UTC), null when nothing to load */
+  /** the selection clipped to finished UTC days (what is fetched), null when nothing to load */
   range: DayRange | null;
-  /** the requested end before clipping (to say "daily data ends …") */
+  /** the selection's end before clipping (to say "daily data ends …") */
   requestedEnd: string;
+  /** every day of the span (clipped to finished days) */
   dates: string[];
   values: (number | null)[];
   /** loaded[i] = day i has been fetched (its value may still be null = missing) */
   loaded: boolean[];
+  /** selected days held / selected days */
   doneDays: number;
   totalDays: number;
   /** seconds, refined from the pieces fetched so far */
   etaSeconds: number;
-  /** days not loaded yet */
+  /** selected days not loaded yet */
   remainingDays: number;
+  /** always false: the selection loads without a click */
   needsConfirm: boolean;
   unit: string | null;
   source: DailySeries["source"] | null;
@@ -48,105 +53,90 @@ export interface DailyState {
   retry: () => void;
 }
 
-export function useDailyRange({ region, layer, start, end, focus = null, enabled = true }: {
-  region: string; layer: string; start: string; end: string;
-  /** the selection's own days; for long spans only these load without a click */
-  focus?: DayRange | null;
+export function useDailyRange({ region, layer, start, end, fetch, enabled = true }: {
+  region: string; layer: string;
+  /** the span drawn */
+  start: string; end: string;
+  /** the selected days: the only ones fetched */
+  fetch: DayRange | null;
   enabled?: boolean;
 }): DailyState {
   const supported = supportsDaily(layer);
-  const range = useMemo(() => (supported ? completedDailyRange({ start, end }) : null), [supported, start, end]);
-  const evStart = focus?.start ?? "", evEnd = focus?.end ?? "";
-  const auto = useMemo(() => (range ? autoRange(range, evStart ? { start: evStart, end: evEnd } : null) : null), [range, evStart, evEnd]);
-  const parts = useMemo(() => (range ? planPieces(range, auto) : []), [range, auto]);
-  const dates = useMemo(() => (range ? daysOf(range) : []), [range]);
-  const key = `${region}|${layer}|${range?.start ?? ""}|${range?.end ?? ""}|${auto?.start ?? ""}`;
-  const confirm = needsConfirm(dates.length);
-  const has = (p: DayRange) => pieces.has(pieceKey(region, layer, p));
-
-  type Phase = "idle" | "waiting" | "loading" | "stopped" | "error" | "done" | "partial";
-  // scope "auto" loads the automatic pieces only, "all" every piece; version bumps re-render after each piece
-  const [run, setRun] = useState<{ key: string; phase: Phase; scope: "auto" | "all"; error: DailyLoadError["code"] | null; token: number }>(
-    { key: "", phase: "idle", scope: "auto", error: null, token: 0 },
-  );
+  const span = useMemo(() => (supported ? completedDailyRange({ start, end }) : null), [supported, start, end]);
+  const fs = fetch?.start ?? "", fe = fetch?.end ?? "";
+  const range = useMemo(() => (supported && fs ? completedDailyRange({ start: fs, end: fe }) : null), [supported, fs, fe]);
+  const dates = useMemo(() => (span ? daysOf(span) : []), [span]);
+  const selDates = useMemo(() => (range ? daysOf(range) : []), [range]);
+  const key = `${region}|${layer}|${range?.start ?? ""}|${range?.end ?? ""}`;
   const [, setVersion] = useState(0);
-  const timing = useRef<{ key: string; ms: number; n: number }>({ key: "", ms: 0, n: 0 });
+  const held = (d: string) => days.has(dayKey(region, layer, d));
+  const missing = selDates.filter((d) => !held(d)).length;
+
+  type Phase = "waiting" | "loading" | "stopped" | "error" | "done";
+  const [run, setRun] = useState<{ key: string; phase: Phase; error: DailyLoadError["code"] | null; token: number }>(
+    { key: "", phase: "waiting", error: null, token: 0 },
+  );
+  const timing = useRef<{ ms: number; n: number }>({ ms: 0, n: 0 });
   const ctrl = useRef<AbortController | null>(null);
+  const cur = run.key === key ? run : { key, phase: (missing ? "waiting" : "done") as Phase, error: null, token: 0 };
 
-  const cachedAll = parts.length > 0 && parts.every(has);
-  const autoParts = parts.filter((p) => p.auto);
-  const cachedAuto = autoParts.length > 0 && autoParts.every(has);
-  const initial: Phase = cachedAll ? "done" : cachedAuto ? "partial" : autoParts.length ? "waiting" : "idle";
-  const cur = run.key === key ? run : { key, phase: initial, scope: "auto" as const, error: null, token: 0 };
+  const begin = useCallback(() =>
+    setRun((r) => ({ key, phase: "loading", error: null, token: (r.key === key ? r.token : 0) + 1 })), [key]);
 
-  const begin = useCallback((scope: "auto" | "all") =>
-    setRun((r) => ({ key, phase: "loading", scope, error: null, token: (r.key === key ? r.token : 0) + 1 })), [key]);
-  const startAll = useCallback(() => begin("all"), [begin]);
-  const retry = useCallback(() => begin(run.key === key ? run.scope : "auto"), [begin, run.key, run.scope, key]);
-
-  // the automatic part: start after the debounce
+  // a new selection: (re)start after the debounce; every change clears the pending timer
   useEffect(() => {
-    if (!enabled || !supported || !range || cachedAll || cachedAuto || !autoParts.length || run.key === key) return;
-    const t = window.setTimeout(() => begin("auto"), AUTO_DELAY_MS);
+    if (!enabled || !supported || !range || !missing || run.key === key) return;
+    const t = window.setTimeout(begin, AUTO_DELAY_MS);
     return () => window.clearTimeout(t);
-  }, [enabled, supported, range, cachedAll, cachedAuto, autoParts.length, run.key, key, begin]);
+  }, [enabled, supported, range, missing, run.key, key, begin]);
 
-  // the loading loop: one piece at a time, skipping cached pieces
+  // the loading loop: the selection's missing days, one piece at a time; aborted when the selection changes
   useEffect(() => {
-    if (!enabled || run.key !== key || run.phase !== "loading") return;
+    if (!enabled || !range || run.key !== key || run.phase !== "loading") return;
     const ac = new AbortController();
     ctrl.current = ac;
-    if (timing.current.key !== key) timing.current = { key, ms: 0, n: 0 };
-    const todo = run.scope === "auto" ? parts.filter((p) => p.auto) : parts;
+    const token = run.token;
     (async () => {
-      for (const p of todo) {
-        const k = pieceKey(region, layer, p);
-        if (pieces.has(k)) continue;
+      for (const p of missingPieces(daysOf(range), (d) => days.has(dayKey(region, layer, d)))) {
+        if (daysOf(p).every((d) => days.has(dayKey(region, layer, d)))) continue;
         const t0 = performance.now();
         const s = await requestDailySeries({ region, layer: layer as DailySeries["layer"], start: p.start, end: p.end }, ac.signal);
         if (ac.signal.aborted) return;
-        remember(k, s);
+        remember(pieceKey(region, layer, p), s);
         timing.current.ms += performance.now() - t0;
         timing.current.n += 1;
         setVersion((v) => v + 1);
       }
-      const all = parts.every((p) => pieces.has(pieceKey(region, layer, p)));
-      setRun((r) => (r.key === key && r.token === run.token ? { ...r, phase: all ? "done" : "partial" } : r));
+      setRun((r) => (r.key === key && r.token === token ? { ...r, phase: "done" } : r));
     })().catch((e: unknown) => {
       if (ac.signal.aborted) return;
       const code = e instanceof DailyLoadError ? e.code : "failed";
-      setRun((r) => (r.key === key && r.token === run.token ? { ...r, phase: "error", error: code } : r));
+      setRun((r) => (r.key === key && r.token === token ? { ...r, phase: "error", error: code } : r));
     });
     return () => ac.abort();
-  }, [enabled, key, run.key, run.phase, run.scope, run.token, parts, region, layer]);
+  }, [enabled, key, run.key, run.phase, run.token, range, region, layer]);
 
   const stop = useCallback(() => {
     ctrl.current?.abort();
     setRun((r) => (r.key === key && r.phase === "loading" ? { ...r, phase: "stopped" } : r));
   }, [key]);
 
-  // assemble what we have (pieces are in date order)
-  const values: (number | null)[] = new Array(dates.length).fill(null);
-  const loaded: boolean[] = new Array(dates.length).fill(false);
-  let unit: string | null = null, source: DailySeries["source"] | null = null, done = 0, missingPieces = 0, i0 = 0;
-  for (const p of parts) {
-    const s = pieces.get(pieceKey(region, layer, p));
-    const n = daysOf(p).length;
-    if (s) {
-      for (let j = 0; j < n; j++) { values[i0 + j] = s.values[j] ?? null; loaded[i0 + j] = true; }
-      unit ??= s.unit; source ??= s.source; done += n;
-    } else if (cur.phase !== "loading" || cur.scope === "all" || p.auto) missingPieces += 1;
-    i0 += n;
+  let unit: string | null = null, source: DailySeries["source"] | null = null;
+  const values: (number | null)[] = [], loaded: boolean[] = [];
+  for (const d of dates) {
+    const h = days.get(dayKey(region, layer, d));
+    values.push(h ? h.value : null);
+    loaded.push(!!h);
+    if (h) { unit ??= h.unit; source ??= h.source; }
   }
-  const perPiece = timing.current.key === key && timing.current.n > 0 ? timing.current.ms / timing.current.n / 1000 : null;
-  const left = dates.length - done;
-  const eta = perPiece != null ? perPiece * missingPieces : estimateSeconds(cur.phase === "loading" && cur.scope === "auto"
-    ? autoParts.filter((p) => !has(p)).reduce((n, p) => n + daysOf(p).length, 0) : left);
+  const perPiece = timing.current.n > 0 ? timing.current.ms / timing.current.n / 1000 : null;
+  const eta = perPiece != null ? perPiece * Math.ceil(missing / 3) : estimateSeconds(missing);
 
-  const phase: DailyPhase = !supported ? "unsupported" : !range ? "empty" : cur.phase === "loading" && done === dates.length ? "done" : cur.phase;
+  const phase: DailyPhase = !supported ? "unsupported" : !range ? "empty" : !missing ? "done" : cur.phase === "done" ? "stopped" : cur.phase;
   return {
-    phase, range, requestedEnd: end, dates, values, loaded, doneDays: done, totalDays: dates.length,
-    etaSeconds: eta, remainingDays: left, needsConfirm: confirm, unit, source, error: cur.error,
-    start: startAll, stop, retry,
+    phase, range, requestedEnd: fe || end, dates, values, loaded,
+    doneDays: selDates.length - missing, totalDays: selDates.length,
+    etaSeconds: eta, remainingDays: missing, needsConfirm: false, unit, source, error: cur.error,
+    start: begin, stop, retry: begin,
   };
 }

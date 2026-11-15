@@ -1,12 +1,9 @@
-// Pure helpers of the daily view: day lists longer than one month, ≤ 3-day request pieces, load-time estimate, the
-// normal of each day (trend + seasonal cycle) and the daily anomaly. No DOM: run under `npx tsx --test`.
+// Pure helpers of the daily view: day lists longer than one month, ≤ 3-day pieces of the selected days still missing,
+// load-time estimate, the normal of each day (trend + seasonal cycle) and the daily anomaly. No DOM: run under `npx tsx --test`.
 import type { Decomposition } from "@/lib/detective/contracts";
 import { DAILY_REQUEST_MAX_DAYS, dayNumber, dayString } from "@/lib/detective/daily";
 
-/** spans up to this many days load by themselves (after a short debounce) */
-export const AUTO_MAX_DAYS = 62;
-/** for longer spans only the selection's own days load by themselves, when there are at most this many */
-export const EVENT_AUTO_MAX_DAYS = 31;
+/** the selection loads by itself this long after it last changed */
 export const AUTO_DELAY_MS = 400;
 /** ≈ 1 minute per month of days (observed 30–130 s per month, cache-dependent) */
 export const SECONDS_PER_DAY = 60 / 31;
@@ -29,41 +26,27 @@ export function splitRange(r: DayRange, max = DAILY_REQUEST_MAX_DAYS): DayRange[
 }
 
 export const estimateSeconds = (days: number) => Math.max(0, days) * SECONDS_PER_DAY;
-export const needsConfirm = (days: number) => days > AUTO_MAX_DAYS;
 
 /**
- * The part of `range` that loads without a click: all of it up to AUTO_MAX_DAYS; otherwise the focus days (the
- * selection's own days, clipped to the range) when they are at most EVENT_AUTO_MAX_DAYS; otherwise nothing.
+ * ≤ 3-day request pieces covering exactly the days of `days` that `has` does not hold: consecutive missing days are
+ * grouped, nothing outside `days` and nothing already held is requested.
  */
-export function autoRange(range: DayRange, event: DayRange | null): DayRange | null {
-  const days = daysOf(range).length;
-  if (!days) return null;
-  if (!needsConfirm(days)) return range;
-  if (!event) return null;
-  const a = Math.max(dayNumber(range.start)!, dayNumber(event.start) ?? Infinity);
-  const b = Math.min(dayNumber(range.end)!, dayNumber(event.end) ?? -Infinity);
-  if (!(b >= a) || b - a + 1 > EVENT_AUTO_MAX_DAYS) return null;
-  return { start: dayString(a), end: dayString(b) };
-}
-
-export interface Piece extends DayRange { auto: boolean }
-
-/**
- * ≤ 3-day pieces covering `range` in order. Pieces never straddle the edges of `auto`, so the automatic part can load
- * on its own and the rest later; `auto` marks the pieces inside it.
- */
-export function planPieces(range: DayRange, auto: DayRange | null): Piece[] {
-  if (!auto || (auto.start === range.start && auto.end === range.end)) return splitRange(range).map((p) => ({ ...p, auto: !!auto }));
-  const s = dayNumber(auto.start)!, e = dayNumber(auto.end)!;
-  const out: Piece[] = [];
-  const add = (a: number, b: number, isAuto: boolean) => {
-    if (b >= a) for (const p of splitRange({ start: dayString(a), end: dayString(b) })) out.push({ ...p, auto: isAuto });
+export function missingPieces(days: readonly string[], has: (day: string) => boolean, max = DAILY_REQUEST_MAX_DAYS): DayRange[] {
+  const out: DayRange[] = [];
+  let run: string[] = [];
+  const flush = () => {
+    for (let i = 0; i < run.length; i += max) out.push({ start: run[i], end: run[Math.min(run.length, i + max) - 1] });
+    run = [];
   };
-  add(dayNumber(range.start)!, s - 1, false);
-  add(s, e, true);
-  add(e + 1, dayNumber(range.end)!, false);
+  for (const day of days) {
+    if (has(day)) { flush(); continue; }
+    if (run.length && dayNumber(day)! !== dayNumber(run[run.length - 1])! + 1) flush();
+    run.push(day);
+  }
+  flush();
   return out;
 }
+
 const monthIndex = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7)) - 1;
 const daysInMonth = (k: number) => new Date(Date.UTC(Math.floor(k / 12), (k % 12) + 1, 0)).getUTCDate();
 
