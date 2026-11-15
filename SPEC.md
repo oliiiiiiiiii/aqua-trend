@@ -105,11 +105,21 @@ flowchart LR
 
 | id | 事件 | T | L（basin4） | 變數 | 預期 |
 | --- | --- | --- | --- | --- | --- |
-| `taiwan-2021-drought` | 2021 台灣春季大旱 | 2021-02..2021-05 | `b4-4040046370` 台灣 | precip, soil, tws, ndvi | 全部偏低 |
+| `taiwan-2021-drought` | 2021 台灣春季大旱 | 2021-04..2021-05 | `b4-4040046370` 台灣 | precip, soil, tws, ndvi | 全部偏低 |
 | `pakistan-2022-flood` | 2022 巴基斯坦洪水 | 2022-07..2022-09 | `b4-4040879050` Indus（巴基斯坦） | precip, runoff, soil, tws | 全部偏高 |
 | `australia-2019-fire` | 2019–20 澳洲黑色夏季（乾旱與野火） | 2019-09..2020-01 | `b4-5040070710` 澳洲東南 | precip, soil, tair, ndvi | 降水、土壤、植被偏低；氣溫偏高 |
 
 驗收：每個事件至少一個變數 |z| ≥ 2 且方向符合預期；不符就換區域或事件（工作線 E 負責）。目錄沒有 AOD，所以野火事件以乾熱條件呈現。
+
+驗證結果（pad = 12，預設資料層，詳見 [`docs/presets-validation.md`](docs/presets-validation.md)）：
+
+| id | 通過（事件平均 z） | 未達預期 |
+| --- | --- | --- |
+| `taiwan-2021-drought` | `ndvi` −3.01、`sm_root` −2.59 | `p_imerg` −0.34、`tws` −1.82（方向對但未達 2） |
+| `pakistan-2022-flood` | `runoff` +24.4、`p_imerg` +6.25、`sm_root` +5.47 | `tws` +0.07 |
+| `australia-2019-fire` | `ndvi` −2.69、`sm_root` −2.31 | `p_imerg` −1.04、`tair` +0.20 |
+
+台灣事件的 T 由 2021-02..05 改為 2021-04..05（旱象最嚴重、水庫見底的兩個月）：原本 2–5 月的預設層 `sm_root` 只有 −1.66、`ndvi` −1.51，未通過。未達預期的類別仍保留在預設事件中，當作「假說 ✗」的教學案例。
 
 ## 6. 架構
 
