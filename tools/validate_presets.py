@@ -158,6 +158,7 @@ def main():
     ap.add_argument("--data", default=os.path.join("web", "public", "data"))
     ap.add_argument("--pad", type=int, default=12)
     ap.add_argument("--markdown", action="store_true")
+    ap.add_argument("--json", help="also write per-layer results to this JSON file (for cross-checks)")
     ap.add_argument("--region")
     ap.add_argument("--start")
     ap.add_argument("--end")
@@ -176,6 +177,7 @@ def main():
         events = EVENTS
 
     all_ok = True
+    json_rows = []
     for ev in events:
         doc = load(a.data, ev["region"])
         rows = []
@@ -203,6 +205,8 @@ def main():
             r["expected"] = exp
             r["ok"] = ok
             rows.append((cat, layer, is_default, r))
+            json_rows.append({"event": ev["id"], "layer": layer, "meanResidual": r["mean_resid"],
+                              "meanZ": r["mean_z"], "rank": r.get("rank"), "n": r["n_event"]})
         if ev["expected"]:
             all_ok &= passed
 
@@ -231,6 +235,9 @@ def main():
                 print("  " + "  ".join(f"{c:<14}" for c in line), "" if r is None else r["event_z"])
         if ev["expected"]:
             print(("" if a.markdown else "  ") + f"PASS (default layer): {'yes' if passed else 'NO'}")
+    if a.json:
+        with open(a.json, "w", encoding="utf-8") as f:
+            json.dump(json_rows, f)
     return 0 if all_ok else 1
 
 
