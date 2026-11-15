@@ -1,6 +1,6 @@
 // 三個預設事件（工作線 E）。規格：/SPEC.md §5。
-// 每個事件都已用 tools/validate_presets.py 對 series-2 重算殘差與 z，
-// 至少一個預設資料層 |z| ≥ 2 且方向符合 expected；數值見 /docs/presets-validation.md。
+// 已用 tools/validate_presets.py 對 series-2 重算殘差與 z；數值見 /docs/presets-validation.md。
+// 台灣保留原訂 2–5 月，尚未達 |z| ≥ 2；巴基斯坦、澳洲有預設資料層通過。
 // expected 是給學生看的「假說」：有些類別（例如巴基斯坦的 tws）資料上不顯著，
 // 刻意保留，讓畫面呈現假說 ✗ 的情況。
 
@@ -13,7 +13,7 @@ export const PRESET_EVENTS: PresetEvent[] = [
     event: "2021 台灣春季大旱",
     blurb:
       "2020 年是 1964 年以來第一次沒有颱風登陸台灣，秋冬到春天又少雨；2021 年 4–5 月水庫見底，中部實施分區供水。",
-    time: { start: "2021-04", end: "2021-05" },
+    time: { start: "2021-02", end: "2021-05" },
     region: "b4-4040046370",
     categories: ["precip", "soil", "tws", "ndvi"],
     padMonths: 12,

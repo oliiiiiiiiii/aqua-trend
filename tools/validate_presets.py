@@ -16,6 +16,7 @@ Only reads JSON; needs numpy.
 """
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -26,7 +27,7 @@ EVENTS = [
     {
         "id": "taiwan-2021-drought",
         "region": "b4-4040046370",
-        "start": "2021-04", "end": "2021-05",
+        "start": "2021-02", "end": "2021-05",
         "expected": {"precip": "low", "soil": "low", "tws": "low", "ndvi": "low"},
     },
     {
@@ -68,7 +69,8 @@ def decompose(start, values, ev_start, ev_end, pad):
     t = np.arange(n, dtype=float)
     idx = i0 + np.arange(n)
     x = np.array([np.nan if v is None else float(v) for v in values])
-    valid = ~np.isnan(x)
+    valid = np.isfinite(x)
+    x[~valid] = np.nan
 
     ex_lo = ym_to_idx(ev_start) - pad
     ex_hi = ym_to_idx(ev_end) + pad
@@ -78,42 +80,37 @@ def decompose(start, values, ev_start, ev_end, pad):
     cal_month = idx % 12
     year = idx // 12
 
-    # Years eligible for climatology: <= 3 missing months among the year's non-excluded
-    # months. Months of the calendar year outside the record also count as missing.
-    eligible_year = {}
-    for y in np.unique(year):
-        months_in_record = (year == y)
-        n_record = int(months_in_record.sum())
-        n_out_of_record = 12 - n_record
-        n_null = int((months_in_record & ~valid & ~in_excl).sum())
-        eligible_year[int(y)] = (n_null + n_out_of_record) <= 3
+    # A checks original coverage before event exclusion; absent months are missing.
+    eligible_year = {int(y): int((valid & (year == y)).sum()) >= 9 for y in np.unique(year)}
     clim_mask = base & np.array([eligible_year[int(y)] for y in year])
+    if base.sum() < 14 or any(not np.any(clim_mask & (cal_month == m)) for m in range(12)):
+        raise ValueError("Insufficient baseline: need 14 observations and all 12 eligible calendar months.")
 
-    seasonal_m = np.zeros(12)
-    slope = intercept = 0.0
-    for _ in range(20):
-        # OLS trend on deseasonalised baseline values
-        xs = x[base] - seasonal_m[cal_month[base]]
-        A = np.vstack([np.ones(base.sum()), t[base]]).T
-        coef, *_ = np.linalg.lstsq(A, xs, rcond=None)
-        intercept_new, slope_new = coef
-        # Climatology on detrended baseline values of eligible years
-        detr = x - (intercept_new + slope_new * t)
-        new_seas = np.array([
-            np.mean(detr[clim_mask & (cal_month == m)]) if np.any(clim_mask & (cal_month == m)) else 0.0
-            for m in range(12)
-        ])
-        new_seas -= new_seas.mean()
-        converged = abs(slope_new - slope) < 1e-12 and np.allclose(new_seas, seasonal_m, atol=1e-12)
-        slope, intercept, seasonal_m = slope_new, intercept_new, new_seas
-        if converged:
-            break
+    # Joint OLS of time and month effects, using eligible baseline years only.
+    month_t = np.array([t[clim_mask & (cal_month == m)].mean() for m in range(12)])
+    month_x = np.array([x[clim_mask & (cal_month == m)].mean() for m in range(12)])
+    centered_t = t[clim_mask] - month_t[cal_month[clim_mask]]
+    denominator = np.dot(centered_t, centered_t)
+    if denominator <= 0:
+        raise ValueError("Insufficient baseline: seasonal trend is unidentified.")
+    joint_slope = np.dot(centered_t, x[clim_mask] - month_x[cal_month[clim_mask]]) / denominator
+    month_intercepts = month_x - joint_slope * month_t
+    seasonal_m = month_intercepts - month_intercepts.mean()
+
+    # Hold the seasonal cycle fixed while every observed baseline month informs OLS.
+    base_t = t[base]
+    base_x = x[base] - seasonal_m[cal_month[base]]
+    centered_base_t = base_t - base_t.mean()
+    slope = np.dot(centered_base_t, base_x - base_x.mean()) / np.dot(centered_base_t, centered_base_t)
+    intercept = base_x.mean() - slope * base_t.mean()
 
     trend = intercept + slope * t
     seasonal = seasonal_m[cal_month]
     resid = x - trend - seasonal  # NaN where x is null
     sigma = float(np.std(resid[base], ddof=1))
-    z = resid / sigma
+    if sigma <= np.finfo(float).eps * np.max(np.abs(x[base])) * 32:
+        sigma = 0.0
+    z = resid / sigma if sigma > 0 else np.full(n, np.nan)
 
     ev = (idx >= ym_to_idx(ev_start)) & (idx <= ym_to_idx(ev_end))
     ev_valid = ev & valid
@@ -123,28 +120,32 @@ def decompose(start, values, ev_start, ev_end, pad):
         "sigma": sigma,
         "slope_per_decade": float(slope * 120),
         "n_event": int(ev_valid.sum()),
-        "n_event_total": int(ev.sum()),
-        "mean_resid": float(np.mean(resid[ev_valid])) if ev_valid.any() else None,
-        "mean_z": float(np.mean(z[ev_valid])) if ev_valid.any() else None,
+        "n_event_total": ym_to_idx(ev_end) - ym_to_idx(ev_start) + 1,
+        "mean_resid": math.fsum(resid[ev_valid] / ev_valid.sum()) if ev_valid.any() else None,
+        "mean_z": math.fsum(z[ev & np.isfinite(z)] / np.isfinite(z[ev]).sum()) if np.isfinite(z[ev]).any() else None,
         "event_z": [None if np.isnan(v) else round(float(v), 2) for v in z[ev]],
     }
 
     # Rank among all same-length sliding windows (all months valid)
-    L = int(ev.sum())
-    if ev_valid.any() and L > 0:
-        means = []
+    L = out["n_event_total"]
+    if int(ev_valid.sum()) == L and L > 0:
+        summaries = []
         for s in range(0, n - L + 1):
             w = resid[s:s + L]
-            if not np.isnan(w).any():
-                means.append(float(w.mean()))
-        if out["mean_resid"] is not None and means:
+            if np.isfinite(w).all():
+                summaries.append((math.fsum(w / L), float(np.abs(w / L).sum())))
+        if out["mean_resid"] is not None and summaries:
             mr = out["mean_resid"]
+            selected_magnitude = float(np.abs(resid[ev_valid] / L).sum())
+            def beyond(candidate, magnitude):
+                tolerance = 32 * np.finfo(float).eps * max(magnitude, selected_magnitude)
+                return candidate < mr - tolerance if mr < 0 else candidate > mr + tolerance
+
+            pos = 1 + sum(1 for candidate, magnitude in summaries if beyond(candidate, magnitude))
             if mr < 0:
-                pos = 1 + sum(1 for m in means if m < mr - 1e-12)
-                out["rank"] = (pos, len(means), "low")
+                out["rank"] = (pos, len(summaries), "low")
             else:
-                pos = 1 + sum(1 for m in means if m > mr + 1e-12)
-                out["rank"] = (pos, len(means), "high")
+                out["rank"] = (pos, len(summaries), "high")
     return out
 
 
@@ -213,7 +214,7 @@ def main():
         title = f"{ev['id']}  {ev['region']}  {ev['start']}..{ev['end']}  pad={a.pad}"
         if a.markdown:
             print(f"\n#### {title}\n")
-            print("| 類別 | 資料層 | 預期 | n | 平均殘差 | 平均 z | 名次 | |z|≥2 且方向對 |")
+            print("| 類別 | 資料層 | 預期 | n | 平均殘差 | 平均 z | 名次 | 通過 |")
             print("| --- | --- | --- | --- | --- | --- | --- | --- |")
         else:
             print(f"\n== {title}")

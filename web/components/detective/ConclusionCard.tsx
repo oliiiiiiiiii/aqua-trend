@@ -50,7 +50,7 @@ export function conclusionText(p: ConclusionCardProps): { sentence: string; stre
     sentence += `，${since} 年以來第 ${stats.rank.position} ${stats.rank.direction === "low" ? "低" : "高"}`;
   }
   sentence += "。";
-  const az = Math.round(Math.abs(stats.meanZ) * 10) / 10; // same rounding as the sentence
+  const az = Math.abs(stats.meanZ);
   return { sentence, strength: az >= 2 ? "strong" : az >= 1 ? "moderate" : "weak" };
 }
 

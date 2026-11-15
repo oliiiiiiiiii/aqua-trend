@@ -2,13 +2,15 @@
 
 NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 
-輸入一個地球事件（例如「2021 台灣大旱」），選定時間與子流域，網站會推薦相關的 NASA 變數，扣除季節循環與長期趨勢後，把事件前後的異常畫在可互動的數線上，回答三個問題：
+專案目標是讓學生輸入一個地球事件（例如「2021 台灣大旱」），選定時間與子流域，推薦相關的 NASA 變數，扣除季節循環與長期趨勢後，把事件前後的異常畫在可互動的數線上，回答三個問題：
 
 1. 這個事件在資料裡**看得到**嗎？
 2. 它有**多不尋常**？（z 值、歷史名次）
 3. 背後的**長期趨勢**是什麼、**顯不顯著**？
 
 給高中、大學學生與有科學背景的大眾使用。全部分析在瀏覽器內完成，沒有 Python 後端，也不需要 NASA 帳號。
+
+目前主線已整合 A 的統計函式、B 的圖表元件與 E 的類別／預設事件設定。圖表可在 [`/dev/detective-chart`](http://localhost:3000/dev/detective-chart) 以假資料試用；C 的 `/detective` 完整流程與 D 的 AI 選變數服務尚未整合，因此目前不能從事件輸入直接取得真實資料分析。
 
 - 產品規格：[`SPEC.md`](SPEC.md)
 - 分工與整合：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)
@@ -22,7 +24,7 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 ```bash
 cd web
 npm i
-npm run dev        # 開啟 http://localhost:3000/detective
+npm run dev        # 圖表示範：http://localhost:3000/dev/detective-chart（假資料）
 ```
 
 網站資料（月時間序列、目錄、區域邊界）**不在 git 裡**，而是放在 GitHub Release 的附件。`npm run dev` 第一次執行時會自動呼叫 `npm run setup`，依 [`web/data.lock.json`](web/data.lock.json) 下載並驗證 sha256，解壓到 `web/public/data` 與 `web/data`。
@@ -33,6 +35,8 @@ repo 是私有的，下載需要下列其中一種：
 - 環境變數 `GITHUB_TOKEN`（有讀取此 repo 權限的 token）
 - 手動下載 Release 附件後：`npm run setup -- --file <檔案路徑>`
 
+容器部署：先依上面方式取得資料，再回到 repo 根目錄執行 `docker compose up --build -d`，預設開啟 http://localhost:8080 。設定與更新方式見 [`deploy/README.md`](deploy/README.md)。
+
 其他指令：
 
 | 指令 | 用途 |
@@ -40,9 +44,9 @@ repo 是私有的，下載需要下列其中一種：
 | `npm run setup` | 重新下載網站資料 |
 | `npm run typecheck` | TypeScript 型別檢查 |
 | `npm run build` | 產生靜態網站（`out/`） |
-| `python3 -I tools/validate_presets.py` | 在 repo 根目錄執行，用 Python 重算三個預設事件的 z 值（需要 numpy） |
+| `python3 -I tools/validate_presets.py` | 在 repo 根目錄重算三個預設事件的 z 值（需要 numpy）；台灣原訂事件窗未達門檻，因此目前結束碼為 1 |
 
-## 使用流程
+## 預定使用流程（待 C／D 整合）
 
 1. **輸入**事件文字、期間（`YYYY-MM..YYYY-MM`）與 basin4 子流域（地球上點選或搜尋）；或按一個預設事件。
 2. **選變數**：本地開源模型對 12 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示。
@@ -52,7 +56,7 @@ repo 是私有的，下載需要下列其中一種：
 
 | 事件 | 期間 | 最明顯的訊號 |
 | --- | --- | --- |
-| 2021 台灣春季大旱 | 2021-04..05 | 植被 z = −3.0、根區土壤水 z = −2.6 |
+| 2021 台灣春季大旱 | 2021-02..2021-05 | 根區土壤水 z = −1.66、植被 z = −1.51；未達 \|z\| ≥ 2 |
 | 2022 巴基斯坦洪水 | 2022-07..09 | 逕流與根區土壤水為 2000 年以來最高；降水 z = +6.3 |
 | 2019–20 澳洲黑色夏季 | 2019-09..2020-01 | 植被 z = −2.7、根區土壤水 z = −2.3（2000 年以來最低） |
 
@@ -60,13 +64,13 @@ repo 是私有的，下載需要下列其中一種：
 
 | 官方要求 | 對應功能 | 實作位置 |
 | --- | --- | --- |
-| **選擇變數**（variable selection） | 12 個類別，每類一句淺白定義與預設 NASA 資料層，可切換同類其他產品；AI 投票預先勾選，使用者用 checkbox 修改 | `web/lib/detective/categories.ts`、`app/api/select-variables`、`components/detective/VariablePicker.tsx` |
-| **取得特定區域資料**（region） | 1,313 個 HydroBASINS level-4 子流域，地球點選或文字搜尋；序列是子流域內的面積平均 | `components/detective/InputPanel.tsx`、`web/lib/detective/series.ts` |
-| **產生並視覺化時間序列**（time series） | 月序列數線，可縮放、拖曳選取；圖層切換原始／季節循環／趨勢／殘差；事件期間著色 | `components/detective/SeriesChart.tsx`、`VariableTab.tsx` |
+| **選擇變數**（variable selection） | 已有 12 類別的淺白定義與預設資料層；AI 投票、checkbox 與切換產品待 C／D 整合 | `web/lib/detective/categories.ts`；規劃位置見 `docs/INTEGRATION.md` 工作線 C／D |
+| **取得特定區域資料**（region） | 資料 bundle 有 1,313 個 basin4 子流域；偵探頁的地球點選、搜尋與序列載入待 C 整合 | `web/public/data/series/`（setup 下載）；規劃位置見工作線 C |
+| **產生並視覺化時間序列**（time series） | 已有月序列數線，可縮放、拖曳選取、切換原始／季節／趨勢／殘差，並標記事件期間；開發頁以假資料示範 | `web/components/detective/SeriesChart.tsx`、`VariableTab.tsx` |
 | **變化速率**（rate of change） | 長期趨勢面板：Sen's slope，以「原單位／十年」表示，附 95% 信賴區間；結論卡另顯示事件期間的平均異常 | `web/lib/detective/analysis.ts` 的 `trendStats`、`components/detective/TrendPanel.tsx` |
 | **顯著性檢定**（significance testing） | Mann–Kendall 檢定（自相關修正）的 p 值與是否顯著；不顯著時估計還需要幾年資料；事件異常以 z 值與歷史同長度區間的百分位、名次呈現 | `analysis.ts` 的 `trendStats`、`intervalStats` |
-| 示範案例 | 三個預設事件，每個都經過驗證，至少一個變數 \|z\| ≥ 2 | `presets.ts`、`docs/presets-validation.md` |
-| 用 AI 找變數 | 本地開源決策模型，不需要 API key；失敗時退回關鍵字表 | `tools/selector/`、`web/lib/detective/keywords.ts` |
+| 示範案例 | 三個預設事件已有 Python／A 交叉驗證；巴基斯坦與澳洲通過 \|z\| ≥ 2，台灣保留原訂 2–5 月而未達門檻；一鍵開啟待 C 整合 | `web/lib/detective/presets.ts`、`docs/presets-validation.md` |
+| 用 AI 找變數 | 規劃本地開源模型與關鍵字備案，尚未整合 | `docs/INTEGRATION.md` 工作線 D |
 
 ## 方法摘要
 

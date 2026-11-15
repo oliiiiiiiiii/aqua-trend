@@ -46,7 +46,7 @@ export default function TrendPanel({ stats: s, unit, record, defaultOpen = false
         <p className="mt-2.5 text-ink-2">
           {sig === false && (s.yearsToSignificance != null
             ? `如果這個速率維持不變，大約還需要 ${Math.ceil(s.yearsToSignificance)} 年的資料才可能看出顯著趨勢。`
-            : "以目前的速率，50 年內的資料可能都看不出顯著趨勢。")}
+            : "目前無法估計還需要多少年資料才可能看出顯著趨勢。")}
           {sig === true && "這段期間的長期變化不太可能只是隨機起伏。"}
           {" "}
           趨勢在扣除季節循環後的{record ? `全期間（${record}）` : "全期間"}序列上計算，p 值已修正月資料的自相關。

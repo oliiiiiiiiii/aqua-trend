@@ -4,11 +4,12 @@ import type { ReactNode } from "react";
 /** Floating read-out inside a chart wrapper (which must be position: relative). Never takes pointer events. */
 export function ChartTooltip({ x, width, children }: { x: number; width: number; children: ReactNode }) {
   const flip = x > width * 0.55;
+  const availableWidth = Math.max(0, flip ? x - 12 : width - x - 12);
   return (
     <div
       role="presentation"
-      className="pointer-events-none absolute top-2 z-10 w-max max-w-[17rem] rounded-ctl border border-line bg-paper px-3 py-2 text-[0.8125rem] leading-snug text-ink shadow-card"
-      style={{ left: flip ? undefined : x + 12, right: flip ? width - x + 12 : undefined, borderRadius: "min(var(--r-ctl), 10px)" }}
+      className="pointer-events-none absolute top-2 z-10 w-max rounded-ctl border border-line bg-paper px-3 py-2 text-[0.8125rem] leading-snug text-ink shadow-card"
+      style={{ left: flip ? undefined : x + 12, right: flip ? width - x + 12 : undefined, maxWidth: `min(17rem, ${availableWidth}px)`, borderRadius: "min(var(--r-ctl), 10px)" }}
     >
       {children}
     </div>
