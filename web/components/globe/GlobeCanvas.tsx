@@ -8,11 +8,21 @@ import { PLANET, parseCssColor } from "./palette";
 import TrendLegend from "./TrendLegend";
 
 export interface GlobeCanvasExtraProps {
+  /** Extra transparent render space on each side, outside the layout/hit area. */
+  renderPadding?: number;
   /** where the camera starts and where "Reset view" returns; default { lon: 15, lat: 18, zoom: 1 } */
   initialView?: View;
   /** override the accessible name of the interactive globe */
   ariaLabel?: string;
-  /** show the on-canvas zoom buttons (default true when interactive) */
+  /** wheel, pinch and +/- zoom; default true. The home page turns it off: the planet only turns there. */
+  zoomEnabled?: boolean;
+  /** hover highlight and click-to-pick; default true */
+  pickEnabled?: boolean;
+  /** keep turning slowly while idle although the planet is interactive; default false */
+  autoRotate?: boolean;
+  /** when this changes (after mount) the camera eases back to `initialView` */
+  resetToken?: number;
+  /** @deprecated Visible controls have been removed; keyboard and gestures remain. */
   showControls?: boolean;
 }
 
@@ -32,6 +42,9 @@ function readTheme(): ThemeColors {
   };
 }
 
+/** A zoomed-in planet is larger than its disc: fade it out in a circle just past the rim instead of cutting a square. */
+const DISC_MASK = "radial-gradient(circle closest-side, #000 93%, transparent 100%)";
+
 const reducedQuery = "(prefers-reduced-motion: reduce)";
 
 export default function GlobeCanvas({
@@ -45,7 +58,11 @@ export default function GlobeCanvas({
   onZoomChange,
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
-  showControls = true,
+  renderPadding = 0,
+  zoomEnabled = true,
+  pickEnabled = true,
+  autoRotate = false,
+  resetToken = 0,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -55,7 +72,7 @@ export default function GlobeCanvas({
   const [trend, setTrend] = useState<TrendInfo | null>(null);
   const [cursor, setCursor] = useState("");
   const themeId = useThemeId();
-  const initialRef = useRef({ interactive, initialView });
+  const initialRef = useRef({ interactive, initialView, renderPadding });
 
   useLayoutEffect(() => {
     cbRef.current = { onPick, onHover, onZoomChange };
@@ -72,6 +89,7 @@ export default function GlobeCanvas({
         reducedMotion: window.matchMedia(reducedQuery).matches,
         initialView: initialRef.current.initialView,
         theme: readTheme(),
+        renderPadding: initialRef.current.renderPadding,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -107,6 +125,13 @@ export default function GlobeCanvas({
   }, []);
 
   useEffect(() => { engineRef.current?.setInteractive(interactive); }, [interactive]);
+  useEffect(() => { engineRef.current?.setBehavior({ zoom: zoomEnabled, pick: pickEnabled, autoRotate }); }, [zoomEnabled, pickEnabled, autoRotate]);
+  const lastReset = useRef(resetToken);
+  useEffect(() => {
+    if (lastReset.current === resetToken) return;
+    lastReset.current = resetToken;
+    engineRef.current?.resetView();
+  }, [resetToken]);
   useEffect(() => { void engineRef.current?.setBoundaryLayer(boundaryLayer ?? null).catch(() => {}); }, [boundaryLayer]);
   useEffect(() => {
     const e = engineRef.current;
@@ -123,23 +148,36 @@ export default function GlobeCanvas({
   useEffect(() => { engineRef.current?.setTheme(readTheme()); }, [themeId]);
 
   const live = interactive && status !== "error";
-  const btn =
-    "grid h-10 w-10 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
 
   return (
-    <div className={`relative overflow-hidden ${className}`} aria-hidden={interactive ? undefined : true}>
+    <div data-plane-cursor className={`pointer-events-none relative overflow-visible ${className}`} aria-hidden={interactive ? undefined : true}>
       <div
         ref={hostRef}
-        className="group absolute inset-0 rounded-card focus-visible:outline-offset-[-3px]"
+        className="group pointer-events-none absolute focus-visible:outline-offset-[-3px]"
         role={live ? "application" : undefined}
         aria-roledescription={live ? "globe" : undefined}
         aria-label={live ? ariaLabel : undefined}
         tabIndex={live ? 0 : -1}
-        style={{ cursor: live ? cursor || "grab" : "default" }}
+        style={{
+          inset: `${-renderPadding * 100}%`,
+          cursor: live ? cursor || "grab" : "default",
+          ...(renderPadding > 0 ? { maskImage: DISC_MASK, WebkitMaskImage: DISC_MASK } : null),
+        }}
         onKeyDown={(e) => {
           if (engineRef.current?.handleKey(e.nativeEvent)) e.preventDefault();
         }}
       >
+        {/* Only this circular target receives gestures; render overscan stays transparent to clicks. */}
+        <div
+          data-globe-hit-area
+          className="absolute"
+          style={{
+            inset: `${100 * renderPadding / (1 + 2 * renderPadding)}%`,
+            clipPath: "circle(50%)",
+            pointerEvents: live ? "auto" : "none",
+            touchAction: live ? (zoomEnabled ? "none" : "pan-y") : "auto",
+          }}
+        />
         {live && status === "ready" && (
           <span
             aria-hidden="true"
@@ -163,23 +201,6 @@ export default function GlobeCanvas({
             <p className="mt-1 text-ink-2">{error}</p>
             <p className="mt-2 text-ink-2">You can still choose a region from the region list.</p>
           </div>
-        </div>
-      )}
-
-      {live && showControls && status === "ready" && (
-        <div className="absolute bottom-3 right-3 flex flex-col gap-2">
-          <button type="button" className={btn} aria-label="Zoom in" onClick={() => engineRef.current?.zoomBy(1.5)}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-          </button>
-          <button type="button" className={btn} aria-label="Zoom out" onClick={() => engineRef.current?.zoomBy(1 / 1.5)}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-          </button>
-          <button type="button" className={btn} aria-label="Reset view" onClick={() => engineRef.current?.resetView()}>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <circle cx="9" cy="9" r="6" />
-              <path d="M9 1.5v3M9 13.5v3M1.5 9h3M13.5 9h3" />
-            </svg>
-          </button>
         </div>
       )}
 

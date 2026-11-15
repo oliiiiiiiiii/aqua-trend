@@ -1,141 +1,230 @@
 import type { Metadata } from "next";
-import { ContentPage, Part } from "@/components/shell/ContentPage";
-import { Provenance } from "@/components/ui/Provenance";
-import { VAR_ORDER, VARIABLES } from "@/lib/variables";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { ContentPage, ExtLink, Part } from "@/components/shell/ContentPage";
 
 export const metadata: Metadata = {
   title: "Methods",
-  description: "How Aqua Trend computes trend numbers, how the crystal ball encodes data, what is synthetic, and what the tool does not claim.",
+  description:
+    "How the Trend Detective decides that an interval is unusual: baseline, seasonal cycle and trend removal, z scores, AR(1)-adjusted and empirical tests, same-season rank, long-term trend, the AI variable selector, and the limits.",
 };
+
+/** A formula line: plain text in a quiet box, after the words that explain it. */
+function F({ children }: { children: ReactNode }) {
+  return (
+    <p className="w-fit max-w-full overflow-x-auto rounded-ctl bg-well px-3 py-1.5 font-mono text-[0.875rem] text-ink">
+      {children}
+    </p>
+  );
+}
+
+function H({ children }: { children: ReactNode }) {
+  return <h3 className="pt-2 text-lg text-ink">{children}</h3>;
+}
+
+const B = ({ children }: { children: ReactNode }) => <span className="font-semibold text-ink">{children}</span>;
+
+const GLOSSARY: [string, string][] = [
+  ["Basin", "a river sub-basin (HydroBASINS level 4), the only spatial unit the detective uses."],
+  ["Event", "the months you name for a known extreme, e.g. Jul – Sep 2022."],
+  ["Baseline", "every month of the record outside the event ± pad; the normal is learned from it."],
+  ["Anomaly", "a month’s value minus its expected value (trend + seasonal cycle), in the layer’s unit."],
+  ["z (σ)", "an anomaly divided by the typical size of baseline anomalies."],
+  ["Interval", "the months you drag on the time axis; all statistics describe it."],
+];
 
 export default function MethodsPage() {
   return (
     <ContentPage
       title="Methods"
-      lede="How the trend numbers are produced, how the crystal ball turns them into a picture, what is still synthetic, and the limits of all three."
+      lede="How the detective decides that an interval is unusual, what each number on the analysis screen means, and what none of them can tell you."
     >
-      <Part id="trends" title="Trend numbers">
-        <div className="flex flex-wrap gap-2"><Provenance kind="real" /></div>
-        <ol className="list-decimal space-y-2 pl-5 marker:text-ink-3">
-          <li>
-            Monthly regional values are averaged into annual means. Only complete calendar years count: a year with any
-            missing month is dropped, and 2026, which is partial, is shown but never fitted. That leaves at most 26
-            years, 2000 to 2025.
-          </li>
-          <li>
-            The rate of change is the Sen slope, the median of the slopes between every pair of years, shown per decade.
-            It resists single odd years better than a straight-line fit. Its 95 % interval is the rank-based interval of
-            the Sen slope itself.
-          </li>
-          <li>
-            Whether there is a trend at all is tested with the Mann–Kendall test on the same annual means. Very small
-            p-values are written as “&lt; 0.001”, never as 0.
-          </li>
-          <li>
-            An ordinary least-squares slope is computed as a cross-check. Its 95 % interval belongs to that OLS slope and
-            is never attached to the Sen slope.
-          </li>
-          <li>
-            Percent change is given only where it means something: not for air temperature in °C, and not for P − ET,
-            whose mean can sit near zero.
-          </li>
-        </ol>
+      <Part id="detective" title="How the detective works">
         <p>
-          <span className="font-semibold text-ink">These results are preliminary. </span>
-          The Mann–Kendall test here assumes the yearly values are independent; it is not corrected for serial
-          correlation (the lag-1 autocorrelation of the residuals is shown so you can judge), and there is no correction
-          for testing many variables and many regions. A p-value below 0.05 is a reason to look closer, not a finding.
+          For each variable you choose, the detective takes the basin’s monthly series, learns what a normal month looks
+          like from the years away from the event, and subtracts that normal. What is left, the anomaly, is drawn as a
+          lane. Dragging an interval asks one question of every lane: is the average anomaly in these months bigger than
+          ordinary month-to-month wobble would produce? All of it runs in your browser from the series files listed
+          on <Link href="/data" className="text-link underline underline-offset-2">Data</Link>.
         </p>
+
+        <H>1. Baseline and the exclusion window</H>
         <p>
-          The trend map on the globe uses the same method per 1° cell: Sen slope per year and Mann–Kendall p from the
-          2000–2025 annual means of each cell.
+          The baseline is every month of the record except the event and a pad on each side (12 months by default; the
+          Window control sets ±6, ±12 or ±24, and “All” only widens the view). Leaving the event out means a large
+          event cannot drag the normal towards itself and hide.
+        </p>
+        <F>baseline = whole record − [event start − pad, event end + pad]</F>
+
+        <H>2. Seasonal cycle and linear trend</H>
+        <p>
+          On the baseline months, one least-squares fit estimates a straight-line trend together with a separate level
+          for each calendar month (January, February, …). The twelve levels, shifted to average zero, are the seasonal
+          cycle. Only calendar years with at least 9 observed months (counted before the event is removed) shape the
+          seasonal cycle; holding that cycle fixed, the trend is then refitted on every observed baseline month. If
+          fewer than 14 baseline months remain, or some calendar month never appears, the lane says there is not enough
+          data.
+        </p>
+        <F>value(t) = a + b·t + s(month of t) + anomaly(t),   s(Jan) + … + s(Dec) = 0</F>
+
+        <H>3. Anomaly and z</H>
+        <p>
+          The anomaly is what the trend and the seasonal cycle do not explain. σ is the standard deviation of the
+          baseline anomalies (n − 1 in the denominator), so z says how many “typical anomalies” a month is away from
+          normal. Missing months stay missing; nothing is interpolated.
+        </p>
+        <F>anomaly = value − trend − seasonal,   z = anomaly / σ</F>
+
+        <H>4. Statistics for the selected interval</H>
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
+          <li>
+            <B>Mean anomaly</B> over the observed months, in the layer’s unit, and <B>mean z</B>. A percentage of normal is
+            shown only for quantities that cannot be negative (every value in the record ≥ 0) and whose expected value is
+            above zero, so never for temperatures or storage anomalies.
+          </li>
+          <li>
+            <B>95 % interval and p value.</B> Neighbouring months are not independent: a wet month tends to follow a wet
+            month. The standard error therefore uses ρ, the lag-1 autocorrelation of the baseline anomalies (adjacent
+            observed months only, kept between 0 and 0.99). The p value is two-sided, from the normal distribution.
+          </li>
+        </ul>
+        <F>se = σ · √( Σᵢ Σⱼ ρ^|tᵢ − tⱼ| ) / n,   z = mean / se,   95 % CI = mean ± 1.96 · se</F>
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
+          <li>
+            <B>Empirical window test.</B> A check that assumes no model of the noise: take every run of the same number of
+            months that lies wholly in the baseline and has no missing month, and count how many have an average at least
+            as far from zero as the interval’s. With k such windows out of N, p = (k + 1) / (N + 1), the “add-one” form
+            that never gives zero. It needs a complete interval and at least 20 windows.
+          </li>
+          <li>
+            <B>Verdict.</B> “Unusually low” or “Unusually high” only when both tests give p &lt; 0.05. “Within normal
+            variability” when both give p ≥ 0.05. “Tests disagree” when one is below 0.05 and the other is not. If only
+            one test can be computed it decides alone; with neither, “Not enough data”.
+          </li>
+          <li>
+            <B>Same-season rank.</B> The interval’s calendar months are compared with the same months in every other year
+            of the record that has them all (e.g. Feb – May of each year): “2nd lowest of 24”. Shown for complete intervals
+            of up to 12 months with at least 5 comparable years. It is a description, not a p value: those years include
+            the pad years and the interval itself, there are only a few dozen of them, and every record has a lowest year,
+            so “1st of 26” for an interval chosen because it looked extreme is far weaker evidence than 1 in 26 suggests.
+          </li>
+          <li>
+            <B>Shape.</B> The peak month (largest |z|), the number of months beyond 2σ, and the share of months with the
+            same sign as the mean.
+          </li>
+        </ul>
+
+        <H>5. Long-term trend</H>
+        <p>
+          The challenge asks whether each variable has a significant long-term trend, so each lane also reports one,
+          for the whole record. Here only the seasonal cycle is removed (same fit as above, on all months); the trend is
+          what is being measured, and the event is not left out.
+        </p>
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
+          <li>
+            <B>Sen slope</B>: the median of the slopes between every pair of months, per decade. It shrugs off single odd
+            months. Its 95 % interval is the rank-based (Sen/Gilbert) interval.
+          </li>
+          <li>
+            <B>Mann–Kendall test</B>: does the series tend to rise (or fall) over time? Monthly values are correlated, so
+            the test’s variance is inflated by n / nEff, with nEff from the lag-1 autocorrelation ρ of the detrended
+            series (negative ρ treated as 0). Two-sided, normal approximation with continuity correction. The same
+            inflation widens the slope interval.
+          </li>
+        </ul>
+        <F>nEff = n · (1 − ρ) / (1 + ρ)</F>
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
+          <li>
+            <B>Years to significance.</B> When a slope is not significant, a rough estimate of how many more years of
+            data would make it so if the slope, sampling and autocorrelation stayed the same. Not shown above 50 years.
+          </li>
+        </ul>
+        <F>extra years ≈ record length · ( (1.96 · se / |slope|)^(2/3) − 1 ),   se = CI width / (2 · 1.96)</F>
+        <p>
+          Sources for the two corrections: the rank interval of{" "}
+          <ExtLink href="https://search.r-project.org/CRAN/refmans/EnvStats/html/kendallTrendTest.html">EnvStats kendallTrendTest</ExtLink>{" "}
+          and the lag-1 correction of{" "}
+          <ExtLink href="https://search.r-project.org/CRAN/refmans/modifiedmk/html/mmky1lag.html">modifiedmk mmky1lag</ExtLink>.
+          The annual SO₂ layer gets none of these tests.
         </p>
       </Part>
 
-      <Part id="ball" title="How the crystal ball encodes data">
+      <Part id="selector" title="Variable suggestions">
         <p>
-          The ball shows one region and one month. Only the channels of your chosen targets are driven by data; the
-          others rest. Every data-driven element in the ball’s legend names its variable, unit and month.
+          After you describe the event, a small language model running on the project’s own server (OneJev 1.6, 0.8 B
+          parameters, no API key) answers one yes/no question per category: is the event related to that category’s
+          one-line definition? Categories with probability ≥ 0.5 come pre-ticked, with the probability beside them. A
+          deployment may instead be configured to call an online model; the label then says “online AI model”.
         </p>
-        <div className="overflow-x-auto rounded-card border border-line">
-          <table className="w-full min-w-[36rem] border-collapse text-left text-[0.9375rem]">
-            <caption className="sr-only">Crystal ball channels</caption>
-            <thead className="bg-well text-ink-2">
-              <tr>
-                <th scope="col" className="px-4 py-2.5 font-semibold">Variable</th>
-                <th scope="col" className="px-4 py-2.5 font-semibold">In the ball</th>
-                <th scope="col" className="px-4 py-2.5 font-semibold">Shared scale</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {VAR_ORDER.map((v) => {
-                const m = VARIABLES[v];
-                return (
-                  <tr key={v} className="align-top">
-                    <th scope="row" className="px-4 py-3 font-medium text-ink">{m.label}</th>
-                    <td className="px-4 py-3 text-ink-2">{m.orbChannel}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-ink-2 tnum">
-                      {m.domain[0]} to {m.domain[1]} {m.unit}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <p>
+          If the model is not running, errors or takes more than 5 seconds, a keyword table answers instead. The screen
+          always says which: “Suggested by the local AI model” or “Suggested by keywords (AI model unavailable)”. The
+          three example cases use fixed variables and skip the model. Suggestions are a starting checklist; you can tick
+          or untick anything, and categories with no data in the chosen basin are disabled. The model never sees or
+          produces a data value.
+        </p>
+      </Part>
+
+      <Part id="ball" title="The crystal ball">
+        <p>
+          The open lane shows a crystal ball for one month: the month under your cursor, otherwise the peak month of
+          the interval. A switch shows the observed month or the normal for that month (trend + seasonal cycle), so the
+          anomaly appears as a change in the ball.
+        </p>
         <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
           <li>
-            Every region uses the same scale for a variable, so balls can be compared. Values outside the scale are
-            clamped and flagged.
+            Only five water quantities drive the ball: precipitation, evapotranspiration and runoff (converted to mm per
+            day), soil water (the root-zone and top-layer layers only) and snow water equivalent.
           </li>
           <li>
-            Particle <em>count</em> carries the value. Particle <em>speed</em> is fixed and means nothing. Particles are
-            an encoding of a monthly average, not tracked drops of water.
+            Every other variable, including air temperature, GRACE storage (an anomaly about an unknown mean) and snow
+            cover, gets a gauge beside the ball instead: the month’s value against its normal and its record range.
+          </li>
+          <li>Hills, trees and clouds are scenery and carry no data.</li>
+        </ul>
+      </Part>
+
+      <Part id="limits" title="Limits">
+        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
+          <li>
+            <B>Timing match, not proof of cause.</B> An unusual interval coincides with the event. Whether one caused the
+            other needs physical reasoning and independent evidence.
           </li>
           <li>
-            Missing is not zero. A missing month turns its channel grey with a note; it is never drawn as an empty
-            sky, a dry soil or a stopped flow.
+            <B>Exploratory p values.</B> You pick the interval after seeing the lanes, and you look at several variables
+            at once. Both make small p values easier to find by chance, and there is no correction for multiple testing
+            yet. Treat p &lt; 0.05 as “worth a closer look”.
           </li>
           <li>
-            <Provenance kind="illustrative" className="mr-1" /> Hills, trees, sand and cloud shapes are chosen from the
-            region’s long-term climate to make the place recognisable. They carry no monthly data. Cloud size is never
-            driven by data, and no river is drawn because there is no river data.
+            <B>Months, not days.</B> A flood that peaks for a week is averaged with the rest of its month.
           </li>
           <li>
-            Vapour colour can carry near-surface air temperature. That is the temperature of the air, not of the vapour
-            and not of the land surface.
+            <B>Basin averages.</B> One number per basin per month hides differences inside it; a hard-hit valley can
+            vanish in a large basin. GRACE storage resolves only about 300 km, so small basins are smoothed.
+          </li>
+          <li>
+            <B>Different kinds of product.</B> GLDAS is a land-surface model and MERRA-2 a reanalysis: physically
+            consistent estimates, not direct measurements. IMERG, GRACE, MODIS, CERES and FIRMS come from satellites;
+            GPCP blends satellites with rain gauges. Two model variables agreeing is expected, not independent
+            confirmation. The <Link href="/data" className="text-link underline underline-offset-2">Data</Link> page lists
+            each layer’s type and caveat.
+          </li>
+          <li>
+            <B>The baseline is the record.</B> Records start between 1979 and 2002, so “normal” means normal for those
+            decades, and a straight-line trend is an approximation.
           </li>
         </ul>
       </Part>
 
-      <Part id="leads" title="Leads">
-        <div className="flex flex-wrap gap-2"><Provenance kind="synthetic" /></div>
-        <p>
-          <span className="font-semibold text-ink">What the engine will do. </span>
-          For each water target, compare it with every eligible variable from the NASA resources of the challenge:
-          temperature, radiation, vegetation, clouds, aerosols, terrain, land cover and more. The system, not the user,
-          picks the method for each pair: anomaly links after removing the seasonal cycle and the long-term trend,
-          lagged links with an automatically chosen range of lags, and spatial links between trend rates across
-          locations. Each pair uses its own common period and resolution, and the whole search is corrected for multiple
-          testing before anything is recommended. “No reliable association found” is a valid, reported result.
-        </p>
-        <p>
-          <span className="font-semibold text-ink">What this demo shows. </span>
-          That engine does not exist yet. Every lead here is a synthetic example, generated deterministically from the
-          region and targets. The candidate product names are real so the layout is realistic, but the associations,
-          lags and p-values are invented and say nothing about the region. Each lead is marked as synthetic wherever it
-          appears.
-        </p>
-      </Part>
-
-      <Part id="limits" title="What this tool does not claim">
-        <ul className="list-disc space-y-2 pl-5 marker:text-ink-3">
-          <li><span className="font-semibold text-ink">No causation.</span> A trend says how something changed, not why. A lead says two things moved together; which one comes first is a statistical clue, not a cause.</li>
-          <li><span className="font-semibold text-ink">No forecast.</span> Playback replays past months. Nothing on this site predicts future months.</li>
-          <li><span className="font-semibold text-ink">No closed water budget.</span> P − ET leaves out runoff and lateral flow, so it is not a storage change. Modelled storage leaves out deep groundwater and surface water, so it is not GRACE.</li>
-          <li><span className="font-semibold text-ink">No drop tracking.</span> The model reports amounts and rates per grid cell. It does not follow water from one place to another.</li>
-          <li><span className="font-semibold text-ink">No independent confirmation.</span> All nine variables come from one model product. Agreement between them is expected, not independent evidence.</li>
-        </ul>
+      <Part id="glossary" title="Words used on screen">
+        <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)]">
+          {GLOSSARY.map(([t, d]) => (
+            <div key={t} className="contents">
+              <dt className="font-semibold text-ink">{t}</dt>
+              <dd>{d}</dd>
+            </div>
+          ))}
+        </dl>
       </Part>
     </ContentPage>
   );

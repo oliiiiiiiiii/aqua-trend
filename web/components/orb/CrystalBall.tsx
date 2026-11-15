@@ -19,6 +19,8 @@ export interface CrystalBallExtraProps {
   legendPlacement?: "auto" | "side" | "below";
   /** diorama style: "glass" (default, smooth landscape in a glass ball), "hex-glass" (hex-tile board in the ball) or "hex-island" (floating hex sky island, no glass) */
   variant?: OrbVariant;
+  /** the ball sits on paper, not on the stage: the "3D view unavailable" fallback then uses paper text colours */
+  onPaper?: boolean;
 }
 
 function subscribeReduced(cb: () => void) {
@@ -49,8 +51,9 @@ const MISSING_ANCHOR: Partial<Record<VarId, AnchorName>> = { precip: "cloud", et
 
 export default function CrystalBall({
   className = "", region, climate, month, values, targets: rawTargets, colorBy, playing = false,
-  showLegend = true, legendPlacement = "auto", variant = "glass", compact = false, onAnchors,
+  showLegend = true, legendPlacement = "auto", variant = "glass", compact = false, onAnchors, onPaper = false,
 }: CrystalBallProps & CrystalBallExtraProps) {
+  const fallbackTone = onPaper ? "border-line text-ink-2" : "border-stage-line text-on-stage-2";
   const targetKey = rawTargets.join(",");
   const targets = useMemo(
     () => targetKey.split(",").filter((v): v is VarId => v in VARIABLES && VARIABLES[v as VarId].target).slice(0, MAX_TARGETS),
@@ -215,13 +218,12 @@ export default function CrystalBall({
   const legendW = legendPlacement === "side" ? "w-[20rem]" : legendPlacement === "below" ? "w-full" : "w-full @min-[44rem]:w-[20rem] @min-[44rem]:max-h-full @min-[44rem]:overflow-y-auto";
 
   const setAnchor = (n: AnchorName) => (el: HTMLElement | null) => { anchors.current[n] = el; };
-  const ctl = "grid h-9 w-9 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
   const chip = "rounded-ctl border border-line px-2 py-0.5 text-[0.75rem] font-semibold leading-tight text-ink whitespace-nowrap shadow-card";
 
   if (compact) {
     // small static comparison orb: the same scene and data channels, no controls, no legend
     return (
-      <div className={`@container ${className}`}>
+      <div data-plane-cursor className={`@container ${className}`}>
         <div
           ref={hostRef}
           role="img"
@@ -230,7 +232,7 @@ export default function CrystalBall({
           className="relative aspect-square h-full w-full min-w-0 select-none overflow-hidden"
         >
           {gl === "failed" && (
-            <div className="absolute inset-[8%] grid place-items-center rounded-full border border-dashed border-stage-line p-3 text-center text-xs text-on-stage-2">3D view unavailable</div>
+            <div className={`absolute inset-[8%] grid place-items-center rounded-full border border-dashed p-3 text-center text-xs ${fallbackTone}`}>3D view unavailable</div>
           )}
           {/* small orb: one chip only, so several missing channels don't pile up on top of each other */}
           {missingChips.slice(0, 1).map((t) => (
@@ -246,7 +248,7 @@ export default function CrystalBall({
   }
 
   return (
-    <div ref={rootRef} className={`@container ${className}`}>
+    <div ref={rootRef} data-plane-cursor className={`@container ${className}`}>
       <div className={`flex h-full w-full gap-4 ${outer}`}>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center gap-3 @min-[28rem]:flex-row @min-[28rem]:items-stretch">
           <div
@@ -259,21 +261,8 @@ export default function CrystalBall({
             onKeyDown={(e) => { if (e.target === e.currentTarget && sceneRef.current?.handleKey(e.nativeEvent)) e.preventDefault(); }}
             className={`relative w-full min-w-0 flex-1 select-none overflow-hidden focus-visible:outline-offset-[-3px] ${ballSize} ${gl === "ok" ? "cursor-grab" : ""}`}
           >
-            {gl === "ok" && !compact && (
-              <div className="absolute bottom-1 right-1 z-20 flex flex-col gap-1.5">
-                <button type="button" className={ctl} aria-label="Zoom in" onClick={() => sceneRef.current?.zoomBy(1.4)}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-                <button type="button" className={ctl} aria-label="Zoom out" onClick={() => sceneRef.current?.zoomBy(1 / 1.4)}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-                <button type="button" className={ctl} aria-label="Reset view" onClick={() => sceneRef.current?.resetView()}>
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="9" cy="9" r="6" /><path d="M9 1.5v3M9 13.5v3M1.5 9h3M13.5 9h3" /></svg>
-                </button>
-              </div>
-            )}
             {gl === "failed" && (
-              <div className="absolute inset-[8%] grid place-items-center rounded-full border border-dashed border-stage-line p-6 text-center text-sm text-on-stage-2">
+              <div className={`absolute inset-[8%] grid place-items-center rounded-full border border-dashed p-6 text-center text-sm ${fallbackTone}`}>
                 3D view unavailable in this browser
               </div>
             )}

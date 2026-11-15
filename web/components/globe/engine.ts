@@ -78,6 +78,12 @@ export class GlobeEngine {
 
   // inputs
   private interactive: boolean;
+  /** wheel, pinch and +/- zoom; off on the home page, where the planet only turns */
+  private zoomEnabled = true;
+  /** hover highlight and click-to-pick; off on the home page */
+  private pickEnabled = true;
+  /** keep turning slowly while idle even though the planet is interactive */
+  private autoRotate = false;
   private reduced: boolean;
   private pointers = new Map<number, { x: number; y: number }>();
   private drag: { x: number; y: number; moved: boolean; lastT: number } | null = null;
@@ -105,7 +111,7 @@ export class GlobeEngine {
 
   constructor(
     private host: HTMLElement,
-    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors },
+    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors; renderPadding?: number },
   ) {
     this.interactive = opts.interactive;
     this.reduced = opts.reducedMotion;
@@ -114,6 +120,8 @@ export class GlobeEngine {
     this.tgt = { ...opts.initialView };
     this.lastReportedZoom = opts.initialView.zoom;
     this.theme = opts.theme;
+    // The larger transparent canvas keeps the same apparent planet size.
+    this.camera.zoom = 1 / (1 + 2 * (opts.renderPadding ?? 0));
 
     // a fresh canvas per engine: React strict mode remounts must not inherit a lost context
     const canvas = document.createElement("canvas");
@@ -142,12 +150,12 @@ export class GlobeEngine {
     this.io.observe(host);
     document.addEventListener("visibilitychange", this.onVisibility);
 
-    canvas.addEventListener("pointerdown", this.onPointerDown);
-    canvas.addEventListener("pointermove", this.onPointerMove);
-    canvas.addEventListener("pointerup", this.onPointerUp);
-    canvas.addEventListener("pointercancel", this.onPointerUp);
-    canvas.addEventListener("pointerleave", this.onPointerLeave);
-    canvas.addEventListener("wheel", this.onWheel, { passive: false });
+    host.addEventListener("pointerdown", this.onPointerDown);
+    host.addEventListener("pointermove", this.onPointerMove);
+    host.addEventListener("pointerup", this.onPointerUp);
+    host.addEventListener("pointercancel", this.onPointerUp);
+    host.addEventListener("pointerleave", this.onPointerLeave);
+    host.addEventListener("wheel", this.onWheel, { passive: false });
     this.resize();
   }
 
@@ -203,13 +211,22 @@ export class GlobeEngine {
   setCallbacks(cb: EngineCallbacks) { this.cb = cb; }
 
   private applyTouchAction() {
-    this.canvas.style.touchAction = this.interactive ? "none" : "auto";
+    // Without zoom the planet only turns: vertical swipes stay with the page so a phone can still scroll past it.
+    this.canvas.style.touchAction = !this.interactive ? "auto" : this.zoomEnabled ? "none" : "pan-y";
   }
 
   setInteractive(v: boolean) {
     this.interactive = v;
     this.applyTouchAction();
     if (!v) { this.pointers.clear(); this.drag = null; this.pinch = null; this.setHover(null); }
+    this.kick();
+  }
+
+  setBehavior(b: { zoom?: boolean; pick?: boolean; autoRotate?: boolean }) {
+    if (b.zoom !== undefined) { this.zoomEnabled = b.zoom; this.pinch = null; }
+    if (b.pick !== undefined) { this.pickEnabled = b.pick; if (!b.pick) { this.hoverPos = null; this.setHover(null); } }
+    if (b.autoRotate !== undefined) this.autoRotate = b.autoRotate;
+    this.applyTouchAction();
     this.kick();
   }
 
@@ -343,10 +360,11 @@ export class GlobeEngine {
       case "ArrowRight": this.flyTo({ ...this.tgt, lon: this.tgt.lon + step }); return true;
       case "ArrowUp": this.flyTo({ ...this.tgt, lat: this.tgt.lat + step }); return true;
       case "ArrowDown": this.flyTo({ ...this.tgt, lat: this.tgt.lat - step }); return true;
-      case "+": case "=": this.zoomBy(1.35); return true;
-      case "-": case "_": this.zoomBy(1 / 1.35); return true;
+      case "+": case "=": if (!this.zoomEnabled) return false; this.zoomBy(1.35); return true;
+      case "-": case "_": if (!this.zoomEnabled) return false; this.zoomBy(1 / 1.35); return true;
       case "Home": case "0": this.resetView(); return true;
       case "Enter": case " ": {
+        if (!this.pickEnabled) return false;
         const v = this.tgt;
         this.cb.onPick?.({ lon: wrapLon(v.lon), lat: v.lat, zoom: round2(v.zoom) });
         return true;
@@ -368,6 +386,9 @@ export class GlobeEngine {
     // whole planet plus its rim in view at zoom 1
     this.d1 = 1.1 / Math.sin(Math.min(halfV, halfH));
     this.camera.updateProjectionMatrix();
+    // Resizing clears the canvas and ResizeObserver runs after this frame's rAF: repaint now or a blank frame shows
+    // for every step of an animated resize (the home -> detective hand-off).
+    if (this.planet && this.running) this.render();
     this.dirty = true;
     this.kick();
   }
@@ -376,7 +397,7 @@ export class GlobeEngine {
 
   /** degrees of arc per screen pixel at the centre of the view */
   private degPerPx() {
-    return ((this.altitude(this.cur.zoom) * Math.tan(((FOV / 2) * Math.PI) / 180)) / (this.height / 2)) * (180 / Math.PI);
+    return ((this.altitude(this.cur.zoom) * Math.tan(((FOV / 2) * Math.PI) / 180)) / (this.camera.zoom * this.height / 2)) * (180 / Math.PI);
   }
 
   private hit(clientX: number, clientY: number): { lon: number; lat: number } | null {
@@ -395,7 +416,8 @@ export class GlobeEngine {
   private onPointerDown = (e: PointerEvent) => {
     if (!this.interactive) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    this.canvas.setPointerCapture?.(e.pointerId);
+    if (!this.zoomEnabled && this.pointers.size >= 1) return; // a second finger would only pinch
+    this.host.setPointerCapture?.(e.pointerId);
     this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (this.pointers.size === 1) {
       this.drag = { x: e.clientX, y: e.clientY, moved: false, lastT: performance.now() };
@@ -412,7 +434,7 @@ export class GlobeEngine {
     if (!this.interactive) return;
     const p = this.pointers.get(e.pointerId);
     if (!p) {
-      if (e.pointerType !== "touch") { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; this.kick(); }
+      if (e.pointerType !== "touch" && this.pickEnabled) { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; this.kick(); }
       return;
     }
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
@@ -450,7 +472,7 @@ export class GlobeEngine {
   private onPointerUp = (e: PointerEvent) => {
     if (!this.pointers.has(e.pointerId)) return;
     this.pointers.delete(e.pointerId);
-    this.canvas.releasePointerCapture?.(e.pointerId);
+    this.host.releasePointerCapture?.(e.pointerId);
     if (this.pointers.size >= 1) return;
     const drag = this.drag;
     this.drag = null;
@@ -458,12 +480,13 @@ export class GlobeEngine {
     this.onCursor("");
     if (!drag) return;
     if (!drag.moved && e.type === "pointerup") {
+      if (!this.pickEnabled) { this.kick(); return; }
       const h = this.hit(e.clientX, e.clientY);
       if (h) this.cb.onPick?.({ lon: wrapLon(h.lon), lat: h.lat, zoom: round2(this.cur.zoom) });
     } else if (this.reduced || performance.now() - drag.lastT > 120) {
       this.vel = { lon: 0, lat: 0 };
     }
-    if (e.pointerType !== "touch") { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; }
+    if (e.pointerType !== "touch" && this.pickEnabled) { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; }
     this.kick();
   };
 
@@ -473,7 +496,7 @@ export class GlobeEngine {
   };
 
   private onWheel = (e: WheelEvent) => {
-    if (!this.interactive) return;
+    if (!this.interactive || !this.zoomEnabled) return;
     e.preventDefault();
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
     this.tgt.zoom = clamp(this.tgt.zoom * Math.exp(-dy * 0.0016), ZOOM_MIN, ZOOM_MAX);
@@ -555,7 +578,7 @@ export class GlobeEngine {
   private step(dt: number) {
     const motion = !this.reduced;
     if (motion) this.time += dt;
-    if (!this.interactive && motion) this.tgt.lon += dt * 5;
+    if ((!this.interactive || this.autoRotate) && motion && !this.drag) this.tgt.lon += dt * 5;
     // inertia
     if (!this.drag && (this.vel.lon || this.vel.lat)) {
       if (!motion) this.vel = { lon: 0, lat: 0 };
@@ -623,7 +646,7 @@ export class GlobeEngine {
     this.ro.disconnect();
     this.io.disconnect();
     document.removeEventListener("visibilitychange", this.onVisibility);
-    const c = this.canvas;
+    const c = this.host;
     c.removeEventListener("pointerdown", this.onPointerDown);
     c.removeEventListener("pointermove", this.onPointerMove);
     c.removeEventListener("pointerup", this.onPointerUp);
@@ -642,7 +665,7 @@ export class GlobeEngine {
     this.blank.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
-    c.remove();
+    this.canvas.remove();
   }
 }
 

@@ -9,7 +9,7 @@ export function SiteFooter() {
           <Link href="/data" className="text-link underline underline-offset-2">Sources and credits</Link>
         </p>
         <p>
-          A NASA Space Apps Challenge 2026 demo, not a NASA product. Leads in the Explore demo are synthetic examples. The site was
+          A NASA Space Apps Challenge 2026 demo, not a NASA product. The site was
           built with AI assistance, as the challenge rules ask us to disclose.
         </p>
       </div>

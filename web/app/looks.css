@@ -1,0 +1,265 @@
+/* =====================================================================
+   Visual looks. <html data-look="terrarium | strip | console | atlas"> is orthogonal to light/dark
+   (<html data-theme="terrarium | night">). Terrarium is the baseline in globals.css and has no overrides.
+
+   Each look overrides token VALUES only (the Tailwind names in globals.css keep working), plus a couple of
+   decorative background rules. Specificity: the shared block `:root[data-look]` (0,2,0) comes later than
+   globals.css and so beats it; the theme blocks `:root[data-look][data-theme]` (0,3,0) beat both.
+   Tokens a look does not set fall through to the baseline of the active theme.
+
+   The anomaly diverging pair --viz-cool / --viz-warm keeps its validated values; --action is never blue
+   or red in any look (the event band is drawn with --action), and --focus (the selection) differs from it.
+   scripts/check-look-contrast.mjs checks the text pairs of every look x theme.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   STRIP: strip-chart recorder. Pen traces on gridded chart paper.
+   Display Barlow Condensed 600 (the lettering of instrument dials and chart-paper headers) over Barlow, its
+   own text companion: same skeleton and proportions, so the condensed headings and the body read as one hand.
+   --------------------------------------------------------------------- */
+:root[data-look="strip"] {
+  --r-card: 6px;
+  --r-ctl: 6px;
+  --font-display-active: var(--font-barlow-condensed), "Arial Narrow", system-ui, sans-serif;
+  --font-body-active: var(--font-barlow), system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: 0.01em;
+}
+:root[data-look="strip"][data-theme="terrarium"] {
+  --stage: #1c3345;
+  --stage-2: #28495d;
+  --on-stage: #eef5f0;
+  --on-stage-2: #bdd0cc;
+  --stage-line: rgba(238, 245, 240, 0.24);
+  --paper: #edf3ee;
+  --well: #e0e9e2;
+  --ink: #14263f;
+  --ink-2: #394c63;
+  --ink-3: #566a7c;
+  --line: #bccdc2;
+  --action: #f6e23d;
+  --action-hover: #ead31a;
+  --on-action: #14263f;
+  --link: #0a5e84;
+  --focus: #0a5e84;
+  --water: #2fa5b8;
+  --leaf: #5e9e4a;
+  --sand: #d8cda5;
+  --shadow-card: 0 1px 0 rgba(20, 38, 63, 0.12);
+  --viz-grid: #d3e0d7;
+  --viz-axis: #a4b8ab;
+  --viz-mid: #dce5de;
+  --viz-map-mid: #dce5de;
+}
+:root[data-look="strip"][data-theme="night"] {
+  --stage: #0d1a17;
+  --stage-2: #172c27;
+  --on-stage: #e6f0ea;
+  --on-stage-2: #a9c0b6;
+  --stage-line: rgba(230, 240, 234, 0.2);
+  --paper: #14211e;
+  --well: #1b2d29;
+  --ink: #e6f0ea;
+  --ink-2: #b0c4ba;
+  --ink-3: #8ca297;
+  --line: #2c423b;
+  --action: #e9dc5b;
+  --action-hover: #f2e775;
+  --on-action: #14211e;
+  --link: #8fdcb9;
+  --focus: #8fdcb9;
+  --water: #3bb5c4;
+  --leaf: #6fb55a;
+  --sand: #cfc59d;
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --viz-grid: #22352f;
+  --viz-axis: #3a554b;
+  --viz-mid: #283b35;
+  --viz-map-mid: #7a8a82;
+}
+/* graph paper: a fine 12 px grid with a heavier line every 60 px. Paper below panels, sky on the stage. */
+:root[data-look="strip"] body {
+  background-image:
+    linear-gradient(rgba(20, 38, 63, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 38, 63, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(20, 38, 63, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 38, 63, 0.035) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+}
+:root[data-look="strip"][data-theme="night"] body {
+  background-image:
+    linear-gradient(rgba(190, 235, 215, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(190, 235, 215, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(190, 235, 215, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(190, 235, 215, 0.03) 1px, transparent 1px);
+}
+:root[data-look="strip"] .stage-sky {
+  background:
+    linear-gradient(rgba(238, 245, 240, 0.07) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(90deg, rgba(238, 245, 240, 0.07) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(rgba(238, 245, 240, 0.035) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(90deg, rgba(238, 245, 240, 0.035) 1px, transparent 1px) 0 0 / 12px 12px,
+    linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+}
+
+/* ---------------------------------------------------------------------
+   CONSOLE: Earth-observation operations room. Dark-first, blue-graphite, 1 px lines, signal amber.
+   Display Archivo with its width axis opened to 112 (wide, technical, still quick to read), body Inter:
+   neutral and dense-friendly at small sizes, so the wide headings carry all the character.
+   --------------------------------------------------------------------- */
+:root[data-look="console"] {
+  --r-card: 8px;
+  --r-ctl: 8px;
+  --font-display-active: var(--font-archivo), system-ui, sans-serif;
+  --font-body-active: var(--font-inter), system-ui, sans-serif;
+  --display-weight: 650;
+  --display-tracking: -0.005em;
+}
+:root[data-look="console"][data-theme="terrarium"] {
+  --stage: #26364b;
+  --stage-2: #344a63;
+  --on-stage: #eaf0f7;
+  --on-stage-2: #bccade;
+  --stage-line: rgba(234, 240, 247, 0.22);
+  --paper: #f2f4f7;
+  --well: #e5e9ef;
+  --ink: #161f2c;
+  --ink-2: #404e61;
+  --ink-3: #5a6779;
+  --line: #c9d0db;
+  --action: #f4a62a;
+  --action-hover: #e8950f;
+  --on-action: #1b1405;
+  --link: #1a5ea6;
+  --focus: #0b6e7f;
+  --water: #2aa7c9;
+  --leaf: #5aa044;
+  --sand: #d9cfb4;
+  --shadow-card: 0 1px 2px rgba(22, 31, 44, 0.1);
+  --viz-grid: #e0e5ec;
+  --viz-axis: #b5bfcc;
+  --viz-mid: #e6e9ee;
+  --viz-map-mid: #e6e9ee;
+}
+:root[data-look="console"][data-theme="night"] {
+  --stage: #111a2b;
+  --stage-2: #1b2a43;
+  --on-stage: #e8eef7;
+  --on-stage-2: #aebcd2;
+  --stage-line: rgba(232, 238, 247, 0.16);
+  --paper: #172134;
+  --well: #1f2b42;
+  --ink: #e8edf5;
+  --ink-2: #b0bccf;
+  --ink-3: #8795ab;
+  --line: #2d3b54;
+  --action: #f2aa3c;
+  --action-hover: #f7bd62;
+  --on-action: #1b1405;
+  --link: #86b9f3;
+  --focus: #5fd0e6;
+  --water: #3ab8da;
+  --leaf: #67b34f;
+  --sand: #cdbf9d;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --viz-grid: #26344c;
+  --viz-axis: #3d4f6c;
+  --viz-mid: #2b3a55;
+  --viz-map-mid: #7a869b;
+  /* amber at the baseline 0.18 turns to mud over the dark blue paper; a stronger tint stays amber */
+  --event-band-opacity: 0.36;
+}
+:root[data-look="console"] h1,
+:root[data-look="console"] h2,
+:root[data-look="console"] h3,
+:root[data-look="console"] .font-display {
+  font-variation-settings: "wdth" 112;
+}
+/* a faint 1 px screen grid on the stage only: monitors, not graph paper */
+:root[data-look="console"] .stage-sky {
+  background:
+    linear-gradient(rgba(234, 240, 247, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(234, 240, 247, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+}
+
+/* ---------------------------------------------------------------------
+   ATLAS: physical atlas. Sea blues on the stage with lowland-green and upland-tan washes in its corners, and
+   contour lines drawn over it. Paper is a cool pale blue-grey, never cream.
+   Display Literata (a sturdy reading serif designed for books and screens; heavier and sturdier than
+   Newsreader, less ornamental than Fraunces/Playfair) over Public Sans, a clean civic sans.
+   --------------------------------------------------------------------- */
+:root[data-look="atlas"] {
+  --r-card: 12px;
+  --r-ctl: 10px;
+  --font-display-active: var(--font-literata), Georgia, serif;
+  --font-body-active: var(--font-public-sans), system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.005em;
+}
+:root[data-look="atlas"][data-theme="terrarium"] {
+  --stage: #27617f;
+  --stage-2: #377d91;
+  --on-stage: #ffffff;
+  --on-stage-2: #e0eef2;
+  --stage-line: rgba(255, 255, 255, 0.3);
+  --paper: #eef2f6;
+  --well: #e1e8ef;
+  --ink: #15273a;
+  --ink-2: #3f5266;
+  --ink-3: #566a7e;
+  --line: #c3cfdb;
+  --action: #34b394;
+  --action-hover: #27a283;
+  --on-action: #0b2330;
+  --link: #1d5c93;
+  --focus: #1d5c93;
+  --water: #2fb0cf;
+  --leaf: #6aa84f;
+  --sand: #d9c79d;
+  --shadow-card: 0 6px 18px -12px rgba(21, 39, 58, 0.5);
+  --viz-grid: #dbe3eb;
+  --viz-axis: #b0bfce;
+  --viz-mid: #e3e8ee;
+  --viz-map-mid: #e3e8ee;
+}
+:root[data-look="atlas"][data-theme="night"] {
+  --stage: #0a1527;
+  --stage-2: #123049;
+  --on-stage: #eaf1f8;
+  --on-stage-2: #aec3d6;
+  --stage-line: rgba(234, 241, 248, 0.17);
+  --paper: #111c2e;
+  --well: #19273f;
+  --ink: #e4ecf4;
+  --ink-2: #aebdcf;
+  --ink-3: #8497ae;
+  --line: #263953;
+  --action: #52cdad;
+  --action-hover: #72dcc0;
+  --on-action: #07202a;
+  --link: #8cc4f0;
+  --focus: #f2c879;
+  --water: #3bbfe0;
+  --leaf: #6db553;
+  --sand: #cdbd96;
+  --shadow-card: 0 10px 26px -16px rgba(0, 0, 0, 0.8);
+  --viz-grid: #1f3250;
+  --viz-axis: #38507a;
+  --viz-mid: #28384f;
+  --viz-map-mid: #77839a;
+}
+:root[data-look="atlas"] .stage-sky {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMid slice'><g fill='none' stroke='white' opacity='0.22'><path d='M963 226Q963 230 963 234Q964 238 966 245Q968 251 960 254Q953 256 945 256Q937 256 930 256Q923 256 918 253Q912 251 907 248Q902 246 896 243Q891 239 884 235Q877 230 884 225Q891 221 897 218Q903 215 908 213Q913 210 918 206Q923 203 930 202Q937 202 945 203Q952 205 959 207Q967 209 965 216Q964 222 963 226Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M996 222Q996 230 998 239Q1001 247 1004 260Q1007 273 991 277Q974 281 959 282Q944 283 930 282Q916 282 906 276Q895 271 884 266Q873 262 861 256Q849 250 837 240Q824 230 840 221Q855 212 866 206Q877 200 886 195Q895 189 905 182Q915 175 930 174Q945 174 960 176Q974 179 989 184Q1003 189 999 202Q995 214 996 222Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1027 219Q1030 230 1035 243Q1041 257 1044 276Q1046 295 1020 300Q995 305 973 307Q951 310 930 308Q910 307 894 299Q878 290 861 284Q844 278 824 269Q805 260 789 245Q773 230 797 217Q822 204 837 195Q851 186 863 176Q876 167 892 157Q908 147 930 146Q952 146 975 149Q998 152 1018 161Q1038 170 1031 188Q1024 207 1027 219Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1058 215Q1066 230 1075 249Q1084 267 1084 292Q1084 316 1049 322Q1014 327 986 332Q958 337 931 334Q903 332 882 321Q861 309 837 302Q813 296 785 284Q757 272 740 251Q723 230 758 213Q792 197 808 184Q823 170 840 158Q856 145 878 132Q901 119 930 118Q960 118 991 121Q1022 124 1046 138Q1071 151 1061 176Q1051 201 1058 215Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M1090 212Q1104 230 1117 254Q1129 278 1125 308Q1122 337 1077 343Q1033 349 999 356Q965 364 931 360Q897 356 871 342Q845 328 813 321Q780 314 744 299Q708 284 692 257Q676 230 721 210Q765 190 780 172Q795 154 816 138Q836 122 865 106Q893 91 930 90Q967 89 1007 92Q1047 95 1074 115Q1101 134 1089 164Q1076 195 1090 212Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1123 209Q1146 230 1161 260Q1175 290 1167 323Q1158 357 1105 364Q1051 370 1012 381Q973 392 932 385Q891 379 860 363Q829 347 787 340Q745 334 701 315Q658 296 646 263Q633 230 686 207Q738 183 752 161Q765 138 790 118Q816 98 851 80Q886 63 930 61Q975 60 1023 63Q1072 67 1100 93Q1129 119 1115 154Q1100 189 1123 209Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1158 206Q1191 230 1207 265Q1223 301 1207 339Q1192 377 1131 384Q1070 391 1025 406Q980 420 933 410Q885 400 849 383Q812 366 759 360Q707 355 657 332Q607 308 601 269Q594 230 653 204Q713 177 723 149Q733 120 765 98Q796 75 837 55Q878 35 931 32Q983 29 1040 34Q1096 38 1125 71Q1154 105 1139 144Q1125 183 1158 206Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1196 203Q1240 230 1255 271Q1270 312 1247 354Q1225 395 1157 404Q1088 413 1038 431Q988 449 934 434Q880 419 837 403Q794 387 730 382Q667 377 612 349Q557 320 558 275Q559 230 623 200Q687 171 693 136Q700 101 738 77Q776 52 823 29Q871 6 931 2Q991 -2 1056 4Q1121 10 1148 51Q1175 93 1163 135Q1151 176 1196 203Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M321 512Q325 520 323 529Q320 537 309 542Q298 547 291 553Q283 558 271 557Q260 556 250 557Q240 558 226 561Q212 564 200 559Q189 554 188 545Q186 535 193 528Q199 520 194 513Q189 505 195 499Q201 493 208 486Q215 479 226 475Q237 471 250 471Q263 471 271 479Q279 487 283 493Q288 499 302 501Q316 504 321 512Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M393 503Q399 520 394 537Q388 554 368 564Q347 574 331 585Q316 596 292 594Q269 591 249 595Q229 599 200 605Q171 611 150 599Q129 588 128 569Q128 550 137 535Q147 520 137 505Q127 490 140 478Q153 466 166 452Q178 437 201 429Q224 421 250 422Q275 424 290 440Q305 456 316 467Q327 477 357 482Q386 487 393 503Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M466 495Q472 520 464 545Q455 570 425 586Q396 601 372 617Q348 633 313 629Q278 624 247 634Q217 643 174 651Q130 659 101 639Q72 619 73 591Q73 563 83 542Q93 520 78 497Q62 474 84 457Q106 439 123 417Q141 394 176 382Q210 370 249 375Q287 379 308 404Q329 428 350 440Q371 452 415 461Q460 469 466 495Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M539 485Q543 520 532 553Q521 586 483 607Q445 629 412 649Q379 669 333 663Q286 657 245 674Q205 691 146 700Q87 708 53 679Q19 649 20 613Q21 576 28 548Q36 520 17 489Q-2 459 28 436Q58 413 80 381Q102 349 150 335Q197 320 248 328Q298 337 325 369Q353 402 385 414Q418 426 477 438Q535 451 539 485Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M612 476Q612 520 599 561Q586 602 540 629Q493 656 451 679Q408 703 352 696Q295 690 243 716Q191 743 118 750Q45 757 7 717Q-31 677 -30 633Q-29 588 -27 554Q-24 520 -46 482Q-67 443 -28 415Q11 386 36 344Q62 303 123 286Q184 270 246 284Q309 299 342 337Q375 376 422 386Q470 397 541 415Q612 432 612 476Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M683 467Q678 520 665 569Q652 617 597 650Q542 683 489 709Q436 735 370 729Q304 724 240 761Q176 799 90 802Q3 805 -37 754Q-78 703 -78 651Q-79 600 -83 560Q-87 520 -109 474Q-131 428 -84 393Q-37 359 -9 307Q19 254 95 238Q171 221 244 243Q318 264 358 307Q398 349 462 357Q526 365 607 390Q688 414 683 467Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M753 458Q743 520 731 577Q718 634 653 672Q589 709 525 737Q462 765 388 763Q314 760 237 809Q160 859 62 855Q-37 851 -78 789Q-120 727 -124 670Q-129 612 -140 566Q-152 520 -173 466Q-194 412 -140 372Q-87 332 -56 267Q-24 203 67 189Q159 175 243 204Q326 232 374 277Q422 322 505 327Q587 331 675 363Q762 396 753 458Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M821 449Q807 520 796 585Q786 650 710 692Q634 735 560 764Q487 794 405 797Q324 800 234 861Q144 922 35 908Q-74 894 -117 822Q-160 749 -170 687Q-180 624 -200 572Q-219 520 -237 459Q-255 398 -197 350Q-139 303 -104 227Q-69 151 39 142Q148 133 241 168Q334 203 391 248Q448 292 550 294Q652 295 743 337Q834 378 821 449Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M651 636Q653 640 649 643Q646 646 643 649Q640 651 637 653Q634 656 630 660Q627 665 620 664Q614 663 610 660Q606 656 603 654Q600 651 597 649Q594 646 591 643Q589 640 590 636Q591 633 591 628Q591 624 598 623Q604 622 610 623Q616 623 620 624Q624 624 630 622Q637 621 642 623Q647 625 648 629Q649 633 651 636Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M682 633Q685 640 678 646Q670 652 665 657Q660 662 654 667Q648 673 641 682Q633 691 621 688Q608 685 600 678Q592 672 586 667Q579 663 573 658Q567 653 562 646Q558 640 560 633Q561 626 561 616Q561 607 576 606Q590 605 601 606Q611 608 620 607Q629 607 641 604Q654 601 664 605Q673 610 676 618Q679 626 682 633Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M713 629Q718 640 706 649Q694 658 687 666Q680 673 672 682Q664 691 652 704Q640 717 622 711Q603 705 591 696Q579 687 568 681Q557 675 548 667Q539 660 533 650Q528 640 528 629Q529 618 531 604Q532 591 554 590Q577 590 592 591Q607 592 620 590Q634 588 653 584Q672 580 685 588Q699 596 703 607Q708 619 713 629Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M744 626Q749 640 732 652Q716 663 708 674Q700 685 691 698Q681 711 664 727Q647 744 623 734Q598 724 582 713Q566 703 551 695Q536 687 524 677Q512 666 504 653Q497 640 496 625Q496 610 500 592Q504 575 534 576Q565 576 584 576Q603 576 621 572Q639 568 665 564Q690 559 707 571Q723 582 731 597Q738 611 744 626Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M774 622Q780 640 758 654Q736 668 729 683Q722 697 711 715Q700 732 677 751Q654 769 624 755Q593 741 573 730Q552 718 533 709Q514 700 499 686Q485 673 475 656Q465 640 463 621Q461 601 468 580Q476 560 515 562Q554 564 576 562Q599 559 622 553Q645 547 677 542Q709 538 728 553Q747 569 758 586Q769 604 774 622Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M804 618Q809 640 782 657Q756 673 751 692Q745 710 732 732Q719 754 690 774Q661 794 625 775Q589 757 564 745Q538 734 515 723Q491 712 475 696Q458 679 445 660Q432 640 428 616Q425 593 438 569Q450 545 498 549Q545 553 569 547Q594 542 622 533Q650 525 688 521Q726 517 748 536Q770 556 785 576Q800 596 804 618Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M834 614Q836 640 806 659Q776 678 773 701Q770 724 755 751Q739 778 703 798Q667 817 626 794Q585 771 555 761Q524 751 497 738Q469 724 450 705Q431 686 415 663Q398 640 393 612Q387 584 407 558Q427 532 481 537Q536 543 562 533Q589 523 623 512Q657 502 700 499Q744 497 769 520Q793 543 813 566Q832 589 834 614Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M862 610Q860 640 828 661Q795 682 796 711Q797 739 779 770Q760 801 716 820Q673 839 627 812Q581 786 545 777Q509 768 478 753Q447 737 426 714Q404 692 383 666Q362 640 356 607Q350 574 378 547Q406 520 466 526Q527 533 555 517Q583 502 623 490Q663 478 712 477Q761 477 789 504Q816 530 840 555Q864 581 862 610Z' stroke-width='1.6' stroke-opacity='0.9'/></g></svg>") center / cover no-repeat,
+    radial-gradient(ellipse 55% 60% at 100% 100%, rgba(143, 184, 112, 0.3), transparent 70%),
+    radial-gradient(ellipse 40% 45% at 0% 100%, rgba(214, 186, 132, 0.22), transparent 70%),
+    linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+}
+:root[data-look="atlas"][data-theme="night"] .stage-sky {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='xMidYMid slice'><g fill='none' stroke='white' opacity='0.22'><path d='M963 226Q963 230 963 234Q964 238 966 245Q968 251 960 254Q953 256 945 256Q937 256 930 256Q923 256 918 253Q912 251 907 248Q902 246 896 243Q891 239 884 235Q877 230 884 225Q891 221 897 218Q903 215 908 213Q913 210 918 206Q923 203 930 202Q937 202 945 203Q952 205 959 207Q967 209 965 216Q964 222 963 226Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M996 222Q996 230 998 239Q1001 247 1004 260Q1007 273 991 277Q974 281 959 282Q944 283 930 282Q916 282 906 276Q895 271 884 266Q873 262 861 256Q849 250 837 240Q824 230 840 221Q855 212 866 206Q877 200 886 195Q895 189 905 182Q915 175 930 174Q945 174 960 176Q974 179 989 184Q1003 189 999 202Q995 214 996 222Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1027 219Q1030 230 1035 243Q1041 257 1044 276Q1046 295 1020 300Q995 305 973 307Q951 310 930 308Q910 307 894 299Q878 290 861 284Q844 278 824 269Q805 260 789 245Q773 230 797 217Q822 204 837 195Q851 186 863 176Q876 167 892 157Q908 147 930 146Q952 146 975 149Q998 152 1018 161Q1038 170 1031 188Q1024 207 1027 219Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1058 215Q1066 230 1075 249Q1084 267 1084 292Q1084 316 1049 322Q1014 327 986 332Q958 337 931 334Q903 332 882 321Q861 309 837 302Q813 296 785 284Q757 272 740 251Q723 230 758 213Q792 197 808 184Q823 170 840 158Q856 145 878 132Q901 119 930 118Q960 118 991 121Q1022 124 1046 138Q1071 151 1061 176Q1051 201 1058 215Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M1090 212Q1104 230 1117 254Q1129 278 1125 308Q1122 337 1077 343Q1033 349 999 356Q965 364 931 360Q897 356 871 342Q845 328 813 321Q780 314 744 299Q708 284 692 257Q676 230 721 210Q765 190 780 172Q795 154 816 138Q836 122 865 106Q893 91 930 90Q967 89 1007 92Q1047 95 1074 115Q1101 134 1089 164Q1076 195 1090 212Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1123 209Q1146 230 1161 260Q1175 290 1167 323Q1158 357 1105 364Q1051 370 1012 381Q973 392 932 385Q891 379 860 363Q829 347 787 340Q745 334 701 315Q658 296 646 263Q633 230 686 207Q738 183 752 161Q765 138 790 118Q816 98 851 80Q886 63 930 61Q975 60 1023 63Q1072 67 1100 93Q1129 119 1115 154Q1100 189 1123 209Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1158 206Q1191 230 1207 265Q1223 301 1207 339Q1192 377 1131 384Q1070 391 1025 406Q980 420 933 410Q885 400 849 383Q812 366 759 360Q707 355 657 332Q607 308 601 269Q594 230 653 204Q713 177 723 149Q733 120 765 98Q796 75 837 55Q878 35 931 32Q983 29 1040 34Q1096 38 1125 71Q1154 105 1139 144Q1125 183 1158 206Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M1196 203Q1240 230 1255 271Q1270 312 1247 354Q1225 395 1157 404Q1088 413 1038 431Q988 449 934 434Q880 419 837 403Q794 387 730 382Q667 377 612 349Q557 320 558 275Q559 230 623 200Q687 171 693 136Q700 101 738 77Q776 52 823 29Q871 6 931 2Q991 -2 1056 4Q1121 10 1148 51Q1175 93 1163 135Q1151 176 1196 203Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M321 512Q325 520 323 529Q320 537 309 542Q298 547 291 553Q283 558 271 557Q260 556 250 557Q240 558 226 561Q212 564 200 559Q189 554 188 545Q186 535 193 528Q199 520 194 513Q189 505 195 499Q201 493 208 486Q215 479 226 475Q237 471 250 471Q263 471 271 479Q279 487 283 493Q288 499 302 501Q316 504 321 512Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M393 503Q399 520 394 537Q388 554 368 564Q347 574 331 585Q316 596 292 594Q269 591 249 595Q229 599 200 605Q171 611 150 599Q129 588 128 569Q128 550 137 535Q147 520 137 505Q127 490 140 478Q153 466 166 452Q178 437 201 429Q224 421 250 422Q275 424 290 440Q305 456 316 467Q327 477 357 482Q386 487 393 503Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M466 495Q472 520 464 545Q455 570 425 586Q396 601 372 617Q348 633 313 629Q278 624 247 634Q217 643 174 651Q130 659 101 639Q72 619 73 591Q73 563 83 542Q93 520 78 497Q62 474 84 457Q106 439 123 417Q141 394 176 382Q210 370 249 375Q287 379 308 404Q329 428 350 440Q371 452 415 461Q460 469 466 495Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M539 485Q543 520 532 553Q521 586 483 607Q445 629 412 649Q379 669 333 663Q286 657 245 674Q205 691 146 700Q87 708 53 679Q19 649 20 613Q21 576 28 548Q36 520 17 489Q-2 459 28 436Q58 413 80 381Q102 349 150 335Q197 320 248 328Q298 337 325 369Q353 402 385 414Q418 426 477 438Q535 451 539 485Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M612 476Q612 520 599 561Q586 602 540 629Q493 656 451 679Q408 703 352 696Q295 690 243 716Q191 743 118 750Q45 757 7 717Q-31 677 -30 633Q-29 588 -27 554Q-24 520 -46 482Q-67 443 -28 415Q11 386 36 344Q62 303 123 286Q184 270 246 284Q309 299 342 337Q375 376 422 386Q470 397 541 415Q612 432 612 476Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M683 467Q678 520 665 569Q652 617 597 650Q542 683 489 709Q436 735 370 729Q304 724 240 761Q176 799 90 802Q3 805 -37 754Q-78 703 -78 651Q-79 600 -83 560Q-87 520 -109 474Q-131 428 -84 393Q-37 359 -9 307Q19 254 95 238Q171 221 244 243Q318 264 358 307Q398 349 462 357Q526 365 607 390Q688 414 683 467Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M753 458Q743 520 731 577Q718 634 653 672Q589 709 525 737Q462 765 388 763Q314 760 237 809Q160 859 62 855Q-37 851 -78 789Q-120 727 -124 670Q-129 612 -140 566Q-152 520 -173 466Q-194 412 -140 372Q-87 332 -56 267Q-24 203 67 189Q159 175 243 204Q326 232 374 277Q422 322 505 327Q587 331 675 363Q762 396 753 458Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M821 449Q807 520 796 585Q786 650 710 692Q634 735 560 764Q487 794 405 797Q324 800 234 861Q144 922 35 908Q-74 894 -117 822Q-160 749 -170 687Q-180 624 -200 572Q-219 520 -237 459Q-255 398 -197 350Q-139 303 -104 227Q-69 151 39 142Q148 133 241 168Q334 203 391 248Q448 292 550 294Q652 295 743 337Q834 378 821 449Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M651 636Q653 640 649 643Q646 646 643 649Q640 651 637 653Q634 656 630 660Q627 665 620 664Q614 663 610 660Q606 656 603 654Q600 651 597 649Q594 646 591 643Q589 640 590 636Q591 633 591 628Q591 624 598 623Q604 622 610 623Q616 623 620 624Q624 624 630 622Q637 621 642 623Q647 625 648 629Q649 633 651 636Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M682 633Q685 640 678 646Q670 652 665 657Q660 662 654 667Q648 673 641 682Q633 691 621 688Q608 685 600 678Q592 672 586 667Q579 663 573 658Q567 653 562 646Q558 640 560 633Q561 626 561 616Q561 607 576 606Q590 605 601 606Q611 608 620 607Q629 607 641 604Q654 601 664 605Q673 610 676 618Q679 626 682 633Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M713 629Q718 640 706 649Q694 658 687 666Q680 673 672 682Q664 691 652 704Q640 717 622 711Q603 705 591 696Q579 687 568 681Q557 675 548 667Q539 660 533 650Q528 640 528 629Q529 618 531 604Q532 591 554 590Q577 590 592 591Q607 592 620 590Q634 588 653 584Q672 580 685 588Q699 596 703 607Q708 619 713 629Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M744 626Q749 640 732 652Q716 663 708 674Q700 685 691 698Q681 711 664 727Q647 744 623 734Q598 724 582 713Q566 703 551 695Q536 687 524 677Q512 666 504 653Q497 640 496 625Q496 610 500 592Q504 575 534 576Q565 576 584 576Q603 576 621 572Q639 568 665 564Q690 559 707 571Q723 582 731 597Q738 611 744 626Z' stroke-width='1.6' stroke-opacity='0.9'/><path d='M774 622Q780 640 758 654Q736 668 729 683Q722 697 711 715Q700 732 677 751Q654 769 624 755Q593 741 573 730Q552 718 533 709Q514 700 499 686Q485 673 475 656Q465 640 463 621Q461 601 468 580Q476 560 515 562Q554 564 576 562Q599 559 622 553Q645 547 677 542Q709 538 728 553Q747 569 758 586Q769 604 774 622Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M804 618Q809 640 782 657Q756 673 751 692Q745 710 732 732Q719 754 690 774Q661 794 625 775Q589 757 564 745Q538 734 515 723Q491 712 475 696Q458 679 445 660Q432 640 428 616Q425 593 438 569Q450 545 498 549Q545 553 569 547Q594 542 622 533Q650 525 688 521Q726 517 748 536Q770 556 785 576Q800 596 804 618Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M834 614Q836 640 806 659Q776 678 773 701Q770 724 755 751Q739 778 703 798Q667 817 626 794Q585 771 555 761Q524 751 497 738Q469 724 450 705Q431 686 415 663Q398 640 393 612Q387 584 407 558Q427 532 481 537Q536 543 562 533Q589 523 623 512Q657 502 700 499Q744 497 769 520Q793 543 813 566Q832 589 834 614Z' stroke-width='0.8' stroke-opacity='0.6'/><path d='M862 610Q860 640 828 661Q795 682 796 711Q797 739 779 770Q760 801 716 820Q673 839 627 812Q581 786 545 777Q509 768 478 753Q447 737 426 714Q404 692 383 666Q362 640 356 607Q350 574 378 547Q406 520 466 526Q527 533 555 517Q583 502 623 490Q663 478 712 477Q761 477 789 504Q816 530 840 555Q864 581 862 610Z' stroke-width='1.6' stroke-opacity='0.9'/></g></svg>") center / cover no-repeat,
+    radial-gradient(ellipse 55% 60% at 100% 100%, rgba(90, 140, 90, 0.2), transparent 70%),
+    radial-gradient(ellipse 40% 45% at 0% 100%, rgba(170, 140, 90, 0.14), transparent 70%),
+    linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+}

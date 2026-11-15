@@ -1,6 +1,6 @@
 // Component contracts between the work packages. Owned by the PM.
 // Implementations may ADD optional props, but must not rename or remove anything here.
-import type { Lead, LayerId, Region, RegionSeries, VarId } from "./types";
+import type { LayerId, Region, RegionSeries, VarId } from "./types";
 
 /* ---------------------------------------------------------------- globe  (components/globe/GlobeCanvas.tsx) */
 export interface GlobePoint { lon: number; lat: number }
@@ -52,24 +52,4 @@ export interface CrystalBallProps {
   compact?: boolean;
   /** called (throttled, only when something moved > 1 px) with the on-screen anchor of each channel's drawing; never called when `compact` */
   onAnchors?: (a: OrbAnchors) => void;
-}
-
-/* ---------------------------------------------------------------- evidence  (components/evidence/TrendPanel.tsx) */
-export interface TrendPanelProps {
-  region: Region;
-  series: RegionSeries;
-  targets: VarId[];
-  /** index into series.months for the playback cursor */
-  monthIndex: number;
-  onMonthChange: (index: number) => void;
-}
-
-/* ---------------------------------------------------------------- leads  (components/leads/LeadsPanel.tsx) */
-export interface LeadsPanelProps {
-  region: Region;
-  /** null when the region has no GLDAS series (ocean, Antarctica) */
-  series: RegionSeries | null;
-  targets: VarId[];
-  selectedLeadId: string | null;
-  onSelectLead: (lead: Lead | null) => void;
 }

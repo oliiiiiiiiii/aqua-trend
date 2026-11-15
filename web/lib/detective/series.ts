@@ -10,6 +10,7 @@
 // ("b4-4040046370") is also the series file name. `seriesRegionId` is the one place to map them if that ever changes.
 import type { CategoryId, LayerId, MonthlySeries, RegionId, YearMonth } from "./contracts";
 import { CATEGORY_IDS, isCategory, isYearMonth } from "./url";
+import { withEnglishText } from "./layerText";
 
 const BASE = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/data`;
 
@@ -71,7 +72,7 @@ export function loadVariableCatalog(): Promise<VariableCatalog> {
     const order: LayerId[] = [];
     for (const [id, l] of Object.entries(raw.layers ?? {})) {
       if (!l.category || !isCategory(l.category) || !l.start || !isYearMonth(l.start) || !l.end || !isYearMonth(l.end)) continue;
-      layers[id] = {
+      layers[id] = withEnglishText({
         id,
         name: l.name ?? id,
         category: l.category,
@@ -84,7 +85,7 @@ export function loadVariableCatalog(): Promise<VariableCatalog> {
         start: l.start,
         end: l.end,
         caveat: l.caveat ? l.caveat : null,
-      };
+      });
       order.push(id);
     }
     const defaults: Partial<Record<CategoryId, LayerId>> = {};

@@ -9,10 +9,9 @@ import type { PresetEvent } from "./contracts";
 export const PRESET_EVENTS: PresetEvent[] = [
   {
     id: "taiwan-2021-drought",
-    title: "2021 台灣春季大旱",
-    event: "2021 台灣春季大旱",
-    blurb:
-      "2020 年是 1964 年以來第一次沒有颱風登陸台灣，秋冬到春天又少雨；2021 年 4–5 月水庫見底，中部實施分區供水。",
+    title: "2021 Taiwan spring drought",
+    event: "2021 Taiwan spring drought",
+    blurb: "No typhoon made landfall in 2020, then a dry winter; reservoirs ran very low by April–May 2021 and central Taiwan rationed water.",
     time: { start: "2021-02", end: "2021-05" },
     region: "b4-4040046370",
     categories: ["precip", "soil", "tws", "ndvi"],
@@ -22,10 +21,9 @@ export const PRESET_EVENTS: PresetEvent[] = [
   },
   {
     id: "pakistan-2022-flood",
-    title: "2022 巴基斯坦洪水",
-    event: "2022 巴基斯坦洪水",
-    blurb:
-      "2022 年 7–9 月季風帶來破紀錄的雨量，印度河流域大範圍氾濫，約三分之一國土被淹，超過 3,000 萬人受災。",
+    title: "2022 Pakistan floods",
+    event: "2022 Pakistan floods",
+    blurb: "Record monsoon rain from July to September flooded the Indus basin; about a third of the country was under water.",
     time: { start: "2022-07", end: "2022-09" },
     region: "b4-4040879050",
     categories: ["precip", "runoff", "soil", "tws"],
@@ -35,10 +33,9 @@ export const PRESET_EVENTS: PresetEvent[] = [
   },
   {
     id: "australia-2019-fire",
-    title: "2019–20 澳洲黑色夏季",
-    event: "2019–20 澳洲黑色夏季（乾旱與野火）",
-    blurb:
-      "2019 年是澳洲有紀錄以來最熱也最乾的一年；9 月到隔年 1 月，東南部森林大火延燒，燒毀上千萬公頃土地。",
+    title: "2019–20 Australian Black Summer",
+    event: "2019–20 Australian Black Summer (drought and bushfires)",
+    blurb: "The hottest and driest year on record in Australia, followed by bushfires across the south-east from September to January.",
     time: { start: "2019-09", end: "2020-01" },
     region: "b4-5040070710",
     categories: ["precip", "soil", "tair", "ndvi"],

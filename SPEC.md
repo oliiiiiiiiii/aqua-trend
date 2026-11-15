@@ -190,7 +190,7 @@ flowchart LR
 ```
 
 - 建置端具備 Git、Node.js 24／npm、Docker／Compose，以及下載和解壓工具。先在主機或 CI runner 準備資料，再交給 Docker build；目前 Dockerfile 會在建置前檢查資料，不會自行補下載。
-- 映像包含 `/detective/`、`/explore/`、`POST /api/select-variables/`、`GET /api/daily-series/`、`/healthz/` 與必要靜態資料。部署平台須能保留伺服器端 API；純靜態輸出不滿足本規格。
+- 映像包含 `/detective/`、`POST /api/select-variables/`、`GET /api/daily-series/`、`/healthz/` 與必要靜態資料。部署平台須能保留伺服器端 API；純靜態輸出不滿足本規格。
 - 執行端只需要映像與容器執行環境。服務在容器內監聽 `0.0.0.0:8080`；外部連接埠與 HTTPS 由主機、反向代理或平台設定。
 - 沿用 Compose 的非 root 使用者、唯讀根檔案系統及暫存目錄設定。月資料已封裝在映像中，執行時不再下載 Release 或模型權重。啟用日資料時只取指定區域、短日期區間的 NASA 子集，在記憶體內聚合後丟棄原始格網，不建立完整日資料庫，也不依賴本機開發伺服器。
 - 每次發布保存映像 digest。跨 CPU 架構部署時，為目標架構建置並驗證；需要跨次完全重現映像位元組時，另外固定基底映像 digest，目前的 `node:24-alpine` 標籤仍會更新。
@@ -241,4 +241,6 @@ API、產品對應及效能證據見 [`docs/daily-data.md`](docs/daily-data.md)�
 
 ## 8. 不做（本版）
 
-偵探頁不做 hex／海域／命名區、跨變數關聯、水晶球、Python 統計後端、全球熱點推薦、使用者帳號。日資料限 §7.7 的短期原始值細節，不新增日尺度異常／趨勢模型。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。
+偵探頁不做 hex／海域／命名區、跨變數關聯、Python 統計後端、全球熱點推薦、使用者帳號。日資料限 §7.7 的短期原始值細節，不新增日尺度異常／趨勢模型。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。
+
+2026-11-15 UI 改版：偵探頁改用水晶球（推翻原「不做水晶球」），舊的 `/explore` 展示頁與合成 leads 已刪除；見 `docs/ux-refresh.md`。

@@ -23,6 +23,7 @@
   --ink-3: #6f8098;
   --line: #d3dce9;
   --action: #ffcf3f;
+  --event-band-opacity: 0.18; /* the event band behind the detective charts; looks may override */
   --action-hover: #ffc21a;
   --on-action: #12233a;
   --link: #0b6a8c;
@@ -196,3 +197,15 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Shared planet stage (components/shell/HeroGlobe.tsx). The planet sits on a layer below the page content, so the
+   page's own sky is lifted off the sections that anchor it, and the empty layout wrappers let pointers fall through
+   to the planet's circular hit area. Interactive children opt back in with pointer-events-auto. */
+[data-shared-stage-root][data-stage-active] [data-stage-through] {
+  background: none !important;
+}
+[data-stage-pass] {
+  pointer-events: none;
+}
+
+.stats-scroll { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }

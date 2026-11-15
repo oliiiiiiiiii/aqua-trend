@@ -2,7 +2,7 @@
 
 The repository and pinned GitHub Release assets are public. Deployment requirements and implementation gaps are defined in [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格). This guide describes commands supported by the current code; it does not establish a hosting provider or automatic deployment.
 
-The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, `GET /api/daily-series/`, and the public monthly dataset. The default container uses keyword selection immediately; monthly analysis requires no model, model download, Python service, or API key. Optional daily queries require an Earthdata credential at runtime.
+The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/` (the old `/explore` demo was removed in the 2026-11-15 UI refresh), `POST /api/select-variables/`, `GET /api/daily-series/`, and the public monthly dataset. The default container uses keyword selection immediately; monthly analysis requires no model, model download, Python service, or API key. Optional daily queries require an Earthdata credential at runtime.
 
 The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 

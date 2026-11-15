@@ -6,7 +6,7 @@
 // noseries=1 passes climate = null as for a region without land-model data (the "no data" state).
 import { useEffect, useMemo, useState } from "react";
 import CrystalBall from "@/components/orb/CrystalBall";
-import { climateOf, valuesAt } from "@/components/explore/regionUtils";
+import { climateOf, valuesAt } from "@/components/ui/regionUtils";
 import { VARIANT_LABEL, type OrbVariant } from "@/components/orb/encoding";
 import type { OrbClimate } from "@/lib/contracts";
 import { loadCatalog, loadRegionSeries } from "@/lib/data";
