@@ -1,5 +1,5 @@
 {
-  "version": "baselines-1.0.0",
+  "version": "baselines-1.0.1",
   "note": "Fixed seasonal reference period per product (spec §7.1). Periods never follow the query period. SPI calibration baselines are registered with their recipe in indicators.json.",
   "selection_rule": [
     "1. If the prepared record covers 1991-01..2020-12, use it and call it wmo_standard_normal.",
@@ -83,44 +83,6 @@
       "refs": [
         "wmo_normals",
         "wmo_1203"
-      ],
-      "applies_to": [
-        "et"
-      ]
-    },
-    {
-      "baseline_id": "clim.et_m2land.2001-2020",
-      "version": "1",
-      "kind": "seasonal_reference",
-      "product_id": "et_m2land",
-      "start": "2001-01",
-      "end": "2020-12",
-      "designation": "registered_reference_mean",
-      "rule": "Registered reference mean, NOT a climatological standard normal: mean of each calendar month over 2001-01..2020-12 (20 years). The prepared record starts between 1998 and 2000-04 and cannot cover 1991–2020. The period is the longest block of complete calendar years ending in 2020 (the end of the current WMO normal) that every product starting around 2000 covers, so anomalies of different variables in one study refer to the same years. A calendar month needs at least 16 valid years (80% of 20); otherwise the region is insufficient_baseline.",
-      "season_positions": 12,
-      "minimum_samples": 16,
-      "samples_per_position": "computed per region from the prepared series of the same dataset version (PreparedDataStore.baseline_support); identical for one dataset version",
-      "refs": [
-        "wmo_normals"
-      ],
-      "applies_to": [
-        "et"
-      ]
-    },
-    {
-      "baseline_id": "clim.et_gldas.2001-2020",
-      "version": "1",
-      "kind": "seasonal_reference",
-      "product_id": "et_gldas",
-      "start": "2001-01",
-      "end": "2020-12",
-      "designation": "registered_reference_mean",
-      "rule": "Registered reference mean, NOT a climatological standard normal: mean of each calendar month over 2001-01..2020-12 (20 years). The prepared record starts between 1998 and 2000-04 and cannot cover 1991–2020. The period is the longest block of complete calendar years ending in 2020 (the end of the current WMO normal) that every product starting around 2000 covers, so anomalies of different variables in one study refer to the same years. A calendar month needs at least 16 valid years (80% of 20); otherwise the region is insufficient_baseline.",
-      "season_positions": 12,
-      "minimum_samples": 16,
-      "samples_per_position": "computed per region from the prepared series of the same dataset version (PreparedDataStore.baseline_support); identical for one dataset version",
-      "refs": [
-        "wmo_normals"
       ],
       "applies_to": [
         "et"

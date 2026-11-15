@@ -49,15 +49,23 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
-                href="/explore"
+                href="/research"
                 className="rounded-ctl bg-action px-6 py-3 text-lg font-semibold text-on-action hover:bg-action-hover"
               >
-                Open the globe
+                Start a research
+              </Link>
+              <Link href="/explore" className="text-on-stage underline underline-offset-4">
+                Earlier GLDAS demo
               </Link>
               <Link href="/methods" className="text-on-stage underline underline-offset-4">
                 How the numbers are made
               </Link>
             </div>
+            <p className="mt-4 max-w-md text-sm text-on-stage-2">
+              Research is the main tool: describe any phenomenon, choose one region and an optional period, and the
+              analysis service computes the trends. The earlier GLDAS demo is kept for reference; its leads are
+              synthetic examples.
+            </p>
           </div>
           <HeroGlobe className="order-first mx-auto aspect-square w-full max-w-[22rem] sm:max-w-[30rem] lg:order-none lg:max-w-[42rem]" />
         </div>
@@ -103,14 +111,14 @@ export default function Home() {
           <div>
             <h2 id="featured" className="text-3xl">Start from a region</h2>
             <p className="mt-3 max-w-sm text-ink-2">
-              Places with distinct water stories. Each link opens the workspace with that region selected.
+              Places with distinct water stories. Each link opens the research page with that region chosen.
             </p>
           </div>
           <ul className="grid gap-x-8 sm:grid-cols-2">
             {FEATURED.map((f) => (
               <li key={f.id} className="border-b border-line">
                 <Link
-                  href={`/explore?region=${f.id}`}
+                  href={`/research?region=${f.id}`}
                   className="group flex flex-col py-3 hover:bg-well sm:px-2"
                 >
                   <span className="font-semibold text-link group-hover:underline">{f.name}</span>

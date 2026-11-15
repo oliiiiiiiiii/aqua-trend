@@ -1,5 +1,5 @@
 {
-  "version": "concepts-1.0.0",
+  "version": "concepts-1.0.1",
   "note": "Physical variable concepts the selector may choose. A product is a fallback only for the same physical quantity (same definition_class, unit and temporal support). Order is decided by observation basis, record length and known defects — never by which trend is larger or more significant.",
   "concepts": [
     {
@@ -52,12 +52,12 @@
       "variable_id": "et",
       "label": "Evapotranspiration",
       "label_zh": "蒸發散",
-      "description": "Water returned from the surface to the atmosphere by soil evaporation, plant transpiration, interception loss and sublimation, as a monthly mean rate. All prepared products are model estimates (reanalysis or land surface model); evapotranspiration is not measured directly by these products.",
+      "description": "Water returned from the surface to the atmosphere by soil evaporation, plant transpiration, interception loss and sublimation, as a monthly mean rate. The approved product is the MERRA-2 grid-cell total (a model estimate, including open-water evaporation in coastal and lake cells); evapotranspiration is not measured directly. Land-only evapotranspiration products are a different quantity and are not used as fallbacks.",
       "quantity_definition": {
-        "quantity": "evapotranspiration rate from the surface",
+        "quantity": "total evaporation / evapotranspiration rate from the surface of the whole grid cell (land and open water)",
         "nature": "flux",
         "depth_or_height": "surface",
-        "observed_or_modelled": "modelled (reanalysis / land surface model)",
+        "observed_or_modelled": "modelled (reanalysis)",
         "definition_class": "surface_evapotranspiration_rate"
       },
       "unit": "mm/day",
@@ -70,15 +70,11 @@
         "ipcc_ar6_wg1_ch8"
       ],
       "approved_product_ids": [
-        "et_m2",
-        "et_m2land",
-        "et_gldas"
+        "et_m2"
       ],
-      "product_order_reason": "1 et_m2: longest record (1980). 2 et_m2land: same reanalysis, land tiles only, from 2000. 3 et_gldas: last, because its long-term trend has a known drift. Levels differ between models; products are never spliced.",
+      "product_order_reason": "et_m2 only. The concept is ONE physical quantity: the MERRA-2 grid-cell total evaporation (EVAP), which includes open-water evaporation in coastal and lake cells. et_m2land (MERRA-2 land tiles only) and et_gldas (GLDAS Noah land surface model, land only) are land-only evapotranspiration, a different quantity wherever a region contains open water, so they are registered for inspection but are NOT approved fallbacks (spec §6.1: same category is not the same physical quantity). Where et_m2 is not applicable the variable is reported as unavailable; no land-only product is substituted.",
       "baseline_ref": {
-        "et_m2": "clim.et_m2.1991-2020",
-        "et_m2land": "clim.et_m2land.2001-2020",
-        "et_gldas": "clim.et_gldas.2001-2020"
+        "et_m2": "clim.et_m2.1991-2020"
       },
       "relative_change": null,
       "relative_change_note": "No relative change: the quantity can be negative or its mean can be close to zero, so slope ÷ mean is not meaningful.",

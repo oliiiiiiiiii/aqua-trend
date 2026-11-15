@@ -44,6 +44,16 @@ export default function DataPage() {
       title="Data"
       lede="Everything numeric on this site comes from one NASA land-surface model product. This page lists what it contains, how regional series are made from it, and what is still undocumented."
     >
+      <Part id="research" title="Research page">
+        <p>
+          This page documents the single GLDAS product behind the earlier demo. The{" "}
+          <Link href="/research" className="text-link underline underline-offset-2">Research page</Link> reads a separate
+          prepared multi-product dataset through the analysis service: one approved product per physical variable, with
+          registered fallbacks. Every research result names the product, agency, priority and coverage it used next to
+          each variable, and says so when data for a region or an event catalogue has not been delivered.
+        </p>
+      </Part>
+
       <Part id="package" title="The GLDAS package">
         <div className="flex flex-wrap gap-2"><Provenance kind="real" /></div>
         <dl className="grid max-w-[68ch] grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-[10rem_minmax(0,1fr)]">

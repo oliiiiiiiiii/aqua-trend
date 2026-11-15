@@ -1,20 +1,43 @@
 {
-  "version": "preset-1.0.0",
-  "note": "Product defaults (spec §8). Weights are tunable, not scientific constants.",
+  "version": "preset-1.1.0",
+  "note": "Product defaults (spec §8). Weights are tunable, not scientific constants. 1.1.0: every number the PresetEngine uses is now a machine-readable field (1.0.0 kept some of them only inside prose); added the per-region cap, the full tie-break order and the search-family declaration. See docs/preset-policy.md.",
   "candidate_region_layers": ["basin3", "named", "ice", "lme", "sea"],
-  "candidate_region_rule": "every catalogue region of these layers that has a prepared series for at least one selected variable; basin4 sub-basins and hex cells are reachable by user selection but are not searched automatically (hex has no series)",
+  "candidate_region_rule": "every catalogue region of these layers that has a prepared series for at least one selected variable; basin4 sub-basins and hex cells are reachable by user selection but are not searched automatically (hex has no series). A region the user selected is the only candidate region, whatever its layer.",
   "window_lengths_years": [10, 20, 30],
   "window_step_years": 5,
   "window_alignment": "calendar years: Jan of start year to Dec of end year, anchored on the last complete common year and stepped backwards",
   "also_test_full_common_period": true,
+  "candidate_period_rule": "periods are derived from data availability only: the common period of the region is the intersection of the valid data of every selected variable whose approved product supports a trend on its record; candidate periods are that full common period plus every fixed calendar window of window_lengths_years that lies inside its complete calendar years. A period the user selected is the only candidate period. No slope, p-value or index value is read when candidates are declared.",
   "min_variables_fraction": 0.5,
+  "min_variables_rule": "a candidate (region, period) is analysed only when at least this share of the selected variables has an approved product that supports a trend for exactly that region and period; otherwise it is excluded before any computation and listed with the reason",
   "weights": {"relevance": 0.30, "effect": 0.30, "quality": 0.25, "stability": 0.15},
   "missing_component_rule": "a missing component scores 0 and is listed in missing_components; weights are not renormalised",
-  "effect": {"definition": "abs(slope_per_decade) / sd of the fixed-baseline anomalies in the baseline period, squashed with x/(1+x)", "zero_variance_rule": "component is missing"},
-  "relevance": {"core_indicator": 1.0, "related_condition": 0.6, "response": 0.6, "aggregation": "role-weighted share of the selected variables that are analysable for the candidate"},
-  "quality": {"definition": "mean over variables of coverage inside the window times (1 if inference applicable else 0.5), reduced by 0.2 for a fallback product or a registered caveat"},
-  "stability": {"definition": "share of analysable variables whose first-half and second-half descriptive slopes have the same sign as the full-window slope"},
+  "effect": {
+    "definition": "abs(slope_per_decade) / sd of the fixed-baseline anomalies in the baseline period, squashed with x/(1+x)",
+    "zero_variance_rule": "component is missing",
+    "aggregation": "role-weighted mean over the analysable variables that have a positive baseline sd; a variable without one is listed and left out; no such variable -> the component is missing"
+  },
+  "relevance": {
+    "core_indicator": 1.0, "related_condition": 0.6, "response": 0.6,
+    "aggregation": "role-weighted share of the selected variables that are analysable for the candidate"
+  },
+  "quality": {
+    "definition": "mean over analysable variables of coverage inside the window times (1 if inference applicable else descriptive_only_factor), reduced by fallback_or_caveat_penalty (not below 0) for a fallback product or a registered caveat",
+    "descriptive_only_factor": 0.5,
+    "fallback_or_caveat_penalty": 0.2
+  },
+  "stability": {
+    "definition": "share of analysable variables whose first-half and second-half descriptive slopes have the same sign as the full-window slope; variables without both half slopes or with a zero slope are left out; none left -> the component is missing"
+  },
   "aggregation": "fixed weighted mean across variables, so more variables do not raise the score by count",
+  "significance_rule": "statistical significance is not an input of the score; candidates are labelled has_significant / none_significant / undetermined_only from the preset-search family and can rank in any of the three states",
+  "search_family": {
+    "scope": "preset_search",
+    "definition": "every hypothesis of every analysed candidate of one search batch: regions x periods x (variable anomaly trends + every metric of every selected indicator recipe + recorded-event metrics); BY-adjusted as ONE family; hypotheses without a valid p-value stay listed with the reason",
+    "final_only_when_complete": true
+  },
   "max_presets_returned": 12,
-  "tie_break": ["score desc", "region_id asc", "period.start asc"]
+  "max_presets_per_region": 2,
+  "max_presets_per_region_rule": "applies to automatic presets only and only when the region is being recommended (the user left it blank); it keeps the returned list from being one region with many windows. It never removes a candidate from the search family.",
+  "tie_break": ["pinned desc", "manual priority asc", "score desc", "region_id asc", "period.start asc", "period.end asc"]
 }

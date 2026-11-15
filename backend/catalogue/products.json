@@ -1,5 +1,5 @@
 {
-  "version": "products-1.0.0",
+  "version": "products-1.0.1",
   "note": "One product per series-2 layer (product_id = layer id). 'start'/'end' are the prepared record at registration; the store serves the bounds of the delivered data. 'approved' order lives in concepts.json.",
   "products": [
     {
@@ -166,13 +166,14 @@
       ],
       "unit": "mm/day",
       "physical_definition": "Evapotranspiration from the land tiles of the MERRA-2 land surface model.",
-      "definition_class": "surface_evapotranspiration_rate",
+      "definition_class": "land_evapotranspiration_rate_land_only",
       "native_resolution": "0.5° × 0.625°, monthly mean (collection M2TMNXLND)",
       "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
       "temporal_support": "monthly_mean_rate",
       "cadence": "monthly",
       "calendar": "gregorian",
       "quality_limits": [
+        "Registered for inspection only, NOT an approved fallback of the concept 'et': this is land-only evapotranspiration, while the approved product et_m2 is the grid-cell total including open-water evaporation (spec §6.1: same category is not the same physical quantity).",
         "Reanalysis model output; not a direct observation.",
         "Land tiles only; differs from et_m2 where a region contains open water.",
         "Prepared record starts in 2000."
@@ -197,13 +198,14 @@
       ],
       "unit": "mm/day",
       "physical_definition": "Evapotranspiration of the Noah land surface model in GLDAS-2.1.",
-      "definition_class": "surface_evapotranspiration_rate",
+      "definition_class": "land_evapotranspiration_rate_land_only",
       "native_resolution": "0.25°, monthly (GLDAS_NOAH025_M)",
       "prepared_resolution": "0.5° monthly grid prepared upstream (hub), area-averaged over the region; a series is delivered only where at least 30% of the region has valid data",
       "temporal_support": "monthly_mean_rate",
       "cadence": "monthly",
       "calendar": "gregorian",
       "quality_limits": [
+        "Registered for inspection only, NOT an approved fallback of the concept 'et': this is land-only evapotranspiration, while the approved product et_m2 is the grid-cell total including open-water evaporation (spec §6.1: same category is not the same physical quantity).",
         "Land-surface model output (Noah driven by observation-based forcing); not a direct observation.",
         "Known drift in the long-term trend of GLDAS-2.1 evapotranspiration (team finding W11); it is the last fallback for that reason.",
         "GLDAS-2.1 forcing sources change during the record."

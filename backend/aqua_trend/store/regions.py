@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .catalogue import AssetReport, read_json
-from .region_names import english_name, zh_place_names
+from .region_names import ISO_EN, english_name, zh_place_names
 
 #: region ``type`` in the catalogue -> GeoJSON layer file stem under ``geo/``
 TYPE_TO_LAYER: dict[str, str] = {
@@ -108,6 +108,23 @@ def load_geometry_layers(data_dir: Path, cache_dir: Path | None) -> dict[str, di
     return out
 
 
+def _countries(entries: Any) -> list[dict[str, Any]]:
+    """Member countries as delivered (``zh``, ``iso``) plus the English short name when the ISO code is known.
+
+    The list is kept as records, not reduced to codes: the selector needs the zh and English
+    names to recognise place words that must be ignored (acceptance S05).
+    """
+    out: list[dict[str, Any]] = []
+    for c in entries or []:
+        if not isinstance(c, dict):
+            continue
+        record = {"zh": c.get("zh"), "iso": c.get("iso")}
+        if c.get("iso") in ISO_EN:
+            record["en"] = ISO_EN[c["iso"]]
+        out.append(record)
+    return out
+
+
 def build_regions(
     regions_doc: Any, countries_doc: Any, series_index: Mapping[str, list[str]],
     geometry: Mapping[str, Mapping[str, Any]], report: AssetReport,
@@ -148,7 +165,7 @@ def build_regions(
             "centroid": src.get("centroid"),
             "bbox": src.get("bbox"),
             "area_km2": src.get("area_km2"),
-            "countries": [c.get("iso") for c in src.get("countries") or []],
+            "countries": _countries(src.get("countries")),
             "parent": src.get("parent"),
             "source_warnings_zh": src.get("warnings") or {},
             "geometry_ref": f"geo/{layer}.geojson#{rid}" if has_geometry else None,

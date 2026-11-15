@@ -27,7 +27,7 @@ DATA = fx.BACKEND.parent / "web" / "public" / "data"
 
 #: docs/implementation-architecture.md §3 — fixed concept ids and approved product order
 ARCHITECTURE_TABLE = {
-    "precip": ["p_imerg", "p_gpcp", "p_m2"], "et": ["et_m2", "et_m2land", "et_gldas"], "pet": ["pet_gldas"],
+    "precip": ["p_imerg", "p_gpcp", "p_m2"], "et": ["et_m2"], "pet": ["pet_gldas"],
     "soil_moisture_root": ["sm_root"], "soil_moisture_column": ["sm_total"], "soil_moisture_top": ["g1_soil_top"],
     "soil_wetness_root": ["sm_m2"], "tws_anomaly": ["tws"], "runoff": ["runoff", "ro_m2"], "swe": ["swe"],
     "tair": ["tair"], "tsurf": ["tsurf_m2"], "lst_day": ["lst_day"], "vpd": ["vpd"],

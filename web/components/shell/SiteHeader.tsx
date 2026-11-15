@@ -4,8 +4,10 @@ import { usePathname } from "next/navigation";
 import { Mark } from "./Mark";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
+// Research is the primary entry (spec §9). /explore is the earlier GLDAS demo and says so in its label.
 const NAV = [
-  { href: "/explore", label: "Explore" },
+  { href: "/research", label: "Research" },
+  { href: "/explore", label: "GLDAS demo" },
   { href: "/data", label: "Data" },
   { href: "/methods", label: "Methods" },
 ];

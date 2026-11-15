@@ -71,7 +71,7 @@ quantity — same category is not enough):
 | `variable_id` | approved products (series-2 layers) |
 | --- | --- |
 | `precip` | `p_imerg`, `p_gpcp`, `p_m2` |
-| `et` | `et_m2`, `et_m2land`, `et_gldas` |
+| `et` | `et_m2` |
 | `pet` | `pet_gldas` |
 | `soil_moisture_root` | `sm_root` |
 | `soil_moisture_column` | `sm_total` |

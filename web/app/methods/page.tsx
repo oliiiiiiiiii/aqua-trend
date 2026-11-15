@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ContentPage, Part } from "@/components/shell/ContentPage";
 import { Provenance } from "@/components/ui/Provenance";
 import { VAR_ORDER, VARIABLES } from "@/lib/variables";
@@ -14,6 +15,20 @@ export default function MethodsPage() {
       title="Methods"
       lede="How the trend numbers are produced, how the crystal ball turns them into a picture, what is still synthetic, and the limits of all three."
     >
+      <Part id="research" title="Research page">
+        <p>
+          This page describes the earlier GLDAS demo. The <Link href="/research" className="text-link underline underline-offset-2">Research page</Link>{" "}
+          uses a different method, computed by the analysis service: monthly anomalies from a fixed, registered reference
+          period, a least-squares slope with an autocorrelation-robust (HAC) 95 % interval, and significance labels corrected
+          for multiple comparisons with the Benjamini–Yekutieli procedure. When the data do not support a test, the result
+          says “undetermined”, not “not significant”.
+        </p>
+        <p>
+          Each research result lists its own method, policy versions, reference periods and comparison families under
+          “Evidence and record”. Numbers from this demo and from a research result are not interchangeable.
+        </p>
+      </Part>
+
       <Part id="trends" title="Trend numbers">
         <div className="flex flex-wrap gap-2"><Provenance kind="real" /></div>
         <ol className="list-decimal space-y-2 pl-5 marker:text-ink-3">

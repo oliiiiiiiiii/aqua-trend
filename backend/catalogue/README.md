@@ -55,6 +55,10 @@ display_semantics{color, increase_reads, decimals, orb_channel|null}`.
   larger or more significant trend. A whole analysis uses one product; products are never spliced.
 - `p_m2land` is registered under `precip` but is **not** approved (other `definition_class`; same model as
   `p_m2`, shorter record, never available without it).
+- `et` is the MERRA-2 grid-cell total evaporation (`et_m2`, including open water). The land-only products
+  `et_m2land` and `et_gldas` are registered under `et` for inspection but are **not** approved (other
+  `definition_class`): land-only evapotranspiration is a different quantity wherever a region contains open
+  water, so they are never used as a fallback and have no registered seasonal baseline.
 - Air temperature (`tair`), model skin temperature (`tsurf`) and clear-sky daytime satellite skin temperature
   (`lst_day`) are three concepts; so are the three soil-water storages by depth and the MERRA-2 degree of
   saturation; `vpd` and `pet`; `net_radiation` and `sw_down`.
