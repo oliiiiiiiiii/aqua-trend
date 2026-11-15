@@ -78,6 +78,12 @@ export class GlobeEngine {
 
   // inputs
   private interactive: boolean;
+  /** wheel, pinch and +/- zoom; off on the home page, where the planet only turns */
+  private zoomEnabled = true;
+  /** hover highlight and click-to-pick; off on the home page */
+  private pickEnabled = true;
+  /** keep turning slowly while idle even though the planet is interactive */
+  private autoRotate = false;
   private reduced: boolean;
   private pointers = new Map<number, { x: number; y: number }>();
   private drag: { x: number; y: number; moved: boolean; lastT: number } | null = null;
@@ -205,13 +211,22 @@ export class GlobeEngine {
   setCallbacks(cb: EngineCallbacks) { this.cb = cb; }
 
   private applyTouchAction() {
-    this.canvas.style.touchAction = this.interactive ? "none" : "auto";
+    // Without zoom the planet only turns: vertical swipes stay with the page so a phone can still scroll past it.
+    this.canvas.style.touchAction = !this.interactive ? "auto" : this.zoomEnabled ? "none" : "pan-y";
   }
 
   setInteractive(v: boolean) {
     this.interactive = v;
     this.applyTouchAction();
     if (!v) { this.pointers.clear(); this.drag = null; this.pinch = null; this.setHover(null); }
+    this.kick();
+  }
+
+  setBehavior(b: { zoom?: boolean; pick?: boolean; autoRotate?: boolean }) {
+    if (b.zoom !== undefined) { this.zoomEnabled = b.zoom; this.pinch = null; }
+    if (b.pick !== undefined) { this.pickEnabled = b.pick; if (!b.pick) { this.hoverPos = null; this.setHover(null); } }
+    if (b.autoRotate !== undefined) this.autoRotate = b.autoRotate;
+    this.applyTouchAction();
     this.kick();
   }
 
@@ -345,10 +360,11 @@ export class GlobeEngine {
       case "ArrowRight": this.flyTo({ ...this.tgt, lon: this.tgt.lon + step }); return true;
       case "ArrowUp": this.flyTo({ ...this.tgt, lat: this.tgt.lat + step }); return true;
       case "ArrowDown": this.flyTo({ ...this.tgt, lat: this.tgt.lat - step }); return true;
-      case "+": case "=": this.zoomBy(1.35); return true;
-      case "-": case "_": this.zoomBy(1 / 1.35); return true;
+      case "+": case "=": if (!this.zoomEnabled) return false; this.zoomBy(1.35); return true;
+      case "-": case "_": if (!this.zoomEnabled) return false; this.zoomBy(1 / 1.35); return true;
       case "Home": case "0": this.resetView(); return true;
       case "Enter": case " ": {
+        if (!this.pickEnabled) return false;
         const v = this.tgt;
         this.cb.onPick?.({ lon: wrapLon(v.lon), lat: v.lat, zoom: round2(v.zoom) });
         return true;
@@ -400,6 +416,7 @@ export class GlobeEngine {
   private onPointerDown = (e: PointerEvent) => {
     if (!this.interactive) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (!this.zoomEnabled && this.pointers.size >= 1) return; // a second finger would only pinch
     this.host.setPointerCapture?.(e.pointerId);
     this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (this.pointers.size === 1) {
@@ -417,7 +434,7 @@ export class GlobeEngine {
     if (!this.interactive) return;
     const p = this.pointers.get(e.pointerId);
     if (!p) {
-      if (e.pointerType !== "touch") { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; this.kick(); }
+      if (e.pointerType !== "touch" && this.pickEnabled) { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; this.kick(); }
       return;
     }
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
@@ -463,12 +480,13 @@ export class GlobeEngine {
     this.onCursor("");
     if (!drag) return;
     if (!drag.moved && e.type === "pointerup") {
+      if (!this.pickEnabled) { this.kick(); return; }
       const h = this.hit(e.clientX, e.clientY);
       if (h) this.cb.onPick?.({ lon: wrapLon(h.lon), lat: h.lat, zoom: round2(this.cur.zoom) });
     } else if (this.reduced || performance.now() - drag.lastT > 120) {
       this.vel = { lon: 0, lat: 0 };
     }
-    if (e.pointerType !== "touch") { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; }
+    if (e.pointerType !== "touch" && this.pickEnabled) { this.hoverPos = { x: e.clientX, y: e.clientY }; this.hoverDirty = true; }
     this.kick();
   };
 
@@ -478,7 +496,7 @@ export class GlobeEngine {
   };
 
   private onWheel = (e: WheelEvent) => {
-    if (!this.interactive) return;
+    if (!this.interactive || !this.zoomEnabled) return;
     e.preventDefault();
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
     this.tgt.zoom = clamp(this.tgt.zoom * Math.exp(-dy * 0.0016), ZOOM_MIN, ZOOM_MAX);
@@ -560,7 +578,7 @@ export class GlobeEngine {
   private step(dt: number) {
     const motion = !this.reduced;
     if (motion) this.time += dt;
-    if (!this.interactive && motion) this.tgt.lon += dt * 5;
+    if ((!this.interactive || this.autoRotate) && motion && !this.drag) this.tgt.lon += dt * 5;
     // inertia
     if (!this.drag && (this.vel.lon || this.vel.lat)) {
       if (!motion) this.vel = { lon: 0, lat: 0 };

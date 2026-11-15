@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InvestigationHero } from "@/components/home/InvestigationHero";
-import { categoryStyle, chipColors } from "@/lib/detective/categoryStyle";
-import { AnomalyStrip, StripLegend } from "@/components/home/AnomalyStrip";
+import { categoryStyle } from "@/lib/detective/categoryStyle";
+import { AnomalyStrip } from "@/components/home/AnomalyStrip";
 import { presetFigure, type PresetFigure } from "@/components/home/presetFigures";
 import { MINUS } from "@/components/charts/time";
 import { CATEGORIES } from "@/lib/detective/categories";
@@ -68,72 +68,69 @@ const UNUSUAL = [
 
 export default async function Home() {
   const figures = await Promise.all(PRESET_EVENTS.map((p) => presetFigure(p)));
-  const shown = figures.filter((f): f is PresetFigure => f !== null);
-  const legendFits = shown.length > 0 && shown.every((f) => f.category === "precip" || f.category === "soil");
 
   return (
     <>
       <section data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky overflow-hidden" aria-labelledby="hero">
-        <InvestigationHero />
-        <div className="pointer-events-auto mx-auto max-w-[90rem] px-4 pt-10 pb-10 sm:px-6 lg:px-8 lg:pb-14">
-          <p className="max-w-[60ch] text-on-stage-2">
-            Name an event, a river basin and its months. See which NASA variables departed from normal before, during and after it.
-            <span className="mt-2 block text-sm">Monthly records · 1,313 sub-basins · 17 variable categories</span>
-          </p>
-          <div className="mt-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 className="text-xl text-on-stage">Open a solved case</h2>
-            {legendFits && <StripLegend className="text-sm text-on-stage-2" />}
-          </div>
-          <ul className="mt-3 grid gap-4 md:grid-cols-3">
-            {PRESET_EVENTS.map((p, i) => {
-              const f = figures[i];
-              const cat = CATEGORIES[p.active ?? p.categories[0]];
-              return (
-                <li key={p.id}>
-                  <Link
-                    href={presetHref(p)}
-                    className="group flex h-full flex-col border-t border-line bg-paper p-4 text-ink hover:border-link focus-visible:outline-2 focus-visible:outline-offset-4"
-                  >
-                    <span className="font-display text-xl leading-tight group-hover:underline">{p.title}</span>
-                    <span className="mt-1 text-sm text-ink-2">
-                      {PLACE[p.id] ?? p.region} · <span className="tnum">{formatRange(p.time)}</span>
-                    </span>
-                    {f && (
-                      <span className="mt-3 block">
-                        <span className="block text-xs text-ink-3">
-                          {cat.name.en}, monthly anomaly ± {p.padMonths ?? 12} months
-                        </span>
-                        <span className="mt-1 block py-1.5">
-                          <AnomalyStrip fig={f} label={`${cat.name.en}, ${p.title}`} />
-                        </span>
-                        <span className="mt-2 block text-sm">
-                          <span className="font-semibold">{verdictText(f)}</span>
-                          {f.meanZ !== null && (
-                            <span className="text-ink-2 tnum">
-                              {" "}· event mean {signed(f.meanZ)}
-                              {f.p !== null && `, ${pText(f.p)}`}
-                            </span>
-                          )}
-                        </span>
+        <InvestigationHero>
+          <div className="pointer-events-auto mx-auto max-w-[90rem] px-4 pt-4 pb-12 sm:px-6 lg:px-8 lg:pb-16">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+              <h2 className="text-xl text-on-stage">Or open a solved case</h2>
+            </div>
+            <ul className="mt-4 grid gap-4 md:grid-cols-3">
+              {PRESET_EVENTS.map((p, i) => {
+                const f = figures[i];
+                const cat = CATEGORIES[p.active ?? p.categories[0]];
+                return (
+                  <li key={p.id}>
+                    <Link
+                      href={presetHref(p)}
+                      className="group flex h-full flex-col rounded-card border border-stage-line bg-stage/60 p-4 text-on-stage shadow-card backdrop-blur-xl hover:border-on-stage/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+                    >
+                      <span className="font-display text-xl leading-tight group-hover:underline">{p.title}</span>
+                      <span className="mt-1 text-sm text-on-stage-2">
+                        {PLACE[p.id] ?? p.region} · <span className="tnum">{formatRange(p.time)}</span>
                       </span>
-                    )}
-                    <span className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-sm text-ink">
-                      {p.categories.map((c) => {
-                        const colors = chipColors(categoryStyle(c).color);
-                        return <span key={c} className="inline-flex items-center gap-1.5">
-                          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-ctl" style={{ background: colors.background, color: colors.stroke }}>
-                            <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={CATEGORIES[c].icon} /></svg>
-                          </span>{CATEGORIES[c].name.en}
-                        </span>;
-                      })}
-                    </span>
-                    <span className="mt-auto pt-3 text-sm font-semibold text-link">Open the analysis →</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                      {f && (
+                        <span className="mt-3 block">
+                          <span className="block text-xs text-on-stage-2">
+                            {cat.name.en}, monthly anomaly ± {p.padMonths ?? 12} months
+                          </span>
+                          <span className="mt-1 block py-1.5">
+                            <AnomalyStrip fig={f} label={`${cat.name.en}, ${p.title}`} />
+                          </span>
+                          <span className="mt-2 block text-sm">
+                            <span className="font-semibold">{verdictText(f)}</span>
+                            {f.meanZ !== null && (
+                              <span className="text-on-stage-2 tnum">
+                                {" "}· event mean {signed(f.meanZ)}
+                                {f.p !== null && `, ${pText(f.p)}`}
+                              </span>
+                            )}
+                          </span>
+                        </span>
+                      )}
+                      <span className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-sm">
+                        {p.categories.map((c) => {
+                          const colour = categoryStyle(c).color;
+                          return <span key={c} className="inline-flex items-center gap-1.5">
+                            <span
+                              className="grid h-7 w-7 shrink-0 place-items-center rounded-ctl"
+                              style={{ background: `color-mix(in srgb, ${colour} 26%, transparent)`, color: `color-mix(in srgb, ${colour} 70%, var(--on-stage))` }}
+                            >
+                              <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={CATEGORIES[c].icon} /></svg>
+                            </span>{CATEGORIES[c].name.en}
+                          </span>;
+                        })}
+                      </span>
+                      <span className="mt-auto pt-3 text-sm font-semibold underline-offset-2 group-hover:underline">Open the analysis →</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </InvestigationHero>
       </section>
 
       <div className="mx-auto max-w-[90rem] px-4 py-12 sm:px-6 lg:px-8">

@@ -23,7 +23,6 @@ import {
 } from "@/lib/detective/series";
 import { RetryButton, StatusCard } from "@/components/ui/StatusCard";
 import { InputPanel } from "./InputPanel";
-import { VariablePicker } from "./VariablePicker";
 import { CATEGORIES, PRESETS, requestVotes } from "./wiring";
 import AnalysisView from "./AnalysisView";
 import { COPY } from "./copy/input";
@@ -150,6 +149,7 @@ function InputStage({
   useEffect(() => {
     const onBack = () => {
       cancelRequest();
+      setStarting(false);
       if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
       const next = decodeState(window.location.search).query;
       currentEvent.current = next.event ?? "";
@@ -291,20 +291,29 @@ function InputStage({
   };
 
   const startable = (draft ?? []).filter((c) => !available || available[c]);
-  const blocked = finding
-    ? COPY.blocked.finding
-    : !vc || !index
-      ? COPY.blocked.loading
-      : !q.time
-        ? COPY.blocked.time
-        : !q.region
-          ? COPY.blocked.region
-          : noData
-            ? COPY.blocked.noData
-            : !startable.length
-              ? COPY.blocked.none
-              : null;
+  const blocked = !eventText.trim()
+    ? COPY.find.needEvent
+    : finding
+      ? COPY.blocked.finding
+      : !vc || !index
+        ? COPY.blocked.loading
+        : !q.time
+          ? COPY.blocked.time
+          : !q.region
+            ? COPY.blocked.region
+            : noData
+              ? COPY.blocked.noData
+              : !startable.length
+                ? COPY.blocked.none
+                : null;
+  /** Analyse pressed: a short progress runs, then startNow pushes the URL as before */
+  const [starting, setStarting] = useState(false);
   const onStart = () => {
+    if (!blocked) setStarting(true);
+  };
+  useEffect(() => { if (blocked) setStarting(false); }, [blocked]);
+  const startNow = () => {
+    setStarting(false);
     if (blocked) return;
     if (eventText.trim() !== urlEvent) commitEvent(eventText);
     writeUrl((s) => ({ query: { ...s.query, categories: startable, active: startable[0] }, draft: null }), "push");
@@ -348,21 +357,20 @@ function InputStage({
         onFind={onFind}
         finding={finding}
         hasPicker={showPicker}
-      >
-        {showPicker && (
-          <VariablePicker
-            categories={CATEGORIES}
-            response={vote?.event === eventText.trim() ? vote.response : null}
-            loading={finding}
-            checked={draft ?? []}
-            onChange={onPicks}
-            available={available}
-            unavailableReason={avail?.unavailableReason}
-            onStart={onStart}
-            blocked={blocked}
-          />
-        )}
-      </InputPanel>
+        starting={starting}
+        onStartDone={startNow}
+        picker={showPicker ? {
+          categories: CATEGORIES,
+          response: vote?.event === eventText.trim() ? vote.response : null,
+          loading: finding,
+          checked: draft ?? [],
+          onChange: onPicks,
+          available,
+          unavailableReason: avail?.unavailableReason,
+          onStart,
+          blocked,
+        } : null}
+      />
     </div>
   );
 }

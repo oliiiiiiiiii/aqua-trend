@@ -14,6 +14,14 @@ export interface GlobeCanvasExtraProps {
   initialView?: View;
   /** override the accessible name of the interactive globe */
   ariaLabel?: string;
+  /** wheel, pinch and +/- zoom; default true. The home page turns it off: the planet only turns there. */
+  zoomEnabled?: boolean;
+  /** hover highlight and click-to-pick; default true */
+  pickEnabled?: boolean;
+  /** keep turning slowly while idle although the planet is interactive; default false */
+  autoRotate?: boolean;
+  /** when this changes (after mount) the camera eases back to `initialView` */
+  resetToken?: number;
   /** @deprecated Visible controls have been removed; keyboard and gestures remain. */
   showControls?: boolean;
 }
@@ -51,6 +59,10 @@ export default function GlobeCanvas({
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
   renderPadding = 0,
+  zoomEnabled = true,
+  pickEnabled = true,
+  autoRotate = false,
+  resetToken = 0,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -113,6 +125,13 @@ export default function GlobeCanvas({
   }, []);
 
   useEffect(() => { engineRef.current?.setInteractive(interactive); }, [interactive]);
+  useEffect(() => { engineRef.current?.setBehavior({ zoom: zoomEnabled, pick: pickEnabled, autoRotate }); }, [zoomEnabled, pickEnabled, autoRotate]);
+  const lastReset = useRef(resetToken);
+  useEffect(() => {
+    if (lastReset.current === resetToken) return;
+    lastReset.current = resetToken;
+    engineRef.current?.resetView();
+  }, [resetToken]);
   useEffect(() => { void engineRef.current?.setBoundaryLayer(boundaryLayer ?? null).catch(() => {}); }, [boundaryLayer]);
   useEffect(() => {
     const e = engineRef.current;
@@ -156,7 +175,7 @@ export default function GlobeCanvas({
             inset: `${100 * renderPadding / (1 + 2 * renderPadding)}%`,
             clipPath: "circle(50%)",
             pointerEvents: live ? "auto" : "none",
-            touchAction: live ? "none" : "auto",
+            touchAction: live ? (zoomEnabled ? "none" : "pan-y") : "auto",
           }}
         />
         {live && status === "ready" && (

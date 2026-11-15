@@ -1,16 +1,17 @@
 "use client";
 // Event-led input step. DetectiveApp owns URL state and passes values and callbacks in.
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type { PresetEvent, TimeRange } from "@/lib/detective/contracts";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
-import { useElementWidth } from "@/components/charts/useElementWidth";
-import { addMonths, formatRange, ym, ymFromIndex, ymIndex } from "@/lib/detective/url";
+import { formatRange, ymIndex } from "@/lib/detective/url";
 import { COPY } from "./copy/input";
 import { useSharedStage } from "@/components/shell/HeroGlobe";
+import { Timeline } from "./Timeline";
+import { StartProgress } from "./StartProgress";
+import { AnalyseButton, VariablePicker, type VariablePickerProps } from "./VariablePicker";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 export interface InputPanelProps {
   /* What */
   event: string;
@@ -45,13 +46,76 @@ export interface InputPanelProps {
   finding: boolean;
   /** variable suggestions are already showing */
   hasPicker: boolean;
-  /** variable suggestions, shown under the form */
-  children?: ReactNode;
+  /** variable suggestions: an overlay on the globe from 1024 px up, inline under the form below that */
+  picker?: VariablePickerProps | null;
+  /** Analyse was pressed: show the progress in place of the honeycomb until onStartDone */
+  starting?: boolean;
+  onStartDone?: () => void;
 }
+
+const WIDE = "(min-width: 1024px)";
+const subscribeWide = (cb: () => void) => {
+  const mq = window.matchMedia(WIDE);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+const useWide = () => useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => false);
 
 export function InputPanel(p: InputPanelProps) {
   const { setInput, entering, formHidden, skip } = useSharedStage();
   const panel = useRef<HTMLDivElement>(null);
+  const wide = useWide();
+  const overlayId = useId();
+  const overlayEl = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const focusIn = useRef(false);
+  const lastKey = useRef(-Infinity);
+  useEffect(() => {
+    const note = () => { lastKey.current = performance.now(); };
+    window.addEventListener("keydown", note, true);
+    return () => window.removeEventListener("keydown", note, true);
+  }, []);
+  // Suggestions only need the event. Time and place are checked by Analyse.
+  const ready = !!p.picker && p.hasPicker && !p.finding;
+  const wasReady = useRef(false);
+  useEffect(() => {
+    const previous = wasReady.current;
+    wasReady.current = ready;
+    if (!ready) setOpen(false);
+    else if (!previous) {
+      const active = document.activeElement;
+      const editing = (active instanceof HTMLTextAreaElement || active instanceof HTMLInputElement) && performance.now() - lastKey.current < 1500;
+      focusIn.current = !editing;
+      setOpen(true);
+    }
+  }, [ready]);
+  useEffect(() => {
+    if (!open || !focusIn.current) return;
+    focusIn.current = false;
+    // visibility only flips once the fade has started, so retry for a few frames until the tile takes focus
+    let f = 0, tries = 0;
+    const go = () => {
+      const el = overlayEl.current;
+      el?.querySelector<HTMLInputElement>("input[type=checkbox]:not(:disabled)")?.focus({ preventScroll: true });
+      if (el && !el.contains(document.activeElement) && ++tries < 12) f = requestAnimationFrame(go);
+    };
+    f = requestAnimationFrame(go);
+    return () => cancelAnimationFrame(f);
+  }, [open]);
+  const close = () => {
+    const inside = overlayEl.current?.contains(document.activeElement);
+    setOpen(false);
+    if (inside || document.activeElement === document.body) trigger.current?.focus({ preventScroll: true });
+  };
+  const toggle = () => {
+    if (open) { close(); return; }
+    focusIn.current = true;
+    setOpen(true);
+  };
+  const onOverlayKey = (e: ReactKeyboardEvent) => {
+    if (e.key === "Escape" && !p.starting) { e.stopPropagation(); close(); }
+  };
   useEffect(() => {
     setInput({ catalog: p.catalog, region: p.region, onRegion: p.onRegion });
   }, [setInput, p.catalog, p.region, p.onRegion]);
@@ -81,10 +145,27 @@ export function InputPanel(p: InputPanelProps) {
   return (
     <div data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 pt-8 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,34rem)] lg:gap-12 lg:px-8 lg:pt-12">
       <div data-stage-pass className="order-2 pb-14 lg:order-1">
-        <div data-stage-globe data-stage-pass className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))]" />
+        <div data-stage-pass className="relative mx-auto w-full max-w-[min(100%,calc(100dvh-10rem))]">
+          <div data-stage-globe data-stage-pass className="aspect-square w-full" />
+          {wide && ready && p.picker && (
+            <div
+              ref={overlayEl}
+              id={overlayId}
+              role="region"
+              aria-label={COPY.picker.heading}
+              inert={!open && !p.starting}
+              onKeyDown={onOverlayKey}
+              className={`absolute inset-x-0 top-0 max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain rounded-card border border-stage-line bg-stage/80 px-6 py-6 shadow-card backdrop-blur-xl transition-[opacity,transform,visibility] duration-250 ease-out motion-reduce:transition-none sm:px-8 ${
+                open || p.starting ? "pointer-events-auto visible scale-100 opacity-100" : "pointer-events-none invisible scale-[0.97] opacity-0"
+              }`}
+            >
+              {p.starting ? <StartProgress onDone={p.onStartDone ?? (() => {})} /> : open ? <VariablePicker {...p.picker} layout="overlay" onClose={close} /> : null}
+            </div>
+          )}
+        </div>
       </div>
       <div ref={panel} className="pointer-events-auto order-1 min-w-0 text-on-stage lg:order-2">
-        <div data-stage-copy className="h-32 sm:h-36" />
+        <div data-stage-copy className="h-24 sm:h-28" />
         <form
           className={`mt-5 transition-[opacity,transform] duration-300 motion-reduce:transition-none ${formHidden ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`}
           onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
@@ -92,31 +173,47 @@ export function InputPanel(p: InputPanelProps) {
         >
           <EventField {...p} />
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stage-line pb-5">
-            <p className="text-xs text-on-stage-2">{COPY.what.hint}</p>
             <button
+              ref={trigger}
               type="submit"
               disabled={!p.event.trim() || p.finding}
-              className="min-h-11 rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50"
+              aria-expanded={ready && open}
+              aria-controls={ready ? overlayId : undefined}
+              className={`min-h-11 rounded-ctl px-5 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 ${
+                p.hasPicker ? "border border-stage-line bg-on-stage/5 text-on-stage hover:bg-on-stage/15" : "bg-action text-on-action hover:bg-action-hover"
+              }`}
             >
               {p.finding ? COPY.find.busy : p.hasPicker ? COPY.find.again : COPY.find.go}
             </button>
           </div>
-          <details className="group border-b border-stage-line py-3">
-            <summary className="min-h-11 cursor-pointer py-2 text-sm text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-              <span className="ml-1 font-semibold">{COPY.steps.when}</span>
-              <span className="ml-3 tnum">{p.time ? formatRange(p.time) : COPY.when.choose}</span>
-            </summary>
-            <div className="pb-2"><TimeField {...p} /></div>
-          </details>
-          <details className="group border-b border-stage-line py-3">
-            <summary className="min-h-11 cursor-pointer py-2 text-sm text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-              <span className="ml-1 font-semibold">{COPY.steps.where}</span>
-              <span className="ml-3">{p.region ? p.region.name : COPY.where.none}</span>
-            </summary>
-            <div className="pb-2"><RegionField {...p} /></div>
-          </details>
+          <section className="border-b border-stage-line py-4" aria-label={COPY.steps.when}>
+            <h2 className="text-sm font-semibold">{COPY.steps.when}</h2>
+            <TimeField {...p} />
+          </section>
+          <section className="border-b border-stage-line py-4" aria-label={COPY.steps.where}>
+            <h2 className="mb-2 text-sm font-semibold">{COPY.steps.where}</h2>
+            <RegionField {...p} />
+          </section>
         </form>
-        {p.children && <div className="mt-6">{p.children}</div>}
+        {p.picker && (
+          <>
+            {!open && !p.starting && (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <button type="button" onClick={toggle} disabled={!ready} aria-expanded={false} aria-controls={overlayId}
+                  className="min-h-11 text-sm text-on-stage underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                  {p.picker.checked.length} selected
+                </button>
+                <AnalyseButton picker={p.picker} />
+                {p.picker.blocked && <span className="text-sm text-on-stage-2">{p.picker.blocked}</span>}
+              </div>
+            )}
+            {!wide && (open || p.starting) && (
+              <div ref={overlayEl} id={overlayId} role="region" aria-label={COPY.picker.heading} onKeyDown={onOverlayKey} className="relative mt-6">
+                {p.starting ? <StartProgress onDone={p.onStartDone ?? (() => {})} /> : <VariablePicker {...p.picker} layout="overlay" onClose={close} />}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -151,62 +248,15 @@ function EventField({ event, onEventChange }: InputPanelProps) {
 
 function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: InputPanelProps) {
   const id = useId();
-  const y0 = Number(bounds.start.slice(0, 4)), y1 = Number(bounds.end.slice(0, 4));
-  const years = useMemo(() => Array.from({ length: y1 - y0 + 1 }, (_, i) => y0 + i), [y0, y1]);
-  const clamp = useCallback(
-    (m: string) => ymFromIndex(Math.max(ymIndex(bounds.start), Math.min(ymIndex(bounds.end), ymIndex(m)))),
-    [bounds],
-  );
-  /** set one end; the other end follows when the range would turn around */
-  const set = (which: "start" | "end", year: number, month: number) => {
-    const v = clamp(ym(year, month));
-    onTimeChange((cur) => {
-      const next = { ...(cur ?? { start: v, end: v }), [which]: v };
-      return ymIndex(next.start) <= ymIndex(next.end) ? next : { start: v, end: v };
-    });
-  };
   // offer the text's period only when the chosen one is not already inside it (Jul–Sep 2022 is inside "2022")
   const inside = !!time && !!timeSuggestion && ymIndex(time.start) >= ymIndex(timeSuggestion.start) && ymIndex(time.end) <= ymIndex(timeSuggestion.end);
   const offer = timeSuggestion && !inside ? timeSuggestion : null;
-
-  const part = (which: "start" | "end", label: string) => {
-    const v = time?.[which];
-    const year = v ? Number(v.slice(0, 4)) : NaN;
-    const month = v ? Number(v.slice(5, 7)) : NaN;
-    const fallbackYear = Number.isFinite(year) ? year : y1;
-    const fallbackMonth = Number.isFinite(month) ? month : which === "start" ? 1 : 12;
-    return (
-      <fieldset className="flex min-w-0 items-center gap-1.5">
-        <legend className="sr-only">{label}</legend>
-        <span className="text-sm text-on-stage-2" aria-hidden="true">{label}</span>
-        <select
-          aria-label={`${label} month`}
-          value={Number.isFinite(month) ? month : ""}
-          onChange={(e) => set(which, fallbackYear, Number(e.target.value))}
-          className="rounded-ctl border border-line bg-paper px-2 py-1.5 text-ink"
-        >
-          {!Number.isFinite(month) && <option value="" disabled>{COPY.when.month}</option>}
-          {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-        </select>
-        <select
-          aria-label={`${label} year`}
-          value={Number.isFinite(year) ? year : ""}
-          onChange={(e) => set(which, Number(e.target.value), fallbackMonth)}
-          className="rounded-ctl border border-line bg-paper px-2 py-1.5 text-ink tnum"
-        >
-          {!Number.isFinite(year) && <option value="" disabled>{COPY.when.year}</option>}
-          {years.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
-      </fieldset>
-    );
-  };
 
   return (
     <div role="group" aria-labelledby={`${id}-t`}>
       <p id={`${id}-t`} className="sr-only">{COPY.steps.when}</p>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        {part("start", COPY.when.from)}
-        {part("end", COPY.when.to)}
+        <p role="status" className="text-sm text-on-stage-2 tnum">{time ? formatRange(time) : COPY.when.choose}</p>
         {offer && (
           <button
             type="button"
@@ -219,110 +269,6 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
         )}
       </div>
       <Timeline bounds={bounds} time={time} padMonths={padMonths} onChange={onTimeChange} />
-    </div>
-  );
-}
-
-/**
- * The record as a strip: the event period as an orange bar with handles, event ± pad (the part left out of the
- * baseline) lighter blue. Drag to pick a month range; a click picks that calendar year. The selects above are the
- * keyboard alternative.
- */
-function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; time: TimeRange | null; padMonths: number; onChange: (r: TimeRange) => void }) {
-  const [ref, width] = useElementWidth<HTMLDivElement>();
-  const [drag, setDrag] = useState<{ anchor: number; at: number; moved: boolean } | null>(null);
-  const a = ymIndex(bounds.start), b = ymIndex(bounds.end);
-  const h = 44, padX = 8;
-  const w = Math.max(0, width);
-  const x = (i: number) => padX + ((i - a) / Math.max(1, b - a + 1)) * (w - 2 * padX);
-  const toMonth = (clientX: number, el: Element) => {
-    const r = el.getBoundingClientRect();
-    const t = (clientX - r.left - padX) / Math.max(1, r.width - 2 * padX);
-    return Math.max(a, Math.min(b, a + Math.floor(t * (b - a + 1))));
-  };
-  const shown = drag
-    ? { start: ymFromIndex(Math.min(drag.anchor, drag.at)), end: ymFromIndex(Math.max(drag.anchor, drag.at)) }
-    : time;
-  const years: number[] = [];
-  const y0 = Math.ceil(a / 12), y1 = Math.floor(b / 12);
-  const step = w < 360 ? 10 : 5;
-  for (let y = Math.ceil(y0 / step) * step; y <= y1; y += step) years.push(y);
-
-  const down = (e: PointerEvent<SVGSVGElement>) => {
-    if (e.button !== 0) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const m = toMonth(e.clientX, e.currentTarget);
-    setDrag({ anchor: m, at: m, moved: false });
-  };
-  const move = (e: PointerEvent<SVGSVGElement>) => {
-    if (!drag) return;
-    const m = toMonth(e.clientX, e.currentTarget);
-    if (m !== drag.at) setDrag({ ...drag, at: m, moved: drag.moved || m !== drag.anchor });
-  };
-  const up = () => {
-    if (!drag) return;
-    if (drag.moved) {
-      onChange({ start: ymFromIndex(Math.min(drag.anchor, drag.at)), end: ymFromIndex(Math.max(drag.anchor, drag.at)) });
-    } else {
-      const year = Math.floor(drag.anchor / 12);
-      onChange({ start: ymFromIndex(Math.max(a, year * 12)), end: ymFromIndex(Math.min(b, year * 12 + 11)) });
-    }
-    setDrag(null);
-  };
-
-  const sx = shown ? x(ymIndex(shown.start)) : 0;
-  const ex = shown ? x(ymIndex(shown.end) + 1) : 0;
-  const barW = Math.max(4, ex - sx);
-  return (
-    <div ref={ref} className="mt-2 w-full select-none" title={COPY.when.stripTitle}>
-      {w > 0 && (
-        <svg
-          width={w}
-          height={h}
-          className="block cursor-grab touch-none active:cursor-grabbing"
-          aria-hidden="true"
-          onPointerDown={down}
-          onPointerMove={move}
-          onPointerUp={up}
-          onPointerCancel={() => setDrag(null)}
-        >
-          <rect x={padX} y={9} width={w - 2 * padX} height={12} rx={6} fill="var(--well)" stroke="var(--line)" />
-          {shown && (
-            <>
-              <rect
-                x={x(Math.max(a, ymIndex(addMonths(shown.start, -padMonths))))}
-                y={9}
-                width={Math.max(2, x(Math.min(b, ymIndex(addMonths(shown.end, padMonths))) + 1) - x(Math.max(a, ymIndex(addMonths(shown.start, -padMonths)))))}
-                height={12}
-                fill="var(--water)"
-                opacity={0.3}
-              />
-              <rect x={sx} y={6} width={barW} height={18} rx={3} fill="var(--viz-orange)" />
-              {/* grab handles on both edges */}
-              {[sx, sx + barW].map((hx, k) => (
-                <rect key={k} x={hx - 2.5} y={2} width={5} height={26} rx={2.5} fill="var(--paper)" stroke="var(--viz-orange)" strokeWidth={1.5} />
-              ))}
-            </>
-          )}
-          {years.map((y) => {
-            const at = x(y * 12);
-            // keep the end labels inside the strip
-            const anchor = at < 18 ? "start" : at > w - 18 ? "end" : "middle";
-            return (
-              <g key={y}>
-                <line x1={at} x2={at} y1={22} y2={28} stroke="var(--viz-axis)" />
-                <text x={anchor === "start" ? Math.max(0, at - 2) : anchor === "end" ? Math.min(w, at + 2) : at} y={41} textAnchor={anchor} fontSize={11} fill="var(--ink-3)" className="tnum">{y}</text>
-              </g>
-            );
-          })}
-        </svg>
-      )}
-      <p className="flex flex-wrap gap-x-4 text-xs text-on-stage-2">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--viz-orange)" }} aria-hidden="true" />{COPY.when.legendEvent}</span>
-        <span className="inline-flex items-center gap-1.5" title={COPY.when.legendBaselineTitle(padMonths)}>
-          <span className="h-2.5 w-4 rounded-sm bg-water opacity-30" aria-hidden="true" />{COPY.when.legendBaseline} (±{padMonths} mo)
-        </span>
-      </p>
     </div>
   );
 }

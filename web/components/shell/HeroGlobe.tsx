@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createContext, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type MouseEvent } from "react";
 import type { Catalog, Region } from "@/lib/types";
@@ -15,6 +14,8 @@ type Stage = {
   /** the input form stays hidden until the planet is well on its way */
   formHidden: boolean;
   started: number;
+  /** run the home -> detective hand-off and navigate to `href` (an event typed on the home page rides along as ?e=) */
+  start: (href: string) => void;
   enter: (e: MouseEvent<HTMLAnchorElement>) => void;
   skip: () => void;
 };
@@ -45,15 +46,18 @@ export function SharedGlobeLayout({ children }: { children: ReactNode }) {
   const [formHidden, setFormHidden] = useState(false);
   const [started, setStarted] = useState(0);
   const skip = useCallback(() => { setEntering(false); setFormHidden(false); }, []);
-  const enter = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    e.preventDefault();
+  const start = useCallback((href: string) => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setStarted(performance.now());
     setEntering(!reduced);
     setFormHidden(!reduced);
-    router.push("/detective", { scroll: false });
+    router.push(href, { scroll: false });
   }, [router]);
+  const enter = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    start("/detective");
+  }, [start]);
   useEffect(() => {
     if (!entering) return;
     const reveal = window.setTimeout(() => setFormHidden(false), Math.max(0, started + REVEAL_MS - performance.now()));
@@ -71,7 +75,7 @@ export function SharedGlobeLayout({ children }: { children: ReactNode }) {
     return () => ro.disconnect();
   }, []);
   return (
-    <StageContext.Provider value={{ input, setInput, entering, formHidden, started, enter, skip }}>
+    <StageContext.Provider value={{ input, setInput, entering, formHidden, started, start, enter, skip }}>
       <div ref={root} data-shared-stage-root className="relative isolate overflow-x-clip">
         {children}
         <Suspense fallback={null}><StageScene root={root} /></Suspense>
@@ -158,7 +162,6 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
   if (!visible) return null; // GlobeCanvas cleanup disposes the renderer and loses its WebGL context.
   const { area, clip, globe, copy } = positions;
   const move = travelling ? `${TRAVEL_MS}ms ${EASE}` : "0ms";
-  const centred = home && !stage.entering;
   return (
     <>
       <style>{`@media(prefers-reduced-motion:reduce){[data-shared-stage],[data-shared-clip]{transition:none !important}}`}</style>
@@ -190,7 +193,7 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
                 transition: `transform ${move}, width ${move}`,
               }}
             >
-              <SubBasinGlobe catalog={stage.input?.catalog ?? null} region={stage.input?.region ?? null} onRegion={stage.input?.onRegion ?? (() => {})} interactive={inputRoute} />
+              <SubBasinGlobe catalog={stage.input?.catalog ?? null} region={stage.input?.region ?? null} onRegion={stage.input?.onRegion ?? (() => {})} mode={home ? "home" : inputRoute ? "pick" : "off"} />
             </div>
           </div>
         </div>
@@ -198,7 +201,7 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
       <div
         data-shared-stage
         data-shared-copy
-        className={`on-stage pointer-events-none absolute left-0 top-0 z-10 text-on-stage ${centred ? "text-center" : ""}`}
+        className={`on-stage pointer-events-none absolute left-0 top-0 z-10 text-on-stage ${home ? "text-center" : ""}`}
         style={{
           width: copy?.width ?? 0,
           transform: `translate(${copy?.x ?? 0}px, ${copy?.y ?? 0}px)`,
@@ -206,14 +209,9 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
           transition: `transform ${move}, width ${move}`,
         }}
       >
-        <p className="text-sm font-semibold text-on-stage-2">Earth System Trend Detective</p>
-        <h1 id="hero" className={`mt-3 text-balance leading-tight ${home ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"}`} aria-label={home ? "Was it unusual?" : COPY.intro}>
+        <h1 id="hero" className={`text-balance leading-tight ${home ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"}`} aria-label={home ? "Was it unusual?" : COPY.intro}>
           {home ? "Was it unusual?" : stage.entering ? question || "\u00a0" : COPY.intro}
         </h1>
-        {home && <div className={`transition-[opacity,transform] duration-150 motion-reduce:transition-none ${stage.entering ? "-translate-y-2 opacity-0" : ""}`}>
-          <p className={`mt-4 max-w-[38ch] text-xl ${centred ? "mx-auto" : ""}`}>Test an extreme event against decades of Earth records.</p>
-          <Link href="/detective" onClick={stage.enter} className="pointer-events-auto mt-6 inline-flex min-h-11 items-center gap-6 rounded-ctl bg-action px-5 py-3 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4">Detective<span aria-hidden="true">→</span></Link>
-        </div>}
       </div>
     </>
   );
