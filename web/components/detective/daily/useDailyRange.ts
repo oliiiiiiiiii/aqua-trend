@@ -7,7 +7,8 @@
 //
 // Every change of the selection (or the variable) aborts the run in flight and starts again AUTO_DELAY_MS after the
 // last change, so dragging fires no requests and the newest selection always wins. Stop / Retry resume where loading
-// stopped; nothing waits for a click.
+// stopped; nothing waits for a click. loadAround() also fetches the rest of the span (after the selection), on request:
+// the surrounding-window baseline and tests that compare with data outside the selection need it.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supportsDaily, type DailySeries } from "@/lib/detective/daily";
 import { DailyLoadError, completedDailyRange, requestDailySeries } from "@/lib/detective/daily-client";
@@ -45,6 +46,12 @@ export interface DailyState {
   remainingDays: number;
   /** always false: the selection loads without a click */
   needsConfirm: boolean;
+  /** days of the span outside the selection not held yet (what loadAround() would fetch) */
+  aroundMissing: number;
+  /** the rest of the span has been asked for */
+  around: boolean;
+  /** fetch the rest of the span too (kept while the span stays the same) */
+  loadAround: () => void;
   unit: string | null;
   source: DailySeries["source"] | null;
   error: DailyLoadError["code"] | null;
@@ -67,10 +74,19 @@ export function useDailyRange({ region, layer, start, end, fetch, enabled = true
   const range = useMemo(() => (supported && fs ? completedDailyRange({ start: fs, end: fe }) : null), [supported, fs, fe]);
   const dates = useMemo(() => (span ? daysOf(span) : []), [span]);
   const selDates = useMemo(() => (range ? daysOf(range) : []), [range]);
-  const key = `${region}|${layer}|${range?.start ?? ""}|${range?.end ?? ""}`;
+  // the rest of the span, on request (per span, so moving the selection inside it keeps it)
+  const spanKey = `${region}|${layer}|${span?.start ?? ""}|${span?.end ?? ""}`;
+  const [aroundKey, setAroundKey] = useState("");
+  const around = !!span && aroundKey === spanKey;
+  const target = useMemo(() => {
+    if (!around) return selDates;
+    const inSel = new Set(selDates);
+    return [...selDates, ...dates.filter((d) => !inSel.has(d))];
+  }, [around, selDates, dates]);
+  const key = `${region}|${layer}|${range?.start ?? ""}|${range?.end ?? ""}|${around ? "around" : ""}`;
   const [, setVersion] = useState(0);
   const held = (d: string) => days.has(dayKey(region, layer, d));
-  const missing = selDates.filter((d) => !held(d)).length;
+  const missing = target.filter((d) => !held(d)).length;
 
   type Phase = "waiting" | "loading" | "stopped" | "error" | "done";
   const [run, setRun] = useState<{ key: string; phase: Phase; error: DailyLoadError["code"] | null; token: number }>(
@@ -85,19 +101,25 @@ export function useDailyRange({ region, layer, start, end, fetch, enabled = true
 
   // a new selection: (re)start after the debounce; every change clears the pending timer
   useEffect(() => {
-    if (!enabled || !supported || !range || !missing || run.key === key) return;
+    if (!enabled || !supported || !target.length || !missing || run.key === key) return;
     const t = window.setTimeout(begin, AUTO_DELAY_MS);
     return () => window.clearTimeout(t);
-  }, [enabled, supported, range, missing, run.key, key, begin]);
+  }, [enabled, supported, target.length, missing, run.key, key, begin]);
 
-  // the loading loop: the selection's missing days, one piece at a time; aborted when the selection changes
+  // the loading loop: the selection's missing days (then the span's, after loadAround), one piece at a time; aborted
+  // when the selection changes
   useEffect(() => {
-    if (!enabled || !range || run.key !== key || run.phase !== "loading") return;
+    if (!enabled || !target.length || run.key !== key || run.phase !== "loading") return;
     const ac = new AbortController();
     ctrl.current = ac;
     const token = run.token;
     (async () => {
-      for (const p of missingPieces(daysOf(range), (d) => days.has(dayKey(region, layer, d)))) {
+      // the selection's days first (target lists them first), then the rest of the span
+      const sorted = (list: string[]) => [...list].sort();
+      const has = (d: string) => days.has(dayKey(region, layer, d));
+      const inSel = new Set(selDates);
+      const todo = [...missingPieces(sorted(target.filter((d) => inSel.has(d))), has), ...missingPieces(sorted(target.filter((d) => !inSel.has(d))), has)];
+      for (const p of todo) {
         if (daysOf(p).every((d) => days.has(dayKey(region, layer, d)))) continue;
         const t0 = performance.now();
         const s = await requestDailySeries({ region, layer: layer as DailySeries["layer"], start: p.start, end: p.end }, ac.signal);
@@ -114,7 +136,7 @@ export function useDailyRange({ region, layer, start, end, fetch, enabled = true
       setRun((r) => (r.key === key && r.token === token ? { ...r, phase: "error", error: code } : r));
     });
     return () => ac.abort();
-  }, [enabled, key, run.key, run.phase, run.token, range, region, layer]);
+  }, [enabled, key, run.key, run.phase, run.token, target, selDates, region, layer]);
 
   const stop = useCallback(() => {
     ctrl.current?.abort();
@@ -132,11 +154,15 @@ export function useDailyRange({ region, layer, start, end, fetch, enabled = true
   const perPiece = timing.current.n > 0 ? timing.current.ms / timing.current.n / 1000 : null;
   const eta = perPiece != null ? perPiece * Math.ceil(missing / 3) : estimateSeconds(missing);
 
-  const phase: DailyPhase = !supported ? "unsupported" : !range ? "empty" : !missing ? "done" : cur.phase === "done" ? "stopped" : cur.phase;
+  const inSel = new Set(selDates);
+  const aroundMissing = dates.filter((d) => !inSel.has(d) && !held(d)).length;
+  const loadAround = useCallback(() => setAroundKey(spanKey), [spanKey]);
+
+  const phase: DailyPhase = !supported ? "unsupported" : !range && !around ? "empty" : !missing ? "done" : cur.phase === "done" ? "stopped" : cur.phase;
   return {
     phase, range, requestedEnd: fe || end, dates, values, loaded,
-    doneDays: selDates.length - missing, totalDays: selDates.length,
-    etaSeconds: eta, remainingDays: missing, needsConfirm: false, unit, source, error: cur.error,
+    doneDays: target.length - missing, totalDays: target.length,
+    etaSeconds: eta, remainingDays: missing, needsConfirm: false, aroundMissing, around, loadAround, unit, source, error: cur.error,
     start: begin, stop, retry: begin,
   };
 }

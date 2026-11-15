@@ -4,6 +4,7 @@
 // selection (or the whole record) after a short progress bar, then the result card (verdict, key numbers, figure,
 // chart overlay, collapsed details and the multiple-testing log) appears. A result whose range or test no longer
 // matches is dimmed with "Selection changed — Analyse again". The picked test is the URL `test`.
+import { COPY as DAILY } from "../../copy/daily";
 import { useEffect, useId, useState } from "react";
 import ResultCard from "./ResultCard";
 import { LabStepContext, labCopy, useLabCopy, type LabAxis } from "./step";
@@ -21,7 +22,17 @@ export interface LabControl {
   onWhole: (whole: boolean) => void;
 }
 
+/** Ways to get the data a test lacks (Days and Weeks windows only). */
+export interface FetchMore {
+  /** fetch the rest of the window around the selection; null when it is all loaded */
+  around: { days: number; eta: string; run: () => void } | null;
+  /** widen the selection to `points` points (its new days then load by themselves) */
+  widen: (points: number) => void;
+}
+
 export interface TestsPanelProps {
+  /** Days / Weeks windows: buttons to fetch what an unavailable test needs */
+  more?: FetchMore | null;
   lab: LabControl;
   analysis: LabAnalysis | null;
   /** names the points of the tested series (months, or the daily view's days and weeks) */
@@ -35,7 +46,7 @@ export interface TestsPanelProps {
   onShowAnomaly?: () => void;
 }
 
-export default function TestsPanel({ lab, analysis: a, axis, base, unit, polarity, onShowAnomaly }: TestsPanelProps) {
+export default function TestsPanel({ lab, analysis: a, axis, base, unit, polarity, onShowAnomaly, more }: TestsPanelProps) {
   const L = labCopy(axis.step);
   const uid = useId();
   if (!a) return null;
@@ -90,6 +101,7 @@ export default function TestsPanel({ lab, analysis: a, axis, base, unit, polarit
               <span className="text-ink-2"> · {L.testTitle[lab.test]}</span>
             </p>
             {!ok && <p className="mt-1 text-xs text-ink-3 tnum">{a.avail[lab.test].reason}</p>}
+            {!ok && more && <FetchMoreButton more={more} avail={a.avail[lab.test]} step={axis.step} />}
             {a.running && <div className="mt-2"><Progress key={a.running.token} ms={a.running.ms} /></div>}
             {!a.running && a.stale && <p role="status" className="mt-2 text-sm text-synthetic">{L.stale[a.stale]}</p>}
             {a.run && (
@@ -124,6 +136,18 @@ function TestButton({ name, t, group, first, on, avail, onPick }: {
       <span className={`max-w-full text-[9.5px] @[40rem]:text-[10.5px] leading-tight [overflow-wrap:anywhere] ${on ? "font-semibold" : ""}`}>{L.test[t]}</span>
     </label>
   );
+}
+
+/** One button that gets what the picked test lacks: a wider selection, or the days around it. */
+function FetchMoreButton({ more, avail, step }: { more: FetchMore; avail: { need: number; shortInRange: boolean }; step: string }) {
+  const cls = "mt-2 rounded-ctl border border-line px-2.5 py-0.5 text-sm font-semibold text-ink hover:border-ink-3";
+  if (avail.shortInRange) {
+    const unit = step === "week" ? (avail.need === 1 ? "week" : "weeks") : avail.need === 1 ? "day" : "days";
+    return <button type="button" title={DAILY.widenTitle} onClick={() => more.widen(avail.need)} className={cls}>{DAILY.widen(avail.need, unit)}</button>;
+  }
+  if (!more.around) return null;
+  const { days, eta, run } = more.around;
+  return <button type="button" title={DAILY.fetchAroundTitle} onClick={run} className={cls}>{DAILY.fetchAround(days, eta)}</button>;
 }
 
 /** a thin bar that fills in `ms` (pacing only) */

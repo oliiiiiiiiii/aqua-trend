@@ -19,7 +19,7 @@ import LaneChart, { type ChartLayer } from "./LaneChart";
 import StatsPanel, { StatsExtras, StatsMetrics } from "./StatsPanel";
 import type { Span } from "./model";
 import type { LaneModel, LaneReady } from "./types";
-import TestsPanel, { type LabControl } from "./lab/TestsPanel";
+import TestsPanel, { type FetchMore, type LabControl } from "./lab/TestsPanel";
 import { useLabAnalysis, type LabSource } from "./lab/useLabRun";
 import { monthAxis, type LabAxis } from "./lab/step";
 import { BandLegend } from "./lab/overlay";
@@ -57,7 +57,7 @@ export interface ExpandedProps {
    * Days and weeks: the Tests area runs on this series and selection instead of the months, and `stats` replaces the
    * statistics column. Absent (or `source` null while days load) = the monthly lane.
    */
-  fine?: { source: LabSource | null; sel: Span; axis: LabAxis; stats: ReactNode } | null;
+  fine?: { source: LabSource | null; sel: Span; axis: LabAxis; stats: ReactNode; more?: FetchMore | null } | null;
   /** baseline exclusion control, shown in "Baseline and method" */
   baselineControl?: ReactNode;
 }
@@ -189,7 +189,7 @@ export function ExpandedLane(p: ExpandedProps) {
 
         {p.lab && (
           <div className="order-5 min-w-0 lg:col-span-3 lg:row-start-2 lg:mt-1">
-            <TestsPanel lab={p.lab} analysis={analysis} axis={fine ? fine.axis : monthAxis(r.d.months)} base={fine ? 0 : r.base} unit={r.meta.unit} polarity={lane.polarity}
+            <TestsPanel lab={p.lab} analysis={analysis} more={fine?.more} axis={fine ? fine.axis : monthAxis(r.d.months)} base={fine ? 0 : r.base} unit={r.meta.unit} polarity={lane.polarity}
               onShowAnomaly={layer !== "anomaly" && !p.renderChart ? () => setLayer("anomaly") : undefined} />
           </div>
         )}
