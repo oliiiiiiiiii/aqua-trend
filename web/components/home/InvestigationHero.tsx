@@ -18,7 +18,7 @@ export function InvestigationHero({ children }: { children?: ReactNode }) {
           className="relative z-10 mx-auto flex max-w-[90rem] flex-col items-center gap-4 px-4 pt-10 sm:px-6 sm:pt-12 lg:px-8"
         >
           <div data-stage-pass className="w-full max-w-[42rem] min-w-0 text-center">
-            <div data-stage-copy data-stage-pass className="h-16 sm:h-20" />
+            <div data-stage-copy data-stage-pass className="h-28 sm:h-40" />
             <EventForm />
           </div>
         </div>
@@ -73,6 +73,7 @@ function EventForm() {
           id={`${id}-e`}
           ref={area}
           rows={1}
+          placeholder="e.g. 2021 Taiwan drought, 2022 Pakistan floods"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onKeyDown}
