@@ -1,7 +1,7 @@
 {
- "version": "export-2",
- "generated": "2026-11-14",
- "source": "隊友 hub.py（0.5° 月網格）匯出，加上 GLDAS 1° 表層土壤水",
+ "version": "export-3",
+ "generated": "2026-11-15",
+ "source": "舊管線（隊友 hub.py 0.5° 月網格，2026-11-14）＋工作線 F 管線（pipeline/，2026-11-15）；各層的 source／processed 欄位標明來源",
  "category_default_layer": {
   "precip": "p_imerg",
   "et": "et_m2",

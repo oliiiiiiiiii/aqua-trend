@@ -1,0 +1,380 @@
+{
+ "dataset_version": "data-2026-11-15",
+ "generated": "2026-11-15",
+ "catalogue_version": "variables-fd10b7337959",
+ "region_catalogue_version": "regions_0p5-7ddd6e9d56cc",
+ "series_index": "catalog/series_index.json",
+ "series_format": "series-2（每層 start + values，月資料，缺值 null）",
+ "n_series_files": 1706,
+ "event_catalogues": {
+  "status": "pending"
+ },
+ "indicator_registry_version": null,
+ "baselines": {
+  "status": "query_time",
+  "rule": "趨勢與季節循環只用基準期擬合；基準期 = 全期間扣除 [事件起 − pad, 事件迄 + pad]（SPEC §4 Step 2、INTEGRATION A）"
+ },
+ "quality_policy_version": "cover-0.30",
+ "quality_policy": "0.5° 格網 cos(lat) 面積加權；區域內有效面積 < 30% 的月份為 null；null 不可當 0",
+ "asset_status": [
+  {
+   "asset": "layer:aod",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:et_gldas",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:et_m2",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:et_m2land",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:fire_count",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "2000-11",
+   "end": "2025-12",
+   "source": "share",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:g1_soil_top",
+   "status": "ready",
+   "n_regions": 1628,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:lst_day",
+   "status": "ready",
+   "n_regions": 1600,
+   "start": "2000-02",
+   "end": "2026-10",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:lst_night",
+   "status": "ready",
+   "n_regions": 1600,
+   "start": "2000-02",
+   "end": "2026-10",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:ndvi",
+   "status": "ready",
+   "n_regions": 1553,
+   "start": "2000-02",
+   "end": "2026-10",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:p_gpcp",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1979-01",
+   "end": "2026-10",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:p_imerg",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1998-01",
+   "end": "2025-09",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:p_m2",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:p_m2land",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:pet_gldas",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:rn",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:rn_ceres",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "2000-03",
+   "end": "2026-07",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:rn_m2",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:ro_m2",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:runoff",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:sm_m2",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:sm_root",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:sm_total",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:snow_cover",
+   "status": "ready",
+   "n_regions": 1589,
+   "start": "2000-03",
+   "end": "2026-10",
+   "source": "share",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:so2_emis",
+   "status": "ready",
+   "n_regions": 441,
+   "start": "2005-01",
+   "end": "2025-12",
+   "source": "share",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:sst",
+   "status": "ready",
+   "n_regions": 84,
+   "start": "1982-01",
+   "end": "2026-10",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:swdown",
+   "status": "ready",
+   "n_regions": 1574,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:swe",
+   "status": "ready",
+   "n_regions": 1572,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:tair",
+   "status": "ready",
+   "n_regions": 1574,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:to3_m2",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:tqv",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:tsurf_m2",
+   "status": "ready",
+   "n_regions": 1566,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "missing": []
+  },
+  {
+   "asset": "layer:tws",
+   "status": "ready",
+   "n_regions": 1664,
+   "start": "2002-04",
+   "end": "2026-09",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:vpd",
+   "status": "ready",
+   "n_regions": 1574,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:wind",
+   "status": "ready",
+   "n_regions": 1574,
+   "start": "2000-01",
+   "end": "2026-07",
+   "source": "hub_export (2026-11-14)",
+   "processed": "2026-11-14",
+   "missing": []
+  },
+  {
+   "asset": "layer:ndvi (MODIS MOD13C2 re-build / extension)",
+   "status": "pending",
+   "reason": "下載中；既有 ndvi 層（舊管線，到 2026-10）仍可用"
+  },
+  {
+   "asset": "event_catalogues",
+   "status": "pending",
+   "reason": "尚無已核可的事件紀錄資料集（RecordedEvent）；查詢不得把缺資料當成零事件"
+  },
+  {
+   "asset": "indicator_registry",
+   "status": "pending",
+   "reason": "尚無標準指標配方（SPI 等）"
+  }
+ ],
+ "dropped": [
+  "OMI OMTO3d（臭氧／UV 氣膠指數，2026-11-15 決定不做；臭氧改用 MERRA-2 TO3）"
+ ],
+ "reproduce": "pipeline/README.md"
+}
