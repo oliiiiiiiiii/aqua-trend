@@ -13,8 +13,8 @@ import { anomalyColor, type LaneReady } from "./types";
 import { useSelectionDrag } from "./useSelectionDrag";
 import { MonthTip } from "./MonthTip";
 import { COPY } from "./copy";
-// Tests (lab) overlay: drawn on the Anomaly layer only
-import { LabOverlayMarks } from "./lab/overlay";
+// Tests (lab) overlay: shaded bands on every layer, fit lines and the break on the Anomaly layer only
+import { LabBandMarks, LabOverlayMarks } from "./lab/overlay";
 import type { LabOverlay } from "./lab/tests";
 
 export type ChartLayer = "anomaly" | "observed" | "seasonal" | "trend";
@@ -37,7 +37,7 @@ export interface LaneChartProps {
   onCommit: (s: Span) => void;
   onHover: (k: number | null) => void;
   onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
-  /** fit lines / break of the open test (Tests area); shown on the Anomaly layer */
+  /** what the open test draws (Tests area): bands on every layer, fit lines / break on the Anomaly layer */
   overlay?: LabOverlay | null;
 }
 
@@ -129,6 +129,7 @@ export default function LaneChart(p: LaneChartProps) {
                 return b ? <rect key={g.s} {...b} y={0} height={ih} fill={`url(#${hatch})`} /> : null;
               })}
               {sb && <rect {...sb} y={0} height={ih} style={{ fill: "var(--focus)", opacity: 0.07 }} />}
+              {p.overlay && <LabBandMarks overlay={p.overlay} base={base} t={t} ih={ih} polarity={p.polarity} />}
 
               {crossesZero && <line x1={0} x2={t.iw} y1={y(0)} y2={y(0)} strokeWidth={1} style={{ stroke: "var(--viz-axis)" }} />}
 

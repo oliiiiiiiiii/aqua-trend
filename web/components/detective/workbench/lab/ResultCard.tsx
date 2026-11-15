@@ -4,10 +4,13 @@
 // the multiple-testing log. No boxes: whitespace, alignment and a hairline or two.
 import { Fragment } from "react";
 import type { YearMonth } from "@/lib/detective/contracts";
-import { formatYm } from "@/lib/detective/url";
+import { formatRange, formatYm } from "@/lib/detective/url";
 import { pValue } from "../../format";
 import { COPY } from "../copy";
-import { AcfFigure, BootFigure, CusumFigure, MonthlyFigure, NormalFigure, PermFigure, SpectrumFigure } from "./figures";
+import {
+  AcfFigure, AnalogFigure, BocpdFigure, BootFigure, CusumFigure, DiscordFigure, ForecastFigure, GpFigure, HmmFigure, IforestFigure,
+  MonthlyFigure, NormalFigure, PermFigure, SpectrumFigure,
+} from "./figures";
 import { resultView, type Tag } from "./format";
 import { slopeScale, type HolmStatus, type TestLog } from "./tests";
 import type { LabRun } from "./useLabRun";
@@ -56,6 +59,7 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
   const o = run.outcome;
   const n = run.span.e - run.span.s + 1;
   const monthLabel = (i: number) => (months[i] ? formatYm(months[i]) : "—");
+  const monthSpan = (a: number, b: number) => (months[a] && months[b] ? formatRange({ start: months[a], end: months[b] }) : "—");
 
   if (o.kind === "insufficient" || !run.avail[run.test].ok) {
     return (
@@ -63,14 +67,14 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
         <p aria-live="polite" className="flex flex-wrap items-baseline gap-x-2 text-sm">
           <LabMark state="none" title={COPY.verdict.insufficient} />
           <span className="font-semibold text-ink">{COPY.verdict.insufficient}</span>
-          <span className="text-ink-2 tnum">{run.avail[run.test].reason ?? L.needs(run.avail[run.test].need)}</span>
+          <span className="text-ink-2 tnum">{(o.kind === "insufficient" && o.note && L.ml.note[o.tool]) || run.avail[run.test].reason || L.needs(run.avail[run.test].need)}</span>
         </p>
         <LogLine log={run.log} pending={run.logPending} />
       </div>
     );
   }
 
-  const v = resultView(o.stats, { unit, months: n, monthLabel });
+  const v = resultView(o.stats, { unit, months: n, monthLabel, monthSpan });
   const s = o.stats;
   const k = slopeScale(n).k;
   return (
@@ -103,8 +107,17 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
         {s.tool === "cusum" && <CusumFigure s={s} months={months} polarity={polarity} />}
         {s.tool === "monthly" && <MonthlyFigure s={s} polarity={polarity} unit={unit} />}
         {s.tool === "spectrum" && <SpectrumFigure s={s} />}
+        {s.tool === "analog" && <AnalogFigure s={s} />}
+        {s.tool === "hmm" && <HmmFigure s={s} months={months} polarity={polarity} />}
+        {s.tool === "forecast" && <ForecastFigure s={s} months={months} />}
+        {s.tool === "discord" && <DiscordFigure s={s} months={months} />}
+        {s.tool === "iforest" && <IforestFigure s={s} months={months} polarity={polarity} />}
+        {s.tool === "bocpd" && <BocpdFigure s={s} months={months} />}
+        {s.tool === "gp" && <GpFigure s={s} months={months} residual={run.residual} />}
 
-        {onShowAnomaly && run.overlay && (
+        {v.caveat && <p role="note" className="mt-2 text-xs text-ink-3">{v.caveat}</p>}
+
+        {onShowAnomaly && run.overlay && (run.overlay.segments.length > 0 || run.overlay.breakAfter != null) && (
           <button type="button" onClick={onShowAnomaly} title={L.onAnomalyTitle}
             className="mt-2 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
             {L.onAnomaly}
@@ -118,8 +131,8 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
           <span className="font-semibold text-ink-2">{L.details}</span>
         </summary>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 pb-2 pl-5 text-sm tnum">
-          {v.details.map((r) => (
-            <Fragment key={r.label}>
+          {v.details.map((r, i) => (
+            <Fragment key={`${r.label}-${i}`}>
               <dt className="text-ink-2">{r.label}</dt>
               <dd className="text-ink">{r.value}<TagNote tag={r.tag} /></dd>
             </Fragment>

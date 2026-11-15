@@ -1,6 +1,6 @@
 "use client";
-// The Tests area under the chart (docs/ANALYSIS_LAB.md), two columns: on the left the lab's 17 tests as small icon
-// grids grouped like LAB_GROUPS (Trend · Mean · Extremes · Cycles) with Analyse under them, on the right the result. Picking a test does not run it; "Analyse" runs it on the anomaly of the shared
+// The Tests area under the chart (docs/ANALYSIS_LAB.md), two columns: on the left the lab's 24 tests as small icons
+// in LAB_GROUPS order (Trend · Mean · Extremes · Cycles · Machine learning; four rows of six) with Analyse under them, on the right the result. Picking a test does not run it; "Analyse" runs it on the anomaly of the shared
 // selection (or the whole record) after a short progress bar, then the result card (verdict, key numbers, figure,
 // chart overlay, collapsed details and the multiple-testing log) appears. A result whose range or test no longer
 // matches is dimmed with "Selection changed — Analyse again". The picked test is the URL `test`.
@@ -54,7 +54,7 @@ export default function TestsPanel({ lab, analysis: a, months, unit, polarity, o
         </label>
       </div>
 
-      {/* chooser (left): the 17 tests in four small icon grids, then Analyse. Result (right): description, progress, card.
+      {/* chooser (left): the 24 tests, six per row (five on phones), then Analyse. Result (right): description, progress, card.
           Below ~40rem of room the result goes under the chooser. */}
       <div className="@container mt-3">
         <div className="grid gap-x-8 gap-y-5 @[40rem]:grid-cols-[minmax(0,9fr)_minmax(0,11fr)]">

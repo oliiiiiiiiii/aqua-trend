@@ -24,12 +24,14 @@ const ok = (o: LabOutcome) => { assert.equal(o.kind, "ok"); return o as Extract<
 const ctx = { unit: "mm", months: 24, monthLabel: (i: number) => `m${i}` };
 
 describe("test grouping", () => {
-  it("follows the lab's four groups, every tool once, English labels", () => {
+  it("follows the lab's five groups, every tool once, English labels", () => {
     assert.equal(LAB_GROUPS.length, GROUPS.length);
     assert.deepEqual(GROUPS.flatMap(testsIn), [...LAB_TOOLS]);
     assert.deepEqual([...TEST_IDS], [...LAB_TOOLS]);
     assert.equal(groupOf("pettitt"), "extremes");
     assert.equal(groupOf("spectrum"), "cycles");
+    assert.equal(groupOf("gp"), "ml");
+    assert.equal(testsIn("ml").length, 7);
     for (const t of TEST_IDS) assert.match(COPY.lab.test[t], /^[\x20-\x7E–σ]+$/, t);
     for (const g of GROUPS) assert.ok(COPY.lab.group[g].split(" ").length <= 3);
   });
@@ -95,12 +97,40 @@ describe("result wording", () => {
     assert.equal(countText(3.5), "3.5");
   });
   it("every tool gives a verdict and 1–4 key numbers in English", () => {
-    for (const t of TEST_IDS) {
+    for (const t of TEST_IDS.filter((x) => groupOf(x) !== "ml")) {
       const v = resultView(ok(runLabTool(t, d, 0, 47)).stats, ctx);
-      assert.ok(v.headline.length > 0 && v.headline.length < 48, `${t}: ${v.headline}`);
+      assert.ok(v.headline.length > 0 && v.headline.length < 64, `${t}: ${v.headline}`);
       assert.ok(v.cells.length >= 1 && v.cells.length <= 4, t);
       assert.doesNotMatch(JSON.stringify(v), /[一-鿿]/, t);
     }
+  });
+  it("machine-learning tools: a plain verdict, 1–4 numbers, a caveat, English only", () => {
+    const d2 = fake(noise(120, 5).map((v, i) => v + (i >= 80 && i < 92 ? 2.5 : 0)));
+    for (const t of testsIn("ml")) {
+      const o = ok(runLabTool(t, d2, 70, 105));
+      const v = resultView(o.stats, ctx);
+      assert.ok(v.headline.length > 0 && v.headline.length < 64, `${t}: ${v.headline}`);
+      assert.ok(v.cells.length >= 1 && v.cells.length <= 4, t);
+      assert.ok(v.caveat && v.caveat.length < 90, t);
+      assert.doesNotMatch(JSON.stringify(v), /[一-鿿]/, t);
+      const ov = overlayFor(o);
+      assert.doesNotMatch(JSON.stringify(ov), /[一-鿿]/, t);
+      if (ov?.bands.length) assert.ok(ov.bands.every((b) => b.x1 >= b.x0), t);
+      if (ov && ov.bands.length && t !== "analog") assert.ok(ov.legend.length > 0, t);
+    }
+    assert.equal(resultView(ok(runLabTool("forecast", d2, 70, 105)).stats, ctx).significant !== null, true);
+    assert.equal(resultView(ok(runLabTool("gp", d2, 70, 105)).stats, ctx).significant, null);
+  });
+  it("band overlays are marked (similar periods numbered, states low / high); a forecast with no history is unavailable", () => {
+    const d2 = fake(noise(120, 5).map((v, i) => v + (i >= 80 && i < 92 ? 2.5 : 0)));
+    const a = overlayFor(ok(runLabTool("analog", d2, 70, 105)))!;
+    assert.deepEqual(a.bands.map((b) => b.label), a.bands.map((_, k) => String(k + 1)));
+    const h = overlayFor(ok(runLabTool("hmm", d2, 0, 119)))!;
+    assert.ok(h.bands.some((b) => b.fill === "high") && h.bands.some((b) => b.fill === "low"));
+    const av = availability(d2.residual, 10, 30);
+    assert.equal(av.forecast.ok, false);
+    assert.match(av.forecast.reason!, /3 years/);
+    assert.equal(availability(d2.residual, 70, 105).forecast.ok, true);
   });
   it("shift: verdict first, 4 key numbers with unit and CI", () => {
     const v = resultView(ok(runLabTool("mean", d, 30, 40)).stats, ctx);

@@ -1,9 +1,52 @@
 "use client";
-// What the open test draws on LaneChart's Anomaly layer: fit segments as a thin ink line on a 2 px
-// surface halo (dashed where the lab says so), and for Pettitt a dashed rule at the break.
+// What the open test draws on LaneChart. On every layer: shaded spans ("bands": similar periods, states, flagged
+// months) behind the series. On the Anomaly layer only (they are in anomaly units): fit segments as a thin ink line on
+// a 2 px surface halo (dashed where the lab says so), and for Pettitt a dashed rule at the break.
 import type { TimeScale } from "../axis";
 import { COPY } from "../copy";
-import type { LabOverlay } from "./tests";
+import { anomalyColor } from "../types";
+import type { BandFill, LabOverlay } from "./tests";
+
+/** CSS colour of a band fill: low / high follow the variable's anomaly colours. */
+export const bandColor = (f: BandFill, polarity: "cool" | "warm") =>
+  f === "low" ? anomalyColor(false, polarity) : f === "high" ? anomalyColor(true, polarity) : f === "focus" ? "var(--focus)" : "var(--ink)";
+
+export function LabBandMarks({ overlay, base, t, ih, polarity }: { overlay: LabOverlay; base: number; t: TimeScale; ih: number; polarity: "cool" | "warm" }) {
+  if (!overlay.bands.length) return null;
+  return (
+    <g pointerEvents="none">
+      {overlay.bands.map((b, i) => {
+        const x0 = t.x(b.x0 + base), x1 = t.x(b.x1 + base + 1);
+        if (x1 < 0 || x0 > t.iw) return null;
+        const w = Math.max(2, x1 - x0), c = bandColor(b.fill, polarity);
+        return (
+          <g key={i}>
+            <rect x={x0} width={w} y={0} height={ih} style={{ fill: c, opacity: 0.17 }} />
+            <rect x={x0} width={w} y={0} height={3} style={{ fill: c }} />
+            {b.label && w > 10 && (
+              <text x={x0 + w / 2} y={16} textAnchor="middle" style={{ fill: "var(--ink)", fontSize: 11, fontWeight: 700, paintOrder: "stroke", stroke: "var(--well)", strokeWidth: 3 }}>{b.label}</text>
+            )}
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+/** Legend entries for the bands, appended to the chart legend while a band overlay is shown. */
+export function BandLegend({ overlay, polarity }: { overlay: LabOverlay | null; polarity: "cool" | "warm" }) {
+  if (!overlay || !overlay.bands.length) return null;
+  return (
+    <>
+      {overlay.legend.map((l) => (
+        <span key={l.text} className="inline-flex items-center gap-1.5 whitespace-nowrap">
+          <span aria-hidden="true" className="inline-block h-2.5 w-3 rounded-[2px] border-t-[2px]" style={{ background: `color-mix(in srgb, ${bandColor(l.fill, polarity)} 22%, transparent)`, borderColor: bandColor(l.fill, polarity) }} />
+          {l.text}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export function LabOverlayMarks({ overlay, base, t, y, ih }: {
   overlay: LabOverlay;

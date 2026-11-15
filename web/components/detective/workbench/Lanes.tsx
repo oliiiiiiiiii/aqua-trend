@@ -21,6 +21,8 @@ import type { Span } from "./model";
 import type { LaneModel, LaneReady } from "./types";
 import TestsPanel, { type LabControl } from "./lab/TestsPanel";
 import { useLabAnalysis } from "./lab/useLabRun";
+import { BandLegend } from "./lab/overlay";
+import type { LabOverlay } from "./lab/tests";
 
 export interface Shared {
   view: Span;
@@ -97,7 +99,7 @@ export function ExpandedLane(p: ExpandedProps) {
   const trigger = useRef<HTMLButtonElement>(null);
   const closeMore = () => setMore(false);
   const analysis = useLabAnalysis(r.kind === "ready" ? r : null, shared.sel, p.lab?.test ?? "mean", p.lab?.whole ?? false);
-  const overlay = layer === "anomaly" ? analysis?.run?.overlay ?? null : null;
+  const overlay = analysis?.run?.overlay ?? null; // bands show on every layer; LaneChart keeps fit lines for Anomaly
   const L = COPY.lanes;
 
   const product = lane.choices.length > 1 && p.vc ? (
@@ -174,7 +176,7 @@ export function ExpandedLane(p: ExpandedProps) {
           </div>
           <div className="order-2 min-w-0">
             {p.renderChart ? p.renderChart(monthly) : monthly}
-            {!p.renderChart && <Legend layer={layer} lane={lane} />}
+            {!p.renderChart && <Legend layer={layer} lane={lane} overlay={overlay} />}
           </div>
         </div>
 
@@ -186,7 +188,11 @@ export function ExpandedLane(p: ExpandedProps) {
         )}
 
         {wide ? (
-          <aside aria-label={COPY.stats.heading} className="flex min-w-0 justify-end lg:col-start-3 lg:row-start-1">
+          <aside aria-label={COPY.stats.heading} className="relative min-w-0 lg:col-start-3 lg:row-start-1 lg:self-stretch">
+            {/* in-flow, invisible copy of the metrics: gives the closed row its height; the curtain is absolutely sized to it */}
+            <div aria-hidden="true" inert className="invisible w-full pl-10">
+              <StatsMetrics d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} live={false} />
+            </div>
             <StatsCurtain
               id={moreId} open={more} onToggle={() => setMore((m) => !m)} onClose={closeMore} trigger={trigger}
               metrics={<StatsMetrics d={lane.detail} unit={r.meta.unit} polarity={lane.polarity} />}
@@ -242,12 +248,27 @@ function StatsCurtain({ id, open, onToggle, onClose, trigger, metrics, extras }:
       document.removeEventListener("pointerdown", down);
     };
   }, [open, trigger]);
+  const scroller = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState(false);
+  const measure = () => {
+    const el = scroller.current;
+    setMore(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 4);
+  };
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
+  }, [open]);
   const S = COPY.stats;
   return (
     <div
       ref={box}
       style={{ transitionDuration: `${CURTAIN_MS}ms` }}
-      className={`relative z-20 flex shrink-0 border-l border-line bg-paper transition-[width] ease-out motion-reduce:transition-none ${
+      className={`absolute inset-y-0 right-0 z-20 flex border-l border-line bg-paper transition-[width] ease-out motion-reduce:transition-none ${
         open ? "w-[42rem] max-w-[calc(100vw-3rem)]" : "w-[17rem]"
       }`}
     >
@@ -265,12 +286,17 @@ function StatsCurtain({ id, open, onToggle, onClose, trigger, metrics, extras }:
       <div
         id={id} role="region" aria-label={S.drawerLabel} inert={!open} aria-hidden={!open}
         style={{ transitionDuration: "0s", transitionDelay: open ? "0s" : `${CURTAIN_MS}ms` }}
-        className={`min-w-0 flex-1 overflow-hidden transition-[max-height] ${open ? "max-h-[200rem]" : "max-h-0"}`}
+        className="relative min-w-0 flex-1 overflow-hidden"
       >
-        <div className="w-[25rem] px-4 pb-4">
+        <div
+          ref={scroller} tabIndex={open ? 0 : -1} onScroll={measure}
+          className="stats-scroll h-full w-[25rem] overflow-y-auto overscroll-contain px-4 pb-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+        >
           <h3 className="mb-2 font-[family-name:var(--font-body-active)] text-sm font-semibold text-ink">{S.moreHeading}</h3>
           {extras}
         </div>
+        <div aria-hidden="true" style={{ opacity: more ? 1 : 0 }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-paper to-transparent transition-opacity duration-150" />
       </div>
       <div className="w-[15.5rem] shrink-0 pr-0 pl-3">{metrics}</div>
     </div>
@@ -336,7 +362,7 @@ function StatsSheet({ id, trigger, onClosed, children }: {
 }
 
 /** one compact row under the chart's time axis: fills and guides with their meaning */
-function Legend({ layer, lane }: { layer: ChartLayer; lane: LaneModel }) {
+function Legend({ layer, lane, overlay }: { layer: ChartLayer; lane: LaneModel; overlay: LabOverlay | null }) {
   const sw = (cls: string, style?: React.CSSProperties) => <span aria-hidden="true" className={`inline-block h-2.5 w-3 rounded-[2px] ${cls}`} style={style} />;
   const line = (dash: string | undefined, color: string, w = 1.5, op = 1) => (
     <svg width="16" height="8" aria-hidden="true"><line x1="0" x2="16" y1="4" y2="4" strokeWidth={w} strokeDasharray={dash} style={{ stroke: color, opacity: op }} /></svg>
@@ -358,6 +384,7 @@ function Legend({ layer, lane }: { layer: ChartLayer; lane: LaneModel }) {
         </>
       )}
       {item(sw("", { background: "var(--action)", opacity: 0.45 }), COPY.chart.eventBand)}
+      <BandLegend overlay={overlay} polarity={lane.polarity} />
       {item(sw("border-[1.5px] border-focus", { background: "color-mix(in srgb, var(--focus) 12%, transparent)" }), COPY.chart.selection)}
       {item(sw("", { background: "repeating-linear-gradient(45deg, color-mix(in srgb, var(--ink) 22%, transparent) 0 2px, transparent 2px 5px)" }), COPY.chart.missing)}
     </p>

@@ -1,22 +1,22 @@
-// The workbench "Tests" area, pure part: the lab's tools in its four groups (LAB_GROUPS), which ones
+// The workbench "Tests" area, pure part: the lab's tools in its five groups (LAB_GROUPS), which ones
 // the range can support, what each draws on the anomaly chart, and the multiple-testing log.
 // Statistics live in lib/detective/lab.ts.
-import { LAB_GROUPS, LAB_MIN_N, holm, labSample, primaryP, restSample, type LabOutcome, type LabSegment } from "@/lib/detective/lab";
+import { LAB_GROUPS, LAB_MIN_N, holm, labSample, primaryP, restSample, type LabBand, type LabOutcome, type LabSegment } from "@/lib/detective/lab";
 import { TEST_IDS, type TestId } from "@/lib/detective/url";
 import { COPY } from "../copy";
 
 export type { TestId };
-/** LAB_GROUPS in order: trend · mean and distribution · persistence and extremes · cycles and memory */
-export type TestGroup = "trend" | "mean" | "extremes" | "cycles";
+/** LAB_GROUPS in order: trend · mean and distribution · persistence and extremes · cycles and memory · machine learning */
+export type TestGroup = "trend" | "mean" | "extremes" | "cycles" | "ml";
 
-export const GROUPS: readonly TestGroup[] = ["trend", "mean", "extremes", "cycles"];
+export const GROUPS: readonly TestGroup[] = ["trend", "mean", "extremes", "cycles", "ml"];
 
 export const testsIn = (g: TestGroup): TestId[] => [...LAB_GROUPS[GROUPS.indexOf(g)].tools];
 export const groupOf = (t: TestId): TestGroup => GROUPS.find((g) => testsIn(g).includes(t)) ?? "trend";
 
 export const DEFAULT_TEST: TestId = "mean";
-/** simulation-heavy tests (2000 draws, or a dense periodogram) wait until the selection stops moving */
-const SLOW: ReadonlySet<TestId> = new Set(["bootstrap", "permutation", "runs", "spectrum"]);
+/** simulation- or fit-heavy tests (2000 draws, a dense periodogram, model fits) run only after Analyse and get a longer progress bar */
+const SLOW: ReadonlySet<TestId> = new Set(["bootstrap", "permutation", "runs", "spectrum", "hmm", "gp", "iforest", "discord", "bocpd"]);
 export const isSlow = (t: TestId) => SLOW.has(t);
 
 /**
@@ -49,6 +49,17 @@ export interface Availability {
   reason: string | null;
 }
 
+/** months the forecast needs before the range: rows with the 6 months before them all present (ml.ts arForecast asks for 30) */
+export const FORECAST_TRAIN = 30;
+function trainingRows(v: readonly (number | null)[], start: number): number {
+  let run = 0, rows = 0;
+  for (let t = 0; t < Math.min(start, v.length); t++) {
+    run = v[t] != null && Number.isFinite(v[t] as number) ? run + 1 : 0;
+    if (run >= 7) rows++;
+  }
+  return rows;
+}
+
 /** Which tests the residual months [start, end] (indices into d.months) can support, with the reason when not. */
 export function availability(residual: readonly (number | null)[], start: number, end: number): Record<TestId, Availability> {
   const n = labSample(residual, start, end).n;
@@ -60,6 +71,7 @@ export function availability(residual: readonly (number | null)[], start: number
     else if (NEEDS_REST.has(t) && rest < REST_MIN) out[t] = { ok: false, need, shortInRange: false, reason: COPY.lab.needsRest(REST_MIN) };
     else out[t] = { ok: true, need, shortInRange: false, reason: null };
   }
+  if (out.forecast.ok && trainingRows(residual, start) < FORECAST_TRAIN) out.forecast = { ok: false, need: LAB_MIN_N.forecast, shortInRange: false, reason: COPY.lab.ml.needsTraining };
   return out;
 }
 
@@ -75,14 +87,42 @@ export function slopeScale(months: number): { k: number; per: "decade" | "year" 
   return months >= 120 ? { k: 120, per: "decade" } : { k: 12, per: "year" };
 }
 
-/** What a test draws on the anomaly layer: fit segments (indices into d.months) and, for Pettitt, the first month after the break. */
-export interface LabOverlay { segments: LabSegment[]; breakAfter: number | null }
+/** Colour of a shaded span: the variable's low / high anomaly colours, or neutral focus / ink. */
+export type BandFill = "low" | "high" | "focus" | "ink";
+export interface OverlayBand { x0: number; x1: number; fill: BandFill; label?: string }
+export interface OverlayLegend { fill: BandFill; text: string }
+
+/**
+ * What a test draws on the chart. `segments` and `breakAfter` are in anomaly units, so they show on the Anomaly layer only;
+ * `bands` (shaded spans of months, indices into d.months) show on every layer, with a legend entry each.
+ */
+export interface LabOverlay { segments: LabSegment[]; breakAfter: number | null; bands: OverlayBand[]; legend: OverlayLegend[] }
+
+const FILL: Record<LabBand["tone"], BandFill> = { cool: "low", warm: "high", focus: "focus", ink: "ink" };
+
+/** Band legend wording per tool (the lab's own band labels are Chinese: they are replaced here). */
+function bandView(o: Extract<LabOutcome, { kind: "ok" }>): { bands: OverlayBand[]; legend: OverlayLegend[] } {
+  const raw = o.bands ?? [];
+  const L = COPY.lab.band;
+  const tool = o.stats.tool;
+  let bands: OverlayBand[];
+  if (tool === "discord") bands = raw.map((b) => ({ x0: b.x0, x1: b.x1, fill: b.label === "罕見" ? ("ink" as const) : ("focus" as const) }));
+  else bands = raw.map((b) => ({ x0: b.x0, x1: b.x1, fill: FILL[b.tone], label: tool === "analog" ? b.label : undefined }));
+  const has = (f: BandFill) => bands.some((b) => b.fill === f);
+  const legend: OverlayLegend[] = [];
+  if (tool === "analog" && bands.length) legend.push({ fill: "focus", text: L.similar });
+  else if (tool === "hmm") { if (has("low")) legend.push({ fill: "low", text: L.lowState }); if (has("high")) legend.push({ fill: "high", text: L.highState }); }
+  else if (tool === "discord") { if (has("ink")) legend.push({ fill: "ink", text: L.rare }); if (has("focus")) legend.push({ fill: "focus", text: L.repeat }); }
+  else if (tool === "iforest") { if (has("low")) legend.push({ fill: "low", text: L.flaggedLow }); if (has("high")) legend.push({ fill: "high", text: L.flaggedHigh }); }
+  return { bands, legend };
+}
 
 export function overlayFor(o: LabOutcome | null): LabOverlay | null {
   if (!o || o.kind !== "ok") return null;
   const breakAfter = o.stats.tool === "pettitt" ? o.stats.splitAt + 1 : null;
-  if (!o.segments.length && breakAfter == null) return null;
-  return { segments: o.segments, breakAfter };
+  const { bands, legend } = bandView(o);
+  if (!o.segments.length && breakAfter == null && !bands.length) return null;
+  return { segments: o.segments, breakAfter, bands, legend };
 }
 
 /* ------------------------------------------------------------------ multiple-testing log */

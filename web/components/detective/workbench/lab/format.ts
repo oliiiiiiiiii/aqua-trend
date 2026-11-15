@@ -5,10 +5,12 @@ import { num, pValue } from "../../format";
 import { COPY } from "../copy";
 import { slopeScale } from "./tests";
 
+type GpSpan = { x0: number; x1: number; sign: 1 | -1 };
+
 export type Tag = "uncorrected" | "optimistic";
 export interface ResultCell { label: string; value: string; sub?: string | null; tag?: Tag }
 export interface DetailRow { label: string; value: string; tag?: Tag }
-export type FigureKind = "acf" | "hist" | "boot" | "perm" | "cusum" | "monthly" | "spectrum";
+export type FigureKind = "acf" | "hist" | "boot" | "perm" | "cusum" | "monthly" | "spectrum" | "analog" | "hmm" | "forecast" | "discord" | "iforest" | "bocpd" | "gp";
 
 export interface ResultView {
   /** null for descriptive tools (no p value) */
@@ -19,6 +21,8 @@ export interface ResultView {
   details: DetailRow[];
   method: string;
   figure: FigureKind | null;
+  /** one short honesty line shown under the key numbers (machine-learning tools) */
+  caveat?: string | null;
 }
 
 export interface ResultContext {
@@ -27,6 +31,8 @@ export interface ResultContext {
   months: number;
   /** "Mar 2021" for an index into d.months */
   monthLabel: (i: number) => string;
+  /** "Mar – Jun 2002" for a span of indices into d.months (default: "Mar 2002 – Jun 2002") */
+  monthSpan?: (a: number, b: number) => string;
 }
 
 const ALPHA = 0.05;
@@ -57,6 +63,8 @@ export function resultView(s: LabStats, ctx: ResultContext): ResultView {
   ];
   const sig = (p: number) => p < ALPHA;
   const ym = ctx.monthLabel;
+  const span = (a: number, b: number) => (ctx.monthSpan ? ctx.monthSpan(a, b) : a === b ? ym(a) : `${ym(a)} – ${ym(b)}`);
+  const ML = L.ml;
 
   switch (s.tool) {
     case "mean": return {
@@ -278,6 +286,153 @@ export function resultView(s: LabStats, ctx: ResultContext): ResultView {
         details: [n(s.n), { label: R.rho, value: num(s.rho, 2) },
           ...s.peaks.map((pk, k) => ({ label: R.peak(k + 1), value: `${P(pk.period)} · ${S.power(num(pk.power, 2), num(pk.threshold, 2), pk.significant)}` }))],
         method: M.spectrum, figure: "spectrum",
+      };
+    }
+    case "analog": {
+      const m0 = s.matches[0];
+      const at = (st: number) => span(st, st + s.length - 1);
+      const dtw0 = s.dtw[0];
+      const after = (x: number | null) => (x == null ? "—" : val(x));
+      return {
+        significant: null, headline: ML.verdict.analog(s.matches.length, at(m0.start)), note: L.descriptive,
+        cells: [
+          { label: ML.cell.closest, value: `${num(m0.distance)} ${u}`, sub: ML.sub.typical(`${num(s.typical)} ${u}`) },
+          { label: ML.cell.shape, value: rText(m0.corr) },
+          { label: ML.cell.then(s.horizon), value: after(s.analogAfter), sub: s.actualAfter != null ? ML.sub.followed(val(s.actualAfter)) : ML.sub.notObserved },
+          ...(dtw0 ? [{ label: ML.cell.dtw, value: at(dtw0.start), sub: `RMS ${num(dtw0.distance)} ${u}` }] : []),
+        ],
+        details: [
+          { label: R.n, value: RV.months(s.length) },
+          ...s.matches.map((m, k) => ({ label: ML.row.match(k + 1), value: `${at(m.start)} · ${ML.rowValue.match(`${num(m.distance)} ${u}`, rText(m.corr), after(m.after))}` })),
+          ...s.dtw.map((m, k) => ({ label: ML.row.dtwMatch(k + 1), value: `${at(m.start)} · RMS ${num(m.distance)} ${u}` })),
+          { label: ML.row.typical, value: `${num(s.typical)} ${u}` },
+          { label: ML.row.horizon(s.horizon), value: `${after(s.analogAfter)} · ${ML.row.actual.toLowerCase()} ${after(s.actualAfter)}` },
+        ],
+        method: ML.method.analog, figure: "analog", caveat: ML.caveat.analog,
+      };
+    }
+    case "hmm": {
+      const lo = s.states[0], hi = s.states[s.K - 1];
+      const len = (r: { from: number; to: number } | null) => (r ? r.to - r.from + 1 : 0);
+      // the headline is about the rarer state (the one the range may be an event of), falling back to the other
+      const preferLow = lo.share <= hi.share;
+      const useLow = (preferLow ? len(s.longestLow) > 0 : len(s.longestHigh) === 0) && len(s.longestLow) > 0;
+      const best = useLow ? s.longestLow : s.longestHigh;
+      const stateCell = (label: string, st: typeof lo) => ({ label, value: val(st.mean), sub: ML.sub.shareLasts(pct(st.share), num(st.expectedDuration, 2)) });
+      return {
+        significant: null, note: L.descriptive,
+        headline: best ? ML.verdict.hmm(useLow, ym(best.from), len(best)) : ML.verdict.hmmNone,
+        cells: [
+          { label: ML.cell.states, value: String(s.K), sub: ML.sub.byBic },
+          stateCell(ML.cell.low, lo), stateCell(ML.cell.high, hi),
+        ],
+        details: [
+          { label: ML.row.bic, value: ML.rowValue.states(num(s.bic.k2, 4), s.bic.k3 != null ? num(s.bic.k3, 4) : "—") },
+          ...s.states.map((st, k) => ({ label: ML.row.state(k + 1), value: ML.rowValue.stateRow(val(st.mean), `${num(st.sd)} ${u}`, pct(st.share), num(st.expectedDuration, 2)) })),
+          ...(s.longestLow ? [{ label: ML.cell.low, value: span(s.longestLow.from, s.longestLow.to) }] : []),
+          ...(s.longestHigh ? [{ label: ML.cell.high, value: span(s.longestHigh.from, s.longestHigh.to) }] : []),
+        ],
+        method: ML.method.hmm, figure: "hmm", caveat: ML.caveat.hmm,
+      };
+    }
+    case "forecast": {
+      const p = s.pValue, up = s.meanError > 0;
+      return {
+        significant: sig(p), headline: ML.verdict.forecast(sig(p), up), note: null,
+        cells: [
+          { label: ML.cell.meanError, value: val(s.meanError), sub: ML.sub.actualMinusForecast },
+          { label: ML.cell.outside, value: S.of(s.outside, s.observed), },
+          { label: C.p, value: pText(p), sub: ML.sub.z(num(s.z, 2, true)) },
+          { label: ML.cell.model, value: `AR(${s.p})`, sub: ML.sub.trained(s.trainN) },
+        ],
+        details: [
+          { label: ML.row.order, value: `AR(${s.p})` }, { label: ML.row.trained, value: RV.months(s.trainN) },
+          { label: ML.row.sigma, value: `${num(s.sigma)} ${u}` }, { label: ML.row.observed, value: RV.months(s.observed) },
+          { label: ML.cell.meanError, value: val(s.meanError) },
+          { label: R.z, value: num(s.z, 2, true) }, { label: R.p, value: pValue(p) },
+        ],
+        method: ML.method.forecast, figure: "forecast", caveat: ML.caveat.forecast,
+      };
+    }
+    case "discord": {
+      const w = s.windows.find((q) => q.m === s.profileM) ?? s.windows[s.windows.length - 1];
+      const at = (st: number, m: number) => span(st, st + m - 1);
+      return {
+        significant: null, note: L.descriptive,
+        headline: w?.discord ? ML.verdict.discord(w.m, at(w.discord.start, w.m)) : ML.verdict.discordNone,
+        cells: [
+          ...s.windows.filter((q) => q.discord).map((q) => ({
+            label: ML.cell.rarest(q.m), value: at(q.discord!.start, q.m), sub: ML.sub.rms(`${num(q.discord!.distance)} ${u}`, `${num(q.typical)} ${u}`),
+          })),
+          ...(w?.motif ? [{ label: ML.cell.pair, value: `${ym(w.motif.a)} ≈ ${ym(w.motif.b)}`, sub: `${w.m} mo · RMS ${num(w.motif.distance)} ${u}` }] : []),
+        ].slice(0, 4),
+        details: s.windows.flatMap((q) => [
+          ...(q.discord ? [{ label: ML.cell.rarest(q.m), value: ML.rowValue.window(at(q.discord.start, q.m), `${num(q.discord.distance)} ${u}`, `${num(q.typical)} ${u}`) }] : []),
+          ...(q.motif ? [{ label: ML.row.pair(q.m), value: ML.rowValue.pair(at(q.motif.a, q.m), at(q.motif.b, q.m), `${num(q.motif.distance)} ${u}`) }] : []),
+        ]),
+        method: ML.method.discord, figure: "discord", caveat: ML.caveat.discord,
+      };
+    }
+    case "iforest": {
+      const top = s.flagged[0];
+      return {
+        significant: null, note: L.descriptive,
+        headline: top ? ML.verdict.iforest(s.flagged.length, ym(top.x)) : ML.verdict.iforestNone,
+        cells: [
+          { label: ML.cell.flagged, value: String(s.flagged.length), sub: ML.sub.percentile },
+          ...(top ? [{ label: ML.cell.strongest, value: ym(top.x), sub: `${val(top.value)} · ${ML.sub.score(num(top.score, 2))}` }] : []),
+          { label: ML.cell.threshold, value: num(s.threshold, 2) },
+        ],
+        details: [
+          { label: ML.row.records, value: RV.months(s.n) }, { label: ML.row.trees, value: String(s.trees) }, { label: ML.row.sample, value: RV.months(s.sample) },
+          { label: ML.cell.threshold, value: num(s.threshold, 2) },
+          ...s.flagged.map((f) => ({ label: ML.cell.flagged, value: ML.rowValue.flagged(ym(f.x), val(f.value), ML.sub.score(num(f.score, 2))) })),
+        ],
+        method: ML.method.iforest, figure: "iforest", caveat: ML.caveat.iforest,
+      };
+    }
+    case "bocpd": {
+      const first = s.changes[0];
+      let step: { size: number; at: number } | null = null;
+      for (let i = 1; i < s.segments.length; i++) {
+        const d = s.segments[i].mean - s.segments[i - 1].mean;
+        if (Number.isFinite(d) && (!step || Math.abs(d) > Math.abs(step.size))) step = { size: d, at: s.segments[i].x0 };
+      }
+      const sure = s.changes.reduce<{ x: number; p: number } | null>((b, c) => (!b || c.p > b.p ? c : b), null);
+      return {
+        significant: null, note: L.descriptive,
+        headline: first ? ML.verdict.bocpd(s.changes.length, ym(first.x)) : ML.verdict.bocpdNone,
+        cells: [
+          { label: ML.cell.changes, value: String(s.changes.length), sub: ML.sub.steps(s.segments.length) },
+          ...(step ? [{ label: ML.cell.largestStep, value: val(step.size), sub: ym(step.at) }] : []),
+          ...(sure ? [{ label: ML.cell.mostCertain, value: `${pct(sure.p)} %`, sub: ym(sure.x) }] : []),
+        ],
+        details: [
+          { label: ML.row.hazard, value: ML.rowValue.hazard },
+          ...s.changes.map((c, k) => ({ label: ML.row.changeRow(k + 1), value: ML.rowValue.change(ym(c.x), pct(c.p)) })),
+          ...s.segments.map((g, k) => ({ label: ML.row.segment(k + 1), value: ML.rowValue.segment(span(g.x0, g.x1), val(g.mean)) })),
+        ],
+        method: ML.method.bocpd, figure: "bocpd", caveat: ML.caveat.bocpd,
+      };
+    }
+    case "gp": {
+      let long: GpSpan | null = null;
+      for (const g of s.spans) if (!long || g.x1 - g.x0 > long.x1 - long.x0) long = g;
+      const len = (g: GpSpan) => g.x1 - g.x0 + 1;
+      return {
+        significant: null, note: L.descriptive,
+        headline: long ? ML.verdict.gp(long.sign < 0, span(long.x0, long.x1)) : ML.verdict.gpNone,
+        cells: [
+          { label: ML.cell.departures, value: String(s.spans.length) },
+          ...(long ? [{ label: ML.cell.longest, value: RV.months(len(long)), sub: span(long.x0, long.x1) }] : []),
+          { label: ML.cell.smoothness, value: RV.months(s.lengthScale), sub: ML.sub.scale },
+        ],
+        details: [
+          { label: ML.row.n, value: RV.months(s.n) }, { label: ML.row.scaleRow, value: RV.months(s.lengthScale) },
+          { label: ML.row.share, value: `${pct(s.signalShare)} %` },
+          ...s.spans.map((g) => ({ label: g.sign > 0 ? ML.row.above : ML.row.below, value: ML.sub.spanMonths(span(g.x0, g.x1), len(g)) })),
+        ],
+        method: ML.method.gp, figure: "gp", caveat: ML.caveat.gp,
       };
     }
     case "normality": return {

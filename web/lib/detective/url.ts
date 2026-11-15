@@ -86,6 +86,7 @@ export const TEST_IDS = [
   "mean", "wilcoxon", "compare", "variance", "normality", "monthly",
   "cusum", "runs", "extremes", "pettitt",
   "acf", "spectrum",
+  "analog", "hmm", "forecast", "discord", "iforest", "bocpd", "gp",
 ] as const;
 export type TestId = (typeof TEST_IDS)[number];
 const TEST_SET = new Set<string>(TEST_IDS);

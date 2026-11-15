@@ -207,3 +207,5 @@
 [data-stage-pass] {
   pointer-events: none;
 }
+
+.stats-scroll { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }

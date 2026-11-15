@@ -17,6 +17,8 @@ export interface LabRun {
   avail: Record<TestId, Availability>;
   outcome: LabOutcome;
   overlay: LabOverlay | null;
+  /** d.residual, for figures that draw the observed anomaly */
+  residual: readonly (number | null)[];
   /** kept for ResultCard: true dims the result (it is stale) */
   pending: boolean;
   /** the range covers ≥ 80 % of the baseline, so residual mean / slope are ≈ 0 by construction */
@@ -88,6 +90,7 @@ export function useLabAnalysis(lane: LaneReady | null, sel: Span, test: TestId, 
     test: result.test, span: result.span, outcome: result.outcome,
     avail: availability(d.residual, result.span.s - base, result.span.e - base),
     overlay: stale ? null : overlayFor(result.outcome),
+    residual: d.residual,
     pending: stale != null,
     baselineWarning: BASELINE_SENSITIVE.has(result.test) && result.share >= 0.8,
     log: testLog(log.key === result.key ? log.runs : []),
