@@ -23,6 +23,7 @@
   --ink-3: #6f8098;
   --line: #d3dce9;
   --action: #ffcf3f;
+  --event: var(--action); /* colour of the event band; a look whose buttons are ink sets its own */
   --event-band-opacity: 0.18; /* the event band behind the detective charts; looks may override */
   --action-hover: #ffc21a;
   --on-action: #12233a;

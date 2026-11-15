@@ -32,8 +32,8 @@ export function AnomalyStrip({ fig, label }: { fig: PresetFigure; label: string 
       role="img"
       aria-label={`${label}: monthly anomaly in standard deviations, ${formatYm(fig.months[0])} to ${formatYm(fig.months[n - 1])}, event months shaded.`}
     >
-      <rect x={e0 * step} y={0} width={(e1 - e0 + 1) * step} height={H} fill="var(--action)" opacity={0.2} />
-      <line x1={e0 * step} x2={(e1 + 1) * step} y1={0.75} y2={0.75} stroke="var(--action)" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      <rect x={e0 * step} y={0} width={(e1 - e0 + 1) * step} height={H} fill="var(--event)" opacity={0.2} />
+      <line x1={e0 * step} x2={(e1 + 1) * step} y1={0.75} y2={0.75} stroke="var(--event)" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
       {[2, -2].map((g) => (
         <line key={g} x1={0} x2={W} y1={y(g)} y2={y(g)} stroke="var(--viz-axis)" strokeWidth={1} strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
       ))}
@@ -73,7 +73,7 @@ export function StripLegend({ className = "" }: { className?: string }) {
         drier than normal
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span aria-hidden="true" className="h-2.5 w-3 bg-[color-mix(in_srgb,var(--action)_35%,transparent)]" />
+        <span aria-hidden="true" className="h-2.5 w-3 bg-[color-mix(in_srgb,var(--event)_35%,transparent)]" />
         event
       </span>
       <span className="inline-flex items-center gap-1.5">

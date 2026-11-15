@@ -72,18 +72,28 @@ export default async function Home() {
   return (
     <>
       <section className="on-stage stage-sky overflow-hidden" aria-labelledby="hero">
-        <div className="mx-auto max-w-[90rem] px-4 pt-8 pb-10 sm:px-6 lg:px-8 lg:pt-12 lg:pb-14">
-          <p className="text-sm font-semibold tracking-wide text-on-stage-2 uppercase">Earth System Trend Detective</p>
-          <h1 id="hero" className="mt-2 max-w-4xl text-[2.25rem] leading-[1.1] sm:text-5xl">
+        <div className="mx-auto max-w-[90rem] px-4 pt-10 pb-12 sm:px-6 lg:px-8 lg:pt-16 lg:pb-16">
+          <h1 id="hero" className="max-w-4xl text-[2.25rem] leading-[1.1] sm:text-5xl">
             Was it unusual? Test an extreme event against decades of Earth records.
           </h1>
           <p className="mt-4 max-w-[64ch] text-lg text-on-stage-2">
             Name an event, a river basin and its months. The detective removes each variable’s seasonal cycle and
             long-term trend, then shows which ones departed from normal before, during and after it.
           </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link
+              href="/detective"
+              className="rounded-ctl bg-action px-5 py-2.5 font-semibold text-on-action hover:bg-action-hover"
+            >
+              Start an investigation
+            </Link>
+            <span className="text-sm text-on-stage-2">
+              Monthly data, 1,313 river sub-basins, 17 variable categories.
+            </span>
+          </div>
 
-          <div className="mt-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <h2 className="text-xl text-on-stage">Open a solved case</h2>
+          <div className="mt-12 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <h2 className="text-xl text-on-stage">Or open a solved case</h2>
             {legendFits && <StripLegend className="text-sm text-on-stage-2" />}
           </div>
           <ul className="mt-3 grid gap-4 md:grid-cols-3">
@@ -94,9 +104,12 @@ export default async function Home() {
                 <li key={p.id}>
                   <Link
                     href={presetHref(p)}
-                    className="group flex h-full flex-col rounded-card border border-line bg-paper p-4 text-ink shadow-[var(--shadow-card)] hover:border-link focus-visible:outline-offset-4"
+                    className="group flex h-full flex-col rounded-card border border-line bg-paper p-5 text-ink shadow-[var(--shadow-card)] hover:border-ink-3 focus-visible:outline-offset-4"
                   >
-                    <span className="font-display text-xl leading-tight group-hover:underline">{p.title}</span>
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="font-display text-xl leading-tight group-hover:underline">{p.title}</span>
+                      <span aria-hidden="true" className="text-ink-3 group-hover:text-ink">→</span>
+                    </span>
                     <span className="mt-1 text-sm text-ink-2">
                       {PLACE[p.id] ?? p.region} · <span className="tnum">{formatRange(p.time)}</span>
                     </span>
@@ -105,7 +118,7 @@ export default async function Home() {
                         <span className="block text-xs text-ink-3">
                           {cat.name.en}, monthly anomaly ± {p.padMonths ?? 12} months
                         </span>
-                        <span className="mt-1 block rounded-ctl bg-well px-2 py-1.5">
+                        <span className="mt-1.5 block">
                           <AnomalyStrip fig={f} label={`${cat.name.en}, ${p.title}`} />
                         </span>
                         <span className="mt-2 block text-sm">
@@ -119,26 +132,12 @@ export default async function Home() {
                         </span>
                       </span>
                     )}
-                    <span className="mt-3 text-sm text-ink-2">
-                      {p.categories.map((c) => CATEGORIES[c].name.en).join(" · ")}
-                    </span>
-                    <span className="mt-auto pt-3 text-sm font-semibold text-link">Open the analysis →</span>
+                    <span className="sr-only">Open the analysis</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link
-              href="/detective"
-              className="rounded-ctl bg-action px-5 py-2.5 font-semibold text-on-action hover:bg-action-hover"
-            >
-              Start your own investigation
-            </Link>
-            <span className="text-sm text-on-stage-2">
-              Monthly data, 1,313 river sub-basins, 17 variable categories.
-            </span>
-          </div>
         </div>
       </section>
 
@@ -148,13 +147,10 @@ export default async function Home() {
           <ol className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {STEPS.map((s, i) => (
               <li key={s.title} className="max-w-sm">
-                <span
-                  aria-hidden="true"
-                  className="font-display grid h-8 w-8 place-items-center rounded-full bg-well text-base text-ink tnum"
-                >
-                  {i + 1}
+                <span aria-hidden="true" className="block border-t border-line pt-3 text-sm text-ink-3 tnum">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-2 text-lg">{s.title}</h3>
+                <h3 className="mt-1 text-lg">{s.title}</h3>
                 <p className="mt-1 text-ink-2">{s.body}</p>
               </li>
             ))}
@@ -187,16 +183,16 @@ export default async function Home() {
         >
           <h2 id="limits" className="text-2xl lg:text-[1.625rem]">What it cannot tell you</h2>
           <div>
-            <ul className="grid gap-4 sm:grid-cols-3">
-              <li className="rounded-card bg-well p-4">
+            <ul className="grid gap-6 sm:grid-cols-3">
+              <li className="border-t border-line pt-3">
                 <p className="font-semibold text-ink">Timing match, not proof of cause.</p>
                 <p className="mt-1 text-ink-2">An unusual interval lines up with the event. Why it happened needs physics and other evidence.</p>
               </li>
-              <li className="rounded-card bg-well p-4">
+              <li className="border-t border-line pt-3">
                 <p className="font-semibold text-ink">Monthly basin averages.</p>
                 <p className="mt-1 text-ink-2">A week-long flood or one hard-hit valley is diluted: most basins cover 7,000 to 240,000 km².</p>
               </li>
-              <li className="rounded-card bg-well p-4">
+              <li className="border-t border-line pt-3">
                 <p className="font-semibold text-ink">Models, reanalyses, satellites.</p>
                 <p className="mt-1 text-ink-2">Most layers are model or reanalysis output; others are satellite retrievals. Every layer names its product.</p>
               </li>

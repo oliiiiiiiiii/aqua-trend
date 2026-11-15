@@ -67,15 +67,15 @@ export interface InputPanelProps {
 export function InputPanel(p: InputPanelProps) {
   return (
     <div className="mx-auto grid max-w-[90rem] items-start gap-5 px-4 pt-4 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,30rem)] lg:gap-x-8 lg:px-8 lg:pt-8">
-      <div className="order-1 lg:col-start-2 lg:row-start-1">
+      <div className="order-1 min-w-0 lg:col-start-2 lg:row-start-1">
         <h1 className="text-[2rem] leading-tight sm:text-[2.5rem]">{COPY.title}</h1>
         <p className="mt-1 text-on-stage-2">{COPY.intro}</p>
       </div>
       {/* phones: title, form, globe, variables; wide screens: the globe stays beside the right-hand column */}
-      <div className="order-3 lg:sticky lg:top-4 lg:col-start-1 lg:row-span-3 lg:row-start-1">
+      <div className="order-3 min-w-0 lg:sticky lg:top-4 lg:col-start-1 lg:row-span-3 lg:row-start-1">
         <SubBasinGlobe catalog={p.catalog} region={p.region} onRegion={p.onRegion} />
       </div>
-      <div className="order-2 lg:col-start-2 lg:row-start-2">
+      <div className="order-2 min-w-0 lg:col-start-2 lg:row-start-2">
         <form
           className="space-y-5 rounded-card bg-paper p-5 text-ink shadow-card sm:p-6"
           onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
@@ -101,7 +101,7 @@ export function InputPanel(p: InputPanelProps) {
           </div>
         </form>
       </div>
-      {p.children && <div className="order-4 lg:col-start-2 lg:row-start-3">{p.children}</div>}
+      {p.children && <div className="order-4 min-w-0 lg:col-start-2 lg:row-start-3">{p.children}</div>}
     </div>
   );
 }
@@ -142,9 +142,9 @@ function Cases({ presets, onPreset }: { presets: readonly PresetEvent[]; onPrese
               type="button"
               onClick={() => onPreset(pr)}
               title={pr.blurb}
-              className="h-full w-full rounded-ctl border border-line bg-well px-3 py-2 text-left hover:border-link"
+              className="h-full w-full rounded-ctl border border-line px-3 py-2 text-left hover:border-ink-3 hover:bg-well"
             >
-              <span className="block font-semibold leading-snug text-link">{pr.title}</span>
+              <span className="block font-medium leading-snug text-ink">{pr.title}</span>
               <span className="block text-xs text-ink-3 tnum">
                 {formatRange(pr.time)}
                 {COPY.cases.place[pr.id] ? ` · ${COPY.cases.place[pr.id]}` : ""}
@@ -256,8 +256,8 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
 }
 
 /**
- * The record as a strip: the event period as an orange bar with handles, event ± pad (the part left out of the
- * baseline) lighter blue. Drag to pick a month range; a click picks that calendar year. The selects above are the
+ * The record as a strip: the event period as a bar in the event colour with handles, event ± pad (the part left out
+ * of the baseline) a lighter tint of it. Drag to pick a month range; a click picks that calendar year. The selects above are the
  * keyboard alternative.
  */
 function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; time: TimeRange | null; padMonths: number; onChange: (r: TimeRange) => void }) {
@@ -326,13 +326,13 @@ function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; ti
                 y={9}
                 width={Math.max(2, x(Math.min(b, ymIndex(addMonths(shown.end, padMonths))) + 1) - x(Math.max(a, ymIndex(addMonths(shown.start, -padMonths)))))}
                 height={12}
-                fill="var(--water)"
+                fill="var(--event)"
                 opacity={0.3}
               />
-              <rect x={sx} y={6} width={barW} height={18} rx={3} fill="var(--viz-orange)" />
+              <rect x={sx} y={6} width={barW} height={18} rx={3} fill="var(--event)" />
               {/* grab handles on both edges */}
               {[sx, sx + barW].map((hx, k) => (
-                <rect key={k} x={hx - 2.5} y={2} width={5} height={26} rx={2.5} fill="var(--paper)" stroke="var(--viz-orange)" strokeWidth={1.5} />
+                <rect key={k} x={hx - 2.5} y={2} width={5} height={26} rx={2.5} fill="var(--paper)" stroke="var(--ink-2)" strokeWidth={1.5} />
               ))}
             </>
           )}
@@ -349,12 +349,15 @@ function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; ti
           })}
         </svg>
       )}
-      <p className="flex flex-wrap gap-x-4 text-xs text-ink-3">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--viz-orange)" }} aria-hidden="true" />{COPY.when.legendEvent}</span>
-        <span className="inline-flex items-center gap-1.5" title={COPY.when.legendBaselineTitle(padMonths)}>
-          <span className="h-2.5 w-4 rounded-sm bg-water opacity-30" aria-hidden="true" />{COPY.when.legendBaseline} (±{padMonths} mo)
-        </span>
-      </p>
+      {/* the key appears with the bar it explains */}
+      {shown && (
+        <p className="flex flex-wrap gap-x-4 text-xs text-ink-3">
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--event)" }} aria-hidden="true" />{COPY.when.legendEvent}</span>
+          <span className="inline-flex items-center gap-1.5" title={COPY.when.legendBaselineTitle(padMonths)}>
+            <span className="h-2.5 w-4 rounded-sm opacity-30" style={{ background: "var(--event)" }} aria-hidden="true" />{COPY.when.legendBaseline} (±{padMonths} mo)
+          </span>
+        </p>
+      )}
     </div>
   );
 }
@@ -393,7 +396,7 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
               <button
                 type="button"
                 onClick={() => onRegion(r)}
-                className="rounded-full border border-line px-3 py-1 text-left text-sm hover:border-link"
+                className="rounded-ctl border border-line px-3 py-1 text-left text-sm hover:border-link"
               >
                 <span className="font-semibold text-link">{r.name}</span>{" "}
                 <span className="text-ink-3 tnum">{formatArea(r.areaKm2)}</span>
@@ -487,7 +490,7 @@ function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null;
 
   return (
     <div className="on-stage flex min-w-0 flex-col gap-3">
-      <div className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))] min-w-0">
+      <div className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))] min-w-0 overflow-hidden rounded-card">
         <GlobeCanvas
           className="h-full w-full"
           interactive

@@ -120,8 +120,8 @@ export default function LaneChart(p: LaneChartProps) {
             <g clipPath={`url(#${clip})`}>
               {ev && (
                 <g>
-                  <rect x={ev.x} width={ev.width} y={0} height={ih} style={{ fill: "var(--action)", opacity: "var(--event-band-opacity)" }} />
-                  <rect x={ev.x} width={ev.width} y={0} height={3} style={{ fill: "var(--action)" }} />
+                  <rect x={ev.x} width={ev.width} y={0} height={ih} style={{ fill: "var(--event)", opacity: "var(--event-band-opacity)" }} />
+                  <rect x={ev.x} width={ev.width} y={0} height={3} style={{ fill: "var(--event)" }} />
                 </g>
               )}
               {gapRuns(d.raw, base, p.view).map((g) => {

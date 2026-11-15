@@ -55,7 +55,7 @@ export function AxisRow({ view, event }: { view: Span; event: Span }) {
             <g transform={`translate(${GUTTER_L},0)`}>
               {x1 > x0 && (
                 <g>
-                  <rect x={x0} width={x1 - x0} y={h - 6} height={6} style={{ fill: "var(--action)", opacity: 0.5 }} />
+                  <rect x={x0} width={x1 - x0} y={h - 6} height={6} style={{ fill: "var(--event)", opacity: 0.5 }} />
                   <text x={(x0 + x1) / 2} y={9} textAnchor="middle" style={{ fill: "var(--ink)", fontSize: 11, fontWeight: 600 }}>{L.event}</text>
                 </g>
               )}
@@ -198,7 +198,7 @@ export function ExpandedLane(p: ExpandedProps) {
   const sw = (cls: string, style?: React.CSSProperties) => <span aria-hidden="true" className={`inline-block h-2.5 w-3 rounded-[2px] ${cls}`} style={style} />;
 
   return (
-    <li id={`lanebox-${lane.c}`} className={`${LANE_PAD} my-1.5 scroll-mt-12 rounded-card bg-well py-3 md:scroll-mt-[calc(var(--toolbar-h,0px)+3rem)]`} style={{ borderRadius: "min(var(--r-card), 14px)" }}>
+    <li id={`lanebox-${lane.c}`} className={`${LANE_PAD} scroll-mt-12 border-b border-line pt-3 pb-5 md:scroll-mt-[calc(var(--toolbar-h,0px)+3rem)]`}>
       <div className={`${LANE_GRID} items-start gap-y-2`}>
         <h2 className="col-start-1 row-start-1 min-w-0 text-base">
           <button type="button" id={`lane-${lane.c}`} aria-expanded={true} className="flex min-w-0 max-w-full items-center gap-1.5 text-left font-[family-name:var(--font-body-active)]">
@@ -282,7 +282,7 @@ export function ExpandedLane(p: ExpandedProps) {
                   {layer === "trend" && <span className="inline-flex items-center gap-1.5"><svg width="14" height="8" aria-hidden="true"><line x1="0" x2="14" y1="4" y2="4" strokeWidth="1.25" style={{ stroke: "var(--viz-ink)", opacity: 0.5 }} /></svg>{COPY.chart.observedSeries}</span>}
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5">{sw("", { background: "var(--action)", opacity: 0.45 })}{COPY.chart.eventBand}</span>
+              <span className="inline-flex items-center gap-1.5">{sw("", { background: "var(--event)", opacity: 0.45 })}{COPY.chart.eventBand}</span>
               <span className="inline-flex items-center gap-1.5">{sw("border-[1.5px] border-focus", { background: "color-mix(in srgb, var(--focus) 12%, transparent)" })}{COPY.chart.selection}</span>
               <span className="inline-flex items-center gap-1.5">{sw("", { background: "repeating-linear-gradient(45deg, color-mix(in srgb, var(--ink) 22%, transparent) 0 2px, transparent 2px 5px)" })}{COPY.chart.missing}</span>
             </div>

@@ -74,7 +74,7 @@ const PAIRS = [
   ["viz-warm / paper (non-text)", "--viz-warm", "--paper", 3],
 ];
 
-const LOOKS = ["terrarium", "strip", "console", "atlas"];
+const LOOKS = ["minimal", "terrarium", "strip", "console", "atlas"];
 let failures = 0;
 for (const look of LOOKS) {
   for (const theme of ["terrarium", "night"]) {
@@ -87,10 +87,12 @@ for (const look of LOOKS) {
       console.log(`  ${ok ? "pass" : look === "terrarium" ? "warn" : "FAIL"}  ${label.padEnd(30)} ${r.toFixed(2).padStart(5)}  (need ${min})  ${t[fg]} on ${t[bg]}`);
     }
     // rules that are not ratios
-    const h = hue(t["--action"]);
+    // the event band is drawn with --event, which is --action unless the look sets its own
+    const event = /^#[0-9a-f]{6}$/i.test(t["--event"] ?? "") ? t["--event"] : t["--action"];
+    const h = hue(event);
     const notBlueRed = !(h >= 190 && h <= 260) && !(h >= 345 || h <= 12);
-    const differs = t["--action"].toLowerCase() !== t["--focus"].toLowerCase();
-    for (const [label, ok] of [["action is not blue/red (hue " + Math.round(h) + ")", notBlueRed], ["focus differs from action", differs]]) {
+    const differs = event.toLowerCase() !== t["--focus"].toLowerCase();
+    for (const [label, ok] of [["event band is not blue/red (hue " + Math.round(h) + ")", notBlueRed], ["focus differs from event band", differs]]) {
       if (!ok && look !== "terrarium") failures++;
       console.log(`  ${ok ? "pass" : "FAIL"}  ${label}`);
     }

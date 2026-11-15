@@ -1,5 +1,5 @@
 /* =====================================================================
-   Visual looks. <html data-look="terrarium | strip | console | atlas"> is orthogonal to light/dark
+   Visual looks. <html data-look="minimal | terrarium | strip | console | atlas"> is orthogonal to light/dark
    (<html data-theme="terrarium | night">). Terrarium is the baseline in globals.css and has no overrides.
 
    Each look overrides token VALUES only (the Tailwind names in globals.css keep working), plus a couple of
@@ -7,8 +7,8 @@
    globals.css and so beats it; the theme blocks `:root[data-look][data-theme]` (0,3,0) beat both.
    Tokens a look does not set fall through to the baseline of the active theme.
 
-   The anomaly diverging pair --viz-cool / --viz-warm keeps its validated values; --action is never blue
-   or red in any look (the event band is drawn with --action), and --focus (the selection) differs from it.
+   The anomaly diverging pair --viz-cool / --viz-warm keeps its validated values; --event (the event band,
+   --action unless a look sets it) is never blue or red in any look, and --focus (the selection) differs from it.
    scripts/check-look-contrast.mjs checks the text pairs of every look x theme.
    ===================================================================== */
 
@@ -262,4 +262,74 @@
     radial-gradient(ellipse 55% 60% at 100% 100%, rgba(90, 140, 90, 0.2), transparent 70%),
     radial-gradient(ellipse 40% 45% at 0% 100%, rgba(170, 140, 90, 0.14), transparent 70%),
     linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+}
+
+/* ---------------------------------------------------------------------
+   MINIMAL (the default): one neutral surface, hairlines instead of shadows, one typeface, no backdrop art.
+   The stage is as quiet as the paper, so the only colour on a page is the globe, the crystal ball and the
+   data. Buttons are ink; the event band keeps its own amber (--event) so it still reads against the
+   blue/red anomaly bars. Inter for display and body: headings differ by size and weight only.
+   --------------------------------------------------------------------- */
+:root[data-look="minimal"] {
+  --r-card: 10px;
+  --r-ctl: 8px;
+  --font-display-active: var(--font-inter), system-ui, sans-serif;
+  --font-body-active: var(--font-inter), system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.022em;
+  --shadow-card: 0 0 0 0 transparent;
+}
+:root[data-look="minimal"][data-theme="terrarium"] {
+  --stage: #f5f6f8;
+  --stage-2: #f5f6f8;
+  --on-stage: #0f1720;
+  --on-stage-2: #4a5563;
+  --stage-line: rgba(15, 23, 32, 0.1);
+  --paper: #ffffff;
+  --well: #f3f4f6;
+  --ink: #0f1720;
+  --ink-2: #4a5563;
+  --ink-3: #626c7b;
+  --line: #e3e6ea;
+  --action: #0f1720;
+  --action-hover: #2a3340;
+  --on-action: #ffffff;
+  --event: #f2b01e;
+  --link: #1a56b0;
+  --focus: #1a56b0;
+  --viz-grid: #eceef1;
+  --viz-axis: #c5cad2;
+  --viz-mid: #eceef1;
+  --viz-map-mid: #eceef1;
+}
+:root[data-look="minimal"][data-theme="night"] {
+  --stage: #0c0e11;
+  --stage-2: #0c0e11;
+  --on-stage: #eceef1;
+  --on-stage-2: #a3abb7;
+  --stage-line: rgba(236, 238, 241, 0.12);
+  --paper: #111418;
+  --well: #191d23;
+  --ink: #eceef1;
+  --ink-2: #a9b1bd;
+  --ink-3: #8891a0;
+  --line: #262b33;
+  --action: #eceef1;
+  --action-hover: #ffffff;
+  --on-action: #0c0e11;
+  --event: #e9b949;
+  --event-band-opacity: 0.24;
+  --link: #8ab4f8;
+  --focus: #8ab4f8;
+  --viz-grid: #20252c;
+  --viz-axis: #3a424e;
+  --viz-mid: #272c34;
+  --viz-map-mid: #77839a;
+}
+:root[data-look="minimal"] .stage-sky {
+  background: var(--stage);
+}
+/* cards that relied on their shadow for an edge get a hairline instead (bordered ones already have it) */
+:root[data-look="minimal"] .shadow-card:not(.border) {
+  box-shadow: 0 0 0 1px var(--line);
 }

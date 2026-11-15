@@ -56,8 +56,8 @@ export default function LaneStrip(p: StripProps) {
           <g transform={`translate(${GUTTER_L},0)`}>
             {ev && (
               <g>
-                <rect x={ev.x} width={ev.width} y={0} height={h} style={{ fill: "var(--action)", opacity: "var(--event-band-opacity)" }} />
-                <rect x={ev.x} width={ev.width} y={0} height={2} style={{ fill: "var(--action)" }} />
+                <rect x={ev.x} width={ev.width} y={0} height={h} style={{ fill: "var(--event)", opacity: "var(--event-band-opacity)" }} />
+                <rect x={ev.x} width={ev.width} y={0} height={2} style={{ fill: "var(--event)" }} />
               </g>
             )}
             {gapRuns(d.raw, base, p.view).map((g) => {

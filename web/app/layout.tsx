@@ -15,17 +15,17 @@ import { SiteHeader } from "@/components/shell/SiteHeader";
 import "./globals.css";
 import "./looks.css";
 
-const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", display: "swap" });
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
+const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", display: "swap", preload: false });
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap", preload: false });
 
-// Fonts for the looks (see looks.css). Atlas is the default look, so its faces (Literata, Public Sans) are preloaded;
-// the others use preload:false and are only downloaded once a look that uses them is active.
+// Fonts for the looks (see looks.css). Minimal is the default look, so its face (Inter) is preloaded; the others use
+// preload:false and are only downloaded once a look that uses them is active.
 const barlowCondensed = Barlow_Condensed({ subsets: ["latin"], display: "swap", preload: false, weight: "600", variable: "--font-barlow-condensed" });
 const barlow = Barlow({ subsets: ["latin"], display: "swap", preload: false, weight: ["400", "600"], variable: "--font-barlow" });
 const archivo = Archivo({ subsets: ["latin"], display: "swap", preload: false, axes: ["wdth"], variable: "--font-archivo" });
-const inter = Inter({ subsets: ["latin"], display: "swap", preload: false, variable: "--font-inter" });
-const literata = Literata({ subsets: ["latin"], display: "swap", variable: "--font-literata" });
-const publicSans = Public_Sans({ subsets: ["latin"], display: "swap", variable: "--font-public-sans" });
+const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+const literata = Literata({ subsets: ["latin"], display: "swap", preload: false, variable: "--font-literata" });
+const publicSans = Public_Sans({ subsets: ["latin"], display: "swap", preload: false, variable: "--font-public-sans" });
 const FONT_VARS = [barlowCondensed, barlow, archivo, inter, literata, publicSans].map((f) => f.variable).join(" ");
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -43,15 +43,15 @@ export const viewport: Viewport = {
 };
 
 // Applied before first paint, so nothing flashes: the saved theme (else the OS light/dark preference), and the visual
-// look (?look=<id> wins and is saved, else the saved one, else atlas).
-const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["terrarium","strip","console","atlas"];try{t=localStorage.getItem("aqua-trend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("aqua-trend-look",q)}catch(e){}}else{l=localStorage.getItem("aqua-trend-look")}}catch(e){}if(L.indexOf(l)<0)l="atlas";d.setAttribute("data-look",l)})()`;
+// look (?look=<id> wins and is saved, else the saved one, else minimal).
+const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["minimal","terrarium","strip","console","atlas"];try{t=localStorage.getItem("aqua-trend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("aqua-trend-look",q)}catch(e){}}else{l=localStorage.getItem("aqua-trend-look")}}catch(e){}if(L.indexOf(l)<0)l="minimal";d.setAttribute("data-look",l)})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       data-theme="terrarium"
-      data-look="atlas"
+      data-look="minimal"
       suppressHydrationWarning
       className={`${fredoka.variable} ${figtree.variable} ${FONT_VARS}`}
     >
