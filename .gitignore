@@ -139,3 +139,6 @@ $RECYCLE.BIN/
 # 可重新產生的大檔
 data/gldas_1deg/
 data/hub_export/
+
+# 從團隊分享站下載的原始資料
+data/share/

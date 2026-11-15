@@ -10,6 +10,7 @@
 3. 依賴尚未完成時，用 contracts 裡的型別寫假資料先做，不要等。
 4. 開始寫 Next.js 程式前，先讀 `web/AGENTS.md`（Next 16 有破壞性變更）。
 5. 不要動 `web/public/data/**` 的既有檔案（E 的新增檔案除外）。缺值是 `null`，不可當 0。
+   **原始資料在團隊分享站 http://meow1.csie.ntu.edu.tw:3266/**。任何需要原始資料的工作，先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)（盤點結果、哪些資料夾還是空的、下載與使用規則），原始檔不可 commit。
 6. 介面精簡：每加一個控制項，先問「能不能收進面板」。
 7. 完成條件 = 該工作線的「完成檢查」全部打勾，且 `cd web && npm run typecheck` 通過。
 
@@ -105,6 +106,7 @@
 | 輸出 | `PresetEvent[]`；12 類別的名稱、淺白定義（中英）、預設層、圖示；驗證報告 |
 
 規則：
+- **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)，並去分享站 http://meow1.csie.ntu.edu.tw:3266/ 確認最新清單**。分享站新增、適合子流域的變數有 FIRMS 火點、OMI SO₂、MOD10CM 積雪覆蓋，補上 `m2aer` 後還有 AOD。挑對預設事件有幫助的變數（例如澳洲野火用 FIRMS），照 DATA_SHARE.md 的步驟加進 series-2。不要一次全部加。
 - 以 SPEC §5 的三個事件為起點；用 Python 對 series-2 檔案重算殘差與 z，確認至少一個變數 |z| ≥ 2 且方向符合預期。不符就換子流域或事件，並更新 SPEC §5。
 - 淺白定義給高中生看，一句話、不超過 30 字。
 - README：專案介紹、如何執行（`cd web && npm i && npm run dev`）、對應官方題目要求的段落（變數選擇／區域／時間序列／變化速率／顯著性檢定各對應到哪個功能）。

@@ -3,6 +3,7 @@
 > NASA Space Apps Challenge 2026「Be An Earth System Trend Detective!」。更新日期：2026-11-15（Asia/Taipei）。
 > 流程來源：[`docs/FLOW.md`](docs/FLOW.md)。實作分工與整合方式：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)。
 > 介面約定：[`web/lib/detective/contracts.ts`](web/lib/detective/contracts.ts)。
+> 原始資料：團隊分享站 http://meow1.csie.ntu.edu.tw:3266/，盤點與使用規則見 [`docs/DATA_SHARE.md`](docs/DATA_SHARE.md)。
 > 本文件取代 `docs/earth-system-*.md`（舊研究者導向規格，保留作參考，衝突時以本文件為準）。
 
 ## 1. 一句話
