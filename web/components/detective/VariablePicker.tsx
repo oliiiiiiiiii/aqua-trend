@@ -5,6 +5,7 @@ import type { CategoryId, CategoryVote, SelectResponse } from "@/lib/detective/c
 import { CATEGORY_IDS } from "@/lib/detective/url";
 import type { CategoryInfo } from "./wiring";
 import { COPY } from "./copy/input";
+import { categoryStyle, chipColors } from "@/lib/detective/categoryStyle";
 
 export interface VariablePickerProps {
   categories: Readonly<Record<CategoryId, CategoryInfo>>;
@@ -40,6 +41,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
 
   const chip = (c: CategoryId, quiet: boolean) => {
     const info = categories[c];
+    const colors = chipColors(categoryStyle(c).color);
     const vote = votes.get(c);
     const ok = usable(c);
     const reason = unavailableReason?.[c] ?? T.noData;
@@ -53,7 +55,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
             !ok
               ? "cursor-not-allowed border-dashed border-line text-ink-3 opacity-55"
               : checkedNow
-                ? "cursor-pointer border-link bg-well font-semibold text-ink"
+                ? "cursor-pointer border-link font-semibold text-ink"
                 : `cursor-pointer border-line hover:border-link ${quiet ? "text-ink-2" : "text-ink"}`
           }`}
         >
@@ -64,9 +66,11 @@ export function VariablePicker({ categories, response, loading, checked, onChang
             onChange={(e) => toggle(c, e.target.checked)}
             className="sr-only"
           />
-          <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${checkedNow ? "text-link" : ""}`} aria-hidden="true">
-            <path d={info.icon} />
-          </svg>
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-ctl" style={{ background: colors.background, color: colors.stroke }}>
+            <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d={info.icon} />
+            </svg>
+          </span>
           <span className="min-w-0 flex-1 leading-tight">{info.name.en}</span>
           {checkedNow && (
             <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-link" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
@@ -83,13 +87,12 @@ export function VariablePicker({ categories, response, loading, checked, onChang
       </li>
     );
   };
-  const grid = "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2";
+  const grid = "grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-2";
 
   return (
-    <section aria-labelledby={`${id}-h`} className="rounded-card bg-paper p-5 text-ink shadow-card sm:p-6">
+    <section aria-labelledby={`${id}-h`} className="text-ink">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id={`${id}-h`} className="flex items-center text-xl">
-          <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-full bg-well px-1.5 font-display text-sm tnum" aria-hidden="true">4</span>
           {T.heading}
         </h2>
         <p className="text-xs text-ink-3" role="status">

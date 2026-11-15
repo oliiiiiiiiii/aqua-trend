@@ -1,18 +1,16 @@
 // Every user-visible string of the /detective input step (English only; translate here).
 export const COPY = {
   title: "Trend Detective",
-  intro: "Did a known event show up in NASA data?",
+  intro: "What event do you want to investigate?",
   formLabel: "Event, period and sub-basin",
-  cases: {
-    heading: "Try a case",
-    place: { "taiwan-2021-drought": "Taiwan", "pakistan-2022-flood": "Pakistan", "australia-2019-fire": "Australia" } as Record<string, string>,
-  },
   steps: { what: "What", when: "When", where: "Where", variables: "Variables" },
   what: {
-    placeholder: "e.g. 2021 Taiwan drought, 2022 年 7 月巴基斯坦洪水",
-    label: "What happened?",
+    placeholder: "e.g. Pakistan floods, July–September 2022",
+    hint: "Chinese input works too.",
+    label: "What event do you want to investigate?",
   },
   when: {
+    choose: "Choose the event months",
     from: "From",
     to: "To",
     month: "Month",

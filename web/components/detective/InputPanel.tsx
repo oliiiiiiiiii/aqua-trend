@@ -1,6 +1,5 @@
 "use client";
-// Input step of the Trend Detective: four numbered steps (What, When, Where, Variables), presets first.
-// Presentational: DetectiveApp owns the state (in the URL) and passes values and callbacks in.
+// Event-led input step. DetectiveApp owns URL state and passes values and callbacks in.
 import dynamic from "next/dynamic";
 import { useCallback, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import type { GlobePoint } from "@/lib/contracts";
@@ -12,6 +11,7 @@ import { formatArea } from "@/components/ui/regionUtils";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { addMonths, formatRange, ym, ymFromIndex, ymIndex } from "@/lib/detective/url";
 import { COPY } from "./copy/input";
+import { GlobeArrival } from "./input/GlobeArrival";
 
 const GlobeCanvas = dynamic(() => import("@/components/globe/GlobeCanvas"), {
   ssr: false,
@@ -58,101 +58,54 @@ export interface InputPanelProps {
   /* Find */
   onFind: () => void;
   finding: boolean;
-  /** the variable card is showing: "Find variables" steps back to a quiet secondary button */
+  /** variable suggestions are already showing */
   hasPicker: boolean;
-  /** the Variables card, shown under the form */
+  /** variable suggestions, shown under the form */
   children?: ReactNode;
 }
 
 export function InputPanel(p: InputPanelProps) {
   return (
-    <div className="mx-auto grid max-w-[90rem] items-start gap-5 px-4 pt-4 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,30rem)] lg:gap-x-8 lg:px-8 lg:pt-8">
-      <div className="order-1 lg:col-start-2 lg:row-start-1">
-        <h1 className="text-[2rem] leading-tight sm:text-[2.5rem]">{COPY.title}</h1>
-        <p className="mt-1 text-on-stage-2">{COPY.intro}</p>
+    <div className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 pt-8 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,34rem)] lg:gap-8 lg:px-8 lg:pt-12">
+      <div className="order-2 lg:sticky lg:top-4 lg:order-1">
+        <GlobeArrival><SubBasinGlobe catalog={p.catalog} region={p.region} onRegion={p.onRegion} /></GlobeArrival>
       </div>
-      {/* phones: title, form, globe, variables; wide screens: the globe stays beside the right-hand column */}
-      <div className="order-3 lg:sticky lg:top-4 lg:col-start-1 lg:row-span-3 lg:row-start-1">
-        <SubBasinGlobe catalog={p.catalog} region={p.region} onRegion={p.onRegion} />
-      </div>
-      <div className="order-2 lg:col-start-2 lg:row-start-2">
+      <div className="order-1 min-w-0 bg-paper px-5 py-6 text-ink sm:px-6 lg:order-2">
+        <p className="text-sm text-ink-3">{COPY.title}</p>
+        <h1 className="mt-2 text-2xl leading-tight sm:text-3xl">{COPY.intro}</h1>
         <form
-          className="space-y-5 rounded-card bg-paper p-5 text-ink shadow-card sm:p-6"
+          className="mt-5"
           onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
           aria-label={COPY.formLabel}
         >
-          <Cases presets={p.presets} onPreset={p.onPreset} />
           <EventField {...p} />
-          <TimeField {...p} />
-          <RegionField {...p} />
-          <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-5">
+            <p className="text-xs text-ink-3">{COPY.what.hint}</p>
             <button
               type="submit"
               disabled={!p.event.trim() || p.finding}
-              className={
-                p.hasPicker
-                  ? "rounded-ctl border border-line px-4 py-1.5 text-sm font-semibold text-link hover:border-link disabled:cursor-not-allowed disabled:opacity-50"
-                  : "rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover disabled:cursor-not-allowed disabled:opacity-50"
-              }
+              className="min-h-11 rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50"
             >
               {p.finding ? COPY.find.busy : p.hasPicker ? COPY.find.again : COPY.find.go}
             </button>
-            {!p.event.trim() && !p.hasPicker && <span className="text-sm text-ink-3">{COPY.find.needEvent}</span>}
           </div>
+          <details className="group border-b border-line py-3">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+              <span className="ml-1 font-semibold">{COPY.steps.when}</span>
+              <span className="ml-3 tnum">{p.time ? formatRange(p.time) : COPY.when.choose}</span>
+            </summary>
+            <div className="pb-2"><TimeField {...p} /></div>
+          </details>
+          <details className="group border-b border-line py-3">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm text-ink-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+              <span className="ml-1 font-semibold">{COPY.steps.where}</span>
+              <span className="ml-3">{p.region ? p.region.name : COPY.where.none}</span>
+            </summary>
+            <div className="pb-2"><RegionField {...p} /></div>
+          </details>
         </form>
+        {p.children && <div className="mt-6">{p.children}</div>}
       </div>
-      {p.children && <div className="order-4 lg:col-start-2 lg:row-start-3">{p.children}</div>}
-    </div>
-  );
-}
-
-function Step({ n }: { n: number }) {
-  return (
-    <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-full bg-well px-1.5 font-display text-sm text-ink tnum" aria-hidden="true">
-      {n}
-    </span>
-  );
-}
-
-/** a step heading: numeral, 1–3 word label, and the chosen value once there is one */
-function StepHead({ n, id, label, value, htmlFor }: { n: number; id: string; label: string; value?: ReactNode; htmlFor?: string }) {
-  const body = (
-    <>
-      <Step n={n} />
-      {label}
-      {value ? <span className="ml-2 min-w-0 truncate font-normal text-ink-2">{value}</span> : null}
-    </>
-  );
-  const cls = "flex items-center font-semibold";
-  return htmlFor ? <label id={id} htmlFor={htmlFor} className={cls}>{body}</label> : <p id={id} className={cls}>{body}</p>;
-}
-
-/* ------------------------------------------------------------------ presets */
-
-function Cases({ presets, onPreset }: { presets: readonly PresetEvent[]; onPreset: (p: PresetEvent) => void }) {
-  const id = useId();
-  if (!presets.length) return null;
-  return (
-    <div>
-      <p id={id} className="text-sm font-semibold text-ink-2">{COPY.cases.heading}</p>
-      <ul className="mt-1.5 grid gap-2 sm:grid-cols-3 lg:grid-cols-1" aria-labelledby={id}>
-        {presets.map((pr) => (
-          <li key={pr.id}>
-            <button
-              type="button"
-              onClick={() => onPreset(pr)}
-              title={pr.blurb}
-              className="h-full w-full rounded-ctl border border-line bg-well px-3 py-2 text-left hover:border-link"
-            >
-              <span className="block font-semibold leading-snug text-link">{pr.title}</span>
-              <span className="block text-xs text-ink-3 tnum">
-                {formatRange(pr.time)}
-                {COPY.cases.place[pr.id] ? ` · ${COPY.cases.place[pr.id]}` : ""}
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -163,18 +116,19 @@ function EventField({ event, onEventChange }: InputPanelProps) {
   const id = useId();
   return (
     <div>
-      <StepHead n={1} id={`${id}-h`} label={COPY.steps.what} htmlFor={`${id}-e`} />
-      <input
+      <label htmlFor={`${id}-e`} className="sr-only">{COPY.what.label}</label>
+      <textarea
         id={`${id}-e`}
-        type="text"
+        rows={3}
         value={event}
         onChange={(e) => onEventChange(e.target.value)}
         maxLength={300}
         autoComplete="off"
         placeholder={COPY.what.placeholder}
-        aria-label={COPY.what.label}
-        className="mt-2 w-full rounded-ctl border border-line bg-paper px-4 py-2.5 text-ink placeholder:text-ink-3"
+        aria-describedby={`${id}-hint`}
+        className="min-h-40 w-full resize-y rounded-ctl border border-line bg-paper px-4 py-4 font-display text-2xl leading-snug text-ink placeholder:text-ink-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus sm:text-3xl"
       />
+      <span id={`${id}-hint`} className="sr-only">{COPY.what.hint}</span>
     </div>
   );
 }
@@ -235,7 +189,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
 
   return (
     <div role="group" aria-labelledby={`${id}-t`}>
-      <StepHead n={2} id={`${id}-t`} label={COPY.steps.when} value={time ? <span className="tnum">{formatRange(time)}</span> : null} />
+      <p id={`${id}-t`} className="sr-only">{COPY.steps.when}</p>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
         {part("start", COPY.when.from)}
         {part("end", COPY.when.to)}
@@ -244,7 +198,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
             type="button"
             onClick={() => onTimeChange(offer)}
             title={`${COPY.when.useText} ${formatRange(offer)}`}
-            className="rounded-full border border-line bg-well px-3 py-1 text-sm hover:border-link"
+            className="rounded-full border border-line px-3 py-1 text-sm hover:border-link"
           >
             <span className="text-ink-3">{COPY.when.use}</span> <span className="font-semibold text-link tnum">{formatRange(offer)}</span>
           </button>
@@ -370,19 +324,14 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
   const hints = useRegionHints(event, searchable, countryNames).filter((r) => r.id !== region?.id);
   return (
     <div role="group" aria-labelledby={`${id}-h`}>
-      <StepHead
-        n={3}
-        id={`${id}-h`}
-        label={COPY.steps.where}
-        value={region ? <><span className="text-ink">{region.name}</span> <span className="text-ink-3 tnum">· {formatArea(region.areaKm2)}</span></> : <span className="text-ink-3">{COPY.where.none}</span>}
-      />
+      <p id={`${id}-h`} className="text-xs text-ink-3">{region ? `${region.name} · ${formatArea(region.areaKm2)}` : COPY.where.subBasin}</p>
       <div className="mt-2 [&_input]:mt-0 [&>div>label]:sr-only [&>div>p[id$=-hint]]:sr-only" >
         {subCatalog ? (
           <RegionSearch catalog={subCatalog} onSelect={onRegion} />
         ) : catalogError ? (
-          <p role="alert" className="rounded-ctl bg-well px-4 py-2.5 text-ink-2">{catalogError}</p>
+          <p role="alert" className="py-2 text-ink-2">{catalogError}</p>
         ) : (
-          <p role="status" className="rounded-ctl bg-well px-4 py-2.5 text-ink-3">{COPY.where.loading}</p>
+          <p role="status" className="py-2 text-ink-3">{COPY.where.loading}</p>
         )}
       </div>
       {regionNote}
