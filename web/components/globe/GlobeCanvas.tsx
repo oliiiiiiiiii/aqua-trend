@@ -14,6 +14,18 @@ export interface GlobeCanvasExtraProps {
   ariaLabel?: string;
   /** show the on-canvas zoom buttons (default true when interactive) */
   showControls?: boolean;
+  /** keep turning while interactive */
+  autoSpin?: boolean;
+  /** false = wheel scrolls the page */
+  wheelZoom?: boolean;
+  /** camera target; the globe turns smoothly to it whenever it changes */
+  view?: View;
+  /** fly to `selected` when it changes (default true) */
+  followSelected?: boolean;
+  /** CSS custom property (e.g. "--viz-warm") for the selected region's glow; default the theme's --action */
+  selectVar?: string;
+  /** draw the trend legend over the canvas (default true) */
+  showLegend?: boolean;
 }
 
 const DEFAULT_VIEW: View = { lon: 15, lat: 18, zoom: 1 };
@@ -46,6 +58,12 @@ export default function GlobeCanvas({
   initialView = DEFAULT_VIEW,
   ariaLabel = DEFAULT_LABEL,
   showControls = true,
+  autoSpin = false,
+  wheelZoom = true,
+  view,
+  followSelected = true,
+  selectVar,
+  showLegend = true,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
@@ -55,7 +73,7 @@ export default function GlobeCanvas({
   const [trend, setTrend] = useState<TrendInfo | null>(null);
   const [cursor, setCursor] = useState("");
   const themeId = useThemeId();
-  const initialRef = useRef({ interactive, initialView });
+  const initialRef = useRef({ interactive, initialView, autoSpin, wheelZoom });
 
   useLayoutEffect(() => {
     cbRef.current = { onPick, onHover, onZoomChange };
@@ -72,6 +90,8 @@ export default function GlobeCanvas({
         reducedMotion: window.matchMedia(reducedQuery).matches,
         initialView: initialRef.current.initialView,
         theme: readTheme(),
+        autoSpin: initialRef.current.autoSpin,
+        wheelZoom: initialRef.current.wheelZoom,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -118,9 +138,19 @@ export default function GlobeCanvas({
   const selectedRef = useRef(selected);
   useLayoutEffect(() => { selectedRef.current = selected; });
   useEffect(() => {
-    void engineRef.current?.setSelected(selectedRef.current ?? null).catch(() => {});
+    void engineRef.current?.setSelected(selectedRef.current ?? null, followSelected).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedKey]);
+  const viewKey = view ? `${view.lon},${view.lat},${view.zoom}` : "";
+  useEffect(() => {
+    if (view && status === "ready") engineRef.current?.flyTo(view);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewKey, status]);
   useEffect(() => { engineRef.current?.setTheme(readTheme()); }, [themeId]);
+  useEffect(() => {
+    if (status !== "ready") return;
+    engineRef.current?.setSelectColor(parseCssColor(cssVar(selectVar ?? "--action"), [1, 0.81, 0.25]));
+  }, [selectVar, themeId, status]);
 
   const live = interactive && status !== "error";
   const btn =
@@ -183,7 +213,7 @@ export default function GlobeCanvas({
         </div>
       )}
 
-      {overlay && trend && trend.variable === overlay && status === "ready" && (
+      {showLegend && overlay && trend && trend.variable === overlay && status === "ready" && (
         <TrendLegend className="absolute bottom-3 left-3" variable={overlay} limitPerYear={trend.scale.limit} />
       )}
     </div>

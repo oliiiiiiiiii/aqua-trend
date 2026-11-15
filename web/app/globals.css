@@ -197,3 +197,51 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* landing: an always-dark "space" stage for the spinning planet (same in both themes, on purpose) */
+:root {
+  --space: #03060f;
+  --space-2: #0a1530;
+  --on-space: #f5f7fb;
+  --on-space-2: #a7b3c9;
+  --space-line: rgba(255, 255, 255, 0.12);
+  --space-glow: rgba(80, 150, 255, 0.35);
+}
+@layer utilities {
+  .bg-space { background: var(--space); color: var(--on-space); }
+  .text-on-space { color: var(--on-space); }
+  .text-on-space-2 { color: var(--on-space-2); }
+  .border-space-line { border-color: var(--space-line); }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.is-in { opacity: 1; transform: none; }
+  .rise-in { animation: rise-in 1.6s cubic-bezier(.2,.7,.2,1) both; }
+  .fade-up { animation: fade-up 1s cubic-bezier(.2,.7,.2,1) both; }
+  .q-open { animation: q-open 0.45s cubic-bezier(.2,.7,.2,1) both; }
+}
+@keyframes rise-in { from { opacity: 0; transform: translateY(18%) scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes q-open { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@layer utilities {
+  .fade-in { animation: fade-in 0.25s ease both; }
+  .slide-from-right { animation: slide-x 0.4s cubic-bezier(.2,.7,.2,1) both; --from: 48px; }
+  .slide-from-left { animation: slide-x 0.4s cubic-bezier(.2,.7,.2,1) both; --from: -48px; }
+  /* hints are hover tooltips by default; the accessibility option shows them as text */
+  .a11y-hint { display: none; }
+  :root[data-a11y="on"] .a11y-hint { display: block; }
+  :root[data-a11y="on"] { font-size: 112.5%; }
+  :root[data-a11y="on"] :focus-visible { outline-width: 4px; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-x { from { opacity: 0; transform: translateX(var(--from)); } to { opacity: 1; transform: none; } }
+@layer utilities {
+  /* the questionnaire's planet: arrives from far away (the landing page) and settles */
+  .globe-arrive { animation: globe-arrive 1.6s cubic-bezier(.16,.84,.3,1) both; }
+}
+@keyframes globe-arrive { from { opacity: 0; transform: scale(0.35); filter: blur(6px); } 60% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: none; } }
+@layer utilities {
+  /* landing → questionnaire hand-off (HeroSearch.tsx) */
+  :root[data-leaving="hero"] .hero-copy { opacity: 0; transform: translateY(-24px); }
+  .slide-panel { animation: slide-panel 1s cubic-bezier(.65,0,.25,1) both; }
+  .q-from-landing { animation: fade-in 0.4s ease both; }
+}
+@keyframes slide-panel { from { transform: translateX(100%); } to { transform: none; } }

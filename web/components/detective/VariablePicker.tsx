@@ -16,9 +16,10 @@ export interface VariablePickerProps {
   /** which categories the chosen sub-basin has data for; null = no sub-basin yet (all enabled) */
   available: Readonly<Record<CategoryId, boolean>> | null;
   unavailableReason?: Partial<Record<CategoryId, string>>;
-  onStart: () => void;
+  /** omit to hide the card chrome, heading and Start button (the questionnaire supplies its own) */
+  onStart?: () => void;
   /** why Start is disabled, or null when it can run */
-  blocked: string | null;
+  blocked?: string | null;
 }
 
 export function VariablePicker({ categories, response, loading, checked, onChange, available, unavailableReason, onStart, blocked }: VariablePickerProps) {
@@ -83,32 +84,32 @@ export function VariablePicker({ categories, response, loading, checked, onChang
       </li>
     );
   };
-  const grid = "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2";
+  const grid = "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4";
 
+  const bare = !onStart;
   return (
-    <section aria-labelledby={`${id}-h`} className="rounded-card bg-paper p-5 text-ink shadow-card sm:p-6">
+    <section aria-labelledby={`${id}-h`} className={bare ? "text-ink" : "rounded-card bg-paper p-5 text-ink shadow-card sm:p-6"}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 id={`${id}-h`} className="flex items-center text-xl">
-          <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-full bg-well px-1.5 font-display text-sm tnum" aria-hidden="true">4</span>
+        <h2 id={`${id}-h`} className={bare ? "sr-only" : "flex items-center text-xl"}>
           {T.heading}
         </h2>
-        <p className="text-xs text-ink-3" role="status">
+        <p className={bare ? "a11y-hint text-sm text-ink-3" : "text-sm text-ink-3"} role="status">
           {loading ? T.asking : response ? T.source[response.source] : T.yours}
         </p>
       </div>
 
-      <fieldset className="mt-3">
+      <fieldset className={bare ? "" : "mt-3"}>
         <legend className="sr-only">{T.group}</legend>
         {suggested.length > 0 && <ul className={grid}>{suggested.map((c) => chip(c, false))}</ul>}
         {others.length > 0 && (
           <>
-            {suggested.length > 0 && <p className="mt-3 mb-1.5 text-xs text-ink-3">{T.others}</p>}
+            {suggested.length > 0 && <hr className="my-3 border-line" aria-label={T.others} />}
             <ul className={grid}>{others.map((c) => chip(c, !!response))}</ul>
           </>
         )}
       </fieldset>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      {onStart && <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={onStart}
@@ -118,7 +119,7 @@ export function VariablePicker({ categories, response, loading, checked, onChang
           {T.analyse(startable.length)}
         </button>
         {blocked && <span className="text-sm text-ink-3">{blocked}</span>}
-      </div>
+      </div>}
     </section>
   );
 }

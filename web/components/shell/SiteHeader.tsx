@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mark } from "./Mark";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { A11ySwitcher } from "./A11ySwitcher";
 
 const NAV = [
   { href: "/detective", label: "Detective" },
@@ -43,6 +44,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <A11ySwitcher />
           <ThemeSwitcher />
         </div>
       </div>

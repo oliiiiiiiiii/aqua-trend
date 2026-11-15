@@ -78,6 +78,10 @@ export class GlobeEngine {
 
   // inputs
   private interactive: boolean;
+  /** keep turning while interactive (paused while dragged) */
+  private autoSpin = false;
+  /** false = the wheel scrolls the page instead of zooming */
+  private wheelZoom = true;
   private reduced: boolean;
   private pointers = new Map<number, { x: number; y: number }>();
   private drag: { x: number; y: number; moved: boolean; lastT: number } | null = null;
@@ -105,9 +109,11 @@ export class GlobeEngine {
 
   constructor(
     private host: HTMLElement,
-    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors },
+    opts: { interactive: boolean; reducedMotion: boolean; initialView: View; theme: ThemeColors; autoSpin?: boolean; wheelZoom?: boolean },
   ) {
     this.interactive = opts.interactive;
+    this.autoSpin = !!opts.autoSpin;
+    this.wheelZoom = opts.wheelZoom ?? true;
     this.reduced = opts.reducedMotion;
     this.home = { ...opts.initialView };
     this.cur = { ...opts.initialView };
@@ -219,6 +225,12 @@ export class GlobeEngine {
     this.theme = t;
     this.applyTheme();
     if (this.overlayVar) void this.setOverlay(this.overlayVar);
+  }
+
+  /** recolour the selected region's glow only (cheap; no texture rebuild) */
+  setSelectColor(c: RGB) {
+    this.theme = { ...this.theme, select: c };
+    this.applyTheme();
   }
 
   private applyTheme() {
@@ -473,7 +485,7 @@ export class GlobeEngine {
   };
 
   private onWheel = (e: WheelEvent) => {
-    if (!this.interactive) return;
+    if (!this.interactive || !this.wheelZoom) return;
     e.preventDefault();
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
     this.tgt.zoom = clamp(this.tgt.zoom * Math.exp(-dy * 0.0016), ZOOM_MIN, ZOOM_MAX);
@@ -555,7 +567,7 @@ export class GlobeEngine {
   private step(dt: number) {
     const motion = !this.reduced;
     if (motion) this.time += dt;
-    if (!this.interactive && motion) this.tgt.lon += dt * 5;
+    if ((!this.interactive || (this.autoSpin && !this.drag)) && motion) this.tgt.lon += dt * 5;
     // inertia
     if (!this.drag && (this.vel.lon || this.vel.lat)) {
       if (!motion) this.vel = { lon: 0, lat: 0 };

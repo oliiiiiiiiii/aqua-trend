@@ -22,12 +22,11 @@ import {
   categoryAvailability, loadCountryNames, loadSeries, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
 } from "@/lib/detective/series";
 import { RetryButton, StatusCard } from "@/components/ui/StatusCard";
-import { InputPanel } from "./InputPanel";
-import { VariablePicker } from "./VariablePicker";
-import { CATEGORIES, PRESETS, requestVotes } from "./wiring";
+import { Questionnaire } from "./Questionnaire";
+import { CATEGORIES, requestVotes } from "./wiring";
 import AnalysisView from "./AnalysisView";
 import { COPY } from "./copy/input";
-import { NO_LAYERS, msg, writeUrl } from "./appShared";
+import { NO_LAYERS, msg, presetFor, writeUrl } from "./appShared";
 
 /* ------------------------------------------------------------------ small async helper */
 
@@ -280,9 +279,10 @@ function InputStage({
 
   // a reload (or Back) in Step 1 keeps the user's ticks from the URL; ask again only to show the probabilities
   useEffect(() => {
-    if (reasked.current === urlEvent || vote || finding || draft === null || !urlEvent || currentEvent.current !== urlEvent) return;
+    if (reasked.current === urlEvent || vote || finding || !urlEvent || currentEvent.current !== urlEvent) return;
     reasked.current = urlEvent;
-    void ask(urlEvent, false);
+    // arriving from the landing page (an event, no picks yet): the model's picks become the draft
+    void ask(urlEvent, draft === null);
   }, [vote, finding, draft, urlEvent, ask]);
 
   const onPicks = (c: CategoryId[]) => {
@@ -304,35 +304,31 @@ function InputStage({
             : !startable.length
               ? COPY.blocked.none
               : null;
+  const template = presetFor(q) ?? null;
   const onStart = () => {
     if (blocked) return;
     if (eventText.trim() !== urlEvent) commitEvent(eventText);
-    writeUrl((s) => ({ query: { ...s.query, categories: startable, active: startable[0] }, draft: null }), "push");
+    const active = template?.active && startable.includes(template.active) ? template.active : startable[0];
+    writeUrl((s) => ({ query: { ...s.query, categories: startable, active }, draft: null }), "push");
     window.scrollTo({ top: 0 });
   };
 
-  const onPreset = (p: PresetEvent) => {
-    cancelRequest();
-    timeTouched.current = true;
-    if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
-    writeUrl(() => ({
-      query: {
-        event: p.event, time: p.time, region: p.region, categories: p.categories, layers: p.layers,
-        padMonths: p.padMonths, active: p.active ?? p.categories[0],
-      },
-      draft: null,
-    }), "push");
-    window.scrollTo({ top: 0 });
+  /** question 1 answered: ask the model only when the text is new (a case keeps its own picks) */
+  const onEventDone = () => {
+    const e = eventText.trim();
+    if (!e) return;
+    if (draft !== null && e === urlEvent) { commitEvent(e); return; }
+    onFind();
   };
 
-  const showPicker = draft !== null || finding || !!vote;
   return (
-    <div className="on-stage stage-sky">
-      <InputPanel
+    <>
+      <Questionnaire
         event={eventText}
         onEventChange={onEventChange}
-        presets={PRESETS}
-        onPreset={onPreset}
+        committedEvent={urlEvent}
+        onEventDone={onEventDone}
+        finding={finding}
         time={q.time ?? null}
         onTimeChange={onTimeChange}
         timeSuggestion={suggestTime(eventText)}
@@ -343,27 +339,21 @@ function InputStage({
         searchable={searchable}
         countryNames={ready(countryLoad)}
         region={regionOk}
+        regionReady={!!regionOk && !noData && !!layersHere}
         regionNote={regionNote}
         onRegion={onRegion}
-        onFind={onFind}
-        finding={finding}
-        hasPicker={showPicker}
-      >
-        {showPicker && (
-          <VariablePicker
-            categories={CATEGORIES}
-            response={vote?.event === eventText.trim() ? vote.response : null}
-            loading={finding}
-            checked={draft ?? []}
-            onChange={onPicks}
-            available={available}
-            unavailableReason={avail?.unavailableReason}
-            onStart={onStart}
-            blocked={blocked}
-          />
-        )}
-      </InputPanel>
-    </div>
+        picks={startable}
+        template={template}
+        layers={q.layers}
+        layersHere={layersHere}
+        blocked={blocked}
+        onSubmit={onStart}
+        checked={draft ?? []}
+        onPicks={onPicks}
+        response={vote?.event === eventText.trim() ? vote.response : null}
+        available={available}
+      />
+    </>
   );
 }
 

@@ -44,7 +44,7 @@ export const viewport: Viewport = {
 
 // Applied before first paint, so nothing flashes: the saved theme (else the OS light/dark preference), and the visual
 // look (?look=<id> wins and is saved, else the saved one, else atlas).
-const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["terrarium","strip","console","atlas"];try{t=localStorage.getItem("aqua-trend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("aqua-trend-look",q)}catch(e){}}else{l=localStorage.getItem("aqua-trend-look")}}catch(e){}if(L.indexOf(l)<0)l="atlas";d.setAttribute("data-look",l)})()`;
+const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["terrarium","strip","console","atlas"];try{t=localStorage.getItem("aqua-trend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("aqua-trend-look",q)}catch(e){}}else{l=localStorage.getItem("aqua-trend-look")}}catch(e){}if(L.indexOf(l)<0)l="atlas";d.setAttribute("data-look",l);try{if(localStorage.getItem("aqua-trend-a11y")==="on")d.dataset.a11y="on"}catch(e){}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,11 +1,11 @@
 "use client";
-// Input step of the Trend Detective: four numbered steps (What, When, Where, Variables), presets first.
+// Field pieces of the /detective questionnaire (Questionnaire.tsx): period picker, sub-basin search, globe picker.
 // Presentational: DetectiveApp owns the state (in the URL) and passes values and callbacks in.
 import dynamic from "next/dynamic";
 import { useCallback, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import type { GlobePoint } from "@/lib/contracts";
 import type { Catalog, Region } from "@/lib/types";
-import type { PresetEvent, TimeRange } from "@/lib/detective/contracts";
+import type { TimeRange } from "@/lib/detective/contracts";
 import { loadGrid, rasterIndex } from "@/lib/data";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
@@ -30,8 +30,6 @@ export interface InputPanelProps {
   /* What */
   event: string;
   onEventChange: (text: string) => void;
-  presets: readonly PresetEvent[];
-  onPreset: (p: PresetEvent) => void;
   /* When */
   time: TimeRange | null;
   /**
@@ -55,133 +53,11 @@ export interface InputPanelProps {
   /** notes under the selected region (no data here, a link with an unknown id, …) */
   regionNote: ReactNode;
   onRegion: (r: Region) => void;
-  /* Find */
-  onFind: () => void;
-  finding: boolean;
-  /** the variable card is showing: "Find variables" steps back to a quiet secondary button */
-  hasPicker: boolean;
-  /** the Variables card, shown under the form */
-  children?: ReactNode;
-}
-
-export function InputPanel(p: InputPanelProps) {
-  return (
-    <div className="mx-auto grid max-w-[90rem] items-start gap-5 px-4 pt-4 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,30rem)] lg:gap-x-8 lg:px-8 lg:pt-8">
-      <div className="order-1 lg:col-start-2 lg:row-start-1">
-        <h1 className="text-[2rem] leading-tight sm:text-[2.5rem]">{COPY.title}</h1>
-        <p className="mt-1 text-on-stage-2">{COPY.intro}</p>
-      </div>
-      {/* phones: title, form, globe, variables; wide screens: the globe stays beside the right-hand column */}
-      <div className="order-3 lg:sticky lg:top-4 lg:col-start-1 lg:row-span-3 lg:row-start-1">
-        <SubBasinGlobe catalog={p.catalog} region={p.region} onRegion={p.onRegion} />
-      </div>
-      <div className="order-2 lg:col-start-2 lg:row-start-2">
-        <form
-          className="space-y-5 rounded-card bg-paper p-5 text-ink shadow-card sm:p-6"
-          onSubmit={(e) => { e.preventDefault(); if (p.event.trim() && !p.finding) p.onFind(); }}
-          aria-label={COPY.formLabel}
-        >
-          <Cases presets={p.presets} onPreset={p.onPreset} />
-          <EventField {...p} />
-          <TimeField {...p} />
-          <RegionField {...p} />
-          <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
-            <button
-              type="submit"
-              disabled={!p.event.trim() || p.finding}
-              className={
-                p.hasPicker
-                  ? "rounded-ctl border border-line px-4 py-1.5 text-sm font-semibold text-link hover:border-link disabled:cursor-not-allowed disabled:opacity-50"
-                  : "rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover disabled:cursor-not-allowed disabled:opacity-50"
-              }
-            >
-              {p.finding ? COPY.find.busy : p.hasPicker ? COPY.find.again : COPY.find.go}
-            </button>
-            {!p.event.trim() && !p.hasPicker && <span className="text-sm text-ink-3">{COPY.find.needEvent}</span>}
-          </div>
-        </form>
-      </div>
-      {p.children && <div className="order-4 lg:col-start-2 lg:row-start-3">{p.children}</div>}
-    </div>
-  );
-}
-
-function Step({ n }: { n: number }) {
-  return (
-    <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-full bg-well px-1.5 font-display text-sm text-ink tnum" aria-hidden="true">
-      {n}
-    </span>
-  );
-}
-
-/** a step heading: numeral, 1–3 word label, and the chosen value once there is one */
-function StepHead({ n, id, label, value, htmlFor }: { n: number; id: string; label: string; value?: ReactNode; htmlFor?: string }) {
-  const body = (
-    <>
-      <Step n={n} />
-      {label}
-      {value ? <span className="ml-2 min-w-0 truncate font-normal text-ink-2">{value}</span> : null}
-    </>
-  );
-  const cls = "flex items-center font-semibold";
-  return htmlFor ? <label id={id} htmlFor={htmlFor} className={cls}>{body}</label> : <p id={id} className={cls}>{body}</p>;
-}
-
-/* ------------------------------------------------------------------ presets */
-
-function Cases({ presets, onPreset }: { presets: readonly PresetEvent[]; onPreset: (p: PresetEvent) => void }) {
-  const id = useId();
-  if (!presets.length) return null;
-  return (
-    <div>
-      <p id={id} className="text-sm font-semibold text-ink-2">{COPY.cases.heading}</p>
-      <ul className="mt-1.5 grid gap-2 sm:grid-cols-3 lg:grid-cols-1" aria-labelledby={id}>
-        {presets.map((pr) => (
-          <li key={pr.id}>
-            <button
-              type="button"
-              onClick={() => onPreset(pr)}
-              title={pr.blurb}
-              className="h-full w-full rounded-ctl border border-line bg-well px-3 py-2 text-left hover:border-link"
-            >
-              <span className="block font-semibold leading-snug text-link">{pr.title}</span>
-              <span className="block text-xs text-ink-3 tnum">
-                {formatRange(pr.time)}
-                {COPY.cases.place[pr.id] ? ` · ${COPY.cases.place[pr.id]}` : ""}
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ What */
-
-function EventField({ event, onEventChange }: InputPanelProps) {
-  const id = useId();
-  return (
-    <div>
-      <StepHead n={1} id={`${id}-h`} label={COPY.steps.what} htmlFor={`${id}-e`} />
-      <input
-        id={`${id}-e`}
-        type="text"
-        value={event}
-        onChange={(e) => onEventChange(e.target.value)}
-        maxLength={300}
-        autoComplete="off"
-        placeholder={COPY.what.placeholder}
-        aria-label={COPY.what.label}
-        className="mt-2 w-full rounded-ctl border border-line bg-paper px-4 py-2.5 text-ink placeholder:text-ink-3"
-      />
-    </div>
-  );
 }
 
 /* ------------------------------------------------------------------ When */
 
-function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: InputPanelProps) {
+export function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: InputPanelProps) {
   const id = useId();
   const y0 = Number(bounds.start.slice(0, 4)), y1 = Number(bounds.end.slice(0, 4));
   const years = useMemo(() => Array.from({ length: y1 - y0 + 1 }, (_, i) => y0 + i), [y0, y1]);
@@ -235,7 +111,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
 
   return (
     <div role="group" aria-labelledby={`${id}-t`}>
-      <StepHead n={2} id={`${id}-t`} label={COPY.steps.when} value={time ? <span className="tnum">{formatRange(time)}</span> : null} />
+      <span id={`${id}-t`} className="sr-only">{COPY.steps.when}</span>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
         {part("start", COPY.when.from)}
         {part("end", COPY.when.to)}
@@ -361,7 +237,7 @@ function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; ti
 
 /* ------------------------------------------------------------------ Where */
 
-function RegionField({ event, catalog, catalogError, searchable, countryNames, region, regionNote, onRegion }: InputPanelProps) {
+export function RegionField({ event, catalog, catalogError, searchable, countryNames, region, regionNote, onRegion }: InputPanelProps) {
   const id = useId();
   const subCatalog = useMemo<Catalog | null>(
     () => (catalog && searchable ? { ...catalog, regions: searchable } : null),
@@ -370,12 +246,10 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
   const hints = useRegionHints(event, searchable, countryNames).filter((r) => r.id !== region?.id);
   return (
     <div role="group" aria-labelledby={`${id}-h`}>
-      <StepHead
-        n={3}
-        id={`${id}-h`}
-        label={COPY.steps.where}
-        value={region ? <><span className="text-ink">{region.name}</span> <span className="text-ink-3 tnum">· {formatArea(region.areaKm2)}</span></> : <span className="text-ink-3">{COPY.where.none}</span>}
-      />
+      <span id={`${id}-h`} className="sr-only">{COPY.steps.where}</span>
+      {region && (
+        <p className="mb-2 font-semibold">{region.name} <span className="font-normal text-ink-3 tnum">· {formatArea(region.areaKm2)}</span></p>
+      )}
       <div className="mt-2 [&_input]:mt-0 [&>div>label]:sr-only [&>div>p[id$=-hint]]:sr-only" >
         {subCatalog ? (
           <RegionSearch catalog={subCatalog} onSelect={onRegion} />
@@ -415,7 +289,7 @@ const ZH_ALIASES: [string, string][] = [["澳洲", "AUS"], ["中國", "CHN"], ["
  * Sub-basins the event text seems to name: a river ("Indus") or a country in English ("Pakistan") or Chinese
  * ("巴基斯坦"). River hits first, then the largest basins; at most five.
  */
-function useRegionHints(text: string, regions: Region[] | null, countryNames: ReadonlyMap<string, string> | null): Region[] {
+export function useRegionHints(text: string, regions: Region[] | null, countryNames: ReadonlyMap<string, string> | null): Region[] {
   const index = useMemo(() => {
     if (!regions) return null;
     const enToIso = new Map<string, string>();
@@ -454,7 +328,42 @@ function useRegionHints(text: string, regions: Region[] | null, countryNames: Re
 }
 
 /** The planet with sub-basin outlines only. A click selects the sub-basin under the pointer; the selection glows. */
-function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null; region: Region | null; onRegion: (r: Region) => void }) {
+/** Click-to-pick a sub-basin on a globe: the handlers for GlobeCanvas plus the hovered region and a status line. */
+export function useBasinPick(catalog: Catalog | null, onRegion: (r: Region) => void) {
+  const [hover, setHover] = useState<Region | null>(null);
+  const [status, setStatus] = useState("");
+  const seq = useRef(0);
+  const catalogRef = useRef(catalog);
+  catalogRef.current = catalog;
+  const onRegionRef = useRef(onRegion);
+  onRegionRef.current = onRegion;
+
+  const onPick = useCallback(async ({ lon, lat }: GlobePoint & { zoom: number }) => {
+    const n = ++seq.current;
+    const cat = catalogRef.current;
+    if (!cat) { setStatus(COPY.where.pickLoading); return; }
+    setStatus(COPY.where.lookup(fmtLat(lat), fmtLon(lon)));
+    try {
+      const grid = await loadGrid("basin4");
+      if (n !== seq.current) return;
+      const g = grid[rasterIndex(lon, lat)];
+      const r = g ? cat.byGrid.basin4[g] : undefined;
+      if (!r) { setStatus(COPY.where.noBasinAt(fmtLat(lat), fmtLon(lon))); return; }
+      setStatus("");
+      onRegionRef.current(r);
+    } catch (e) {
+      if (n === seq.current) setStatus(COPY.where.lookupFailed(e instanceof Error ? e.message : String(e)));
+    }
+  }, []);
+  const onHover = useCallback((hit: (GlobePoint & { region: Region | null }) | null) => {
+    const r = hit?.region ?? null;
+    setHover((prev) => (prev?.id === r?.id ? prev : r));
+  }, []);
+
+  return { onPick, onHover, hover, status };
+}
+
+export function SubBasinGlobe({ catalog, region, onRegion, compact = false }: { catalog: Catalog | null; region: Region | null; onRegion: (r: Region) => void; compact?: boolean }) {
   const [hover, setHover] = useState<Region | null>(null);
   const [status, setStatus] = useState("");
   const seq = useRef(0);
@@ -487,7 +396,7 @@ function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null;
 
   return (
     <div className="on-stage flex min-w-0 flex-col gap-3">
-      <div className="mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-10rem))] min-w-0">
+      <div className={`mx-auto aspect-square w-full min-w-0 ${compact ? "max-w-[min(100%,calc(100dvh-22rem),40rem)] min-h-[20rem]" : "max-w-[min(100%,calc(100dvh-14rem))]"}`}>
         <GlobeCanvas
           className="h-full w-full"
           interactive
@@ -500,7 +409,8 @@ function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null;
       </div>
       <p className="sr-only" aria-live="polite">{status}</p>
       <p className="min-h-[1.5rem] text-center text-sm text-on-stage-2">
-        {status ||
+        {compact && !status && !hover && region ? <span className="font-semibold text-on-stage">{region.name}</span> : null}
+        {compact && !status && !hover && region ? null : status ||
           (hover ? (
             <>
               <span className="font-semibold text-on-stage">{hover.name}</span> · {COPY.where.hoverSelect}
@@ -509,6 +419,22 @@ function SubBasinGlobe({ catalog, region, onRegion }: { catalog: Catalog | null;
             COPY.where.hint
           ))}
       </p>
+    </div>
+  );
+}
+
+/** The sub-basin search as one quiet pill (the label is a placeholder; selected name shows under the globe). */
+export function RegionSearchBox({ catalog, catalogError, searchable, onRegion }: InputPanelProps) {
+  const subCatalog = useMemo<Catalog | null>(
+    () => (catalog && searchable ? { ...catalog, regions: searchable } : null),
+    [catalog, searchable],
+  );
+  if (!subCatalog) {
+    return <p className="rounded-full bg-white/15 px-5 py-2.5 text-center text-sm text-on-stage-2">{catalogError ?? COPY.where.loading}</p>;
+  }
+  return (
+    <div className="text-ink [&_input]:mt-0 [&_input]:rounded-full [&_input]:border-0 [&_input]:bg-paper/95 [&_input]:px-5 [&_input]:shadow-card [&>div>label]:sr-only [&>div>p[id$=-hint]]:sr-only">
+      <RegionSearch catalog={subCatalog} onSelect={onRegion} />
     </div>
   );
 }
