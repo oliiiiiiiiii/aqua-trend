@@ -14,7 +14,8 @@ export function honeycombRows(n: number, maxPerRow: number): number[] {
 export function honeycombLayout(n: number, maxPerRow: number, width: number, gap = 4) {
   const rows = honeycombRows(n, maxPerRow);
   const extent = maxPerRow + 0.5;
-  const w = Math.max(1, (width - gap * (extent - 1)) / extent);
+  // Keep small clusters at the same compact scale as the complete set.
+  const w = Math.max(1, Math.min(84, (width - gap * (extent - 1)) / extent));
   const h = w * 2 / Math.sqrt(3);
   const pitch = w + gap;
   const rowPitch = h * 0.75 + gap;

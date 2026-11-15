@@ -1,10 +1,10 @@
 "use client";
-// Step 4 of the input: the AI (or keyword) vote per category as a grid of pre-ticked toggle chips.
-import { useEffect, useId, useRef, useState, type ReactNode, type Ref } from "react";
+// One disclosure over the globe: a compact picked-variable bar or the complete honeycomb.
+import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryId, CategoryVote, SelectResponse } from "@/lib/detective/contracts";
 import { CATEGORY_IDS } from "@/lib/detective/url";
 import type { CategoryInfo } from "./wiring";
-import { COPY } from "./copy/input";
+import { COPY, VARIABLE_LABELS } from "./copy/input";
 import { CATEGORY_FAMILY, FAMILIES, categoryStyle } from "@/lib/detective/categoryStyle";
 import { honeycombLayout } from "./honeycomb";
 
@@ -28,7 +28,7 @@ export function startableCount(p: Pick<VariablePickerProps, "checked" | "availab
   return p.checked.filter((c) => !p.available || p.available[c]).length;
 }
 
-/** The primary action; the overlay and the column each render one, never both at once. */
+/** One primary action at the foot of the input column. */
 export function AnalyseButton({ picker, className = "" }: { picker: VariablePickerProps; className?: string }) {
   return (
     <button
@@ -66,25 +66,25 @@ function useHoneycomb() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setWidth(el.clientWidth));
+    const measure = () => { if (el.clientWidth > 0) setWidth(el.clientWidth); };
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    setWidth(el.clientWidth);
+    measure();
     return () => ro.disconnect();
   }, []);
-  const k = width < 470 ? 3 : 5;
+  const k = width < 360 ? 3 : width < 420 ? 4 : 5;
   return { ref, k, width };
 }
 
-export function VariablePicker({ layout = "inline", onClose, closeRef, ...props }: VariablePickerProps & {
-  /** "overlay": no card of its own, a larger title and a close button; the parent supplies the frosted panel */
-  layout?: "inline" | "overlay";
-  onClose?: () => void;
-  closeRef?: Ref<HTMLButtonElement>;
-}) {
-  const { categories, response, loading, checked, onChange, available, unavailableReason, blocked } = props;
+export function VariablePicker(props: VariablePickerProps) {
+  const { categories, response, loading, checked, onChange, available, unavailableReason } = props;
   const id = useId();
+  const [expanded, setExpanded] = useState(false);
+  const arrived = useRef(false);
+  useEffect(() => {
+    if (response && !arrived.current) { arrived.current = true; setExpanded(true); }
+  }, [response]);
   const hc = useHoneycomb();
-  const overlay = layout === "overlay";
   const T = COPY.picker;
   const votes = new Map<CategoryId, CategoryVote>((response?.votes ?? []).map((v) => [v.category, v]));
   const on = new Set(checked);
@@ -95,12 +95,9 @@ export function VariablePicker({ layout = "inline", onClose, closeRef, ...props 
     onChange(CATEGORY_IDS.filter((x) => next.has(x)));
   };
   const keyword = response?.source === "keyword-fallback";
-  // with a vote: its picks first, the rest quieter; without one (link, still asking) a single plain grid
-  // same-family tiles sit next to each other (family order from FAMILIES, then the usual category order)
+  // Keep one stable family-grouped lattice when suggestions or selections change.
   const familyRank = Object.keys(FAMILIES);
   const byFamily = [...CATEGORY_IDS].sort((a, b) => familyRank.indexOf(CATEGORY_FAMILY[a]) - familyRank.indexOf(CATEGORY_FAMILY[b]));
-  const suggested = response ? byFamily.filter((c) => votes.get(c)?.selected) : [];
-  const others = byFamily.filter((c) => !suggested.includes(c));
 
   const chip = (c: CategoryId, quiet: boolean, box: { x: number; y: number; w: number; h: number }) => {
     const info = categories[c];
@@ -114,7 +111,7 @@ export function VariablePicker({ layout = "inline", onClose, closeRef, ...props 
       <li key={c} style={{ left: box.x, top: box.y, width: box.w, height: box.h }} className="absolute">
         <label
           style={{ clipPath: HEX_CLIP }}
-          title={ok ? info.definition.en : `${info.name.en}: ${reason}`}
+          title={`${info.name.en}: ${ok ? info.definition.en : reason}`}
           className={`relative block h-full w-full text-center leading-tight ${
             !ok ? "cursor-not-allowed text-on-stage-2" : checkedNow ? "cursor-pointer font-semibold text-on-stage" : `cursor-pointer ${quiet ? "text-on-stage-2" : "text-on-stage"}`
           }`}
@@ -129,7 +126,7 @@ export function VariablePicker({ layout = "inline", onClose, closeRef, ...props 
           <span
             aria-hidden="true"
             style={{ clipPath: HEX_CLIP, ...(checkedNow ? { background: `color-mix(in srgb, ${fam} 34%, var(--stage))` } : null) }}
-            className={`absolute inset-0 ${overlay ? "" : "backdrop-blur-md"} ${!ok || checkedNow ? "" : quiet ? FROST_QUIET : FROST}`}
+            className={`absolute inset-0 backdrop-blur-md ${!ok || checkedNow ? "" : quiet ? FROST_QUIET : FROST}`}
           />
           <svg viewBox="0 0 100 115.47" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
             <polygon
@@ -152,16 +149,16 @@ export function VariablePicker({ layout = "inline", onClose, closeRef, ...props 
               className="opacity-0 [.peer:focus-visible~svg_&]:opacity-100"
             />
           </svg>
-          <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-[16%] pt-[4%]">
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-[10%] pt-[4%]">
             <span
-              className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${CHIP_STROKE[categoryStyle(c).family] ?? "text-on-stage"}`}
+              className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${CHIP_STROKE[categoryStyle(c).family] ?? "text-on-stage"}`}
               style={{ background: fam, opacity: ok ? 1 : 0.6 }}
             >
-              <svg viewBox="0 0 24 24" width={22} height={22} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width={17} height={17} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={info.icon} />
               </svg>
             </span>
-            <span className="line-clamp-2 min-w-0 text-[10.5px] min-[420px]:text-[11px]">{info.name.en}</span>
+            <span className="min-w-0 max-w-full text-[10px] leading-tight [overflow-wrap:anywhere] min-[420px]:text-[11px]">{VARIABLE_LABELS[c] ?? info.name.en}</span>
           </span>
           {checkedNow && (
             <span className="absolute grid h-4 w-4 place-items-center rounded-full text-paper" style={{ background: fam, right: "21%", top: "10%" }} aria-hidden="true">
@@ -169,61 +166,55 @@ export function VariablePicker({ layout = "inline", onClose, closeRef, ...props 
             </span>
           )}
           <span className="sr-only">
-            {!ok ? `. ${reason}` : `. ${info.definition.en}${pct !== null && !keyword ? ` Probability ${pct}%.` : ""}${keyword && vote && vote.p >= 0.5 ? ` ${T.keyword}.` : ""}`}
+            {`. ${info.name.en}. `}{!ok ? reason : `${info.definition.en}${pct !== null && !keyword ? ` Probability ${pct}%.` : ""}${keyword && vote && vote.p >= 0.5 ? ` ${T.keyword}.` : ""}`}
           </span>
         </label>
       </li>
     );
   };
-  const cluster = (list: CategoryId[], quiet: boolean): ReactNode => {
-    const geometry = honeycombLayout(list.length, hc.k, hc.width);
-    return (
-      <ul aria-label={quiet ? T.others : T.suggested} className="relative" style={{ height: geometry.height }}>
-        {list.map((c, i) => chip(c, quiet, { ...geometry.tiles[i], w: geometry.w, h: geometry.h }))}
-      </ul>
-    );
-  };
-
-  const Root = overlay ? "div" : "section";
-  const sourceLine = loading ? T.asking : response ? T.source[response.source] : T.yours;
+  const geometry = honeycombLayout(byFamily.length, hc.k, hc.width);
+  const sourceLine = response ? T.source[response.source] : null;
   return (
-    <Root {...(overlay ? {} : { "aria-labelledby": `${id}-h` })} className="min-w-0 text-on-stage">
-      <div className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${overlay ? "pr-12" : ""}`}>
-        <h2 id={`${id}-h`} className={`flex items-center ${overlay ? "font-display text-3xl" : "text-xl"}`}>
-          {T.heading}
-        </h2>
-        <span className="text-[10px] text-on-stage-2" role="status">{sourceLine}</span>
-      </div>
-      {overlay && onClose && (
+    <section
+      data-variable-panel
+      data-expanded={expanded}
+      aria-labelledby={`${id}-h`}
+      className={`pointer-events-auto min-w-0 overflow-hidden border border-stage-line bg-stage/65 text-on-stage backdrop-blur-md ${expanded ? "rounded-card" : "rounded-ctl"}`}
+    >
+      <h2 id={`${id}-h`}>
         <button
-          ref={closeRef}
           type="button"
-          onClick={onClose}
-          aria-label={T.close}
-          title={`${T.close} (Esc)`}
-          className="absolute right-3 top-3 grid h-11 w-11 place-items-center rounded-full text-on-stage hover:bg-on-stage/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-controls={`${id}-tiles`}
+          title={expanded ? T.collapse : T.expand}
+          className="flex min-h-14 w-full items-center gap-3 px-4 text-left hover:bg-on-stage/5"
         >
-          <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          <span className="flex shrink-0 items-baseline gap-2">
+            <span className="text-sm font-semibold">{T.heading}</span>
+            {sourceLine && <span className="text-[10px] font-normal text-on-stage-2">{sourceLine}</span>}
+          </span>
+          <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden" aria-hidden="true">
+            {!expanded && byFamily.filter((c) => on.has(c)).map((c) => (
+              <span key={c} title={categories[c].name.en} className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${CHIP_STROKE[categoryStyle(c).family]}`} style={{ background: categoryStyle(c).color }}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={categories[c].icon}/></svg>
+              </span>
+            ))}
+          </span>
+          {loading ? <span role="status" className="shrink-0 text-xs font-normal text-on-stage-2">{T.asking}</span> : <span className="text-xs font-normal text-on-stage-2 tnum">{checked.length}</span>}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className={`shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
         </button>
-      )}
-
-      <fieldset className={`min-w-0 ${overlay ? "py-4" : "mt-3"}`}>
-        <legend className="sr-only">{T.group}</legend>
-        <div ref={hc.ref} className={`w-full min-w-0 overflow-x-clip ${overlay ? "mx-auto max-w-[36rem]" : ""}`}>
-        {suggested.length > 0 && cluster(suggested, false)}
-        {others.length > 0 && (
-          <>
-            {suggested.length > 0 && <p className="mt-3 mb-1.5 text-xs text-on-stage-2">{T.others}</p>}
-            {cluster(others, !!response)}
-          </>
-        )}
-        </div>
-      </fieldset>
-
-      <div className={`flex flex-wrap items-center gap-3 ${overlay ? "mt-2 justify-center" : "mt-4"}`}>
-        <AnalyseButton picker={props} />
-        {blocked && <span className="text-sm text-on-stage-2">{blocked}</span>}
+      </h2>
+      <div id={`${id}-tiles`} hidden={!expanded} className="px-3 pt-2 pb-5 sm:px-5">
+        <fieldset className="min-w-0">
+          <legend className="sr-only">{T.group}</legend>
+          <div ref={hc.ref} className="w-full min-w-0">
+            <ul aria-label={T.group} className="relative" style={{ height: geometry.height }}>
+              {byFamily.map((c, i) => chip(c, !on.has(c) && !votes.get(c)?.selected, { ...geometry.tiles[i], w: geometry.w, h: geometry.h }))}
+            </ul>
+          </div>
+        </fieldset>
       </div>
-    </Root>
+    </section>
   );
 }

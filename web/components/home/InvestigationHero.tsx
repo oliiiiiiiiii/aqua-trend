@@ -39,6 +39,10 @@ function EventForm() {
     // a keyboard-and-mouse visitor can type at once; a phone would raise its keyboard over the planet
     if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) area.current?.focus({ preventScroll: true });
   }, []);
+  useEffect(() => {
+    const el = area.current;
+    if (el) { el.style.height = "auto"; el.style.height = `${Math.min(el.scrollHeight, 80)}px`; }
+  }, [text]);
   const submit = () => {
     const event = text.trim();
     if (!event || entering) return;
@@ -60,14 +64,14 @@ function EventForm() {
       <textarea
         id={`${id}-e`}
         ref={area}
-        rows={2}
+        rows={1}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
         maxLength={300}
         autoComplete="off"
         placeholder={COPY.what.placeholder}
-        className="mt-3 min-h-28 w-full resize-y rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-4 font-display text-2xl leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        className="mt-3 min-h-14 max-h-20 w-full resize-none rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-3 font-display text-[1.3rem] leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       />
       <div className="mt-3 flex justify-center">
         <button

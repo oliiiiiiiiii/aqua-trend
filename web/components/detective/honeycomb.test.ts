@@ -7,7 +7,7 @@ test("15 others use three full offset rows, without an extra orphan", () => {
 });
 
 test("either cluster balances every count from 0–17 at phone and desktop capacities", () => {
-  for (const max of [3, 5]) for (let n = 0; n <= 17; n++) {
+  for (const max of [3, 4, 5]) for (let n = 0; n <= 17; n++) {
     const rows = honeycombRows(n, max);
     assert.equal(rows.reduce((sum, count) => sum + count, 0), n);
     assert.equal(rows.length, Math.ceil(n / max));
@@ -32,7 +32,7 @@ function overlaps(a: Point[], b: Point[]) {
 }
 
 test("hex polygons never overlap or escape their cluster for any 0–17 split", () => {
-  for (const width of [250, 326, 450, 576]) for (const max of [3, 5]) for (let n = 0; n <= 17; n++) {
+  for (const width of [250, 326, 450, 576]) for (const max of [3, 4, 5]) for (let n = 0; n <= 17; n++) {
     const layout = honeycombLayout(n, max, width);
     const { w, h, tiles, height } = layout;
     assert.equal(tiles.length, n);
@@ -46,4 +46,11 @@ test("hex polygons never overlap or escape their cluster for any 0–17 split", 
       assert.equal(overlaps(polygons[i], polygons[j]), false, `${n}/${max}@${width}: tiles ${i},${j}`);
     }
   }
+});
+
+
+test("the full variable panel stays compact and balances every row without an orphan", () => {
+  assert.deepEqual(honeycombRows(17, 4), [4, 4, 3, 3, 3]);
+  assert.deepEqual(honeycombRows(17, 5), [5, 4, 4, 4]);
+  for (const n of [2, 3, 7, 17]) assert.ok(honeycombLayout(n, 5, 576).w <= 84);
 });

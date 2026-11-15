@@ -219,7 +219,7 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
   };
 
   const T = COPY.when;
-  const btn = "grid h-8 min-w-8 place-items-center rounded-ctl border border-stage-line px-2 text-sm text-on-stage hover:bg-on-stage/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40";
+  const btn = "grid h-6 min-w-6 place-items-center rounded-ctl px-1 text-sm text-on-stage hover:bg-on-stage/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-40";
   const sxs = shown ? x(shown.s) : 0;
   const exs = shown ? x(shown.e + 1) : 0;
   const barW = Math.max(4, exs - sxs);
@@ -298,13 +298,7 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
           <rect x={ox(view.lo)} y={1} width={Math.max(8, view.span * oppm)} height={18} rx={4} fill="var(--on-stage)" fillOpacity={0.12} stroke="var(--on-stage)" strokeWidth={1.5} style={{ cursor: ovDrag ? "grabbing" : "grab" }} />
         </svg>
       )}
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-on-stage-2">
-        <p className="flex flex-wrap gap-x-4">
-          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 rounded-sm" style={{ background: "var(--viz-orange)" }} aria-hidden="true" />{T.legendEvent}</span>
-          <span className="inline-flex items-center gap-1.5" title={T.legendBaselineTitle(padMonths)}>
-            <span className="h-2.5 w-4 rounded-sm bg-water opacity-30" aria-hidden="true" />{T.legendBaseline} (±{padMonths} mo)
-          </span>
-        </p>
+      <div className="mt-1 flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-xs text-on-stage-2">
         <span className="inline-flex items-center gap-1.5" role="group" aria-label={T.zoom}>
           <button type="button" className={btn} aria-label={T.zoomOut} title={T.zoomOut} disabled={zoomedOut} onClick={() => zoomAt(1 / 0.6, 0.5)}>−</button>
           <button type="button" className={btn} aria-label={T.zoomIn} title={T.zoomIn} disabled={view.span <= Math.min(MIN_SPAN, full) + 0.01} onClick={() => zoomAt(0.6, 0.5)}>+</button>

@@ -81,9 +81,7 @@ export function SubBasinGlobe({ catalog, region, onRegion, mode }: { catalog: Ca
             <>
               <span className="font-semibold text-on-stage">{hover.name}</span> · {COPY.where.hoverSelect}
             </>
-          ) : (
-            COPY.where.hint
-          ))}
+          ) : null)}
       </p>
     </div>
   );
