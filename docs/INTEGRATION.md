@@ -5,8 +5,8 @@
 >
 > **主線整合狀態（2026-11-15）**：A、B、C、D、E、F 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器使用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。資料更新為 `data-v2`：34 層、17 類別；SO₂ 年資料不提供月分析。台灣預設維持 2021-02..2021-05。
 >
-> **開始前先取得網站資料**（資料不在 git 裡）：`cd web && npm i && npm run setup`。
-> repo 是私有的，下載需要已登入的 `gh`（`gh auth login`）或環境變數 `GITHUB_TOKEN`；也可以手動下載 Release 附件後執行 `npm run setup -- --file <檔案>`。`npm run dev` 會在資料不存在時自動執行 setup。
+> **開始前先取得網站資料**（資料不在 git 裡）：repo 與 Release 已公開，先依 [`deploy/README.md`](../deploy/README.md#build-on-a-new-host) 匿名下載鎖定附件，再用 `npm run setup -- --file <檔案>` 校驗與安裝。
+> 建置、資料下載或 CI/CD 工作先讀 [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格)。現行 setup 的自動匿名下載仍待實作；公開部署不以 `gh` 登入或 `GITHUB_TOKEN` 為前提。
 
 ## 0. 規則
 
@@ -178,7 +178,7 @@ flowchart LR
 
 ## 3. 整合步驟（任何 agent 可執行）
 
-1. `git checkout main && git pull && cd web && npm i && npm run setup`
+1. 切到最新 `main`，在 `web/` 執行 `npm ci`，依部署說明匿名下載 lockfile 指定的 Release 附件，再執行 `npm run setup -- --file <檔案>`。
 2. 依序合併：F → E → A → D → B → C（C 最後，因為它把其他部分接起來）。F 之後若又更新資料，可以隨時再合併。每合併一個跑 `cd web && npm run typecheck`。
 3. 衝突處理：除 `contracts.ts` 外，檔案擁有者的版本優先；`contracts.ts` 衝突時以較新的 `[contract change]` PR 為準並修正呼叫端。
 4. 把 C 中的假資料替換成真實匯入：`analysis.ts`（A）、`VariableTab`（B）、`/api/select-variables`（D）、`presets.ts`／`categories.ts`（E）。

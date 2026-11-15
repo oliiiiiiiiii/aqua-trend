@@ -1,25 +1,33 @@
 # Container deployment
 
+The repository and pinned GitHub Release assets are public. Deployment requirements and implementation gaps are defined in [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格). This guide describes commands supported by the current code; it does not establish a hosting provider or automatic deployment.
+
 The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
 
 The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 
 ## Build on a new host
 
-Install Git, Node.js 24 with npm, and Docker with Compose. Start the Docker engine. Obtain a checkout of this private repository, then prepare its pinned data on the host:
+Install Git, Node.js 24 with npm, curl, tar, and Docker with Compose. Start the Docker engine. Clone over HTTPS and prepare the pinned public data on the host. The commands stop at the first failure:
 
 ```sh
-git clone git@github.com:oliiiiiiiiii/aqua-trend.git
-cd aqua-trend/web
-npm ci
-npm run setup
-cd ..
+git clone https://github.com/oliiiiiiiiii/aqua-trend.git &&
+cd aqua-trend/web &&
+npm ci &&
+AQUA_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
+AQUA_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/aqua-data.XXXXXX")" &&
+curl --fail --location --retry 3 "$AQUA_DATA_URL" --output "$AQUA_DATA_FILE" &&
+npm run setup -- --file "$AQUA_DATA_FILE" &&
+rm -f "$AQUA_DATA_FILE" &&
+cd .. &&
 docker compose up --build -d
 ```
 
-`npm run setup` downloads the private GitHub Release asset pinned by `web/data.lock.json`, verifies its SHA-256, and extracts `web/data` and `web/public/data`. Authenticate the host's GitHub CLI with repository access, or supply `GITHUB_TOKEN` to the host setup command. Repository checkout authentication and Release access must both be available. Docker receives neither GitHub credentials nor a token build argument.
+This flow needs no GitHub login, SSH key, `gh`, or token. The URL comes from `web/data.lock.json`; `setup --file` verifies SHA-256 before replacing and extracting `web/data` and `web/public/data`. For a release deployment, check out the intended commit before preparing the data and record that SHA. A failed download or setup can leave the temporary archive for inspection; remove it after resolving the failure.
 
-If you already have the pinned archive, replace `npm run setup` with:
+**Current implementation gap:** `npm run setup` without `--file` still selects the GitHub CLI or a token-based API path. Public visibility alone does not change that script. Use the anonymous download above until the automatic public-download requirement in the SPEC is implemented. The Dockerfile requires prepared data in its build context; a bare `docker compose up --build` on an empty checkout cannot bootstrap it.
+
+If you already have the pinned archive, skip the download and prepare it from `web/` with:
 
 ```sh
 npm run setup -- --file /absolute/path/to/aqua-trend-data-v2.tar.gz
@@ -95,7 +103,7 @@ Compose maps `host.docker.internal` to Docker's host gateway, including on Linux
 
 ## Update, move, and stop
 
-After changing code, rebuild. If `web/data.lock.json` changed, run host setup again first:
+After changing code, rebuild. If `web/data.lock.json` changed, repeat the public download and `setup --file` preparation using the new lockfile first:
 
 ```sh
 docker compose up --build -d
@@ -110,7 +118,7 @@ docker build -t YOUR_REGISTRY/aqua-trend:YOUR_TAG .
 docker push YOUR_REGISTRY/aqua-trend:YOUR_TAG
 ```
 
-The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Publishing the image also publishes its public dataset, so use a private registry if the dataset must remain private. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep a previous image tag for rollback.
+The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Configure the image as publicly readable when publishing the public distribution; pushing it still requires registry write permission. `YOUR_REGISTRY` and `YOUR_TAG` are placeholders, and no published registry image is established by these examples. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep the previous image digest for rollback.
 
 For a local production run without Docker, run `npm run build` and `npm start` from `web`. The postbuild script prepares `.next/standalone` with public and Next.js static assets; `npm start` starts that packaged server. Set `HOSTNAME=0.0.0.0 PORT=8080 SELECTOR_BACKEND=keyword` to match the container's network and selector settings.
 
