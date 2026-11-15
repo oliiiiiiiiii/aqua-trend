@@ -116,6 +116,8 @@ async function openaiProbabilities(event: string): Promise<Map<CategoryId, numbe
   const base = (env("SELECTOR_OPENAI_BASE_URL") ?? "https://api.openai.com/v1").replace(/\/+$/, "");
   const model = env("SELECTOR_OPENAI_MODEL");
   if (!model) throw new Error("SELECTOR_OPENAI_MODEL not set");
+  // 選填：思考量（OpenAI 相容的 reasoning_effort，例如 Gemini 3.5 Flash 用 minimal 才能在 5 秒內回應）。
+  const reasoningEffort = env("SELECTOR_OPENAI_REASONING_EFFORT");
   const system = [
     "You help students investigate Earth events with NASA monthly, sub-basin-averaged data.",
     "For each category, give the probability (0 to 1) that the described event plausibly leaves a visible monthly anomaly in it.",
@@ -130,6 +132,7 @@ async function openaiProbabilities(event: string): Promise<Map<CategoryId, numbe
     model,
     temperature: 0,
     response_format: { type: "json_object" },
+    ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}),
     messages: [
       { role: "system", content: system },
       { role: "user", content: STATE(event) },

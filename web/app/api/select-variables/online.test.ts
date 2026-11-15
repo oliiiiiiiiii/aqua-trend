@@ -33,6 +33,7 @@ describe("online selector adapters", () => {
       const body = JSON.parse(String(init?.body));
       assert.equal(body.model, "test-model");
       assert.deepEqual(body.response_format, { type: "json_object" });
+      assert.equal("reasoning_effort" in body, false);
       assert.equal(body.messages[1].role, "user");
       assert.ok(body.messages[1].content.endsWith("2021 drought"));
       assert.match(body.messages[0].content, /annual SO2 point-source emissions are not evidence for monthly/);
@@ -149,7 +150,7 @@ describe("online selector adapters", () => {
     beforeEach(() => {
       process.env.SELECTOR_AUTH = "google-adc";
       process.env.SELECTOR_OPENAI_BASE_URL = "https://aiplatform.googleapis.com/v1/projects/p/locations/global/endpoints/openapi";
-      process.env.SELECTOR_OPENAI_MODEL = "google/gemini-2.5-flash";
+      process.env.SELECTOR_OPENAI_MODEL = "google/gemini-3.5-flash";
     });
 
     it("sends the ADC access token to the Vertex AI OpenAI-compatible endpoint and ignores SELECTOR_API_KEY", async () => {
@@ -159,11 +160,21 @@ describe("online selector adapters", () => {
       globalThis.fetch = async (url, init) => {
         assert.equal(url, "https://aiplatform.googleapis.com/v1/projects/p/locations/global/endpoints/openapi/chat/completions");
         assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer ya29.adc-token");
-        assert.equal(JSON.parse(String(init?.body)).model, "google/gemini-2.5-flash");
+        assert.equal(JSON.parse(String(init?.body)).model, "google/gemini-3.5-flash");
         return Response.json(openaiReply(JSON.stringify(probabilities())));
       };
       assert.deepEqual(Object.fromEntries(await onlineProbabilities("openai", "2022 Pakistan floods")), probabilities());
       assert.equal(tokenCalls, 1);
+    });
+
+    it("sends SELECTOR_OPENAI_REASONING_EFFORT as reasoning_effort", async () => {
+      process.env.SELECTOR_OPENAI_REASONING_EFFORT = " minimal ";
+      mock.method(googleTokenSource, "get", async () => "ya29.adc-token");
+      globalThis.fetch = async (_url, init) => {
+        assert.equal(JSON.parse(String(init?.body)).reasoning_effort, "minimal");
+        return Response.json(openaiReply(JSON.stringify(probabilities())));
+      };
+      assert.equal((await onlineProbabilities("openai", "drought")).size, ALL_CATEGORIES.length);
     });
 
     it("fails without fetching when ADC cannot provide a token", async () => {
