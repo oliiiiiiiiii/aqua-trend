@@ -2,8 +2,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  DEFAULT_WINDOW, clampWindow, convertWindow, dailySpan, decodeWindow, encodeWindow, eventDays, monthView,
-  sameWindow, windowFromPad, windowLabel, windowMonths,
+  DEFAULT_WINDOW, clampWindow, convertWindow, dailySpan, decodeWindow, encodeWindow, eventDays, isDailyWindow, monthView,
+  sameWindow, windowFromPad, windowLabel, windowMonths, workbenchView,
 } from "./window";
 
 test("URL round trip: 8m, 3y, 2w, all", () => {
@@ -17,7 +17,7 @@ test("decode clamps out-of-range numbers and rejects junk", () => {
   assert.deepEqual(decodeWindow("40m"), { unit: "month", n: 12 });
   assert.deepEqual(decodeWindow("9w"), { unit: "week", n: 5 });
   assert.deepEqual(decodeWindow("0y"), { unit: "year", n: 1 });
-  for (const s of [null, undefined, "", "m", "8", "8d", "-2m", "1.5m", "8 m", "alll", "1234m"]) assert.equal(decodeWindow(s as string), null, String(s));
+  for (const s of [null, undefined, "", "m", "8", "8h", "-2m", "1.5m", "8 m", "alll", "1234m"]) assert.equal(decodeWindow(s as string), null, String(s));
 });
 
 test("encode clamps and rounds", () => {
@@ -74,10 +74,40 @@ test("daily span of a weeks window, leap years included", () => {
   assert.equal(dailySpan({ start: "2021-02", end: "2021-05" }, 9).days, 120 + 70);
 });
 
-
 test("daily span and highlighted event band retain exact days", () => {
   const event = { start: "2021-02-15", end: "2021-05-20" };
   assert.deepEqual(eventDays(event), event);
   assert.deepEqual(dailySpan(event, 1), { start: "2021-02-08", end: "2021-05-27", days: 109 });
   assert.deepEqual(dailySpan({ start: "2020-02-29", end: "2020-02-29" }, 1), { start: "2020-02-22", end: "2020-03-07", days: 15 });
+});
+
+test("a days window: URL form, limits, reach, label", () => {
+  assert.deepEqual(decodeWindow("3d"), { unit: "day", n: 3 });
+  assert.deepEqual(decodeWindow("40d"), { unit: "day", n: 14 });
+  assert.equal(encodeWindow({ unit: "day", n: 7 }), "7d");
+  assert.equal(windowMonths({ unit: "day", n: 14 }), 1);
+  assert.equal(windowLabel({ unit: "day", n: 1 }), "± 1 day");
+  assert.equal(windowLabel({ unit: "day", n: 10 }), "± 10 days");
+  assert.deepEqual(convertWindow({ unit: "week", n: 1 }, "day"), { unit: "day", n: 7 });
+  assert.deepEqual(convertWindow({ unit: "day", n: 14 }, "week"), { unit: "week", n: 2 });
+  assert.ok(isDailyWindow({ unit: "day", n: 3 }) && isDailyWindow({ unit: "week", n: 2 }));
+  assert.ok(!isDailyWindow({ unit: "month", n: 3 }) && !isDailyWindow("all"));
+});
+
+test("the daily span is built around the given range (the selection), in days or weeks", () => {
+  assert.deepEqual(dailySpan({ start: "2021-03", end: "2021-03" }, 3, "day"), { start: "2021-02-26", end: "2021-04-03", days: 37 });
+  assert.deepEqual(dailySpan({ start: "2021-03", end: "2021-03" }, 99, "day"), { start: "2021-02-15", end: "2021-04-14", days: 59 });
+  // a selection three months before a Feb–May 2021 event: the span is around the selection, not the event
+  assert.deepEqual(dailySpan({ start: "2020-11", end: "2020-11" }, 1, "week"), { start: "2020-10-25", end: "2020-12-07", days: 44 });
+});
+
+test("a days or weeks window keeps a selection made away from the event; months and years do not move", () => {
+  const event = { s: 24253, e: 24256 };       // Feb–May 2021
+  const far = { s: 24240, e: 24241 };         // Jan–Feb 2020
+  assert.deepEqual(workbenchView({ unit: "month", n: 6 }, event, far), monthView({ unit: "month", n: 6 }, event));
+  assert.deepEqual(workbenchView("all", event, far, { s: 24000, e: 24300 }), { s: 24000, e: 24300 });
+  assert.deepEqual(workbenchView({ unit: "week", n: 2 }, event, far), { s: 24239, e: 24257 });
+  assert.deepEqual(workbenchView({ unit: "day", n: 5 }, event, far), { s: 24239, e: 24257 });
+  // the selection on the event: exactly the old weeks view
+  assert.deepEqual(workbenchView({ unit: "week", n: 5 }, event, event), monthView({ unit: "week", n: 5 }, event));
 });

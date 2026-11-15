@@ -2,8 +2,7 @@
 // numbers and the details table, all as strings. Mirrors StatsPanel: verdict first, method last.
 import type { LabStats } from "@/lib/detective/lab";
 import { num, pValue } from "../../format";
-import { COPY } from "../copy";
-import { slopeScale } from "./tests";
+import { labCopy, slopeFor, type LabStep } from "./step";
 
 type GpSpan = { x0: number; x1: number; sign: 1 | -1 };
 
@@ -33,6 +32,8 @@ export interface ResultContext {
   monthLabel: (i: number) => string;
   /** "Mar – Jun 2002" for a span of indices into d.months (default: "Mar 2002 – Jun 2002") */
   monthSpan?: (a: number, b: number) => string;
+  /** the step of the tested series (default months): words and slope units follow it */
+  step?: LabStep;
 }
 
 const ALPHA = 0.05;
@@ -49,11 +50,11 @@ const pct = (x: number) => Math.round(x * 100);
 const rText = (r: number | null) => (r == null ? "—" : num(r, 2, true));
 
 export function resultView(s: LabStats, ctx: ResultContext): ResultView {
-  const L = COPY.lab, C = L.cell, R = L.row, V = L.verdict, S = L.sub, RV = L.rowValue, M = L.method;
+  const L = labCopy(ctx.step), C = L.cell, R = L.row, V = L.verdict, S = L.sub, RV = L.rowValue, M = L.method;
   const u = ctx.unit;
   const val = (x: number) => `${num(x, 2, true)} ${u}`;
   const ci = (c: [number, number], k = 1) => S.ci(num(c[0] * k, 2, true), num(c[1] * k, 2, true));
-  const sc = slopeScale(ctx.months);
+  const sc = slopeFor(ctx.step ?? "month", ctx.months);
   const per = sc.per === "decade" ? L.perDecade(u) : L.perYear(u);
   const slope = (x: number) => `${num(x * sc.k, 2, true)} ${per}`;
   const n = (k: number): DetailRow => ({ label: R.n, value: RV.months(k) });

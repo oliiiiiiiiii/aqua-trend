@@ -3,7 +3,7 @@
 // Statistics live in lib/detective/lab.ts.
 import { LAB_GROUPS, LAB_MIN_N, holm, labSample, primaryP, restSample, type LabBand, type LabOutcome, type LabSegment } from "@/lib/detective/lab";
 import { TEST_IDS, type TestId } from "@/lib/detective/url";
-import { COPY } from "../copy";
+import { labCopy, slopeFor, type LabStep } from "./step";
 
 export type { TestId };
 /** LAB_GROUPS in order: trend · mean and distribution · persistence and extremes · cycles and memory · machine learning */
@@ -61,7 +61,8 @@ function trainingRows(v: readonly (number | null)[], start: number): number {
 }
 
 /** Which tests the residual months [start, end] (indices into d.months) can support, with the reason when not. */
-export function availability(residual: readonly (number | null)[], start: number, end: number): Record<TestId, Availability> {
+export function availability(residual: readonly (number | null)[], start: number, end: number, step: LabStep = "month"): Record<TestId, Availability> {
+  const COPY = { lab: labCopy(step) };
   const n = labSample(residual, start, end).n;
   const rest = restSample(residual, start, end).n;
   const out = {} as Record<TestId, Availability>;
@@ -72,6 +73,8 @@ export function availability(residual: readonly (number | null)[], start: number
     else out[t] = { ok: true, need, shortInRange: false, reason: null };
   }
   if (out.forecast.ok && trainingRows(residual, start) < FORECAST_TRAIN) out.forecast = { ok: false, need: LAB_MIN_N.forecast, shortInRange: false, reason: COPY.lab.ml.needsTraining };
+  // calendar months only exist in a monthly series
+  if (step !== "month") out.monthly = { ok: false, need: LAB_MIN_N.monthly, shortInRange: false, reason: COPY.lab.monthlyOnly };
   return out;
 }
 
@@ -84,7 +87,7 @@ export function pickInGroup(g: TestGroup, remembered: TestId | null | undefined,
 
 /** Slopes are reported per decade for ranges of ten years or more, else per year. `k` converts per-month values. */
 export function slopeScale(months: number): { k: number; per: "decade" | "year" } {
-  return months >= 120 ? { k: 120, per: "decade" } : { k: 12, per: "year" };
+  return slopeFor("month", months);
 }
 
 /** Colour of a shaded span: the variable's low / high anomaly colours, or neutral focus / ink. */
@@ -103,7 +106,7 @@ const FILL: Record<LabBand["tone"], BandFill> = { cool: "low", warm: "high", foc
 /** Band legend wording per tool (the lab's own band labels are Chinese: they are replaced here). */
 function bandView(o: Extract<LabOutcome, { kind: "ok" }>): { bands: OverlayBand[]; legend: OverlayLegend[] } {
   const raw = o.bands ?? [];
-  const L = COPY.lab.band;
+  const L = labCopy("month").band;
   const tool = o.stats.tool;
   let bands: OverlayBand[];
   if (tool === "discord") bands = raw.map((b) => ({ x0: b.x0, x1: b.x1, fill: b.label === "罕見" ? ("ink" as const) : ("focus" as const) }));

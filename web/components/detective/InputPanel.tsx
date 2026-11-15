@@ -1,5 +1,6 @@
 "use client";
 // Empty globe anchors share the layout-owned canvas; only expanded variables cover the disc.
+import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type { TimeRange } from "@/lib/detective/contracts";
@@ -76,6 +77,9 @@ export function InputPanel(p: InputPanelProps) {
         </section>
         <div className="border-t border-stage-line pt-8 lg:pt-10">
           <AnalyseButton picker={p.picker} onBlocked={() => setHighlighted(missing)} className="w-full" />
+          <Link href="/batch" className="mt-3 flex min-h-11 items-center justify-center rounded-ctl text-sm text-on-stage-2 underline underline-offset-4 hover:text-on-stage focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+            {COPY.batchLink}
+          </Link>
         </div>
       </div>
     </div>

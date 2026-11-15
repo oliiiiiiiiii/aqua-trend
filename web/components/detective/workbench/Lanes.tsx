@@ -20,7 +20,8 @@ import StatsPanel, { StatsExtras, StatsMetrics } from "./StatsPanel";
 import type { Span } from "./model";
 import type { LaneModel, LaneReady } from "./types";
 import TestsPanel, { type LabControl } from "./lab/TestsPanel";
-import { useLabAnalysis } from "./lab/useLabRun";
+import { useLabAnalysis, type LabSource } from "./lab/useLabRun";
+import { monthAxis, type LabAxis } from "./lab/step";
 import { BandLegend } from "./lab/overlay";
 import type { LabOverlay } from "./lab/tests";
 
@@ -48,10 +49,15 @@ export interface ExpandedProps {
   /** Tests state shared by every lane; no Tests table without it */
   lab?: LabControl;
   /**
-   * Replaces the chart (the daily view of a weeks window). Called with the monthly chart, which it shows as its
-   * fallback; the chart cell then sizes to its content instead of matching the ball's height.
+   * Replaces the chart (the daily view of a days or weeks window). Called with the monthly chart, which it shows as
+   * its fallback, and what the open test draws; the chart cell then sizes to its content.
    */
-  renderChart?: (monthly: ReactNode) => ReactNode;
+  renderChart?: (monthly: ReactNode, overlay: LabOverlay | null) => ReactNode;
+  /**
+   * Days and weeks: the Tests area runs on this series and selection instead of the months, and `stats` replaces the
+   * statistics column. Absent (or `source` null while days load) = the monthly lane.
+   */
+  fine?: { source: LabSource | null; sel: Span; axis: LabAxis; stats: ReactNode } | null;
   /** baseline exclusion control, shown in "Baseline and method" */
   baselineControl?: ReactNode;
 }
@@ -98,7 +104,8 @@ export function ExpandedLane(p: ExpandedProps) {
   const moreId = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const closeMore = () => setMore(false);
-  const analysis = useLabAnalysis(r.kind === "ready" ? r : null, shared.sel, p.lab?.test ?? "mean", p.lab?.whole ?? false);
+  const fine = p.fine ?? null;
+  const analysis = useLabAnalysis(fine ? fine.source : r.kind === "ready" ? r : null, fine ? fine.sel : shared.sel, p.lab?.test ?? "mean", p.lab?.whole ?? false);
   const overlay = analysis?.run?.overlay ?? null; // bands show on every layer; LaneChart keeps fit lines for Anomaly
   const L = COPY.lanes;
 
@@ -175,19 +182,23 @@ export function ExpandedLane(p: ExpandedProps) {
             {product}
           </div>
           <div className="order-2 min-w-0">
-            {p.renderChart ? p.renderChart(monthly) : monthly}
+            {p.renderChart ? p.renderChart(monthly, overlay) : monthly}
             {!p.renderChart && <Legend layer={layer} lane={lane} overlay={overlay} />}
           </div>
         </div>
 
         {p.lab && (
           <div className="order-5 min-w-0 lg:col-span-3 lg:row-start-2 lg:mt-1">
-            <TestsPanel lab={p.lab} analysis={analysis} months={r.d.months} unit={r.meta.unit} polarity={lane.polarity}
+            <TestsPanel lab={p.lab} analysis={analysis} axis={fine ? fine.axis : monthAxis(r.d.months)} base={fine ? 0 : r.base} unit={r.meta.unit} polarity={lane.polarity}
               onShowAnomaly={layer !== "anomaly" && !p.renderChart ? () => setLayer("anomaly") : undefined} />
           </div>
         )}
 
-        {wide ? (
+        {fine ? (
+          <aside aria-label={COPY.stats.heading} className="order-3 min-w-0 border-t border-line pt-3 lg:col-start-3 lg:row-start-1 lg:border-t-0 lg:pt-0">
+            {fine.stats}
+          </aside>
+        ) : wide ? (
           <aside aria-label={COPY.stats.heading} className="relative min-w-0 lg:col-start-3 lg:row-start-1 lg:self-stretch">
             {/* in-flow, invisible copy of the metrics: gives the closed row its height; the curtain is absolutely sized to it */}
             <div aria-hidden="true" inert className="invisible w-full pl-10">

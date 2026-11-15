@@ -4,19 +4,20 @@
 // /api/daily-series route (requestDailySeries validates each piece). Pieces are cached per session, so Retry and
 // Resume continue where loading stopped and a revisit is instant.
 //
-// After 400 ms the automatic part loads by itself (plan.autoRange): the whole span up to 62 days, else the event's own
-// days when they are ≤ 31; the rest waits for start() ("Load N more days").
+// After 400 ms the automatic part loads by itself (plan.autoRange): the whole span up to 62 days, else the focus days
+// (the selection's own days) when they are ≤ 31; the rest waits for start() ("Load N more days").
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supportsDaily, type DailySeries } from "@/lib/detective/daily";
 import { DailyLoadError, completedDailyRange, requestDailySeries } from "@/lib/detective/daily-client";
 import { AUTO_DELAY_MS, autoRange, daysOf, estimateSeconds, needsConfirm, planPieces, type DayRange } from "./plan";
+import { pieceKey, pieces, remember } from "./pieces";
 
 export type DailyPhase =
   | "unsupported" // the layer has no daily product
   | "empty"       // no finished UTC day in the range
   | "idle"        // waiting for start() (long span, nothing loads by itself)
   | "waiting"     // debounce running before the automatic part loads
-  | "partial"     // the automatic part (the event's days) is loaded; the rest waits for start()
+  | "partial"     // the automatic part (the selection's days) is loaded; the rest waits for start()
   | "loading"
   | "stopped"     // stop() during loading; start() resumes
   | "error"       // a piece failed; retry() resumes
@@ -47,25 +48,15 @@ export interface DailyState {
   retry: () => void;
 }
 
-/* session cache of finished pieces, bounded */
-const pieces = new Map<string, DailySeries>();
-const MAX_PIECES = 800;
-function remember(key: string, s: DailySeries) {
-  pieces.delete(key);
-  pieces.set(key, s);
-  while (pieces.size > MAX_PIECES) pieces.delete(pieces.keys().next().value!);
-}
-const pieceKey = (region: string, layer: string, r: DayRange) => `${region}|${layer}|${r.start}|${r.end}`;
-
-export function useDailyRange({ region, layer, start, end, event = null, enabled = true }: {
+export function useDailyRange({ region, layer, start, end, focus = null, enabled = true }: {
   region: string; layer: string; start: string; end: string;
-  /** the event's own days; for long spans only these load without a click */
-  event?: DayRange | null;
+  /** the selection's own days; for long spans only these load without a click */
+  focus?: DayRange | null;
   enabled?: boolean;
 }): DailyState {
   const supported = supportsDaily(layer);
   const range = useMemo(() => (supported ? completedDailyRange({ start, end }) : null), [supported, start, end]);
-  const evStart = event?.start ?? "", evEnd = event?.end ?? "";
+  const evStart = focus?.start ?? "", evEnd = focus?.end ?? "";
   const auto = useMemo(() => (range ? autoRange(range, evStart ? { start: evStart, end: evEnd } : null) : null), [range, evStart, evEnd]);
   const parts = useMemo(() => (range ? planPieces(range, auto) : []), [range, auto]);
   const dates = useMemo(() => (range ? daysOf(range) : []), [range]);

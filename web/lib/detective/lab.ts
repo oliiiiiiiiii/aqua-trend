@@ -594,8 +594,12 @@ export function baselineShare(d: Decomposition, start: number, end: number): num
   return total ? inside / total : 0;
 }
 
-/** Run one tool on the residuals of `d` over months [start, end] (inclusive indices). */
-export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end: number): LabOutcome {
+/**
+ * Run one tool on the residuals of `d` over months [start, end] (inclusive indices). The tools work in index steps,
+ * so a day or week series (lib/detective/fine.ts) runs the same way; `opts.extremeRate` replaces the baseline's share
+ * of |z| > 2 when the baseline is not part of `d` (earlier years).
+ */
+export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end: number, opts: { extremeRate?: number } = {}): LabOutcome {
   const s = labSample(d.residual, start, end);
   const need = LAB_MIN_N[tool];
   const short = (n: number, note?: string): LabOutcome => ({ kind: "insufficient", tool, n, need, what: WHAT[tool], note });
@@ -649,7 +653,7 @@ export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end
     case "spectrum": return { kind: "ok", stats: spectrumTest(s), segments: [] };
     case "monthly": return { kind: "ok", stats: monthlyTest(s, d.months), segments: [] };
     case "cusum": return { kind: "ok", stats: cusumTest(s), segments: [] };
-    case "extremes": return { kind: "ok", stats: extremesTest(labSample(d.z, start, end), baselineExtremeRate(d)), segments: [] };
+    case "extremes": return { kind: "ok", stats: extremesTest(labSample(d.z, start, end), opts.extremeRate ?? baselineExtremeRate(d)), segments: [] };
     case "runs": {
       const all = labSample(d.residual, 0, d.months.length - 1);
       const r = runsTest(s, lagCorrelation(all.x, all.y, 1));

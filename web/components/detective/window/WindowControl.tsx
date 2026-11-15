@@ -1,8 +1,9 @@
 "use client";
-// View window: a unit choice (weeks · months · years), a native range slider for ± n, the value as text, and an
+// View window: a unit choice (days · weeks · months · years), a native range slider for ± n, the value as text, and an
 // "All" shortcut for the whole record. It only changes how much is SHOWN; the baseline exclusion is BaselinePadControl.
 //
-// Weeks means the daily view (see daily/DailyView): the monthly chart then covers windowMonths(value) months.
+// Days and weeks mean the daily view around the selection (see daily/DailyView): the monthly chart then covers
+// windowMonths(value) months.
 import { useId, useState } from "react";
 import { WINDOW_LIMITS, WINDOW_UNITS, convertWindow, windowLabel, type ViewWindow, type WindowUnit } from "@/lib/detective/window";
 import { COPY } from "../copy/window";

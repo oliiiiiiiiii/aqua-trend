@@ -1,14 +1,14 @@
 "use client";
 // Step 2 + Step 3 of /detective: run the analysis for every chosen category and show the workbench
 // (docs/ux-refresh.md): stage header, sticky selection + window toolbar, the variable dropdown (every variable's
-// sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (daily
-// in a weeks window) and the statistics.
+// sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (the
+// daily anomaly around the selection in a days or weeks window) and the statistics.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Catalog } from "@/lib/types";
 import type { CategoryId, DetectiveQuery, LayerId, MonthlySeries, RegionId, TrendStats } from "@/lib/detective/contracts";
 import { DEFAULT_PAD, decodeState, formatRange, windowOf, ymIndex } from "@/lib/detective/url";
-import { monthView, type ViewWindow } from "@/lib/detective/window";
+import { isDailyWindow, windowLabel, workbenchView, type ViewWindow } from "@/lib/detective/window";
 import { categoryAvailability, loadSeries, type VariableCatalog } from "@/lib/detective/series";
 import { baselineInfo, intervalDetail, type IntervalDetail } from "@/lib/detective/intervalDetail";
 import { anomalyPolarity } from "@/lib/detective/polarity";
@@ -30,6 +30,11 @@ import { itemsFromLanes } from "./picker/fromLanes";
 import WindowControl from "./window/WindowControl";
 import BaselinePadControl from "./window/BaselinePadControl";
 import DailyView from "./daily/DailyView";
+import { FineStats } from "./daily/FineStats";
+import { useFineModel, type BaselineKind } from "./daily/useFineModel";
+import { COPY as COPY_DAILY } from "./copy/daily";
+import { pointAxis } from "./workbench/lab/step";
+import type { LabOverlay } from "./workbench/lab/tests";
 
 const KEY_COMMIT_MS = 450;
 
@@ -124,12 +129,13 @@ export default function AnalysisView({
     for (const c of cats) { const x = results[c]; if (x.kind === "ready") r = r ? { s: Math.min(r.s, x.record.s), e: Math.max(r.e, x.record.e) } : x.record; }
     return r;
   }, [cats, results]);
-  const view = useMemo(() => monthView(win, event, recordUnion), [win, event, recordUnion]);
 
   /* ---------------- the shared selection (URL `sel`, else the event) */
   const urlSel = useMemo(() => decodeState(params.toString()).selection ?? null, [params]);
   const [selState, setSelState] = useState<{ key: string; span: Span }>(() => ({ key: evKey, span: urlSel ? toSpan(urlSel) : event }));
   const selRaw = selState.key === evKey ? selState.span : urlSel ? toSpan(urlSel) : event;
+  // months and years show the event ± n; days and weeks (the daily chart) also reach around the selection, so it is kept
+  const view = useMemo(() => workbenchView(win, event, { s: selRaw.s, e: selRaw.e }, recordUnion), [win, event, selRaw.s, selRaw.e, recordUnion]);
   const sel = clampSpan(selRaw, view, event);
   const [sortSpan, setSortSpan] = useState<Span | null>(null);
 
@@ -137,6 +143,8 @@ export default function AnalysisView({
   const urlWith = useCallback((fn: (q: Partial<DetectiveQuery>) => Partial<DetectiveQuery>, selection?: Span | null) => {
     writeUrl((s) => ({
       query: fn(s.query), selection: selection === undefined ? s.selection : selection ? toRange(selection) : undefined,
+      // a new month selection also resets the daily view's own selection of days
+      daySelection: selection === undefined ? s.daySelection : undefined,
       test: s.test, window: winRef.current,
     }));
   }, []);
@@ -149,7 +157,7 @@ export default function AnalysisView({
     test: labTest, whole: labWhole, onWhole: setLabWhole,
     onTest: (t) => {
       setLabTest(t);
-      writeUrl((s) => ({ query: s.query, selection: s.selection, test: t, window: winRef.current }));
+      writeUrl((s) => ({ query: s.query, selection: s.selection, daySelection: s.daySelection, test: t, window: winRef.current }));
     },
   };
 
@@ -259,7 +267,7 @@ export default function AnalysisView({
   const setWin = (w: ViewWindow) => {
     winRef.current = w;
     setWinState(w);
-    const next = clampSpan(selRaw, monthView(w, event, recordUnion), event);
+    const next = clampSpan(selRaw, workbenchView(w, event, selRaw, recordUnion), event);
     setSelState({ key: evKey, span: next });
     urlWith((x) => x, next);
   };
@@ -288,16 +296,40 @@ export default function AnalysisView({
   const allNoData = cats.every((c) => results[c].kind === "nodata");
   const relation = selectionLabel(sel, event).relation;
   const lane = lanes.find((l) => l.c === active) ?? lanes[0];
-  const weeks = win !== "all" && win.unit === "week" ? win.n : null;
+  // a days or weeks window: the daily (or weekly) anomaly around the selection replaces the monthly chart, and the
+  // statistics and the Tests area work on its own selection of days (URL dsel)
+  const daily = isDailyWindow(win) ? win : null;
   const ready = lane?.res.kind === "ready" ? lane.res : null;
-  const renderChart = weeks != null && ready
-    ? (monthly: React.ReactNode) => (
+  const selRange = toRange(sel);
+  const daySel = useMemo(() => decodeState(params.toString()).daySelection ?? null, [params]);
+  const [fineBaseline, setFineBaseline] = useState<{ kind: BaselineKind; years: number }>({ kind: "window", years: 10 });
+  const fine = useFineModel({
+    region: q.region, layer: ready?.meta.layer ?? "", d: ready?.d ?? null, unit: ready?.meta.unit ?? "",
+    monthSel: selRange, reach: daily ?? { unit: "day", n: 1 }, daySel, baseline: fineBaseline, enabled: !!(daily && ready),
+  });
+  const setDaySel = (r: { start: string; end: string } | null) =>
+    writeUrl((s) => ({ query: s.query, selection: s.selection, test: s.test, window: winRef.current, daySelection: r ?? undefined }));
+  const fineOn = !!(daily && ready && fine.st.phase !== "unsupported");
+  const renderChart = daily && ready
+    ? (monthly: React.ReactNode, overlay: LabOverlay | null) => (
       <DailyView
-        region={q.region} layer={ready.meta.layer} name={ready.meta.name} product={ready.meta.product} unit={ready.meta.unit}
-        event={q.exactTime ?? q.time} weeks={weeks} d={ready.d} fallback={monthly}
+        m={fine} name={ready.meta.name} product={ready.meta.product} event={q.exactTime ?? q.time} polarity={lane.polarity}
+        around={COPY_DAILY.around(windowLabel(daily), formatRange(selRange))}
+        overlay={overlay} fallback={monthly} onSelect={setDaySel}
+        onShift={(months) => {
+          // stay inside the monthly record: a day without a normal has no anomaly
+          const next = { s: sel.s + months, e: sel.e + months };
+          if (!recordUnion || (next.s >= recordUnion.s && next.e <= recordUnion.e)) commitSel(next);
+        }}
       />
     )
     : undefined;
+  const fineLane = fineOn && ready ? {
+    source: fine.lab,
+    sel: fine.lab?.sel ?? { s: 0, e: 0 },
+    axis: fine.lab?.axis ?? pointAxis(fine.step, fine.series.start, fine.series.end),
+    stats: <FineStats m={fine} unit={fine.st.unit ?? ready.meta.unit} polarity={lane.polarity} years={fineBaseline.years} onBaseline={setFineBaseline} />,
+  } : null;
   const T = COPY.toolbar;
 
   return (
@@ -335,6 +367,7 @@ export default function AnalysisView({
                 onLayer={(l) => setLayer(lane.c, l)} onRetry={() => setAttempt((a) => a + 1)}
                 onKeyDown={onChartKey} onCsv={downloadCsv} lab={lab}
                 renderChart={renderChart}
+                fine={fineLane}
                 baselineControl={<BaselinePadControl value={pad} onChange={setPad} />}
               />
             )}

@@ -14,8 +14,11 @@
 // Extension beyond the contract (see encodeState / decodeState):
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
 //   sel  the workbench selection "YYYY-MM..YYYY-MM"; left out when it equals the event period (t)
+//   dsel the daily view's own selection of days "YYYY-MM-DD..YYYY-MM-DD" (Days and Weeks windows); absent = the days of
+//        `sel` (or of the event)
 //   test the method of the expanded row of the workbench's Tests table (one of TEST_IDS); absent = no row expanded
-//   win  the view window around the event ("2w", "8m", "3y", "all"; lib/detective/window.ts). Left out when it equals
+//   win  the view window ("3d", "2w", "8m", "3y", "all"; lib/detective/window.ts): months and years around the event,
+//        days and weeks (the daily chart) around the selection. Left out when it equals
 //        the window the URL implies without it: DEFAULT_WINDOW, or for older links that only carry `pad` (which used to
 //        set the view too) windowFromPad(pad), so those links still open on the same view.
 //
@@ -75,9 +78,15 @@ export const encodeRange = (r: TimeRange): string => `${r.start}..${r.end}`;
 
 /** Strict calendar validation, including leap days; never normalize an impossible date. */
 export const isDay = (s: string): boolean => dayNumber(s) !== null;
-export function parseDayRange(raw: string | null | undefined): TimeRange | null {
-  const [start, end, extra] = (raw ?? "").split("..");
-  return extra === undefined && isDay(start) && isDay(end ?? "") && start <= end ? { start, end } : null;
+/**
+ * "2021-03-04..2021-03-17" -> range; anything else -> null. A single day ("2021-03-04") is a one-day range (the daily
+ * view's `dsel`), except with `pair` (the event's exact days, `td`), where both ends must be written.
+ */
+export function parseDayRange(raw: string | null | undefined, pair = false): TimeRange | null {
+  if (!raw) return null;
+  const [a, b = pair ? "" : a, extra] = raw.trim().split("..");
+  if (extra !== undefined || !isDay(a) || !isDay(b) || b < a) return null;
+  return { start: a, end: b };
 }
 export const monthsOfDays = (r: TimeRange): TimeRange => ({ start: r.start.slice(0, 7), end: r.end.slice(0, 7) });
 
@@ -121,6 +130,8 @@ export interface DetectiveUrlState {
   test?: TestId;
   /** the view window (`win`) as written; absent when the URL has none (see impliedWindow) */
   window?: ViewWindow;
+  /** the daily view's selection of days (`dsel`); absent = the days of the month selection */
+  daySelection?: { start: string; end: string };
 }
 
 /** The view window a URL without `win` stands for: older links set the view with `pad`. */
@@ -139,7 +150,7 @@ export function decodeState(search: string): DetectiveUrlState {
 
   const t = parseRange(p.get("t"));
   if (t) q.time = t;
-  const td = exactDays(parseDayRange(p.get("td")), t ?? undefined);
+  const td = exactDays(parseDayRange(p.get("td"), true), t ?? undefined);
   if (td) q.exactTime = td;
 
   const r = p.get("r")?.trim() ?? "";
@@ -173,11 +184,14 @@ export function decodeState(search: string): DetectiveUrlState {
   if (isTestId(test)) out.test = test;
   const win = decodeWindow(p.get("win"));
   if (win) out.window = win;
+  const dsel = parseDayRange(p.get("dsel"));
+  if (dsel) out.daySelection = dsel;
   return out;
 }
 
 export function encodeState(s: {
   query: Partial<DetectiveQuery>; draft?: CategoryId[] | null; selection?: TimeRange | null; test?: TestId | null; window?: ViewWindow | null;
+  daySelection?: { start: string; end: string } | null;
 }): string {
   const q = s.query;
   const p = new URLSearchParams();
@@ -201,6 +215,7 @@ export function encodeState(s: {
   if (s.selection && parseRange(encodeRange(s.selection)) && !sameRange(s.selection, q.time)) p.set("sel", encodeRange(s.selection));
   if (s.test && isTestId(s.test)) p.set("test", s.test);
   if (s.window && !sameWindow(s.window, impliedWindow(q.padMonths))) p.set("win", encodeWindow(s.window));
+  if (s.daySelection && parseDayRange(`${s.daySelection.start}..${s.daySelection.end}`)) p.set("dsel", `${s.daySelection.start}..${s.daySelection.end}`);
   if (s.draft) p.set("c", cleanCategories(s.draft).join(","));
   // commas, colons and dots stay readable in shared links
   return p.toString().replace(/%2C/gi, ",").replace(/%3A/gi, ":");
