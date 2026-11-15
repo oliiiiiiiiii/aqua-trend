@@ -18,7 +18,7 @@ import {
   suggestTime, ymIndex, type DetectiveUrlState,
 } from "@/lib/detective/url";
 import {
-  categoryAvailability, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
+  categoryAvailability, loadCountryNames, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
 } from "@/lib/detective/series";
 import { RetryButton, StatusCard } from "@/components/ui/StatusCard";
 import { StartProgress } from "./StartProgress";
@@ -126,6 +126,8 @@ function InputStage({
   /* ---------------- E: typed locally, written to the URL after a pause */
   const urlEvent = q.event ?? "";
   const [eventText, setEventText] = useState(urlEvent);
+  // Chinese country names, for the basin suggestions from the event text (optional: English names work without it)
+  const [countryLoad] = useLoad(loadCountryNames);
   const synced = useRef(urlEvent);
   const currentEvent = useRef(urlEvent);
   const [vote, setVote] = useState<{ event: string; response: SelectResponse } | null>(null);
@@ -343,6 +345,7 @@ function InputStage({
         catalog={catalog}
         catalogError={catalogError}
         searchable={searchable}
+        countryNames={ready(countryLoad)}
         region={regionOk}
         regionNote={regionNote}
         onRegion={onRegion}

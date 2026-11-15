@@ -6,6 +6,7 @@ import type { Catalog, Region } from "@/lib/types";
 import type { TimeRange } from "@/lib/detective/contracts";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
+import { buildRegionHintIndex, regionHints } from "@/lib/detective/regionHints";
 import { formatRange, isDay, ymIndex } from "@/lib/detective/url";
 import { eventDays } from "@/lib/detective/window";
 import { COPY } from "./copy/input";
@@ -25,6 +26,8 @@ export interface InputPanelProps {
   catalog: Catalog | null;
   catalogError: string | null;
   searchable: Region[] | null;
+  /** ISO code -> Chinese country name, for basin suggestions from Chinese event text; null while loading or missing */
+  countryNames: ReadonlyMap<string, string> | null;
   region: Region | null;
   regionNote: ReactNode;
   onRegion: (r: Region) => void;
@@ -196,12 +199,18 @@ function DateField({ label, value, onCommit }: { label: string; value: string; o
 
 /* ------------------------------------------------------------------ Where */
 
-function RegionField({ catalog, catalogError, searchable, region, regionNote, onRegion }: InputPanelProps) {
+function RegionField({ event, catalog, catalogError, searchable, countryNames, region, regionNote, onRegion }: InputPanelProps) {
   const id = useId();
   const subCatalog = useMemo<Catalog | null>(
     () => (catalog && searchable ? { ...catalog, regions: searchable } : null),
     [catalog, searchable],
   );
+  // basins the event text names: a river ("Indus") or a country in English or Chinese ("Pakistan", "巴基斯坦")
+  const hintIndex = useMemo(() => (searchable ? buildRegionHintIndex(searchable) : null), [searchable]);
+  const hints = useMemo(
+    () => (hintIndex && searchable ? regionHints(event, hintIndex, searchable, countryNames) : []),
+    [event, hintIndex, searchable, countryNames],
+  ).filter((r) => r.id !== region?.id);
   const [searching, setSearching] = useState(false);
   return (
     <div role="group" aria-labelledby={`${id}-h`}>
@@ -219,7 +228,22 @@ function RegionField({ catalog, catalogError, searchable, region, regionNote, on
         )}
       </div>}
       {regionNote}
-
+      {hints.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-2" aria-label={COPY.where.placesInText}>
+          {hints.map((r) => (
+            <li key={r.id}>
+              <button
+                type="button"
+                onClick={() => { onRegion(r); setSearching(false); }}
+                className="rounded-full border border-stage-line px-3 py-1 text-left text-sm hover:border-link"
+              >
+                <span className="font-semibold text-link">{r.name}</span>{" "}
+                <span className="text-on-stage-2 tnum">{formatArea(r.areaKm2)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
