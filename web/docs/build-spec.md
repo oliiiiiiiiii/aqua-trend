@@ -1,6 +1,6 @@
-# Aqua Trend demo site — build spec
+# TerraTrend demo site — build spec
 
-Front-end-only demo for the NASA Space Apps 2026 entry "Aqua Trend" (challenge: *Be An Earth System Trend
+Front-end-only demo for the NASA Space Apps 2026 entry "TerraTrend" (challenge: *Be An Earth System Trend
 Detective!*). The product brief is `../README.md` (Traditional Chinese, long). This file is the working
 contract for everyone building the site. Read it fully before writing code.
 

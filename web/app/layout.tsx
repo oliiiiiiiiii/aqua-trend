@@ -32,9 +32,9 @@ const FONT_VARS = [barlowCondensed, barlow, archivo, inter, literata, publicSans
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const metadata: Metadata = {
-  title: { template: "%s | Aqua Trend", default: "Aqua Trend" },
+  title: { template: "%s | TerraTrend", default: "TerraTrend" },
   description:
-    "Name a known extreme event and a river basin; Aqua Trend removes the seasonal cycle and trend from NASA and NOAA monthly records and shows which variables were unusual before, during and after it. A NASA Space Apps 2026 entry.",
+    "Name a known extreme event and a river basin; TerraTrend removes the seasonal cycle and trend from NASA and NOAA monthly records and shows which variables were unusual before, during and after it. A NASA Space Apps 2026 entry.",
   icons: { icon: { url: `${BASE}/icon.svg`, type: "image/svg+xml" } },
 };
 
@@ -45,7 +45,7 @@ export const viewport: Viewport = {
 
 // Applied before first paint, so nothing flashes: the saved theme (else the OS light/dark preference), and the visual
 // look (?look=<id> wins and is saved, else the saved one, else atlas).
-const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["terrarium","strip","console","atlas"];try{t=localStorage.getItem("aqua-trend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("aqua-trend-look",q)}catch(e){}}else{l=localStorage.getItem("aqua-trend-look")}}catch(e){}if(L.indexOf(l)<0)l="atlas";d.setAttribute("data-look",l)})()`;
+const THEME_SCRIPT = `(function(){var d=document.documentElement,t=null,l=null,L=["terrarium","strip","console","atlas"];try{t=localStorage.getItem("terratrend-theme")}catch(e){}if(t!=="terrarium"&&t!=="night")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"night":"terrarium";d.setAttribute("data-theme",t);try{var q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){l=q;try{localStorage.setItem("terratrend-look",q)}catch(e){}}else{l=localStorage.getItem("terratrend-look")}}catch(e){}if(L.indexOf(l)<0)l="atlas";d.setAttribute("data-look",l)})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

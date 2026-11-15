@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =====================================================================
-   Aqua Trend design tokens. Two looks, switched with
+   TerraTrend design tokens. Two looks, switched with
    <html data-theme="terrarium | night"> (light | dark; follows the OS until the user picks). Components use the Tailwind
    names mapped below (bg-paper, text-ink-2, rounded-card …) and never raw hex.
    ===================================================================== */

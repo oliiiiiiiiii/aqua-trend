@@ -329,7 +329,7 @@ const RESULT_COLUMNS = [
  */
 export function batchResultsCsv(meta: { source: string; generated: string; note: string }, rows: BatchResultRow[]): string {
   const lines = [
-    `# Aqua Trend batch questions: ${meta.source.replace(/[\r\n]+/g, " ")}`,
+    `# TerraTrend batch questions: ${meta.source.replace(/[\r\n]+/g, " ")}`,
     `# generated: ${meta.generated}`,
     `# ${meta.note}`,
     RESULT_COLUMNS.join(","),

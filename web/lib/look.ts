@@ -13,7 +13,7 @@ export const LOOKS = [
 ] as const;
 export type LookId = (typeof LOOKS)[number]["id"];
 export const DEFAULT_LOOK: LookId = "atlas";
-export const LOOK_STORAGE_KEY = "aqua-trend-look";
+export const LOOK_STORAGE_KEY = "terratrend-look";
 
 function read(): LookId {
   const l = document.documentElement.dataset.look as LookId | undefined;

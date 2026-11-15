@@ -29,7 +29,7 @@ function fixture(url, allNull = false) {
 
 async function openPage(handler, { width = 1280, theme = "terrarium", failMonthly = false, period, tab } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 900 } });
-  await context.addInitScript((value) => localStorage.setItem("aqua-trend-theme", value), theme);
+  await context.addInitScript((value) => localStorage.setItem("terratrend-theme", value), theme);
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(String(error)));
@@ -62,7 +62,7 @@ try {
   assert.match(await chart.locator('[aria-live="polite"]').innerText(), /2024-02-29：尚未載入/);
   assert.ok(await chart.evaluate((element) => getComputedStyle(element).outlineStyle !== "none"));
   assert.equal(await partial.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
-  await partial.panel.screenshot({ path: "/tmp/aqua-daily-partial-mobile.png" });
+  await partial.panel.screenshot({ path: "/tmp/terratrend-daily-partial-mobile.png" });
   failSecond = false;
   await partial.panel.getByRole("button", { name: "重試每日資料" }).click();
   await partial.panel.getByText(/已取得的 29 天中/).waitFor();
@@ -103,7 +103,7 @@ try {
   await empty.panel.locator("summary").click();
   assert.equal(await empty.panel.locator("tbody tr").count(), 29);
   assert.equal(await empty.page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
-  await empty.panel.screenshot({ path: "/tmp/aqua-daily-empty-night-mobile.png" });
+  await empty.panel.screenshot({ path: "/tmp/terratrend-daily-empty-night-mobile.png" });
   assert.deepEqual(empty.errors, []);
   observed.push("All-null daily data shows no observations, never a zero line; dark mobile table displays all 29 days without overflow.");
   await empty.context.close();
@@ -126,7 +126,7 @@ try {
   assert.match(await stale.panel.innerText(), /Browser test fixture tair/);
   assert.equal(await stale.panel.getByRole("button", { name: "重試每日資料" }).count(), 0);
   assert.equal(staleRequests.filter((url) => new URL(url).searchParams.get("layer") === "sm_root").length, 1);
-  await stale.panel.screenshot({ path: "/tmp/aqua-daily-complete-desktop.png" });
+  await stale.panel.screenshot({ path: "/tmp/terratrend-daily-complete-desktop.png" });
   assert.deepEqual(stale.errors, []);
   observed.push("Switching tabs aborts the prior sequence; its late failure cannot replace the current product; complete desktop chart renders.");
   await stale.context.close();

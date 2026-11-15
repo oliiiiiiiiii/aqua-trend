@@ -112,7 +112,7 @@ def fetch(url, dest, tries=6):
     tmp = dest + ".part"
     for k in range(tries):
         try:
-            headers = {"User-Agent": "aqua-trend-pipeline/1.0"}
+            headers = {"User-Agent": "terratrend-pipeline/1.0"}
             if nasa_https(url):
                 headers["Authorization"] = "Bearer " + token()
             req = urllib.request.Request(url, headers=headers)

@@ -1,4 +1,4 @@
-# Aqua Trend 驗收規格
+# TerraTrend 驗收規格
 
 本文件是 [系統技術規格](earth-system-trend-detective-spec.md) 的完成判準。測試輸入與欄位以 [資料與 API 契約](earth-system-data-contracts.md) 為準。本文件列出未來實作必須通過的驗收，不宣稱程式或測試已完成。
 

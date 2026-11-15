@@ -52,7 +52,7 @@ const ctx = await browser.newContext({
 const page = await ctx.newPage();
 if (opt.theme) {
   await page.addInitScript((t) => {
-    try { localStorage.setItem("aqua-trend-theme", t); } catch {}
+    try { localStorage.setItem("terratrend-theme", t); } catch {}
     const set = () => { if (document.documentElement) document.documentElement.dataset.theme = t; };
     set(); document.addEventListener("DOMContentLoaded", set);
   }, opt.theme);

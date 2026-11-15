@@ -8,7 +8,7 @@ export const THEMES = [
 ] as const;
 export type ThemeId = (typeof THEMES)[number]["id"];
 export const DEFAULT_THEME: ThemeId = "terrarium";
-export const THEME_STORAGE_KEY = "aqua-trend-theme";
+export const THEME_STORAGE_KEY = "terratrend-theme";
 
 function read(): ThemeId {
   const t = document.documentElement.dataset.theme as ThemeId | undefined;

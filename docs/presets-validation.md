@@ -51,11 +51,11 @@ F 新增的 AOD、臭氧柱總量、大氣可降水量與植被火熱點偵測�
 重跑（repo 根目錄；需先完成資料 setup）：
 
 ```bash
-python3 -m venv /tmp/aqua-trend-presets
-/tmp/aqua-trend-presets/bin/python -m pip install numpy
-/tmp/aqua-trend-presets/bin/python -I tools/validate_presets.py
-/tmp/aqua-trend-presets/bin/python -I tools/validate_presets.py --markdown
-/tmp/aqua-trend-presets/bin/python -I tools/validate_presets.py --json /tmp/aqua-presets-python.json
+python3 -m venv /tmp/terratrend-presets
+/tmp/terratrend-presets/bin/python -m pip install numpy
+/tmp/terratrend-presets/bin/python -I tools/validate_presets.py
+/tmp/terratrend-presets/bin/python -I tools/validate_presets.py --markdown
+/tmp/terratrend-presets/bin/python -I tools/validate_presets.py --json /tmp/terratrend-presets-python.json
 ```
 
 以上三次預設驗證目前都會輸出 Taiwan `NO`、Pakistan／Australia `yes`，結束碼為 1；表格與 JSON 仍會完整產生。`(alt)` 是同類別的其他產品，只作參考；通過與否只看預設層。
@@ -141,7 +141,7 @@ python3 -m venv /tmp/aqua-trend-presets
 
 ## 與 A 的 TS 實作交叉驗證（data-v1）
 
-比對目前合併後的 `web/lib/detective/analysis.ts` 與 `presets.ts`，以 `npx tsx` 在 Node **24.2.0** 執行。同一批 `data-v1` series-2、目前三個預設事件、pad = 12，逐層呼叫 `decompose(series, event.time, 12)` 與 `intervalStats(d, event.time)`，獨立比對 Python `--json /tmp/aqua-v1-presets.json` 的輸出。Python 仍以結束碼 1 回報台灣未達事件門檻，29 組數值交叉核對全部通過。
+比對目前合併後的 `web/lib/detective/analysis.ts` 與 `presets.ts`，以 `npx tsx` 在 Node **24.2.0** 執行。同一批 `data-v1` series-2、目前三個預設事件、pad = 12，逐層呼叫 `decompose(series, event.time, 12)` 與 `intervalStats(d, event.time)`，獨立比對 Python `--json /tmp/terratrend-v1-presets.json` 的輸出。Python 仍以結束碼 1 回報台灣未達事件門檻，29 組數值交叉核對全部通過。
 
 差異 = |Python − TS| / |TS| × 100%；下表四捨五入到小數點後三位。29 組的最大 z 差異為 **7.736 × 10⁻¹²%**，最大殘差差異為 **7.723 × 10⁻¹²%**；29 組名次與有效月數均相同，滿足 < 1% 的核對要求。
 
@@ -182,8 +182,8 @@ python3 -m venv /tmp/aqua-trend-presets
 **A 的測試紀錄（data-v0 整合時）**：以 ES2022／CommonJS 編譯後，在 Node 24.2.0 執行 `analysis.test.ts`，22 個測試全部通過。這是先前的程式驗證紀錄；本次 `data-v1` 的數值驗證見上方 29 組比對。原編譯與執行指令（`web/`）：
 
 ```bash
-./node_modules/.bin/tsc --ignoreConfig --target ES2022 --module commonjs --skipLibCheck --esModuleInterop --types node --outDir /tmp/aqua-presets-tests lib/detective/analysis.test.ts lib/detective/analysis.ts lib/detective/contracts.ts lib/stats.ts
-node --test /tmp/aqua-presets-tests/detective/analysis.test.js
+./node_modules/.bin/tsc --ignoreConfig --target ES2022 --module commonjs --skipLibCheck --esModuleInterop --types node --outDir /tmp/terratrend-presets-tests lib/detective/analysis.test.ts lib/detective/analysis.ts lib/detective/contracts.ts lib/stats.ts
+node --test /tmp/terratrend-presets-tests/detective/analysis.test.js
 ```
 
 ## 給其他工作線的備註

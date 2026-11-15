@@ -80,7 +80,7 @@ export function toonMaterial(u: PropUniforms, opts: { vertexColors?: boolean; co
       "#include <begin_vertex>\ntransformed *= uPropScale;",
     );
   };
-  m.customProgramCacheKey = () => "aqua-prop";
+  m.customProgramCacheKey = () => "terratrend-prop";
   return m;
 }
 

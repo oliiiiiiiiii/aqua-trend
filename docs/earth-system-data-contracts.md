@@ -1,4 +1,4 @@
-# Aqua Trend 資料與 API 契約
+# TerraTrend 資料與 API 契約
 
 本文件是 [系統技術規格](earth-system-trend-detective-spec.md) 的介面參考，供資料、後端與前端實作共同使用。以下 JSON 為欄位示意，不是已計算的科學結果。
 

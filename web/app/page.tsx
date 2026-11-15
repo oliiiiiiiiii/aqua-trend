@@ -13,7 +13,7 @@ import { PRESET_EVENTS } from "@/lib/detective/presets";
 import { encodeQuery, formatRange } from "@/lib/detective/url";
 
 export const metadata: Metadata = {
-  title: { absolute: "Aqua Trend: Earth System Trend Detective" },
+  title: { absolute: "TerraTrend: Earth System Trend Detective" },
   description:
     "Name a known extreme event and a river basin. The Trend Detective removes each variable's seasonal cycle and trend from NASA and NOAA monthly records and shows which ones were unusual before, during and after it.",
 };

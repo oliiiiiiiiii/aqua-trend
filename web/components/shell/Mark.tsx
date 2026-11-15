@@ -1,4 +1,4 @@
-// The Aqua Trend mark: a water drop with land and an orbit ring. Uses theme tokens only.
+// The TerraTrend mark: a water drop with land and an orbit ring. Uses theme tokens only.
 export function Mark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" className={className}>

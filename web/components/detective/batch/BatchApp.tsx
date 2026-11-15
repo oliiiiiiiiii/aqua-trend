@@ -32,7 +32,7 @@ import { VerdictMark } from "../workbench/bits";
 import { sigmaText, verdictView } from "../workbench/model";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-const STORE = "aqua-trend-batch";
+const STORE = "terratrend-batch";
 const CONCURRENCY = 3;
 const NO_LAYERS: ReadonlySet<LayerId> = new Set();
 

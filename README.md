@@ -41,11 +41,11 @@ cd aqua-trend
 ```bash
 cd web &&
 npm ci &&
-AQUA_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
-AQUA_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/aqua-data.XXXXXX")" &&
-curl --fail --location --retry 3 "$AQUA_DATA_URL" --output "$AQUA_DATA_FILE" &&
-npm run setup -- --file "$AQUA_DATA_FILE" &&
-rm -f "$AQUA_DATA_FILE" &&
+TERRATREND_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
+TERRATREND_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/terratrend-data.XXXXXX")" &&
+curl --fail --location --retry 3 "$TERRATREND_DATA_URL" --output "$TERRATREND_DATA_FILE" &&
+npm run setup -- --file "$TERRATREND_DATA_FILE" &&
+rm -f "$TERRATREND_DATA_FILE" &&
 cd ..
 ```
 

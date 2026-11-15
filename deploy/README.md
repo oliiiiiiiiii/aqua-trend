@@ -14,11 +14,11 @@ Install Git, Node.js 24 with npm, curl, tar, and Docker with Compose. Start the 
 git clone https://github.com/oliiiiiiiiii/aqua-trend.git &&
 cd aqua-trend/web &&
 npm ci &&
-AQUA_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
-AQUA_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/aqua-data.XXXXXX")" &&
-curl --fail --location --retry 3 "$AQUA_DATA_URL" --output "$AQUA_DATA_FILE" &&
-npm run setup -- --file "$AQUA_DATA_FILE" &&
-rm -f "$AQUA_DATA_FILE" &&
+TERRATREND_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
+TERRATREND_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/terratrend-data.XXXXXX")" &&
+curl --fail --location --retry 3 "$TERRATREND_DATA_URL" --output "$TERRATREND_DATA_FILE" &&
+npm run setup -- --file "$TERRATREND_DATA_FILE" &&
+rm -f "$TERRATREND_DATA_FILE" &&
 cd .. &&
 docker compose up --build -d
 ```
@@ -149,11 +149,11 @@ Stop and remove the service with `docker compose down`. Public data is baked int
 For a registry deployment, build and push from a prepared checkout:
 
 ```sh
-docker build -t YOUR_REGISTRY/aqua-trend:YOUR_TAG .
-docker push YOUR_REGISTRY/aqua-trend:YOUR_TAG
+docker build -t YOUR_REGISTRY/terratrend:YOUR_TAG .
+docker push YOUR_REGISTRY/terratrend:YOUR_TAG
 ```
 
-The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Configure the image as publicly readable when publishing the public distribution; pushing it still requires registry write permission. `YOUR_REGISTRY` and `YOUR_TAG` are placeholders, and no published registry image is established by these examples. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep the previous image digest for rollback.
+The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Configure the image as publicly readable when publishing the public distribution; pushing it still requires registry write permission. `YOUR_REGISTRY` and `YOUR_TAG` are placeholders, and no published registry image is established by these examples. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/terratrend:YOUR_TAG --push .`. Keep the previous image digest for rollback.
 
 For a local production run without Docker, run `npm run build` and `npm start` from `web`. The postbuild script prepares `.next/standalone` with public and Next.js static assets; `npm start` starts that packaged server. Set `HOSTNAME=0.0.0.0 PORT=8080 SELECTOR_BACKEND=keyword` to match the container's network and selector settings.
 

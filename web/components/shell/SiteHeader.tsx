@@ -17,9 +17,9 @@ export function SiteHeader() {
   return (
     <header className="on-stage bg-stage text-on-stage">
       <div className="mx-auto flex max-w-[90rem] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2 rounded-ctl font-display text-xl" aria-label="Aqua Trend, home">
+        <Link href="/" className="flex items-center gap-2 rounded-ctl font-display text-xl" aria-label="TerraTrend, home">
           <Mark className="h-8 w-8" />
-          <span>Aqua Trend</span>
+          <span>TerraTrend</span>
         </Link>
         <nav aria-label="Main" className="order-3 w-full sm:order-none sm:w-auto">
           <ul className="flex gap-1">

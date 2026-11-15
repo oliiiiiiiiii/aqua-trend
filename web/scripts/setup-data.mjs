@@ -31,7 +31,7 @@ const fileArg = args.indexOf("--file");
 let bundle = fileArg >= 0 ? path.resolve(args[fileArg + 1]) : null;
 
 if (!bundle) {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "aqua-data-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "terratrend-data-"));
   bundle = path.join(tmp, lock.asset);
   const hasGh = spawnSync("gh", ["--version"], { stdio: "ignore" }).status === 0;
   if (hasGh) {

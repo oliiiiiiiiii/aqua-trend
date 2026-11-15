@@ -27,7 +27,7 @@ test("requires explicit server credentials and rejects whitespace in a bearer to
 });
 
 test("loads a mounted token file and sanitizes file errors", async () => {
-  const dir = await mkdtemp(path.join(tmpdir(), "aqua-daily-auth-"));
+  const dir = await mkdtemp(path.join(tmpdir(), "terratrend-daily-auth-"));
   try {
     process.env.EDL_TOKEN_FILE = path.join(dir, "token");
     await writeFile(process.env.EDL_TOKEN_FILE, "test-only-token\n", { mode: 0o600 });
