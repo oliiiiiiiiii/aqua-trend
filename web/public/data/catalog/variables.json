@@ -17,7 +17,9 @@
   "sst": "sst",
   "aod": "aod",
   "fire": "fire_count",
-  "so2": "so2_emis"
+  "so2": "so2_emis",
+  "ozone": "to3_m2",
+  "vapor": "tqv"
  },
  "layers": {
   "tws": {
@@ -736,6 +738,38 @@
    "source_files": [
     "MSAQSO2L4_2005-2025_v02-00_20260814.nc"
    ]
+  },
+  "to3_m2": {
+   "name": "臭氧柱總量（再分析）",
+   "category": "ozone",
+   "product": "MERRA-2 M2TMNXSLV TO3",
+   "nasa": true,
+   "family": "MERRA-2",
+   "unit": "DU",
+   "visual": "臭氧層厚薄",
+   "caveat": null,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2slv/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
+  },
+  "tqv": {
+   "name": "大氣可降水量",
+   "category": "vapor",
+   "product": "MERRA-2 M2TMNXSLV TQV",
+   "nasa": true,
+   "family": "MERRA-2",
+   "unit": "mm",
+   "visual": "空氣中的水氣量",
+   "caveat": null,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2slv/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   }
  },
  "trend_method": "去季節月距平 OLS（AR(1) 有效樣本數修正 95% CI）；年平均 Mann-Kendall＋Sen；各層用自己的完整年份（GRACE 從 2003 起）；同一區域所有層一起做 Benjamini–Yekutieli"

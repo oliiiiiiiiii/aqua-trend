@@ -65,6 +65,20 @@ def modis_layer(folder, var, offset=0.0):
     return gen
 
 
+def ym_imerg(f):
+    return re.search(r"3IMERG\.(\d{4})(\d{2})01", f).expand(r"\1-\2")
+
+
+def imerg_layer():
+    """IMERG V07 monthly precipitation (time, lon, lat) in mm/hr -> mm/day"""
+    def gen():
+        for ym, f in monthly_files("gesdisc/imerg", "*.subset.nc4", ym_imerg):
+            with netCDF4.Dataset(f) as d:
+                g = d["Grid"]; a = read(g, "precipitation").T * 24.0
+                yield ym, R.to_half_degree(a, g["lat"][:], g["lon"][:])
+    return gen
+
+
 def omi_layer(var):
     def gen():
         by_month = defaultdict(list)
@@ -95,6 +109,10 @@ LAYERS = {
     "tqv": dict(gen=merra_layer("gesdisc/m2slv", "TQV"), meta=dict(
         name="大氣可降水量", category="vapor", product="MERRA-2 M2TMNXSLV TQV", nasa=True,
         family=M2, unit="mm", visual="空氣中的水氣量", source_files="gesdisc/m2slv/*.subset.nc4", caveat=None)),
+    # same product as the existing p_imerg layer: built only to validate this pipeline against it
+    "p_imerg_check": dict(gen=imerg_layer(), meta=dict(
+        name="降水", category="precip", product="GPM IMERG V07 月資料", nasa=True, family="IMERG",
+        unit="mm/day", visual="向下雨滴粒子的密度", source_files="gesdisc/imerg/*.subset.nc4", caveat=None)),
     "lst_night": dict(gen=modis_layer("modis/lst", "LST_Night_CMG", -273.15), meta=dict(
         name="夜間地表溫度", category="tair", product="MODIS Terra MOD11C3 LST_Night（0.05°→0.25°→0.5°）",
         nasa=True, family="MODIS", unit="°C", visual="夜間地表冷暖", source_files="modis/lst/*.nc4",
