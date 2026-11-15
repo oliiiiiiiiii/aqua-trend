@@ -157,7 +157,7 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
           className="on-stage stage-sky pointer-events-none absolute -z-10 overflow-hidden"
           style={{ left: area.x, top: area.y, width: area.width, height: area.height }}
         >
-          {/* The planet is clipped to the visible part of its hero (the rising half-Earth) or to the whole input stage. */}
+          {/* Home includes the cases in its stage area, so the rising planet continues behind their glass. */}
           <div
             data-shared-clip
             className="absolute inset-0"

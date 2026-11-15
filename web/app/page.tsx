@@ -74,11 +74,11 @@ export default async function Home() {
     <>
       <section data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky overflow-hidden" aria-labelledby="hero">
         <InvestigationHero>
-          <div className="pointer-events-auto mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 lg:px-8 lg:pt-16 lg:pb-20">
+          <div data-home-cases className="pointer-events-auto mx-auto max-w-6xl rounded-card bg-stage/45 px-6 pt-12 pb-16 backdrop-blur-xl sm:px-10 lg:px-12 lg:pt-16 lg:pb-20">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
               <h2 id="cases" className="text-3xl text-on-stage sm:text-4xl">Open a solved case</h2>
             </div>
-            <ul className="mt-8 grid gap-6">
+            <ul className="mt-12 grid gap-16 lg:gap-20">
               {PRESET_EVENTS.map((p, i) => {
                 const f = figures[i];
                 const cat = CATEGORIES[p.active ?? p.categories[0]];
@@ -87,7 +87,7 @@ export default async function Home() {
                     <CaseLink
                       href={presetHref(p)}
                       context={{ basin: PLACE[p.id] ?? p.region, variables: p.categories.length, period: formatRange(p.time), firstYear: f?.firstYear }}
-                      className="group grid gap-x-12 rounded-card border border-stage-line bg-stage/60 p-6 sm:p-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:p-10 text-on-stage shadow-card backdrop-blur-xl hover:border-on-stage/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+                      className="group grid gap-x-12 text-on-stage lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
                     >
                       <span className="min-w-0">
                       <span className="block font-display text-3xl leading-tight group-hover:underline sm:text-4xl">{p.title}</span>

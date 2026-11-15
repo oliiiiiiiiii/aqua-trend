@@ -1,5 +1,5 @@
 "use client";
-// Empty globe anchors share the layout-owned canvas; variables fold over its left-hand area.
+// Empty globe anchors share the layout-owned canvas; only expanded variables cover the disc.
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type { TimeRange } from "@/lib/detective/contracts";
@@ -9,7 +9,7 @@ import { formatRange, ymIndex } from "@/lib/detective/url";
 import { COPY } from "./copy/input";
 import { useSharedStage } from "@/components/shell/HeroGlobe";
 import { Timeline } from "./Timeline";
-import { AnalyseButton, VariablePicker, type VariablePickerProps } from "./VariablePicker";
+import { AnalyseButton, NeededMarker, startableCount, VariablePicker, type VariablePickerProps } from "./VariablePicker";
 
 export interface InputPanelProps {
   event: string;
@@ -31,37 +31,51 @@ export interface InputPanelProps {
 
 export function InputPanel(p: InputPanelProps) {
   const { setInput, formHidden } = useSharedStage();
+  const form = useRef<HTMLDivElement>(null);
+  const missing = {
+    event: !!p.picker.blocked && !p.event.trim(),
+    where: !!p.picker.blocked && !p.region,
+    when: !!p.picker.blocked && !p.time,
+    variables: !!p.picker.blocked && startableCount(p.picker) === 0,
+  };
+  const pulseMissing = () => {
+    form.current?.querySelectorAll<HTMLElement>('[data-needed="true"]').forEach((el) => {
+      el.getAnimations().forEach((animation) => animation.cancel());
+      el.animate([
+        { boxShadow: "0 0 0 0 transparent" },
+        { boxShadow: "0 0 0 5px color-mix(in srgb, var(--action) 60%, transparent)", offset: 0.3 },
+        { boxShadow: "0 0 0 0 transparent" },
+      ], { duration: 750, iterations: 2 });
+    });
+  };
   useEffect(() => {
     setInput({ catalog: p.catalog, region: p.region, onRegion: p.onRegion });
   }, [setInput, p.catalog, p.region, p.onRegion]);
   useEffect(() => () => setInput(null), [setInput]);
   const reveal = `transition-[opacity,transform] duration-300 ${formHidden ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`;
   return (
-    <div data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-x-20 px-5 pt-8 pb-16 sm:px-8 lg:min-h-[calc(100svh-var(--stage-offset,4rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[auto_1fr] lg:px-16 lg:pt-14">
+    <div ref={form} data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-x-20 px-5 pt-8 pb-16 sm:px-8 lg:min-h-[calc(100svh-var(--stage-offset,4rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[auto_1fr] lg:px-16 lg:pt-14">
       <section className={`pointer-events-auto min-w-0 text-on-stage lg:col-start-2 ${reveal}`} aria-label={COPY.steps.what}>
-        <h2 className="mb-3 text-sm font-semibold">{COPY.steps.what}</h2>
+        <h2 data-needed={missing.event} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.what}{missing.event && <NeededMarker />}</h2>
         <EventField event={p.event} onEventChange={p.onEventChange} onEventCommit={p.onEventCommit} />
       </section>
-      <div data-stage-pass className={`relative my-8 grid min-w-0 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:my-0 ${reveal}`}>
-        <div data-stage-globe data-stage-pass className="col-start-1 row-start-1 mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-12rem))] self-start max-lg:max-w-[24rem]" />
-        {(!!p.event.trim() || p.picker.checked.length > 0) && (
-          <div data-stage-pass className="z-10 col-start-1 row-start-1 mx-auto w-full max-w-[35rem] self-start lg:mt-0">
-            <VariablePicker {...p.picker} />
-          </div>
-        )}
+      <div data-stage-pass className={`relative my-8 grid min-w-0 grid-cols-1 grid-rows-[3.5rem_auto] gap-y-4 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:my-0 ${reveal}`}>
+        <div data-stage-pass className="z-10 col-start-1 row-start-1 row-span-2 mx-auto w-full max-w-[35rem] self-start">
+          <VariablePicker {...p.picker} needed={missing.variables} />
+        </div>
+        <div data-stage-globe data-stage-pass className="col-start-1 row-start-2 mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-14rem))] self-start max-lg:max-w-[24rem]" />
       </div>
       <div className={`pointer-events-auto min-w-0 text-on-stage lg:col-start-2 lg:row-start-2 ${reveal}`}>
         <section className="border-t border-stage-line py-8 max-lg:border-t-0 lg:mt-10 lg:py-10" aria-label={COPY.steps.where}>
-          <h2 className="mb-3 text-sm font-semibold">{COPY.steps.where}</h2>
+          <h2 data-needed={missing.where} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.where}{missing.where && <NeededMarker />}</h2>
           <RegionField {...p} />
         </section>
         <section className="border-t border-stage-line py-8 lg:py-10" aria-label={COPY.steps.when}>
-          <h2 className="text-sm font-semibold">{COPY.steps.when}</h2>
+          <h2 data-needed={missing.when} className="flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.when}{missing.when && <NeededMarker />}</h2>
           <TimeField {...p} />
         </section>
         <div className="border-t border-stage-line pt-8 lg:pt-10">
-          <AnalyseButton picker={p.picker} className="w-full" />
-          {p.picker.blocked && <p role="status" className="mt-3 text-center text-xs text-on-stage-2">{p.picker.blocked}</p>}
+          <AnalyseButton picker={p.picker} onBlocked={pulseMissing} className="w-full" />
         </div>
       </div>
     </div>
@@ -71,22 +85,19 @@ export function InputPanel(p: InputPanelProps) {
 function EventField({ event, onEventChange, onEventCommit }: Pick<InputPanelProps, "event" | "onEventChange" | "onEventCommit">) {
   const { skip, entering } = useSharedStage();
   const id = useId();
-  const [editing, setEditing] = useState(!event.trim());
   const area = useRef<HTMLTextAreaElement>(null);
-  const input = editing || !event.trim();
   useEffect(() => {
-    if (input && !entering && window.matchMedia("(pointer: fine)").matches) area.current?.focus({ preventScroll: true });
-  }, [input, entering]);
+    if (!entering && window.matchMedia("(pointer: fine)").matches) area.current?.focus({ preventScroll: true });
+  }, [entering]);
   useEffect(() => {
     const el = area.current;
     if (el) { el.style.height = "auto"; el.style.height = `${Math.min(el.scrollHeight, 80)}px`; }
-  }, [event, input]);
+  }, [event]);
   const commit = () => {
     if (!event.trim()) return;
     onEventCommit(event);
-    setEditing(false);
   };
-  return input ? (
+  return (
     <>
       <label htmlFor={`${id}-e`} className="sr-only">{COPY.what.label}</label>
       <textarea
@@ -106,13 +117,6 @@ function EventField({ event, onEventChange, onEventCommit }: Pick<InputPanelProp
         className="block min-h-14 max-h-20 w-full resize-none rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-3 font-display text-[1.3rem] leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       />
     </>
-  ) : (
-    <div className="flex items-start gap-4">
-      <h1 className="min-w-0 flex-1 break-words font-display text-3xl leading-tight sm:text-4xl">{event.trim()}</h1>
-      <button type="button" title={COPY.what.edit} aria-label={COPY.what.edit} onClick={() => setEditing(true)} className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-ctl text-on-stage-2 hover:bg-on-stage/10 hover:text-on-stage">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z" /></svg>
-      </button>
-    </div>
   );
 }
 

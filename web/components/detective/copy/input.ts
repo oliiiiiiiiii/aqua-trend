@@ -17,6 +17,7 @@ export const VARIABLE_LABELS: Partial<Record<CategoryId, string>> = {
 // Every user-visible string of the /detective input step (English only; translate here).
 export const COPY = {
   title: "Trend Detective",
+  needed: "Needed",
   formLabel: "Event, period and sub-basin",
   steps: { what: "Event", when: "When", where: "Where", variables: "Variables" },
   what: {
@@ -76,6 +77,9 @@ export const COPY = {
   picker: {
     heading: "Variables",
     group: "Variable categories",
+    suggested: "Suggested",
+    others: "Others",
+    all: "All variables",
     expand: "Expand variables",
     collapse: "Collapse variables",
     asking: "Suggesting…",

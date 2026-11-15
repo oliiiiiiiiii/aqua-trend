@@ -1,5 +1,5 @@
 "use client";
-// One disclosure over the globe: a compact picked-variable bar or the complete honeycomb.
+// A bar above the globe opens the suggested and remaining honeycomb clusters.
 import { useEffect, useId, useRef, useState } from "react";
 import type { CategoryId, CategoryVote, SelectResponse } from "@/lib/detective/contracts";
 import { CATEGORY_IDS } from "@/lib/detective/url";
@@ -29,17 +29,21 @@ export function startableCount(p: Pick<VariablePickerProps, "checked" | "availab
 }
 
 /** One primary action at the foot of the input column. */
-export function AnalyseButton({ picker, className = "" }: { picker: VariablePickerProps; className?: string }) {
+export function AnalyseButton({ picker, onBlocked, className = "" }: { picker: VariablePickerProps; onBlocked: () => void; className?: string }) {
   return (
     <button
       type="button"
-      onClick={picker.onStart}
-      disabled={!!picker.blocked}
-      className={`min-h-11 rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      onClick={() => picker.blocked ? onBlocked() : picker.onStart()}
+      aria-disabled={!!picker.blocked}
+      className={`min-h-11 rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus aria-disabled:cursor-not-allowed aria-disabled:opacity-50 ${className}`}
     >
       {COPY.picker.analyse(startableCount(picker))}
     </button>
   );
+}
+
+export function NeededMarker() {
+  return <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--viz-yellow)] px-2 py-0.5 text-xs font-semibold text-[#1b1b1b]"><span className="h-1.5 w-1.5 rounded-full bg-current" />{COPY.needed}</span>;
 }
 
 // Frosted tiles share the stage tokens in every look.
@@ -76,7 +80,7 @@ function useHoneycomb() {
   return { ref, k, width };
 }
 
-export function VariablePicker(props: VariablePickerProps) {
+export function VariablePicker(props: VariablePickerProps & { needed?: boolean }) {
   const { categories, response, loading, checked, onChange, available, unavailableReason } = props;
   const id = useId();
   const [expanded, setExpanded] = useState(false);
@@ -95,9 +99,12 @@ export function VariablePicker(props: VariablePickerProps) {
     onChange(CATEGORY_IDS.filter((x) => next.has(x)));
   };
   const keyword = response?.source === "keyword-fallback";
-  // Keep one stable family-grouped lattice when suggestions or selections change.
+  // Family order stays stable within each suggestion group, independently of user selections.
   const familyRank = Object.keys(FAMILIES);
   const byFamily = [...CATEGORY_IDS].sort((a, b) => familyRank.indexOf(CATEGORY_FAMILY[a]) - familyRank.indexOf(CATEGORY_FAMILY[b]));
+
+  const suggested = byFamily.filter((c) => votes.get(c)?.selected);
+  const others = byFamily.filter((c) => !votes.get(c)?.selected);
 
   const chip = (c: CategoryId, quiet: boolean, box: { x: number; y: number; w: number; h: number }) => {
     const info = categories[c];
@@ -160,6 +167,11 @@ export function VariablePicker(props: VariablePickerProps) {
             </span>
             <span className="min-w-0 max-w-full text-[10px] leading-tight [overflow-wrap:anywhere] min-[420px]:text-[11px]">{VARIABLE_LABELS[c] ?? info.name.en}</span>
           </span>
+          {vote?.selected && (
+            <span title={T.suggested} className="absolute text-on-stage-2" style={{ left: "22%", top: "12%" }} aria-hidden="true">
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 7.5 4.5 12 6 7.5 7.5 6 12 4.5 7.5 0 6 4.5 4.5Z" /></svg>
+            </span>
+          )}
           {checkedNow && (
             <span className="absolute grid h-4 w-4 place-items-center rounded-full text-paper" style={{ background: fam, right: "21%", top: "10%" }} aria-hidden="true">
               <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
@@ -172,12 +184,18 @@ export function VariablePicker(props: VariablePickerProps) {
       </li>
     );
   };
-  const geometry = honeycombLayout(byFamily.length, hc.k, hc.width);
+  const cluster = (items: CategoryId[], quiet: boolean, label: string) => {
+    const geometry = honeycombLayout(items.length, hc.k, hc.width);
+    return <ul aria-label={label} className="relative" style={{ height: geometry.height }}>
+      {items.map((c, i) => chip(c, quiet, { ...geometry.tiles[i], w: geometry.w, h: geometry.h }))}
+    </ul>;
+  };
   const sourceLine = response ? T.source[response.source] : null;
   return (
     <section
       data-variable-panel
       data-expanded={expanded}
+      data-needed={props.needed}
       aria-labelledby={`${id}-h`}
       className={`pointer-events-auto min-w-0 overflow-hidden border border-stage-line bg-stage/65 text-on-stage backdrop-blur-md ${expanded ? "rounded-card" : "rounded-ctl"}`}
     >
@@ -192,7 +210,7 @@ export function VariablePicker(props: VariablePickerProps) {
         >
           <span className="flex shrink-0 items-baseline gap-2">
             <span className="text-sm font-semibold">{T.heading}</span>
-            {sourceLine && <span className="text-[10px] font-normal text-on-stage-2">{sourceLine}</span>}
+            {props.needed && <NeededMarker />}
           </span>
           <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden" aria-hidden="true">
             {!expanded && byFamily.filter((c) => on.has(c)).map((c) => (
@@ -209,9 +227,12 @@ export function VariablePicker(props: VariablePickerProps) {
         <fieldset className="min-w-0">
           <legend className="sr-only">{T.group}</legend>
           <div ref={hc.ref} className="w-full min-w-0">
-            <ul aria-label={T.group} className="relative" style={{ height: geometry.height }}>
-              {byFamily.map((c, i) => chip(c, !on.has(c) && !votes.get(c)?.selected, { ...geometry.tiles[i], w: geometry.w, h: geometry.h }))}
-            </ul>
+            {response && <>
+              <p className="mb-3 flex items-baseline gap-2 px-1 text-xs font-semibold">{T.suggested}<span className="text-[10px] font-normal text-on-stage-2">{sourceLine}</span></p>
+              {cluster(suggested, false, "Suggested variables")}
+            </>}
+            <p className={`${response ? "mt-5" : ""} mb-3 px-1 text-xs text-on-stage-2`}>{response ? T.others : loading ? T.asking : T.all}</p>
+            {cluster(others, true, response ? "Other variables" : T.group)}
           </div>
         </fieldset>
       </div>

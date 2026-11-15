@@ -5,14 +5,14 @@ import { COPY } from "@/components/detective/copy/input";
 import { encodeState } from "@/lib/detective/url";
 
 /**
- * Home: centred copy and event question, a half-visible rising planet, the solved
- * cases (`children`) right under them. The layout-owned planet and the headline are painted by the shared stage; the
+ * Home: centred copy and event question, with a rising planet extending behind the solved
+ * cases (`children`) below. The layout-owned planet and the headline are painted by the shared stage; the
  * anchors here are empty. Submitting the question hands the planet over to /detective?e=<text>.
  */
 export function InvestigationHero({ children }: { children?: ReactNode }) {
   return (
     <>
-      <div data-stage-clip className="relative min-h-[calc(100svh-var(--stage-offset,4rem))] overflow-hidden">
+      <div className="relative min-h-[calc(100svh-var(--stage-offset,4rem))]">
         <div
           data-stage-pass
           className="relative z-10 mx-auto flex max-w-[90rem] flex-col items-center gap-4 px-4 pt-10 sm:px-6 sm:pt-12 lg:px-8"
