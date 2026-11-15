@@ -1,0 +1,258 @@
+{
+ "backend": "phocinae",
+ "prompt": "en",
+ "rows": [
+  {
+   "id": "drought-tw",
+   "event": "2021 台灣春季大旱",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.4865,
+    "et": 0.3823,
+    "soil": 0.4895,
+    "tws": 0.3649,
+    "runoff": 0.2996,
+    "snow": 0.3897,
+    "tair": 0.5092,
+    "vpd": 0.443,
+    "energy": 0.465,
+    "wind": 0.5048,
+    "ndvi": 0.5261,
+    "sst": 0.4619
+   },
+   "seconds": 0.81
+  },
+  {
+   "id": "flood-pk",
+   "event": "2022 Pakistan floods",
+   "truth": [
+    "precip",
+    "runoff",
+    "soil",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.4904,
+    "et": 0.3996,
+    "soil": 0.5085,
+    "tws": 0.3888,
+    "runoff": 0.3332,
+    "snow": 0.3899,
+    "tair": 0.5065,
+    "vpd": 0.4532,
+    "energy": 0.4909,
+    "wind": 0.5011,
+    "ndvi": 0.539,
+    "sst": 0.4671
+   },
+   "seconds": 0.67
+  },
+  {
+   "id": "heat-eu",
+   "event": "2003 European heatwave",
+   "truth": [
+    "energy",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.4955,
+    "et": 0.4402,
+    "soil": 0.5346,
+    "tws": 0.4319,
+    "runoff": 0.3259,
+    "snow": 0.4375,
+    "tair": 0.5558,
+    "vpd": 0.4895,
+    "energy": 0.5459,
+    "wind": 0.513,
+    "ndvi": 0.5398,
+    "sst": 0.5286
+   },
+   "seconds": 0.55
+  },
+  {
+   "id": "fire-au",
+   "event": "2019–20 澳洲黑色夏季野火",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.512,
+    "et": 0.4034,
+    "soil": 0.5314,
+    "tws": 0.4167,
+    "runoff": 0.3434,
+    "snow": 0.4328,
+    "tair": 0.5225,
+    "vpd": 0.4519,
+    "energy": 0.4957,
+    "wind": 0.5381,
+    "ndvi": 0.5944,
+    "sst": 0.4851
+   },
+   "seconds": 0.59
+  },
+  {
+   "id": "blizzard-tx",
+   "event": "2021 年 2 月德州暴風雪",
+   "truth": [
+    "precip",
+    "snow",
+    "tair"
+   ],
+   "p": {
+    "precip": 0.4948,
+    "et": 0.402,
+    "soil": 0.4997,
+    "tws": 0.4155,
+    "runoff": 0.3512,
+    "snow": 0.4205,
+    "tair": 0.5224,
+    "vpd": 0.4589,
+    "energy": 0.4937,
+    "wind": 0.5093,
+    "ndvi": 0.5462,
+    "sst": 0.4912
+   },
+   "seconds": 0.61
+  },
+  {
+   "id": "typhoon-ph",
+   "event": "2013 typhoon season in the Philippines",
+   "truth": [
+    "precip",
+    "runoff",
+    "sst",
+    "wind"
+   ],
+   "p": {
+    "precip": 0.4482,
+    "et": 0.3704,
+    "soil": 0.4718,
+    "tws": 0.3618,
+    "runoff": 0.3311,
+    "snow": 0.3737,
+    "tair": 0.4679,
+    "vpd": 0.4152,
+    "energy": 0.4449,
+    "wind": 0.4505,
+    "ndvi": 0.518,
+    "sst": 0.4305
+   },
+   "seconds": 0.56
+  },
+  {
+   "id": "enso",
+   "event": "2015–16 El Niño",
+   "truth": [
+    "precip",
+    "sst",
+    "tair"
+   ],
+   "p": {
+    "precip": 0.505,
+    "et": 0.4263,
+    "soil": 0.5369,
+    "tws": 0.4602,
+    "runoff": 0.3614,
+    "snow": 0.4573,
+    "tair": 0.5327,
+    "vpd": 0.4607,
+    "energy": 0.5094,
+    "wind": 0.5261,
+    "ndvi": 0.587,
+    "sst": 0.4907
+   },
+   "seconds": 0.5
+  },
+  {
+   "id": "lake-mead",
+   "event": "Lake Mead fell to a record low water level in 2022",
+   "truth": [
+    "precip",
+    "runoff",
+    "snow",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.4625,
+    "et": 0.4013,
+    "soil": 0.4895,
+    "tws": 0.4465,
+    "runoff": 0.3562,
+    "snow": 0.379,
+    "tair": 0.5034,
+    "vpd": 0.4113,
+    "energy": 0.4401,
+    "wind": 0.4761,
+    "ndvi": 0.5281,
+    "sst": 0.4677
+   },
+   "seconds": 0.45
+  },
+  {
+   "id": "corn-belt",
+   "event": "2012 US Corn Belt crop failure",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.4687,
+    "et": 0.4122,
+    "soil": 0.525,
+    "tws": 0.3755,
+    "runoff": 0.3245,
+    "snow": 0.3849,
+    "tair": 0.4979,
+    "vpd": 0.4574,
+    "energy": 0.4652,
+    "wind": 0.5026,
+    "ndvi": 0.5154,
+    "sst": 0.437
+   },
+   "seconds": 0.38
+  },
+  {
+   "id": "yangtze",
+   "event": "2022 長江流域夏季乾旱與熱浪",
+   "truth": [
+    "precip",
+    "runoff",
+    "soil",
+    "tair",
+    "tws",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.5327,
+    "et": 0.4197,
+    "soil": 0.5277,
+    "tws": 0.4155,
+    "runoff": 0.341,
+    "snow": 0.423,
+    "tair": 0.5467,
+    "vpd": 0.492,
+    "energy": 0.502,
+    "wind": 0.5332,
+    "ndvi": 0.5386,
+    "sst": 0.4984
+   },
+   "seconds": 0.35
+  }
+ ]
+}

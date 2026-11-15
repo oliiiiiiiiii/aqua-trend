@@ -1,0 +1,258 @@
+{
+ "backend": "onejev",
+ "prompt": "en-affects",
+ "rows": [
+  {
+   "id": "drought-tw",
+   "event": "2021 台灣春季大旱",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.851329,
+    "et": 0.896879,
+    "soil": 0.908485,
+    "tws": 0.888994,
+    "runoff": 0.897063,
+    "snow": 0.420246,
+    "tair": 0.713112,
+    "vpd": 0.832162,
+    "energy": 0.872131,
+    "wind": 0.49034,
+    "ndvi": 0.793748,
+    "sst": 0.414344
+   },
+   "seconds": 5.31
+  },
+  {
+   "id": "flood-pk",
+   "event": "2022 Pakistan floods",
+   "truth": [
+    "precip",
+    "runoff",
+    "soil",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.678638,
+    "et": 0.654736,
+    "soil": 0.881778,
+    "tws": 0.934843,
+    "runoff": 0.9315,
+    "snow": 0.441408,
+    "tair": 0.220905,
+    "vpd": 0.737844,
+    "energy": 0.836726,
+    "wind": 0.238287,
+    "ndvi": 0.718765,
+    "sst": 0.101205
+   },
+   "seconds": 3.69
+  },
+  {
+   "id": "heat-eu",
+   "event": "2003 European heatwave",
+   "truth": [
+    "energy",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.651334,
+    "et": 0.89008,
+    "soil": 0.768781,
+    "tws": 0.856769,
+    "runoff": 0.86942,
+    "snow": 0.561194,
+    "tair": 0.902474,
+    "vpd": 0.871248,
+    "energy": 0.963819,
+    "wind": 0.462696,
+    "ndvi": 0.685035,
+    "sst": 0.895128
+   },
+   "seconds": 2.29
+  },
+  {
+   "id": "fire-au",
+   "event": "2019–20 澳洲黑色夏季野火",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.214911,
+    "et": 0.874701,
+    "soil": 0.799626,
+    "tws": 0.811326,
+    "runoff": 0.836539,
+    "snow": 0.304351,
+    "tair": 0.716754,
+    "vpd": 0.77739,
+    "energy": 0.929947,
+    "wind": 0.512525,
+    "ndvi": 0.716739,
+    "sst": 0.515615
+   },
+   "seconds": 2.69
+  },
+  {
+   "id": "blizzard-tx",
+   "event": "2021 年 2 月德州暴風雪",
+   "truth": [
+    "precip",
+    "snow",
+    "tair"
+   ],
+   "p": {
+    "precip": 0.833294,
+    "et": 0.841654,
+    "soil": 0.823732,
+    "tws": 0.813441,
+    "runoff": 0.829257,
+    "snow": 0.610352,
+    "tair": 0.726795,
+    "vpd": 0.722306,
+    "energy": 0.878391,
+    "wind": 0.622574,
+    "ndvi": 0.506489,
+    "sst": 0.435574
+   },
+   "seconds": 2.88
+  },
+  {
+   "id": "typhoon-ph",
+   "event": "2013 typhoon season in the Philippines",
+   "truth": [
+    "precip",
+    "runoff",
+    "sst",
+    "wind"
+   ],
+   "p": {
+    "precip": 0.749773,
+    "et": 0.704174,
+    "soil": 0.686666,
+    "tws": 0.823009,
+    "runoff": 0.84242,
+    "snow": 0.144224,
+    "tair": 0.663155,
+    "vpd": 0.683917,
+    "energy": 0.858444,
+    "wind": 0.754428,
+    "ndvi": 0.799659,
+    "sst": 0.573193
+   },
+   "seconds": 2.64
+  },
+  {
+   "id": "enso",
+   "event": "2015–16 El Niño",
+   "truth": [
+    "precip",
+    "sst",
+    "tair"
+   ],
+   "p": {
+    "precip": 0.925147,
+    "et": 0.929469,
+    "soil": 0.77562,
+    "tws": 0.865845,
+    "runoff": 0.902483,
+    "snow": 0.692002,
+    "tair": 0.79382,
+    "vpd": 0.825176,
+    "energy": 0.944754,
+    "wind": 0.633302,
+    "ndvi": 0.847599,
+    "sst": 0.922377
+   },
+   "seconds": 2.66
+  },
+  {
+   "id": "lake-mead",
+   "event": "Lake Mead fell to a record low water level in 2022",
+   "truth": [
+    "precip",
+    "runoff",
+    "snow",
+    "tws"
+   ],
+   "p": {
+    "precip": 0.480198,
+    "et": 0.689393,
+    "soil": 0.75837,
+    "tws": 0.90958,
+    "runoff": 0.884642,
+    "snow": 0.545014,
+    "tair": 0.150065,
+    "vpd": 0.801588,
+    "energy": 0.788908,
+    "wind": 0.133602,
+    "ndvi": 0.485311,
+    "sst": 0.254575
+   },
+   "seconds": 2.66
+  },
+  {
+   "id": "corn-belt",
+   "event": "2012 US Corn Belt crop failure",
+   "truth": [
+    "ndvi",
+    "precip",
+    "soil",
+    "tair",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.117176,
+    "et": 0.790805,
+    "soil": 0.875101,
+    "tws": 0.831136,
+    "runoff": 0.766423,
+    "snow": 0.213732,
+    "tair": 0.276853,
+    "vpd": 0.685603,
+    "energy": 0.895642,
+    "wind": 0.273909,
+    "ndvi": 0.650422,
+    "sst": 0.174256
+   },
+   "seconds": 2.65
+  },
+  {
+   "id": "yangtze",
+   "event": "2022 長江流域夏季乾旱與熱浪",
+   "truth": [
+    "precip",
+    "runoff",
+    "soil",
+    "tair",
+    "tws",
+    "vpd"
+   ],
+   "p": {
+    "precip": 0.296237,
+    "et": 0.899434,
+    "soil": 0.759786,
+    "tws": 0.841269,
+    "runoff": 0.844655,
+    "snow": 0.30996,
+    "tair": 0.768146,
+    "vpd": 0.816319,
+    "energy": 0.880684,
+    "wind": 0.492343,
+    "ndvi": 0.286421,
+    "sst": 0.70636
+   },
+   "seconds": 2.7
+  }
+ ]
+}

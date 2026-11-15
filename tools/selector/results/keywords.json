@@ -1,0 +1,135 @@
+[
+ {
+  "id": "drought-tw",
+  "event": "2021 台灣春季大旱",
+  "rules": [
+   "drought"
+  ],
+  "selected": [
+   "precip",
+   "soil",
+   "tws",
+   "ndvi"
+  ]
+ },
+ {
+  "id": "flood-pk",
+  "event": "2022 Pakistan floods",
+  "rules": [
+   "flood"
+  ],
+  "selected": [
+   "precip",
+   "soil",
+   "tws",
+   "runoff"
+  ]
+ },
+ {
+  "id": "heat-eu",
+  "event": "2003 European heatwave",
+  "rules": [
+   "heatwave"
+  ],
+  "selected": [
+   "soil",
+   "tair",
+   "vpd",
+   "energy"
+  ]
+ },
+ {
+  "id": "fire-au",
+  "event": "2019–20 澳洲黑色夏季野火",
+  "rules": [
+   "wildfire"
+  ],
+  "selected": [
+   "precip",
+   "soil",
+   "tair",
+   "vpd",
+   "wind",
+   "ndvi"
+  ]
+ },
+ {
+  "id": "blizzard-tx",
+  "event": "2021 年 2 月德州暴風雪",
+  "rules": [
+   "blizzard"
+  ],
+  "selected": [
+   "precip",
+   "snow",
+   "tair",
+   "wind"
+  ]
+ },
+ {
+  "id": "typhoon-ph",
+  "event": "2013 typhoon season in the Philippines",
+  "rules": [
+   "tropical-cyclone"
+  ],
+  "selected": [
+   "precip",
+   "runoff",
+   "wind",
+   "sst"
+  ]
+ },
+ {
+  "id": "enso",
+  "event": "2015–16 El Niño",
+  "rules": [
+   "enso"
+  ],
+  "selected": [
+   "precip",
+   "tair",
+   "sst"
+  ]
+ },
+ {
+  "id": "lake-mead",
+  "event": "Lake Mead fell to a record low water level in 2022",
+  "rules": [
+   "lake-level"
+  ],
+  "selected": [
+   "precip",
+   "tws",
+   "runoff"
+  ]
+ },
+ {
+  "id": "corn-belt",
+  "event": "2012 US Corn Belt crop failure",
+  "rules": [
+   "crop"
+  ],
+  "selected": [
+   "precip",
+   "soil",
+   "ndvi"
+  ]
+ },
+ {
+  "id": "yangtze",
+  "event": "2022 長江流域夏季乾旱與熱浪",
+  "rules": [
+   "drought",
+   "heatwave"
+  ],
+  "selected": [
+   "precip",
+   "soil",
+   "tws",
+   "tair",
+   "vpd",
+   "energy",
+   "ndvi"
+  ]
+ }
+]
