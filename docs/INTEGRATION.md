@@ -5,7 +5,7 @@
 
 ## 0. 規則
 
-1. 每條工作線開自己的 branch：`td/a-stats`、`td/b-chart`、`td/c-input`、`td/d-ai`、`td/e-data`，從 `trend-detective` 分出，PR 回 `trend-detective`。
+1. 每條工作線開自己的 branch：`td/a-stats`、`td/b-chart`、`td/c-input`、`td/d-ai`、`td/e-data`、`td/f-pipeline`，從 `trend-detective` 分出，PR 回 `trend-detective`。
 2. **只改自己負責的檔案**（下表）。需要改 `contracts.ts` 時，PR 標題加 `[contract change]`，並同步更新本文件。
 3. 依賴尚未完成時，用 contracts 裡的型別寫假資料先做，不要等。
 4. 開始寫 Next.js 程式前，先讀 `web/AGENTS.md`（Next 16 有破壞性變更）。
@@ -106,7 +106,7 @@
 | 輸出 | `PresetEvent[]`；12 類別的名稱、淺白定義（中英）、預設層、圖示；驗證報告 |
 
 規則：
-- **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)，並去分享站 http://meow1.csie.ntu.edu.tw:3266/ 確認最新清單**。分享站新增、適合子流域的變數有 FIRMS 火點、OMI SO₂、MOD10CM 積雪覆蓋，補上 `m2aer` 後還有 AOD。挑對預設事件有幫助的變數（例如澳洲野火用 FIRMS），照 DATA_SHARE.md 的步驟加進 series-2。不要一次全部加。
+- 資料本身（從分享站或 Giovanni 產生 series-2）由工作線 F 負責。E 需要某個變數做預設事件時（例如澳洲野火要 FIRMS 火點或 AOD），向 F 提出，不自己寫管線。
 - 以 SPEC §5 的三個事件為起點；用 Python 對 series-2 檔案重算殘差與 z，確認至少一個變數 |z| ≥ 2 且方向符合預期。不符就換子流域或事件，並更新 SPEC §5。
 - 淺白定義給高中生看，一句話、不超過 30 字。
 - README：專案介紹、如何執行（`cd web && npm i && npm run dev`）、對應官方題目要求的段落（變數選擇／區域／時間序列／變化速率／顯著性檢定各對應到哪個功能）。
@@ -115,24 +115,52 @@
 - [ ] `docs/presets-validation.md` 每個事件附 z 值表。
 - [ ] A 完成後，用 A 的函式再跑一次，數值與 Python 差異 < 1%。
 
+### F — 資料管線（分享站／Giovanni → series-2）
+
+| | |
+| --- | --- |
+| 負責檔案 | `pipeline/`（新資料夾：下載、遮罩平均、寫出 series-2 的腳本）、`web/public/data/series/*.json`、`catalog/variables.json`、`catalog/series_index.json`、`docs/DATA_SHARE.md` |
+| 輸入 | 分享站 http://meow1.csie.ntu.edu.tw:3266/、NASA Giovanni、`data/masks/regions_0p5.npz`、HydroBASINS lev04 |
+| 輸出 | 更新或新增的 basin4 月序列（series-2 格式不變） |
+
+**前提：資料會在你工作期間陸續上傳。** 目前 `gesdisc/`、`modis/`、`ceres/` 等資料夾是空的，團隊正在補。不要假設清單固定，也不要因為某個資料夾是空的就停下來。
+
+規則：
+- **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)**，再抓分享站的最新清單，自己判斷哪些資料可以處理了。
+- 管線要能重跑：同一個資料來源再跑一次，只更新那一層，其他層不動。每個資料層在 `variables.json` 記錄來源（`share` 或 `giovanni`）和處理日期。
+- 優先順序：
+  1. 分享站上已有檔案、而且 series-2 還沒有的子流域變數：FIRMS 火點數（`fire_count`）、OMI SO₂、MOD10CM 積雪覆蓋。
+  2. 分享站補上 `gesdisc/`、`modis/` 後，重算或延長既有資料層；補上 `m2aer` 時加 AOD。
+  3. 分享站沒有或還是空的時，試 **NASA Giovanni**（見 DATA_SHARE.md「Giovanni」一節）。Giovanni 試不通就跳過，**繼續用 repo 裡現有的 series-2**，不要卡住。
+- 新增類別時要改 `contracts.ts` 的 `CategoryId`，PR 標 `[contract change]`，並通知 D（關鍵字表）和 E（淺白定義）。
+- 每次更新資料，在 `docs/DATA_SHARE.md` 的「處理紀錄」補一行：日期、資料層、來源、涵蓋期間、子流域數量。
+
+完成檢查：
+- [ ] 至少新增一個分享站變數，三個預設事件的子流域都有該層序列。
+- [ ] 新序列抽查 3 個子流域，數值範圍與單位合理，缺值是 `null`。
+- [ ] Giovanni：可用的話寫下用法與限制；不可用的話寫下原因。兩種情況都記在 DATA_SHARE.md。
+- [ ] 重跑管線不會改到其他資料層。
+
 ## 2. 相依關係
 
 ```mermaid
 flowchart LR
-    K[contracts.ts<br/>已完成] --> A & B & C & D & E
+    K[contracts.ts<br/>已完成] --> A & B & C & D & E & F
+    F -.新變數.-> E
     A --> I[整合]
     B --> I
     C --> I
     D --> I
     E --> I
+    F --> I
 ```
 
-五條線彼此不阻塞：B 用假 `Decomposition`、C 用假 `SelectResponse` 與假 `VariableTab`、D 只依賴 contracts。
+六條線彼此不阻塞：B 用假 `Decomposition`、C 用假 `SelectResponse` 與假 `VariableTab`、D 只依賴 contracts、E 先用現有 series-2、F 隨資料上傳持續更新。
 
 ## 3. 整合步驟（任何 agent 可執行）
 
 1. `git checkout trend-detective && git pull`
-2. 依序合併：E → A → D → B → C（C 最後，因為它把其他部分接起來）。每合併一個跑 `cd web && npm run typecheck`。
+2. 依序合併：F → E → A → D → B → C（C 最後，因為它把其他部分接起來）。F 之後若又更新資料，可以隨時再合併。每合併一個跑 `cd web && npm run typecheck`。
 3. 衝突處理：除 `contracts.ts` 外，檔案擁有者的版本優先；`contracts.ts` 衝突時以較新的 `[contract change]` PR 為準並修正呼叫端。
 4. 把 C 中的假資料替換成真實匯入：`analysis.ts`（A）、`VariableTab`（B）、`/api/select-variables`（D）、`presets.ts`／`categories.ts`（E）。
 5. `npm run prep && npm run dev`，跑下方驗收清單。

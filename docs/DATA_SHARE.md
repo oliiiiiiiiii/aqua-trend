@@ -51,7 +51,25 @@
 | `oaflux/` | OAFlux 海面通量 | 海洋，不適用子流域 |
 | `obdaac/chl/` | 海洋葉綠素 | 海洋，不適用子流域 |
 
-這些資料夾為空時，**繼續使用 repo 裡已經算好的 `web/public/data/series/*.json`**，它們已經包含 GLDAS、IMERG、MERRA-2、MODIS 的子流域序列（2026-11-14 產生）。
+**團隊正在補這些資料，可能在你工作期間陸續出現。** 每次開始處理前重新抓清單，自己判斷哪些可以處理了。
+
+還沒補上時，**繼續使用 repo 裡已經算好的 `web/public/data/series/*.json`**，它們已經包含 GLDAS、IMERG、MERRA-2、MODIS 的子流域序列（2026-11-14 產生）；或試 Giovanni（下一節）。
+
+## Giovanni（NASA 線上對齊工具）
+
+[Giovanni](https://giovanni.gsfc.nasa.gov/) 是 NASA GES DISC 的線上分析工具，可以對指定範圍產生「區域平均時間序列」，並處理不同產品的格網對齊。它涵蓋的產品大多正好是上面空著的資料夾：GLDAS、IMERG、MERRA-2（含 AOD）、MODIS、OMI 等。
+
+- **用途**：分享站沒有的資料，或要快速取得某個子流域的月序列時使用。
+- **限制，需要實測確認**：需要 Earthdata 帳號；區域通常用經緯度框或內建形狀，不一定能直接用 HydroBASINS 多邊形；大量子流域逐一查詢可能很慢。
+- **建議做法**：先只對三個預設事件的子流域試，用經緯度框或上傳形狀，比對結果和現有 series-2 的差異。可行再擴大範圍。
+- **試不通就算了**：繼續用現有 series-2 和分享站，把原因寫在下方「處理紀錄」。
+- Earthdata 帳密不可 commit，用 `~/.netrc` 或環境變數。
+
+## 處理紀錄
+
+| 日期 | 資料層 | 來源 | 期間 | 子流域數 | 備註 |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-14 | 現有 26 層 | GES DISC 等（舊管線） | 各層不同 | basin4 1,313 | 見 `web/public/data/README.md` |
 
 ## 和現有 series-2 的關係
 
@@ -60,4 +78,4 @@
   1. 用 `data/masks/regions_0p5.npz`（或 HydroBASINS lev04 多邊形）算每個 basin4 的月序列，寫進 `series/<id>.json` 的 `layers`。
   2. 在 `variables.json` 新增資料層，在 `contracts.ts` 的 `CategoryId` 新增類別（PR 標 `[contract change]`）。
   3. 更新 `catalog/series_index.json`。
-- 不適用子流域的全球序列（指數、CH₄、GMSL、臭氧洞、MLS、海冰）MVP 不用。
+- 不適用子流域的資料（指數、CH₄、GMSL、臭氧洞、MLS、海冰、海洋網格）MVP 不用。以後要用的話，可以考慮用 Giovanni 對齊到同一區域；試不通就放棄。
