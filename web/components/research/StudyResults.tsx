@@ -261,6 +261,12 @@ export function StudyResults({
         </div>
         <div className="result-section">
           <h3>Selected variables</h3>
+          {selection?.selection_source === "model" && selection.selector_provider === "ollama" && selection.model_version && (
+            <p className="mt-2 text-sm text-ink-2">Selected from the prepared catalogue by the local model ({selection.model_version}).</p>
+          )}
+          {selection?.selection_source === "curated_plan" && (
+            <p className="mt-2 text-sm text-ink-2">From a reviewed selection in the prepared catalogue.</p>
+          )}
           {!variables.length && (
             <p className="mt-2 text-ink-2">No variable series was available for this study.</p>
           )}

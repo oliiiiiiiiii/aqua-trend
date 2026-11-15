@@ -85,7 +85,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.command == "GET" and route == "/api/health":
             return self.send_data(200, {"status": "ready"})
         if self.command == "GET" and route == "/api/catalogue":
-            return self.send_data(200, {**service.engine.catalogue.public(), "versions": service.engine.versions,
+            return self.send_data(200, {**service.engine.catalogue.public(service.engine.versions),
                                         "presets": service.store.published()})
         if self.command == "POST" and route == "/api/research":
             length = self.headers.get("Content-Length", "")

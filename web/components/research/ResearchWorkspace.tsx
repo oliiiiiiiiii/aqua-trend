@@ -259,14 +259,16 @@ export default function ResearchWorkspace() {
                 aria-describedby="phenomenon-note"
               />
               <p id="phenomenon-note" className="form-hint">
-                Write in English or Chinese. Choose the location and dates with the controls below.
+                {catalogue?.selector?.mode === "ollama" && catalogue.selector.custom_queries_available
+                  ? "Describe the phenomenon in English or Chinese. A local model selects relevant variables."
+                  : "Write in English or Chinese."} Choose the location and dates below.
               </p>
               {catalogue?.curated_phenomena?.length ? (
                 <details className="mt-2 text-sm">
                   <summary className="text-link">Browse prepared phenomena</summary>
-                  {catalogue.selector?.mode === "curated_plans" && (
+                  {catalogue.selector?.custom_queries_available === false && (
                     <p className="form-hint">
-                      These prepared selections work offline. Other descriptions require a configured model.
+                      These prepared topics are available. The model for other descriptions is currently unavailable.
                     </p>
                   )}
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">

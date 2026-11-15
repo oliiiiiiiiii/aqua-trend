@@ -63,9 +63,12 @@ class ResearchEngine:
         self.catalogue = catalogue or Catalogue()
         self.store = store or Store(ROOT / ".aqua-trend/jobs.sqlite")
         self.policy = policy or PresetPolicy()
-        self.versions = {**self.catalogue.versions, "method_policy_version": METHOD_VERSION,
-                         "preset_policy_version": self.policy.version}
+        self.policy_versions = {"method_policy_version": METHOD_VERSION, "preset_policy_version": self.policy.version}
         self.selection_lock = threading.Lock()
+
+    @property
+    def versions(self):
+        return {**self.catalogue.current_versions(), **self.policy_versions}
 
     def validate(self, data):
         req = validate_request(data, self.catalogue.regions)
@@ -86,17 +89,18 @@ class ResearchEngine:
                 return snapshot
         raise ResearchError("invalid_context", "That preset does not match the selected phenomenon, region or period.", "context")
 
-    def select(self, query, fresh=False):
-        key = digest([normalized(query), self.catalogue.versions])
+    def select(self, query, fresh=False, versions=None):
+        versions = versions if versions is not None else self.versions
+        key = digest([normalized(query), versions])
         # Concurrent identical queries reuse the persisted plan even for stochastic selectors.
         with self.selection_lock:
             saved = self.store.get("plan", key)
             if fresh:
-                plan = self.catalogue.select(query, reselect=True)
+                plan = self.catalogue.select(query, reselect=True, versions=versions)
                 return self.store.remember("plan_revision", plan["selection_plan_id"], plan)
             if saved is not None:
                 return saved
-            return self.store.remember("plan", key, self.catalogue.select(query))
+            return self.store.remember("plan", key, self.catalogue.select(query, versions=versions))
 
     def study(self, plan, region, period, requested_period):
         cat = self.catalogue
@@ -159,7 +163,7 @@ class ResearchEngine:
                                           if fit else "No shared period is available."),
                                "requested_period": requested_period, "resolved_period": period}}
 
-    def search(self, req, plan, progress):
+    def search(self, req, plan, progress, versions):
         candidates = self.policy.candidates(self.catalogue, plan, req["region_id"], req["period"])
         log, rows = [], []
         for index, candidate in enumerate(candidates):
@@ -169,7 +173,7 @@ class ResearchEngine:
                 case["excluded_reason"] = "Disabled by the registered preset policy."
             else:
                 result = self.study(plan, case["region_id"], case["period"], req["period"])
-                rows.extend(ledger(result, self.versions, case["region_id"], case["period"]))
+                rows.extend(ledger(result, versions, case["region_id"], case["period"]))
                 score = self.policy.score(result)
                 if score and (req["period"] is not None or result["comparison"]["period"] == case["period"] or
                               (not result["comparison"]["period"] and any(i.get("status") == "ok" for i in result["indicators"]))):
@@ -184,39 +188,40 @@ class ResearchEngine:
             error.payload["evidence_family"] = f
             raise
         public = {**chosen, "id": "case-" + digest([plan["selection_plan_id"], chosen["region_id"], chosen["period"]])[:20],
-                  "version": digest([f["family_id"], self.versions, plan["content_hash"], normalized(req["phenomenon_query"])])[:24],
+                  "version": digest([f["family_id"], versions, plan["content_hash"], normalized(req["phenomenon_query"])])[:24],
                   "region_name": self.catalogue.regions[chosen["region_id"]]["name"],
                   "phenomenon_query": req["phenomenon_query"], "family_id": f["family_id"]}
         if chosen.get("source") == "manual" and chosen.get("manual_reason"):
             public["reason"] = chosen["manual_reason"] + " " + public["reason"]
-        return {"public": public, "family": f, "versions": self.versions, "selection": plan}
+        return {"public": public, "family": f, "versions": versions, "selection": plan}
 
     def run(self, job, progress):
         req = job["request"]
         progress("selecting_variables")
+        versions = self.versions
         bound = self.bound_preset(req) if req["context"]["preset_ref"] else None
-        exact = bool(bound and bound["versions"] == self.versions)
+        exact = bool(bound and bound["versions"] == versions)
         plan = bound["selection"] if exact else None
         parent = req["context"]["parent_research_id"]
         if parent and not plan and not req.get("reselect"):
             previous = self.store.job(parent)["result"]
-            if (previous and previous["identity"]["versions"] == self.versions and
+            if (previous and previous["identity"]["versions"] == versions and
                 normalized(previous["user_constraints"]["phenomenon_query"]) == normalized(req["phenomenon_query"])):
                 plan = previous["selection"]
         if plan is None:
-            plan = self.select(req["phenomenon_query"], req.get("reselect", False))
+            plan = self.select(req["phenomenon_query"], req.get("reselect", False), versions=versions)
         if not plan["variable_set"] and not plan["indicator_recipe_ids"]:
             raise ResearchError("unsupported_phenomenon", "The prepared catalogue has no supported measurements or indicators for this phenomenon.", "phenomenon_query")
         progress("resolving_defaults")
         snapshot = bound
         if not bound and (req["region_id"] is None or req["period"] is None):
-            search_key = digest([self.versions, normalized(req["phenomenon_query"]), plan["selection_plan_id"],
+            search_key = digest([versions, normalized(req["phenomenon_query"]), plan["selection_plan_id"],
                                  req["region_id"], req["period"]])
             ref = self.store.get("completed_search", search_key)
             if ref:
                 snapshot = self.store.get("preset", ref)
             if not snapshot:
-                snapshot = self.search(req, plan, progress)
+                snapshot = self.search(req, plan, progress, versions)
                 snapshot["search_key"] = search_key
         preset = snapshot["public"] if snapshot else None
         region = req["region_id"] or preset["region_id"]
@@ -225,9 +230,9 @@ class ResearchEngine:
         progress("analyzing")
         result = self.study(plan, region, period, req["period"])
         progress("correcting")
-        rows = ledger(result, self.versions, region, period)
+        rows = ledger(result, versions, region, period)
         families = [family("query", rows, [{"region_id": region, "period": period}], METHOD_VERSION)]
-        if snapshot and snapshot["versions"] == self.versions:
+        if snapshot and snapshot["versions"] == versions:
             families.append(snapshot["family"])
         warnings = list(plan.get("limitations") or [])
         if bound and not exact:
@@ -257,7 +262,7 @@ class ResearchEngine:
         partial = any(x["status"] != "ok" for x in result["variables"] + result["indicators"])
         status = "partial" if partial or plan["status"] == "partial" or result["comparison"]["reason"] else "complete"
         study = {**result, "identity": {"id": job["id"], "created_at": job["created"], "status": status,
-                                        "versions": self.versions},
+                                        "versions": versions},
                  "user_constraints": req, "selection": plan, "resolved": {"region_id": region,
                     "region_name": self.catalogue.regions[region]["name"], "period": period,
                     "region_source": "user" if req["region_id"] else "preset",

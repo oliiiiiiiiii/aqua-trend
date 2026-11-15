@@ -1,8 +1,10 @@
 """Launch the research API and Next.js together from any working directory."""
 import argparse
+import json
 from http.client import HTTPConnection
 import os
 from pathlib import Path
+import shutil
 import signal
 import subprocess
 import sys
@@ -25,6 +27,44 @@ def wait_for_api(process, port):
     raise RuntimeError("Research API did not start. Check its startup message above.")
 
 
+def ollama_running():
+    connection = HTTPConnection("127.0.0.1", 11434, timeout=1)
+    try:
+        connection.request("GET", "/api/version")
+        response = connection.getresponse()
+        if response.status == 200:
+            return isinstance(json.loads(response.read(2048)).get("version"), str)
+    except (OSError, ValueError, AttributeError):
+        pass
+    finally:
+        connection.close()
+    return False
+
+
+def launch_local_selector(env):
+    if env.get("AQUA_SELECTOR_URL") or env.get("AQUA_SELECTOR_MODEL") or env.get("AQUA_LOCAL_SELECTOR_URL"):
+        return None
+    if ollama_running():
+        return None
+    binary = shutil.which("ollama")
+    if not binary:
+        print("Local variable selection needs Ollama. Prepared topics are available.", flush=True)
+        return None
+    process = subprocess.Popen([binary, "serve"], start_new_session=True,
+                               env={**env, "OLLAMA_HOST": "127.0.0.1:11434", "OLLAMA_NO_CLOUD": "1"})
+    deadline = time.monotonic() + 10
+    try:
+        while process.poll() is None and time.monotonic() < deadline:
+            if ollama_running():
+                break
+            time.sleep(.1)
+    except KeyboardInterrupt:
+        process.terminate()
+        process.wait()
+        raise
+    return process
+
+
 def main():
     root = Path(__file__).resolve().parents[1]
     cli = argparse.ArgumentParser(description=__doc__)
@@ -39,7 +79,9 @@ def main():
     def stop(*_):
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, stop)
+    local_selector = None
     try:
+        local_selector = launch_local_selector(env)
         for command, directory in [
             ([sys.executable, "-m", "server.api", "--port", str(args.api_port)], root),
             (["npm", "run", "start" if args.production else "dev", "--", "--hostname", "127.0.0.1", "--port", str(args.web_port)], root / "web"),
@@ -53,6 +95,8 @@ def main():
     except KeyboardInterrupt:
         return 0
     finally:
+        if local_selector is not None:
+            children.append(local_selector)
         for child in children:
             try:
                 os.killpg(child.pid, signal.SIGTERM)

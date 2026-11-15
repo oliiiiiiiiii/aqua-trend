@@ -133,7 +133,14 @@ export interface EvidenceFamily extends MetadataRecord {
 export interface ResearchResult {
   identity: { id: string; status: string; created_at: string; [key: string]: unknown };
   user_constraints: Omit<ResearchRequest, "context">;
-  selection: { phenomenon?: string; variable_set?: SelectionItem[]; [key: string]: unknown };
+  selection: {
+    phenomenon?: string;
+    variable_set?: SelectionItem[];
+    selection_source?: string;
+    selector_provider?: string;
+    model_version?: string;
+    [key: string]: unknown;
+  };
   resolved: {
     region_id: string | null;
     region_name?: string;
@@ -179,7 +186,7 @@ export interface ResearchCatalogue {
   products?: (MetadataRecord & { product_id: string; label?: string; scientific_refs?: Source[] })[];
   recipes?: MetadataRecord[];
   curated_phenomena?: string[];
-  selector?: { mode: string; custom_queries_available: boolean };
+  selector?: { mode: string; model?: string; custom_queries_available: boolean };
   presets?: Preset[];
   versions?: MetadataRecord;
 }

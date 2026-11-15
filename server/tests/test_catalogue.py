@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 from urllib.error import URLError
 
+from server import local_selector
 from server.catalogue import Catalogue, DATA, SelectorError
 
 TAIWAN = "named-taiwan-main-island"
@@ -21,6 +22,9 @@ class SelectionTests(unittest.TestCase):
     def setUpClass(cls):
         with patch.dict(os.environ, {"AQUA_SELECTOR_MODEL":"", "AQUA_SELECTOR_URL":""}):
             cls.cat = Catalogue()
+        with patch.dict(os.environ, {"AQUA_SELECTOR_MODEL":"fixture-model-1", "AQUA_SELECTOR_URL":"http://localhost/fixture",
+                                     "AQUA_SELECTOR_API_KEY":"fixture-key"}):
+            cls.external = Catalogue()
 
     def test_reviewed_plans_and_quantities_have_valid_sources(self):
         for alias, pid in self.cat.aliases.items():
@@ -38,7 +42,8 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(self.cat.select("海洋熱浪")["status"], "partial")
         self.assertEqual(self.cat.select("sea surface temperature")["variable_set"][0]["variable_id"], "sst")
 
-    def test_unconfigured_provider_does_not_substitute_keyword_matches(self):
+    @patch("server.local_selector.model_digest", return_value=None)
+    def test_unavailable_provider_does_not_substitute_keyword_matches(self, inventory):
         for text in ("drought in Europe during 2022", "乾旱和海洋升溫", "earthquake recurrence"):
             with self.subTest(text=text), self.assertRaises(SelectorError) as caught:
                 self.cat.select(text)
@@ -57,19 +62,21 @@ class SelectionTests(unittest.TestCase):
                 self.cat.validate_selection({**good, **mutation})
 
     def test_configured_provider_processes_arbitrary_prose(self):
-        cat = self.cat
+        cat = self.external
         model_plan = {"phenomenon":"Near-surface thermal conditions","phenomenon_id":"thermal-conditions",
                       "status":"ok","variable_set":[{"variable_id":"tair","role":"core_indicator","catalogue_ref":"concept:tair"}],
                       "indicator_recipe_ids":[],"limitation_refs":[]}
         body = json.dumps({"choices":[{"message":{"content":json.dumps(model_plan)}}]}).encode()
         text = "How did the temperature of the air change in Alaska after 2015?"
-        with patch.object(cat, "model", "fixture-model-1"), patch.object(cat, "model_url","http://localhost/fixture"), patch(
-                "server.catalogue.urlopen", side_effect=[io.BytesIO(body),io.BytesIO(body)]) as send:
+        with patch("server.catalogue.urlopen", side_effect=[io.BytesIO(body),io.BytesIO(body)]) as send:
             first, second = cat.select(text), cat.select(text,reselect=True)
-            request = json.loads(send.call_args.args[0].data)
+            req = send.call_args.args[0]
+            request = json.loads(req.data)
+        self.assertEqual(req.get_header("Authorization"), "Bearer fixture-key")
         self.assertEqual(request["messages"][-1]["content"], text)
         self.assertEqual(first["model_version"], "fixture-model-1")
         self.assertEqual(first["selection_source"], "model")
+        self.assertEqual(first["selector_provider"], "chat_completions")
         self.assertEqual(first["content_hash"], second["content_hash"])
         self.assertNotEqual(first["selection_plan_id"], second["selection_plan_id"])
         self.assertEqual(first["variable_set"][0]["variable_id"], "tair")
@@ -80,12 +87,60 @@ class SelectionTests(unittest.TestCase):
         unsupported = {"phenomenon":"Stellar winds","phenomenon_id":"stellar-winds","status":"unsupported",
                        "variable_set":[],"indicator_recipe_ids":[],"limitation_refs":[]}
         self.assertEqual(self.cat.validate_selection(unsupported)["status"], "unsupported")
-        with patch.object(self.cat, "model", "fixture"), patch.object(self.cat, "model_url","http://localhost/fixture"):
-            for failure, code in [(URLError("fixture: offline"), "selector_unavailable"), (io.BytesIO(b'{}'), "invalid_selector_output")]:
-                options = {"side_effect":failure} if isinstance(failure,Exception) else {"return_value":failure}
-                with patch("server.catalogue.urlopen", **options), self.assertRaises(SelectorError) as caught:
-                    self.cat.select("any test query")
-                self.assertEqual(caught.exception.code, code)
+        for failure, code in [(URLError("fixture: offline"), "selector_unavailable"), (io.BytesIO(b'{}'), "invalid_selector_output")]:
+            options = {"side_effect":failure} if isinstance(failure,Exception) else {"return_value":failure}
+            with patch("server.catalogue.urlopen", **options), self.assertRaises(SelectorError) as caught:
+                self.external.select("any test query")
+            self.assertEqual(caught.exception.code, code)
+
+    @patch("server.local_selector.model_digest", return_value="a" * 64)
+    def test_native_selection_uses_reviewed_roles_and_no_generated_rules(self, inventory):
+        cat = self.cat
+        query = "How do flood conditions and air temperature compare?"
+        matches = ["Flooding", "Runoff", "Near-surface air temperature"]
+        body = {"done":True, "message":{"content":json.dumps({"matches":matches})}}
+        with patch("server.catalogue.urlopen", return_value=io.BytesIO(json.dumps(body).encode())) as send:
+            plan = cat.select(query)
+        request = json.loads(send.call_args.args[0].data)
+        self.assertIs(request["think"], False)
+        self.assertIs(request["stream"], False)
+        self.assertEqual(send.call_args.args[0].get_header("Authorization"), None)
+        self.assertEqual(request["messages"][-1]["content"], query)
+        self.assertEqual(request["format"]["additionalProperties"], False)
+        self.assertEqual(plan["selector_provider"], "ollama")
+        self.assertEqual(plan["model_digest"], "a" * 64)
+        self.assertEqual(plan["indicator_recipe_ids"], ["recorded-flood"])
+        self.assertEqual([v["catalogue_ref"] for v in plan["variable_set"]],
+                         ["context:flood/precip", "context:flood/runoff", "concept:tair"])
+        self.assertTrue(all(v["scientific_refs"] and v["reason"] for v in plan["variable_set"]))
+        for answer in ({"matches":["New formula"]}, {"matches":["Runoff"],"role":"new role"},
+                       {"matches":[]}, {"matches":[{}]}, {"matches":["Runoff"],"region_id":"foo"}):
+            with self.subTest(answer=answer), self.assertRaises(ValueError):
+                local_selector.expand(answer, cat.plans)
+        with self.assertRaises(SelectorError):
+            cat.validate_selection({**cat.plans["flood"], "phenomenon_id":"river-drainage", "limitation_refs":[],
+                                    "indicator_recipe_ids":[]})
+
+    def test_partial_and_unsupported_matches_are_explicit_and_expand_all_direct_variables(self):
+        cat = self.cat
+        def expand(matches):
+            return cat.validate_selection(local_selector.expand({"matches":matches}, cat.plans))
+        self.assertEqual(expand(["River discharge"])["status"], "unsupported")
+        partial = expand(["Runoff", "Sea level"])
+        self.assertEqual(partial["status"], "partial")
+        self.assertEqual(partial["limitation_refs"], ["missing-observation"])
+        omitted = expand(["Drought", "Marine heatwaves"])
+        self.assertIn("separate-study:marine-heatwave", omitted["limitation_refs"])
+        self.assertNotIn("sst", [v["variable_id"] for v in omitted["variable_set"]])
+        labels = [v["label"] for v in cat.concepts.values()]
+        self.assertEqual(len(expand(labels)["variable_set"]), len(cat.concepts))
+
+    def test_changed_weights_during_inference_do_not_publish_the_wrong_digest(self):
+        with patch("server.local_selector.model_digest", side_effect=["a" * 64, "b" * 64]), patch.object(
+                self.cat, "_call_model", return_value=self.cat.plans["runoff"]), self.assertRaises(SelectorError) as error:
+            self.cat.select("Natural drainage")
+        self.assertEqual(error.exception.code, "selector_unavailable")
+        self.assertTrue(error.exception.retryable)
 
 
 class RealReleaseTests(unittest.TestCase):

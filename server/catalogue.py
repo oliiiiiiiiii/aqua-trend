@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 import uuid
 from functools import lru_cache
 
+from . import local_selector
 from .catalogue_data.definitions import (
     BASELINES, CONCEPTS, LIMITATIONS, PHENOMENA, PRODUCTS, PRODUCT_FAMILIES, recipes, reference,
 )
@@ -158,6 +159,11 @@ class Catalogue:
         self.model_url = os.getenv("AQUA_SELECTOR_URL", "").strip()
         self.model = os.getenv("AQUA_SELECTOR_MODEL", "").strip()
         self.api_key = os.getenv("AQUA_SELECTOR_API_KEY", "")
+        self.provider = "chat_completions" if self.model_url or self.model else "ollama"
+        if self.provider == "ollama":
+            self.model_url = os.getenv("AQUA_LOCAL_SELECTOR_URL", "").strip() or local_selector.DEFAULT_URL
+            self.model = os.getenv("AQUA_LOCAL_SELECTOR_MODEL", "").strip() or local_selector.DEFAULT_MODEL
+        self.prompt_version = local_selector.PROMPT_VERSION if self.provider == "ollama" else PROMPT_VERSION
         self.products = {}
         self.concepts = {}
         self.links = {}
@@ -165,7 +171,9 @@ class Catalogue:
         self.aliases = {}
         self.limitations = {k:v["limit"] for k,v in PHENOMENA.items()}
         self.limitations["monthly-resolution"] = "Monthly averages cannot resolve individual daily or shorter events."
-        self.limitations["missing-observation"] = "The catalogue provides environmental context. Direct observations of this phenomenon are unavailable."
+        self.limitations["missing-observation"] = "At least one requested quantity has no matching observation in this catalogue. The study covers the listed measurements."
+        for key, row in PHENOMENA.items():
+            self.limitations[f"separate-study:{key}"] = f"{row['label']} requires a separate phenomenon study and is outside this analysis."
         self.asset_status = {}
         source = self._metadata("catalog/variables.json", "products", "export-2", "layers")
         self.layer_meta = source.get("layers", {})
@@ -210,7 +218,8 @@ class Catalogue:
         self.events = {}
         event_versions = self._load_event_sources()
         self.versions = {k:v for k,v in self.release.items() if k.endswith("_version")}
-        self.versions["selector_version"] = _digest([PROMPT, _file_digest(Path(__file__))])[:16]
+        self.versions["selector_version"] = _digest([_file_digest(Path(__file__)),
+                                                   _file_digest(Path(local_selector.__file__))])[:16]
         self.versions["catalogue_version"] += "-" + _file_digest(CONFIG / "definitions.py")[:12]
         self.versions["region_catalogue_version"] += "-" + _digest([raw_regions, geo_hashes])[:12]
         for rid in self.index.keys() - self.regions.keys():
@@ -233,7 +242,7 @@ class Catalogue:
         }
         data_hash = _digest([self.release, self.layer_meta, self.index, self.spatial, event_versions])
         self.versions["dataset_version"] += "-" + data_hash[:16]
-        self.versions.update(model_version=self.model or "offline-curator-v1", prompt_version=PROMPT_VERSION,
+        self.versions.update(model_version=self.model or "offline-curator-v1", prompt_version=self.prompt_version,
                              selector_endpoint_version=_digest(self.model_url)[:12])
         self.manifest = {
             **self.release, **self.versions,
@@ -387,25 +396,45 @@ class Catalogue:
         return {**selected, "coverage":coverage, "priority_rank":rank+1,
                 "events":[e for e in selected["events"] if region_id in e["region_ids"]]}
 
-    def public(self):
-        return {"versions":self.versions, "regions":list(self.regions.values()), "variables":list(self.concepts.values()),
-                "products":list(self.products.values()), "manifest":self.manifest, "baselines":list(self.baselines.values()),
-                "recipes":list(self.recipes.values()), "curated_phenomena":[self.plans[key]["phenomenon"] for key in PHENOMENA],
-                "selector":{"mode":"configured_model" if self.model and self.model_url else "curated_plans",
-                            "custom_queries_available":bool(self.model and self.model_url)}}
+    def current_versions(self):
+        versions = self.versions.copy()
+        if self.provider == "ollama":
+            digest = local_selector.model_digest(self.model_url, self.model)
+            if digest:
+                versions["model_digest"] = digest
+        return versions
 
-    def select(self, query, *, reselect=False):
+    def public(self, versions=None):
+        versions = versions if versions is not None else self.current_versions()
+        available = bool(versions.get("model_digest")) if self.provider == "ollama" else bool(self.model and self.model_url)
+        return {"versions":versions, "regions":list(self.regions.values()), "variables":list(self.concepts.values()),
+                "products":list(self.products.values()), "manifest":{**self.manifest, **versions}, "baselines":list(self.baselines.values()),
+                "recipes":list(self.recipes.values()), "curated_phenomena":[self.plans[key]["phenomenon"] for key in PHENOMENA],
+                "selector":{"mode":self.provider if available else "curated_plans", "model":self.model,
+                            "model_digest":versions.get("model_digest"), "custom_queries_available":available}}
+
+    def select(self, query, *, reselect=False, versions=None):
         normalized = normalize_query(query)
         alias = self.aliases.get(normalized)
         if alias and not reselect:
             raw = self.plans[alias]
             source, model = "curated_plan", "offline-curator-v1"
         else:
+            versions = versions if versions is not None else self.current_versions()
+            weight = versions.get("model_digest")
+            if self.provider == "ollama" and not weight:
+                raise SelectorError("selector_unavailable", f"The local model {self.model} is unavailable. Start Ollama and install the model, then retry.", True)
             raw = self._call_model(query)
+            if self.provider == "ollama" and local_selector.model_digest(self.model_url, self.model) != weight:
+                raise SelectorError("selector_unavailable", "The local model changed during selection. Retry to use its current weights.", True)
             source, model = "model", self.model
         plan = self.validate_selection(raw)
-        plan.update(selection_source=source, model_version=model, prompt_version=PROMPT_VERSION,
+        plan.update(selection_source=source, model_version=model,
+                    selector_provider=self.provider if source == "model" else "curated",
+                    prompt_version=self.prompt_version if source == "model" else PROMPT_VERSION,
                     catalogue_version=self.versions["catalogue_version"], normalized_query=normalized)
+        if source == "model" and weight:
+            plan["model_digest"] = weight
         plan["content_hash"] = _digest(plan)
         plan["selection_plan_id"] = "plan-" + (uuid.uuid4().hex if source=="model" else plan["content_hash"][:24])
         return plan
@@ -413,27 +442,41 @@ class Catalogue:
     def _call_model(self, query):
         if not self.model or not self.model_url:
             raise SelectorError("selector_unavailable", "Custom descriptions need a language model, which is not configured. Choose a prepared topic to run with your current region and dates.", True)
-        context = {"entries":list(self.links.values()), "recipes":[{"id":k,"phenomenon_id":v["phenomenon_id"],
-                   "required_variables":v["required_variables"],"applicability":v["phenomenon_applicability"]} for k,v in self.recipes.items()],
-                   "limitations":self.limitations}
-        body = {"model":self.model,"messages":[{"role":"system","content":PROMPT+"\nCatalogue:\n"+json.dumps(context,ensure_ascii=False)},
-                                                {"role":"user","content":query}],
-                "response_format":{"type":"json_object"}}
         headers = {"Content-Type":"application/json"}
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+        if self.provider == "ollama":
+            body = local_selector.request_body(self.model, query, self.plans)
+        else:
+            body = self._external_request(query)
+            if self.api_key:
+                headers["Authorization"] = f"Bearer {self.api_key}"
         try:
             request = Request(self.model_url, data=json.dumps(body).encode(), headers=headers, method="POST")
             with urlopen(request, timeout=40) as response:
                 raw = response.read(128 * 1024 + 1)
         except (URLError,OSError,ValueError) as error:
-            raise SelectorError("selector_unavailable", "The language-model provider could not complete the selection. Retry or check provider settings.", True) from error
+            message = (f"The local selector could not run {self.model}. Start Ollama and install the model, then retry."
+                       if self.provider == "ollama" else
+                       "The language-model provider could not complete the selection. Retry or check provider settings.")
+            raise SelectorError("selector_unavailable", message, True) from error
         try:
             if len(raw) > 128 * 1024:
                 raise ValueError("Response too large.")
-            return json.loads(json.loads(raw)["choices"][0]["message"]["content"])
-        except (ValueError,TypeError,IndexError,KeyError) as error:
+            response = json.loads(raw)
+            if self.provider == "ollama":
+                if response.get("done") is not True or response.get("done_reason") == "length":
+                    raise ValueError("Incomplete model response.")
+                return local_selector.expand(json.loads(response["message"]["content"]), self.plans)
+            return json.loads(response["choices"][0]["message"]["content"])
+        except (ValueError,TypeError,IndexError,KeyError,AttributeError) as error:
             raise SelectorError("invalid_selector_output", "The language model returned an invalid selection document.", True) from error
+
+    def _external_request(self, query):
+        context = {"entries":list(self.links.values()), "recipes":[{"id":k,"phenomenon_id":v["phenomenon_id"],
+                   "required_variables":v["required_variables"],"applicability":v["phenomenon_applicability"]} for k,v in self.recipes.items()],
+                   "limitations":self.limitations}
+        return {"model":self.model,"messages":[{"role":"system","content":PROMPT+"\nCatalogue:\n"+json.dumps(context,ensure_ascii=False)},
+                                               {"role":"user","content":query}],
+                "response_format":{"type":"json_object"}}
 
     def validate_selection(self, raw):
         fields = {"phenomenon","phenomenon_id","status","variable_set","indicator_recipe_ids","limitation_refs"}
@@ -454,12 +497,17 @@ class Catalogue:
             reject()
         if (status=="unsupported") != (not selection) or (status=="partial" and not limitations):
             reject()
+        if (status == "unsupported" and (indicators or limitations)
+            or any(key in PHENOMENA and key != pid for key in limitations)):
+            reject()
         entries, seen = [], set()
         for row in selection:
             if not isinstance(row,dict) or set(row) != {"catalogue_ref","variable_id","role"} or not isinstance(row["catalogue_ref"],str):
                 reject()
             link = self.links.get(row["catalogue_ref"])
             if not link or row["variable_id"]!=link["variable_id"] or row["role"]!=link["role"] or row["variable_id"] in seen:
+                reject()
+            if link.get("phenomenon_id", pid) != pid:
                 reject()
             seen.add(row["variable_id"])
             entries.append({**link, "label":self.concepts[row["variable_id"]]["label"]})

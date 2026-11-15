@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 from server.api import csv_snapshot
 from server.catalogue import Catalogue
 from server.errors import ResearchError
@@ -115,11 +116,35 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(p["period"], self.period)
         self.assertTrue(any(c.get("disabled") for c in r["evidence_families"][1]["candidates"]))
         old = copy.deepcopy(self.engine.versions)
-        self.engine.versions = {**old, "method_policy_version": "test-upgrade"}
+        self.engine.policy_versions["method_policy_version"] = "test-upgrade"
         replay = self.run_study(context={"preset_ref": {"id": p["id"], "version": p["version"]}})
         self.assertEqual(len(replay["evidence_families"]), 1)
         self.assertTrue(replay["warnings"])
         self.assertEqual(self.store.job(r["identity"]["id"])["result"]["identity"]["versions"], old)
+
+    def test_model_install_change_and_cached_studies_use_distinct_snapshots(self):
+        region, period = self.region, self.period
+        weight_a, weight_b = "a" * 64, "b" * 64
+        with patch.object(self.cat, "provider", "ollama"), patch("server.local_selector.model_digest") as inventory, patch.object(
+                self.cat, "_call_model", return_value=self.cat.plans["runoff"]) as model:
+            inventory.return_value = None
+            self.assertFalse(self.cat.public()["selector"]["custom_queries_available"])
+            inventory.return_value = weight_a
+            first = self.run_study("Natural drainage", region_id=region, period=period)
+            replay = self.run_study("Natural drainage", region_id=region, period=period)
+            self.assertEqual(first["selection"], replay["selection"])
+            self.assertEqual(model.call_count, 1)
+            inventory.return_value = weight_b
+            self.assertEqual(self.cat.public()["selector"]["model_digest"], weight_b)
+            newer = self.run_study("Natural drainage", region_id=region, period=period,
+                                   context={"parent_research_id": first["identity"]["id"]})
+            self.assertEqual(model.call_count, 2)
+            self.assertNotEqual(first["selection"]["selection_plan_id"], newer["selection"]["selection_plan_id"])
+            self.assertEqual(newer["identity"]["versions"]["model_digest"], weight_b)
+            self.assertEqual(newer["selection"]["model_digest"], weight_b)
+            saved = self.store.job(first["identity"]["id"])["result"]
+            self.assertEqual(saved["identity"]["versions"]["model_digest"], weight_a)
+            self.assertEqual(saved["selection"]["model_digest"], weight_a)
 
     def test_cancelled_work_never_publishes_a_case_or_overwrites_result(self):
         job = self.store.add_job({})
