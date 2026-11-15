@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Decomposition } from "@/lib/detective/contracts";
-import { autoRange, dailyAnomaly, dailyNormal, daysOf, estimateSeconds, needsConfirm, planPieces, runs, sameUnit, selectionSummary, splitRange } from "./plan";
+import { autoRange, dailyAnomaly, dailyLevel, dailyNormal, daysOf, levelledNormal, estimateSeconds, needsConfirm, planPieces, runs, sameUnit, selectionSummary, splitRange } from "./plan";
 
 test("days of a range longer than a month, across a leap day", () => {
   const d = daysOf({ start: "2020-02-27", end: "2020-03-02" });
@@ -84,6 +84,36 @@ test("daily anomaly removes that normal; a series that is exactly normal has no 
   const values = normal.map((v, i) => (i === 2 ? null : (v as number) + 5));
   assert.deepEqual(dailyAnomaly(values, normal).map((v) => (v === null ? null : Math.round(v * 1e9) / 1e9)), [5, 5, null, 5, 5]);
   assert.deepEqual(dailyAnomaly([3, 4], [null, 1]), [null, 3]);
+});
+
+test("the daily product's level is matched to the monthly series: a month of daily anomalies averages to its monthly anomaly", () => {
+  // the monthly series says March 2021 was 20 below normal and April 5 above; the daily product reads about 22 higher
+  const d = { ...model, residual: model.months.map((m) => (m === "2021-03" ? -20 : m === "2021-04" ? 5 : m === "2021-02" ? null : 0)) } as unknown as Decomposition;
+  const dates = daysOf({ start: "2021-02-26", end: "2021-04-03" });            // March ± 3 days: indices 3 … 33 are March
+  const normal = dailyNormal(d, dates);
+  const weather = dates.map((_, i) => 3 * Math.sin(i));
+  const marchWeather = mean(weather.slice(3, 34));
+  // March: 22 above the monthly series, with day-to-day weather; the three April days happen to read 40 above their month
+  const values = dates.map((day, i) => (normal[i] as number) + (day.startsWith("2021-03") ? 22 - 20 + weather[i] - marchWeather : day.startsWith("2021-04") ? 40 + 5 : 22));
+  const level = dailyLevel(d, dates, values, normal);
+  // the whole month decides (March), not the stray edge days; February has no monthly value and never counts
+  assert.ok(level && Math.abs(level.offset - 22) < 1e-9, JSON.stringify(level));
+  assert.deepEqual([level.days, level.months], [31, 1]);
+  const anomaly = dailyAnomaly(values, levelledNormal(normal, level));
+  assert.ok(Math.abs(mean(anomaly.slice(3, 34)) - -20) < 1e-9);                  // March: exactly the monthly anomaly
+  // without the level the anomaly would have the wrong sign
+  assert.ok(mean(dailyAnomaly(values, normal).slice(3, 34)) > 0);
+
+  // while a month is still loading every usable day counts, and the level says it is provisional
+  const partial = values.map((v, i) => (i >= 3 && i < 13 ? v : null));
+  const early = dailyLevel(d, dates, partial, normal);
+  assert.deepEqual([early?.days, early?.months], [10, 0]);
+  assert.ok(Math.abs((early?.offset ?? 0) - 22) < 3);
+  // nothing loaded, or no monthly value for the loaded days: no level, so no anomaly
+  assert.equal(dailyLevel(d, dates, dates.map(() => null), normal), null);
+  assert.equal(dailyLevel(d, dates.slice(0, 3), values.slice(0, 3), normal.slice(0, 3)), null);
+  assert.deepEqual(levelledNormal([1, null], null), [null, null]);
+  assert.deepEqual(levelledNormal([1, null], { offset: 2, days: 1, months: 0 }), [3, null]);
 });
 
 test("the selection's days are summarised, not the event's or the whole span", () => {

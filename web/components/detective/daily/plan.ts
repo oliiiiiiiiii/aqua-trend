@@ -147,7 +147,59 @@ export function dailyNormal(d: Decomposition | null, dates: string[]): (number |
   });
 }
 
-/** Daily anomaly: the day's value minus its normal (seasonal cycle and long-term trend removed). null stays null. */
+export interface DailyLevel {
+  /** what the daily product reads above (+) or below (−) the monthly series, in the series' unit */
+  offset: number;
+  /** observed days the offset was estimated from */
+  days: number;
+  /** whole calendar months among them; 0 = provisional (no month is fully loaded yet, every usable day counts) */
+  months: number;
+}
+
+/**
+ * The constant difference in level between the daily product and the monthly series.
+ *
+ * Daily and monthly values come from the same product family but are averaged over the basin differently (native
+ * grid and polygon mask against the 0.5° resampling), which leaves a level difference that is far from negligible
+ * (tens of mm for root-zone soil moisture). The monthly normal therefore cannot be subtracted from daily values
+ * as it is. For every observed day the monthly series says what the level should be: that day's normal plus its
+ * month's anomaly; the offset is the mean of (daily value − that).
+ *
+ * It is taken over the months that are wholly loaded and observed. For such a month it is exactly "mean of the
+ * month's daily values − the month's monthly value" (the daily normal keeps monthly means), so the month's daily
+ * anomalies average to its monthly anomaly. Until a whole month is in (loading, or a short span), every usable day
+ * counts and the result is provisional. null when no loaded day lies in a month that has a monthly value.
+ */
+export function dailyLevel(d: Decomposition | null, dates: string[], values: (number | null)[], normal: (number | null)[]): DailyLevel | null {
+  if (!d) return null;
+  const at = new Map(d.months.map((m, i) => [m, i]));
+  const byMonth = new Map<string, { sum: number; days: number }>();
+  dates.forEach((day, i) => {
+    const ym = day.slice(0, 7);
+    const v = values[i], nrm = normal[i], k = at.get(ym);
+    const anomaly = k === undefined ? null : d.residual[k];
+    if (v == null || nrm == null || anomaly == null || !Number.isFinite(v) || !Number.isFinite(nrm) || !Number.isFinite(anomaly)) return;
+    const m = byMonth.get(ym) ?? { sum: 0, days: 0 };
+    m.sum += v - nrm - anomaly;
+    m.days++;
+    byMonth.set(ym, m);
+  });
+  const all = [...byMonth.entries()];
+  const whole = all.filter(([ym, m]) => m.days === daysInMonth(monthIndex(ym)));
+  const used = whole.length ? whole : all;
+  const days = used.reduce((n, [, m]) => n + m.days, 0);
+  return days ? { offset: used.reduce((t, [, m]) => t + m.sum, 0) / days, days, months: whole.length } : null;
+}
+
+/** The daily normal at the daily product's own level (see dailyLevel); all null without a level. */
+export function levelledNormal(normal: (number | null)[], level: DailyLevel | null): (number | null)[] {
+  return normal.map((v) => (v == null || !level ? null : v + level.offset));
+}
+
+/**
+ * Daily anomaly: the day's value minus its normal (seasonal cycle and long-term trend removed). Pass the levelled
+ * normal, so that a month of daily anomalies averages to that month's monthly anomaly. null stays null.
+ */
 export function dailyAnomaly(values: (number | null)[], normal: (number | null)[]): (number | null)[] {
   return values.map((v, i) => {
     const nrm = normal[i];

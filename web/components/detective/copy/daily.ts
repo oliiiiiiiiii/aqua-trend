@@ -9,6 +9,7 @@ export const COPY = {
   },
   noProduct: "No daily product for this variable — showing months",
   noNormal: "No normal in this unit for these days, so the anomaly cannot be computed. Showing observed values.",
+  noLevel: "No monthly value for these days to match the daily series to, so no anomaly is shown.",
   noDays: "No finished days in this range yet.",
   clipped: (end: string) => `Daily data ends ${end} (finished UTC days only).`,
   start: (days: number, eta: string) => `Load ${days} days · about ${eta}`,
@@ -27,7 +28,7 @@ export const COPY = {
   above: "above normal",
   below: "below normal",
   normal: "Normal",
-  normalTitle: "Long-term trend + seasonal cycle from the monthly series, interpolated between mid-months to each day.",
+  normalTitle: "Long-term trend + seasonal cycle from the monthly series, read at each day and moved to the daily product's level.",
   event: "Event",
   selection: "Selection",
   earlier: "Move the selection one month earlier",
@@ -38,7 +39,10 @@ export const COPY = {
     observed: (value: string, n: number, days: number) => `Selection mean ${value} · ${n} of ${days} days`,
     none: "No observed day in the selection yet.",
   },
-  method: "Anomaly = daily value − normal. The normal is the monthly series' long-term trend and seasonal cycle, read at each day. Daily and monthly values come from the same product family but are averaged over the basin differently, and no daily σ is computed: significance stays with the monthly statistics.",
+  method: (offset: string, days: number, months: number) =>
+    `Anomaly = daily value − normal. The normal is the monthly series' long-term trend and seasonal cycle, read at each day. Daily and monthly values are averaged over the basin differently, so the normal is moved by a constant that matches the daily level to the monthly series: ${offset}, ${
+      months ? `from ${months === 1 ? "the whole month" : `the ${months} whole months`} loaded; those daily anomalies average to the monthly anomaly` : `provisional, from ${days} ${days === 1 ? "day" : "days"} until a whole month has loaded`
+    }. No daily σ is computed: significance stays with the monthly statistics.`,
   coverage: (obs: number, done: number) => `${obs} of ${done} days observed`,
   source: "Source",
   chartLabel: (name: string, what: string) => `${name}, ${what}. Left and right arrows step through days.`,

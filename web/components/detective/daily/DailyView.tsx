@@ -5,7 +5,9 @@
 //
 // Two layers, like the monthly chart:
 //   Anomaly  (default) each day minus its normal: the long-term trend and the seasonal cycle of the monthly
-//            decomposition, read at each day (plan.dailyNormal). Bars from zero, in the variable's polarity colours.
+//            decomposition, read at each day (plan.dailyNormal) and moved to the daily product's own level
+//            (plan.dailyLevel: the two series are averaged over the basin differently). Bars from zero, in the
+//            variable's polarity colours. A month of daily anomalies averages to that month's monthly anomaly.
 //   Observed the daily values with that normal as a dashed line.
 // No daily σ / z is computed (there is no daily baseline record): significance stays with the monthly statistics.
 // Variables without a daily product get a one-line note and the monthly `fallback`.
@@ -23,7 +25,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { num } from "../format";
 import { COPY } from "../copy/daily";
 import { anomalyColor } from "../workbench/types";
-import { dailyAnomaly, dailyNormal, runs, sameUnit, selectionSummary, type DayRange } from "./plan";
+import { dailyAnomaly, dailyLevel, dailyNormal, levelledNormal, runs, sameUnit, selectionSummary, type DayRange } from "./plan";
 import { useDailyRange, type DailyState } from "./useDailyRange";
 
 export type DailyMode = "anomaly" | "observed";
@@ -77,10 +79,15 @@ export default function DailyView(p: DailyViewProps) {
   // the normal of every day of the span, and what is left once it is taken off
   const dailyUnit = st.unit ?? p.unit;
   const comparable = !!p.d && sameUnit(dailyUnit, p.unit);
-  const normal = useMemo(() => (comparable ? dailyNormal(p.d, st.dates) : st.dates.map(() => null)), [comparable, p.d, st.dates]);
-  const anomaly = useMemo(() => dailyAnomaly(st.values, normal), [st.values, normal]); // eslint-disable-line react-hooks/exhaustive-deps
-  const hasNormal = normal.some(finite);
-  const mode: DailyMode = hasNormal ? picked : "observed";
+  const model = useMemo(() => (comparable ? dailyNormal(p.d, st.dates) : st.dates.map(() => null)), [comparable, p.d, st.dates]);
+  // the monthly normal sits at the monthly series' level; the daily product has its own (different basin averaging)
+  const level = dailyLevel(p.d, st.dates, st.values, model);
+  const normal = levelledNormal(model, level);
+  const anomaly = dailyAnomaly(st.values, normal);
+  /** the monthly model covers these days (so an anomaly is possible once days have loaded) */
+  const hasModel = model.some(finite);
+  const hasNormal = !!level;
+  const mode: DailyMode = hasModel ? picked : "observed";
 
   if (st.phase === "unsupported") {
     return (
@@ -101,7 +108,7 @@ export default function DailyView(p: DailyViewProps) {
           <h3 id={titleId} className="font-[family-name:var(--font-body-active)] text-sm font-semibold text-ink">{COPY.title[mode]}</h3>
           <p className="min-w-0 text-xs text-ink-2 tnum">{dataset ? `${dataset} · ` : ""}{longDay(span.start)} – {longDay(span.end)}</p>
         </div>
-        {hasNormal && <Segmented legend={COPY.modes} hideLegend tone="paper" look="underline" options={MODES} value={mode} onChange={setMode} />}
+        {hasModel && <Segmented legend={COPY.modes} hideLegend tone="paper" look="underline" options={MODES} value={mode} onChange={setMode} />}
       </div>
       <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-2 tnum">
         {p.onShift && <button type="button" onClick={() => p.onShift!(-1)} aria-label={COPY.earlier} title={COPY.earlier} className={step}><span aria-hidden="true">‹</span></button>}
@@ -109,7 +116,7 @@ export default function DailyView(p: DailyViewProps) {
         {p.onShift && <button type="button" onClick={() => p.onShift!(1)} aria-label={COPY.later} title={COPY.later} className={step}><span aria-hidden="true">›</span></button>}
       </p>
       <Status st={st} />
-      {!hasNormal && st.doneDays > 0 && <p role="note" className="mb-2 text-xs text-ink-2">{COPY.noNormal}</p>}
+      {!hasNormal && st.values.some(finite) && <p role="note" className="mb-2 text-xs text-ink-2">{hasModel ? COPY.noLevel : COPY.noNormal}</p>}
       {st.phase !== "empty" && (
         <DailyChart
           st={st} mode={mode} normal={normal} anomaly={anomaly} unit={dailyUnit} name={p.name}
@@ -151,7 +158,7 @@ export default function DailyView(p: DailyViewProps) {
               </table>
             </div>
           </details>
-          {hasNormal && <p className="mt-1 text-xs leading-relaxed text-ink-3">{COPY.method}</p>}
+          {level && <p className="mt-1 text-xs leading-relaxed text-ink-3">{COPY.method(`${num(level.offset, 2, true)} ${dailyUnit}`, level.days, level.months)}</p>}
           {st.source && (
             <p className="mt-1 text-xs leading-relaxed text-ink-3">
               {COPY.source}: <a href={st.source.url} target="_blank" rel="noreferrer" className="text-link underline underline-offset-2 hover:no-underline">{st.source.dataset}</a> · {st.source.aggregation}
