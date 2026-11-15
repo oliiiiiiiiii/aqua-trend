@@ -19,6 +19,23 @@ export const DEFAULT_TEST: TestId = "mean";
 const SLOW: ReadonlySet<TestId> = new Set(["bootstrap", "permutation", "runs", "spectrum"]);
 export const isSlow = (t: TestId) => SLOW.has(t);
 
+/**
+ * How long the "Analyse" progress bar runs (ms): 600 for quick tests, more for the simulation-heavy ones and longer
+ * ranges, at most 1200; 0 with reduced motion. A pacing cue only — the computation itself is synchronous.
+ */
+export function analyseMs(t: TestId, months: number, reducedMotion = false): number {
+  if (reducedMotion) return 0;
+  const ms = 600 + (isSlow(t) ? 400 : 0) + Math.min(200, Math.max(0, months - 12) * 2);
+  return Math.min(1200, ms);
+}
+
+/** The analysed result no longer matches what is on screen: another range (or variable), or another test. */
+export function staleReason(result: { key: string; test: TestId } | null, key: string, test: TestId): "range" | "test" | null {
+  if (!result) return null;
+  if (result.key !== key) return "range";
+  return result.test !== test ? "test" : null;
+}
+
 /** months "compare" and "variance" need outside the range (see runLabTool) */
 export const REST_MIN = 12;
 const NEEDS_REST: ReadonlySet<TestId> = new Set(["compare", "variance"]);

@@ -75,13 +75,12 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
   const k = slopeScale(n).k;
   return (
     <div className="mt-3">
-      <div aria-live="polite" aria-busy={run.pending} className={`transition-opacity ${run.pending ? "opacity-55" : ""}`}>
+      <div aria-live="polite" className={`transition-opacity ${run.pending ? "opacity-55" : ""}`}>
         <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <LabMark state={v.significant == null ? "none" : v.significant ? "sig" : "not"} title={v.significant == null ? L.descriptive : v.significant ? L.sig : L.notSig} />
           <span className="text-base font-semibold text-ink">{v.headline}</span>
           {v.significant != null && <span className="text-sm text-ink-2">{L.alpha}</span>}
           {v.note && <span className="text-sm text-ink-2">{v.note}</span>}
-          {run.pending && <span className="text-xs text-ink-3">{L.computing}</span>}
         </p>
         {run.baselineWarning && (
           <p role="note" className="mt-1 text-sm text-synthetic"><span aria-hidden="true">⚠ </span>{L.baselineWarn}</p>

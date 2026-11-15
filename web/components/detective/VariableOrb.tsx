@@ -130,6 +130,7 @@ export default function VariableOrb({ region, catalog, category, layer, name, un
             colorBy={null}
             showLegend={false}
             legendPlacement="below"
+            onPaper
           />
         ) : (
           <Skeleton />
@@ -143,6 +144,7 @@ export default function VariableOrb({ region, catalog, category, layer, name, un
             legend={COPY.switchLegend}
             hideLegend
             tone="paper"
+            look="underline"
             value={mode}
             onChange={setMode}
             options={[{ value: "observed", label: COPY.observed }, { value: "normal", label: COPY.normal, title: COPY.normalShown }]}
@@ -162,7 +164,7 @@ export default function VariableOrb({ region, catalog, category, layer, name, un
         {!ch && <Gauge g={gauge} mode={mode} highReads={highReads} />}
         {!ch && range && <p className="mt-1.5 text-[0.6875rem] leading-tight text-ink-3 tnum">{COPY.range(num(range.lo), `${num(range.hi)} ${unit}`)}</p>}
         <p className="mt-1.5 text-[0.6875rem] leading-tight text-ink-3">
-          {ch ? COPY.drives(COPY.channel[ch]) : [COPY.scenery, COPY.unmapped[mapping.reason]].filter(Boolean).join(". ") + "."}
+          {ch ? COPY.drives(COPY.channel[ch]) : [COPY.scenery, COPY.unmapped[mapping.reason]].filter(Boolean).map((t) => t.replace(/\.$/, "")).join(". ") + "."}
         </p>
       </div>
     </section>

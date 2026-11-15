@@ -1,9 +1,8 @@
 "use client";
-// Small shared pieces: the verdict mark, the hypothesis chip, a lane's three numbers.
+// Small shared pieces: the verdict mark, the hypothesis chip, the anomaly legend.
 import type { IntervalDetail } from "@/lib/detective/intervalDetail";
-import { pValue } from "../format";
 import { COPY } from "./copy";
-import { hypothesis, sigmaText, verdictView } from "./model";
+import { hypothesis, verdictView } from "./model";
 import { anomalyColor } from "./types";
 
 /** ● ◐ ○ – (drawn, so every font shows the same shape) with its meaning in title and for screen readers; colour only when significant. */
@@ -42,20 +41,6 @@ export function HypothesisChip({ expected, d }: { expected?: "high" | "low"; d: 
       <span className="sr-only">{COPY.expected.title(h.dir, h.state)}</span>
       <span aria-hidden="true">{h.dir === "high" ? "↑" : "↓"}</span>
     </span>
-  );
-}
-
-/** mean z · p · mark, the lane list's comparison columns */
-export function LaneNumbers({ d, polarity, expected }: { d: IntervalDetail | null; polarity: "cool" | "warm"; expected?: "high" | "low" }) {
-  return (
-    <div className="grid grid-cols-[3.6rem_3.6rem_auto] items-center gap-x-1.5 text-sm text-ink tnum">
-      <span className="text-right font-semibold">{sigmaText(d?.meanZ)}</span>
-      <span className="text-right text-ink-2">{d?.test ? pValue(d.test.p) : "—"}</span>
-      <span className="flex items-center gap-1.5 pl-1">
-        <VerdictMark d={d} polarity={polarity} />
-        <HypothesisChip expected={expected} d={d} />
-      </span>
-    </div>
   );
 }
 

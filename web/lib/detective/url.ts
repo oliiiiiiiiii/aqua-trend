@@ -8,16 +8,20 @@
 //   r    basin4 sub-basin id (L); only "b4-<digits>" is accepted in the MVP
 //   v    analysed categories, written only by "Start"; r + t + v together open the analysis tabs
 //   l    non-default layer per category, "precip:p_gpcp,soil:sm_m2"  (DetectiveQuery.layers)
-//   pad  months shown before and after the event, 3-60 (default 12, left out of the URL)
+//   pad  months kept out of the baseline either side of the event, 3-60 (default 12, left out of the URL)
 //   tab  the open variable tab (one of v)
 // Extension beyond the contract (see encodeState / decodeState):
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
 //   sel  the workbench selection "YYYY-MM..YYYY-MM"; left out when it equals the event period (t)
-//   test the open test of the workbench "Tests" area (one of TEST_IDS); absent = Tests closed
+//   test the method of the expanded row of the workbench's Tests table (one of TEST_IDS); absent = no row expanded
+//   win  the view window around the event ("2w", "8m", "3y", "all"; lib/detective/window.ts). Left out when it equals
+//        the window the URL implies without it: DEFAULT_WINDOW, or for older links that only carry `pad` (which used to
+//        set the view too) windowFromPad(pad), so those links still open on the same view.
 //
 // The time suggestion is shared with the API's keyword selector.
 import type { CategoryId, DetectiveQuery, LayerId, RegionId, TimeRange, UrlCodec, YearMonth } from "./contracts";
 import { CATEGORY_ORDER } from "./categories";
+import { DEFAULT_WINDOW, decodeWindow, encodeWindow, sameWindow, windowFromPad, type ViewWindow } from "./window";
 
 export const CATEGORY_IDS = CATEGORY_ORDER;
 
@@ -98,9 +102,18 @@ export interface DetectiveUrlState {
   rejectedRegion: string | null;
   /** the analysis workbench's selected sub-interval (`sel`); absent when it is the event period */
   selection?: TimeRange;
-  /** the open workbench test (`test`); absent when the Tests area is closed */
+  /** the method of the expanded Tests row (`test`); absent when no row is expanded */
   test?: TestId;
+  /** the view window (`win`) as written; absent when the URL has none (see impliedWindow) */
+  window?: ViewWindow;
 }
+
+/** The view window a URL without `win` stands for: older links set the view with `pad`. */
+export function impliedWindow(padMonths?: number | null): ViewWindow {
+  return padMonths != null && padMonths !== DEFAULT_PAD ? windowFromPad(padMonths) : DEFAULT_WINDOW;
+}
+/** The view window of a decoded URL. */
+export const windowOf = (s: Pick<DetectiveUrlState, "query" | "window">): ViewWindow => s.window ?? impliedWindow(s.query.padMonths);
 
 export function decodeState(search: string): DetectiveUrlState {
   const p = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
@@ -141,10 +154,14 @@ export function decodeState(search: string): DetectiveUrlState {
   if (sel && !sameRange(sel, q.time)) out.selection = sel;
   const test = p.get("test")?.trim() ?? "";
   if (isTestId(test)) out.test = test;
+  const win = decodeWindow(p.get("win"));
+  if (win) out.window = win;
   return out;
 }
 
-export function encodeState(s: { query: Partial<DetectiveQuery>; draft?: CategoryId[] | null; selection?: TimeRange | null; test?: TestId | null }): string {
+export function encodeState(s: {
+  query: Partial<DetectiveQuery>; draft?: CategoryId[] | null; selection?: TimeRange | null; test?: TestId | null; window?: ViewWindow | null;
+}): string {
   const q = s.query;
   const p = new URLSearchParams();
   const e = q.event?.trim();
@@ -164,6 +181,7 @@ export function encodeState(s: { query: Partial<DetectiveQuery>; draft?: Categor
   if (q.active && v.includes(q.active)) p.set("tab", q.active);
   if (s.selection && parseRange(encodeRange(s.selection)) && !sameRange(s.selection, q.time)) p.set("sel", encodeRange(s.selection));
   if (s.test && isTestId(s.test)) p.set("test", s.test);
+  if (s.window && !sameWindow(s.window, impliedWindow(q.padMonths))) p.set("win", encodeWindow(s.window));
   if (s.draft) p.set("c", cleanCategories(s.draft).join(","));
   // commas, colons and dots stay readable in shared links
   return p.toString().replace(/%2C/gi, ",").replace(/%3A/gi, ":");

@@ -1,16 +1,18 @@
 "use client";
 // Step 2 + Step 3 of /detective: run the analysis for every chosen category and show the workbench
-// (docs/ux-refresh.md): stage header, sticky selection toolbar, stacked lanes sharing one time axis and
-// one selection, one expanded lane with the crystal ball, the large chart and the statistics.
+// (docs/ux-refresh.md): stage header, sticky selection + window toolbar, the variable dropdown (every variable's
+// sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (daily
+// in a weeks window) and the statistics.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Catalog } from "@/lib/types";
 import type { CategoryId, DetectiveQuery, LayerId, MonthlySeries, RegionId, TrendStats } from "@/lib/detective/contracts";
-import { DEFAULT_PAD, PAD_MAX, PAD_MIN, decodeState, formatRange, ymIndex } from "@/lib/detective/url";
+import { DEFAULT_PAD, decodeState, formatRange, windowOf, ymIndex } from "@/lib/detective/url";
+import { monthView, type ViewWindow } from "@/lib/detective/window";
 import { categoryAvailability, loadSeries, type VariableCatalog } from "@/lib/detective/series";
 import { baselineInfo, intervalDetail, type IntervalDetail } from "@/lib/detective/intervalDetail";
 import { anomalyPolarity } from "@/lib/detective/polarity";
-import { useElementHeight } from "@/components/charts/useElementWidth";
+import { Segmented } from "@/components/ui/Segmented";
 import { StatusCard } from "@/components/ui/StatusCard";
 import { downloadText } from "@/components/ui/download";
 import { CATEGORIES, analysis, variableMetadata } from "./wiring";
@@ -18,13 +20,17 @@ import { NO_LAYERS, msg, presetFor, writeUrl } from "./appShared";
 import { COPY } from "./workbench/copy";
 import { clampSpan, orderLanes, resizeSpan, selectionLabel, shiftSpan, toRange, toSpan, type Span } from "./workbench/model";
 import type { LaneModel, LaneResult } from "./workbench/types";
-import { AxisRow, CollapsedLane, ExpandedLane, LANE_VARS, type Shared } from "./workbench/Lanes";
+import { ExpandedLane, type Shared } from "./workbench/Lanes";
 import { StageHeader, Toolbar } from "./workbench/Toolbar";
 import { selectionCsv } from "./workbench/csv";
 import type { LabControl } from "./workbench/lab/TestsPanel";
 import { DEFAULT_TEST, type TestId } from "./workbench/lab/tests";
+import VariableSelect from "./picker/VariableSelect";
+import { itemsFromLanes } from "./picker/fromLanes";
+import WindowControl from "./window/WindowControl";
+import BaselinePadControl from "./window/BaselinePadControl";
+import DailyView from "./daily/DailyView";
 
-const PAD_CHOICES = [6, 12, 24];
 const KEY_COMMIT_MS = 450;
 
 export default function AnalysisView({
@@ -108,42 +114,44 @@ export default function AnalysisView({
     return out;
   }, [cats, vc, avail, series, loadKey, tStart, tEnd, pad, trends]);
 
-  /* ---------------- window */
-  const [showAll, setShowAll] = useState(false);
-  const padView = useMemo(() => ({ s: event.s - pad, e: event.e + pad }), [event, pad]);
-  const view = useMemo(() => {
-    if (!showAll) return padView;
-    let s = padView.s, e = padView.e;
-    for (const c of cats) { const r = results[c]; if (r.kind === "ready") { s = Math.min(s, r.record.s); e = Math.max(e, r.record.e); } }
-    return { s, e };
-  }, [showAll, padView, cats, results]);
+  /* ---------------- window (URL `win`; older links set it with `pad`) — what is shown, never the baseline */
+  const params = useSearchParams();
+  const [win, setWinState] = useState<ViewWindow>(() => windowOf(decodeState(params.toString())));
+  const winRef = useRef(win);
+  winRef.current = win;
+  const recordUnion = useMemo(() => {
+    let r: Span | null = null;
+    for (const c of cats) { const x = results[c]; if (x.kind === "ready") r = r ? { s: Math.min(r.s, x.record.s), e: Math.max(r.e, x.record.e) } : x.record; }
+    return r;
+  }, [cats, results]);
+  const view = useMemo(() => monthView(win, event, recordUnion), [win, event, recordUnion]);
 
   /* ---------------- the shared selection (URL `sel`, else the event) */
-  const params = useSearchParams();
   const urlSel = useMemo(() => decodeState(params.toString()).selection ?? null, [params]);
   const [selState, setSelState] = useState<{ key: string; span: Span }>(() => ({ key: evKey, span: urlSel ? toSpan(urlSel) : event }));
   const selRaw = selState.key === evKey ? selState.span : urlSel ? toSpan(urlSel) : event;
   const sel = clampSpan(selRaw, view, event);
   const [sortSpan, setSortSpan] = useState<Span | null>(null);
 
-  // writes keep the selection unless one is given; `null` removes it
+  // writes keep the selection unless one is given (`null` removes it) and always carry the current window
   const urlWith = useCallback((fn: (q: Partial<DetectiveQuery>) => Partial<DetectiveQuery>, selection?: Span | null) => {
-    writeUrl((s) => {
-      const out = { query: fn(s.query), selection: selection === undefined ? s.selection : selection ? toRange(selection) : undefined, test: s.test };
-      return out;
-    });
+    writeUrl((s) => ({
+      query: fn(s.query), selection: selection === undefined ? s.selection : selection ? toRange(selection) : undefined,
+      test: s.test, window: winRef.current,
+    }));
   }, []);
 
-  /* ---------------- Tests (lab): the open test is shared by every lane and kept in the URL `test` */
-  const [labTest, setLabTest] = useState<TestId | null>(() => decodeState(params.toString()).test ?? null);
-  const [lastTest, setLastTest] = useState<TestId>(labTest ?? DEFAULT_TEST);
+  /* ---------------- Tests: the picked test is shared by every variable and kept in the URL `test` (picking does not run
+     it; the user presses Analyse) */
+  const [labTest, setLabTest] = useState<TestId>(() => decodeState(params.toString()).test ?? DEFAULT_TEST);
   const [labWhole, setLabWhole] = useState(false);
-  const onLabTest = useCallback((t: TestId | null) => {
-    setLabTest(t);
-    if (t) setLastTest(t);
-    writeUrl((s) => ({ query: s.query, selection: s.selection, test: t }));
-  }, []);
-  const lab: LabControl = { test: labTest, whole: labWhole, onOpen: () => onLabTest(lastTest), onTest: onLabTest, onWhole: setLabWhole };
+  const lab: LabControl = {
+    test: labTest, whole: labWhole, onWhole: setLabWhole,
+    onTest: (t) => {
+      setLabTest(t);
+      writeUrl((s) => ({ query: s.query, selection: s.selection, test: t, window: winRef.current }));
+    },
+  };
 
   const raf = useRef<number | null>(null);
   const pendingSel = useRef<Span | null>(null);
@@ -240,32 +248,23 @@ export default function AnalysisView({
   }));
 
   /* ---------------- URL edits */
-  const scrollTo = useRef<CategoryId | null>(null);
-  const setTab = (c: CategoryId) => { scrollTo.current = c; urlWith((x) => ({ ...x, active: c })); };
-  // after the user expands a lane, bring it under the sticky bars so its chart and verdict are on screen
-  useEffect(() => {
-    if (scrollTo.current !== active) return;
-    scrollTo.current = null;
-    const el = document.getElementById(`lanebox-${active}`);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top;
-    const phone = window.matchMedia("(max-width: 767px)").matches;
-    if (!phone && top > 0 && top < window.innerHeight * 0.5) return;
-    el.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  }, [active]);
+  const setTab = (c: CategoryId) => urlWith((x) => ({ ...x, active: c }));
   const setLayer = (c: CategoryId, l: LayerId) =>
     urlWith((x) => {
       const layers = { ...(x.layers ?? {}) };
       if (vc?.defaults[c] === l) delete layers[c]; else layers[c] = l;
       return { ...x, layers };
     });
-  const setWindow = (v: "all" | number) => {
-    if (v === "all") { setShowAll(true); return; }
-    setShowAll(false);
-    const next = clampSpan(selRaw, { s: event.s - v, e: event.e + v }, event);
+  // the window only changes what is shown; the selection is clamped into the new view as before
+  const setWin = (w: ViewWindow) => {
+    winRef.current = w;
+    setWinState(w);
+    const next = clampSpan(selRaw, monthView(w, event, recordUnion), event);
     setSelState({ key: evKey, span: next });
-    urlWith((x) => ({ ...x, padMonths: v }), next);
+    urlWith((x) => x, next);
   };
+  // the months left out of the baseline (URL `pad`), set in "Baseline and method"
+  const setPad = (n: number) => urlWith((x) => ({ ...x, padMonths: n }));
   const onEdit = () => writeUrl((s) => ({ query: { ...s.query, categories: undefined, active: undefined }, draft: s.query.categories ?? [] }), "push");
 
   const [copied, setCopied] = useState(false);
@@ -285,11 +284,21 @@ export default function AnalysisView({
     downloadText(`detective-${q.region}-${toRange(sel).start}_${toRange(sel).end}.csv`, csv);
   };
 
-  const [toolbarRef, toolbarH] = useElementHeight<HTMLDivElement>();
   const shared: Shared = { view, event, sel, hover, onSel: onSelLive, onCommit: commitSel, onHover };
   const allNoData = cats.every((c) => results[c].kind === "nodata");
-  const padChoices = (PAD_CHOICES.includes(pad) ? PAD_CHOICES : [...PAD_CHOICES, pad].sort((a, b) => a - b)).filter((n) => n >= PAD_MIN && n <= PAD_MAX);
   const relation = selectionLabel(sel, event).relation;
+  const lane = lanes.find((l) => l.c === active) ?? lanes[0];
+  const weeks = win !== "all" && win.unit === "week" ? win.n : null;
+  const ready = lane?.res.kind === "ready" ? lane.res : null;
+  const renderChart = weeks != null && ready
+    ? (monthly: React.ReactNode) => (
+      <DailyView
+        region={q.region} layer={ready.meta.layer} name={ready.meta.name} product={ready.meta.product} unit={ready.meta.unit}
+        event={q.time} weeks={weeks} d={ready.d} fallback={monthly}
+      />
+    )
+    : undefined;
+  const T = COPY.toolbar;
 
   return (
     <>
@@ -304,25 +313,31 @@ export default function AnalysisView({
         </div>
       ) : (
         <>
-          <Toolbar
-            rootRef={toolbarRef}
-            view={view} event={event} sel={sel} pad={pad} padChoices={padChoices} showAll={showAll} order={order}
-            onPreset={commitSel} onWindow={setWindow} onOrder={setOrder}
-          />
-          <div className={`mx-auto max-w-[90rem] px-2 pt-3 pb-10 sm:px-4 lg:px-6 ${LANE_VARS}`} style={{ "--toolbar-h": `${toolbarH}px` } as React.CSSProperties}>
-            <AxisRow view={view} event={event} />
-            <ul aria-label={COPY.lanes.label}>
-              {lanes.map((lane) => lane.c === active ? (
-                <ExpandedLane
-                  key={lane.c}
-                  lane={lane} shared={shared} vc={vc} catalog={catalog} regionId={q.region} relation={relation}
-                  onLayer={(l) => setLayer(lane.c, l)} onRetry={() => setAttempt((a) => a + 1)}
-                  onKeyDown={onChartKey} onCsv={downloadCsv} lab={lab}
-                />
-              ) : (
-                <CollapsedLane key={lane.c} lane={lane} shared={shared} onExpand={() => setTab(lane.c)} onRetry={() => setAttempt((a) => a + 1)} />
-              ))}
-            </ul>
+          <Toolbar view={view} event={event} sel={sel} onPreset={commitSel} window={<WindowControl value={win} onChange={setWin} />} />
+          <div className="mx-auto max-w-[90rem] px-4 pt-5 pb-12 sm:px-6 lg:px-8">
+            <div className="mb-5 flex flex-wrap items-center gap-x-8 gap-y-2">
+              <VariableSelect
+                className="w-full lg:w-[46rem]"
+                items={itemsFromLanes(lanes)} value={active} onChange={setTab}
+                view={view} event={event} sel={sel}
+              />
+              <div className="flex items-baseline gap-3">
+                <span aria-hidden="true" className="text-sm text-ink-2">{T.order}</span>
+                <Segmented legend={T.order} hideLegend tone="paper" look="underline"
+                  options={[{ value: "picked", label: T.asPicked }, { value: "unusual", label: T.mostUnusual }]}
+                  value={order} onChange={setOrder} />
+              </div>
+            </div>
+            {lane && (
+              <ExpandedLane
+                key={lane.c}
+                lane={lane} shared={shared} vc={vc} catalog={catalog} regionId={q.region} relation={relation}
+                onLayer={(l) => setLayer(lane.c, l)} onRetry={() => setAttempt((a) => a + 1)}
+                onKeyDown={onChartKey} onCsv={downloadCsv} lab={lab}
+                renderChart={renderChart}
+                baselineControl={<BaselinePadControl value={pad} onChange={setPad} />}
+              />
+            )}
           </div>
         </>
       )}

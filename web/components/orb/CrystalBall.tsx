@@ -19,6 +19,8 @@ export interface CrystalBallExtraProps {
   legendPlacement?: "auto" | "side" | "below";
   /** diorama style: "glass" (default, smooth landscape in a glass ball), "hex-glass" (hex-tile board in the ball) or "hex-island" (floating hex sky island, no glass) */
   variant?: OrbVariant;
+  /** the ball sits on paper, not on the stage: the "3D view unavailable" fallback then uses paper text colours */
+  onPaper?: boolean;
 }
 
 function subscribeReduced(cb: () => void) {
@@ -49,8 +51,9 @@ const MISSING_ANCHOR: Partial<Record<VarId, AnchorName>> = { precip: "cloud", et
 
 export default function CrystalBall({
   className = "", region, climate, month, values, targets: rawTargets, colorBy, playing = false,
-  showLegend = true, legendPlacement = "auto", variant = "glass", compact = false, onAnchors,
+  showLegend = true, legendPlacement = "auto", variant = "glass", compact = false, onAnchors, onPaper = false,
 }: CrystalBallProps & CrystalBallExtraProps) {
+  const fallbackTone = onPaper ? "border-line text-ink-2" : "border-stage-line text-on-stage-2";
   const targetKey = rawTargets.join(",");
   const targets = useMemo(
     () => targetKey.split(",").filter((v): v is VarId => v in VARIABLES && VARIABLES[v as VarId].target).slice(0, MAX_TARGETS),
@@ -230,7 +233,7 @@ export default function CrystalBall({
           className="relative aspect-square h-full w-full min-w-0 select-none overflow-hidden"
         >
           {gl === "failed" && (
-            <div className="absolute inset-[8%] grid place-items-center rounded-full border border-dashed border-stage-line p-3 text-center text-xs text-on-stage-2">3D view unavailable</div>
+            <div className={`absolute inset-[8%] grid place-items-center rounded-full border border-dashed p-3 text-center text-xs ${fallbackTone}`}>3D view unavailable</div>
           )}
           {/* small orb: one chip only, so several missing channels don't pile up on top of each other */}
           {missingChips.slice(0, 1).map((t) => (
@@ -273,7 +276,7 @@ export default function CrystalBall({
               </div>
             )}
             {gl === "failed" && (
-              <div className="absolute inset-[8%] grid place-items-center rounded-full border border-dashed border-stage-line p-6 text-center text-sm text-on-stage-2">
+              <div className={`absolute inset-[8%] grid place-items-center rounded-full border border-dashed p-6 text-center text-sm ${fallbackTone}`}>
                 3D view unavailable in this browser
               </div>
             )}

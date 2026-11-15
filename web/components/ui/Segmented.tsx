@@ -7,7 +7,10 @@ export interface SegmentOption<T extends string> {
   title?: string;
 }
 
-/** A labelled radio group drawn as a segmented control. `tone` picks stage or paper colours. */
+/**
+ * A labelled radio group drawn as a segmented control. `tone` picks stage or paper colours; `look="underline"` drops
+ * the frame and the pill: plain words, the chosen one in semibold with an underline (paper tone).
+ */
 export function Segmented<T extends string>({
   legend,
   options,
@@ -17,6 +20,7 @@ export function Segmented<T extends string>({
   hideLegend = false,
   className = "",
   gridOnMobile = false,
+  look = "pill",
 }: {
   legend: string;
   options: SegmentOption<T>[];
@@ -27,9 +31,34 @@ export function Segmented<T extends string>({
   className?: string;
   /** two-column grid below the sm breakpoint, for long option lists */
   gridOnMobile?: boolean;
+  look?: "pill" | "underline";
 }) {
   const name = useId();
   const stage = tone === "stage";
+  if (look === "underline") {
+    return (
+      <fieldset className={`min-w-0 ${className}`}>
+        <legend className={hideLegend ? "sr-only" : "mb-1 text-sm text-ink-2"}>{legend}</legend>
+        <div className="flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1">
+          {options.map((o) => {
+            const on = o.value === value;
+            return (
+              <label
+                key={o.value}
+                title={o.title}
+                className={`cursor-pointer border-b-2 pb-px text-sm whitespace-nowrap has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${
+                  on ? "border-ink font-semibold text-ink" : "border-transparent text-ink-2 hover:text-ink"
+                }`}
+              >
+                <input type="radio" name={name} value={o.value} checked={on} onChange={() => onChange(o.value)} className="sr-only" />
+                {o.label}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+    );
+  }
   return (
     <fieldset className={`min-w-0 ${className}`}>
       <legend className={hideLegend ? "sr-only" : `mb-1.5 text-sm ${stage ? "text-on-stage-2" : "text-ink-2"}`}>{legend}</legend>

@@ -1,5 +1,6 @@
 "use client";
-// Statistics for the selection, by importance: verdict → effect / σ / p / rank → shape → trend → method.
+// Statistics for the selection, by importance: verdict → effect / σ / p / rank → shape → trend → method. Lives in the
+// drawer beside the chart: collapsed (expanded={false}) it shows the verdict and the four live numbers only.
 import type { ReactNode } from "react";
 import type { TrendStats } from "@/lib/detective/contracts";
 import type { BaselineInfo, IntervalDetail } from "@/lib/detective/intervalDetail";
@@ -19,8 +20,14 @@ export interface StatsPanelProps {
   /** relation to the event, already worded ("ends just before") */
   relation: string;
   onCsv?: () => void;
-  /** the collapsible Tests area, placed after the shape line and before trend / method */
-  tests?: ReactNode;
+  /** the baseline exclusion control, shown at the top of "Baseline and method" */
+  baselineControl?: ReactNode;
+  /** false shows only the verdict and the four live numbers (the collapsed drawer); default true */
+  expanded?: boolean;
+  /** shows the More / Less control */
+  onToggle?: () => void;
+  /** id of the expandable part, for aria-controls */
+  moreId?: string;
 }
 
 export default function StatsPanel(p: StatsPanelProps) {
@@ -31,30 +38,21 @@ export default function StatsPanel(p: StatsPanelProps) {
   const pctShown = d?.percentOfNormal != null && percentMakesSense(unit) ? d.percentOfNormal : null;
   const missing = d ? d.months - d.n : 0;
   const sameSign = d?.signConsistency != null ? Math.round(d.signConsistency * d.n) : null;
+  const full = p.expanded !== false;
 
   return (
-    <section aria-label={S.heading} className="rounded-card border border-line bg-paper px-4 py-3 sm:px-5 sm:py-4" style={{ borderRadius: "min(var(--r-card), 14px)" }}>
+    <section aria-label={S.heading} className="min-w-0">
       {/* tier 1: verdict */}
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p aria-live="polite" className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <VerdictMark d={d} polarity={p.polarity} size={14} className="self-center" />
-          <span className="text-lg font-semibold text-ink">{v.label}</span>
-          {v.note && <span className="text-sm text-ink-2 tnum">{v.note}</span>}
-          <HypothesisChip expected={p.expected} d={d} />
-        </p>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-ink-3">{COPY.verdict.notCause}</span>
-          {p.onCsv && (
-            <button type="button" onClick={p.onCsv} title={S.csvTitle}
-              className="rounded-ctl border border-line px-2.5 py-0.5 text-xs font-semibold text-ink-2 hover:bg-well hover:text-ink">
-              {S.csv}
-            </button>
-          )}
-        </div>
-      </div>
+      <p aria-live="polite" className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        <VerdictMark d={d} polarity={p.polarity} size={14} className="self-center" />
+        <span className="text-lg leading-tight font-semibold text-ink">{v.label}</span>
+        <HypothesisChip expected={p.expected} d={d} />
+      </p>
+      {v.note && <p className="mt-0.5 text-sm text-ink-2 tnum">{v.note}</p>}
+      <p className="mt-0.5 text-xs text-ink-3">{COPY.verdict.notCause}</p>
 
-      {/* tier 1: the four numbers */}
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 tnum md:grid-cols-4">
+      {/* tier 1: the live numbers */}
+      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 tnum">
         <Cell label={S.meanAnomaly}
           value={d?.meanAnomaly != null ? `${num(d.meanAnomaly, 2, true)} ${unit}` : "—"}
           sub={[pctShown != null ? S.ofNormal(num(pctShown, 2, true)) : null, d?.ci95 ? S.ci(num(d.ci95[0], 2, true), num(d.ci95[1], 2, true)) : null]} />
@@ -67,27 +65,40 @@ export default function StatsPanel(p: StatsPanelProps) {
           sub={[d?.seasonRank && sel ? S.rankPeriods(monthAbbr(sel.s), monthAbbr(sel.e)) : S.noRankWhy]} />
       </dl>
 
-      {/* tier 2: shape */}
-      {d && d.n > 0 && (
-        <p className="mt-3 flex flex-wrap gap-x-2 gap-y-0.5 border-t border-line pt-2.5 text-sm text-ink-2 tnum">
-          {joinDots([
-            d.peak ? S.peak(formatYm(d.peak.month), sigmaText(d.peak.z)) : null,
-            S.beyond2(d.beyond2Sigma, d.n),
-            sameSign != null && d.direction ? S.sameSign(sameSign, d.n, d.direction) : null,
-            S.n(d.n, missing),
-            p.relation,
-          ])}
-        </p>
+      {p.onToggle && (
+        <button type="button" onClick={p.onToggle} aria-expanded={full} aria-controls={p.moreId}
+          className="mt-3 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
+          {full ? S.less : S.more}
+        </button>
       )}
 
-      {/* Tests (lab) */}
-      {p.tests && <div className="mt-2 border-t border-line">{p.tests}</div>}
-
-      {/* tier 3: trend and method */}
-      <div className={`${p.tests ? "" : "mt-2 "}border-t border-line`}>
-        <TrendDisclosure trend={p.trend} unit={unit} record={formatRange(p.baseline.record)} />
-        <MethodDisclosure baseline={p.baseline} unit={unit} nEff={d?.test?.nEff ?? null} />
-      </div>
+      {full && (
+        <div id={p.moreId} className="mt-3 border-t border-line pt-3">
+          {/* tier 2: shape */}
+          {d && d.n > 0 && (
+            <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-sm text-ink-2 tnum">
+              {joinDots([
+                d.peak ? S.peak(formatYm(d.peak.month), sigmaText(d.peak.z)) : null,
+                S.beyond2(d.beyond2Sigma, d.n),
+                sameSign != null && d.direction ? S.sameSign(sameSign, d.n, d.direction) : null,
+                S.n(d.n, missing),
+                p.relation,
+              ])}
+            </p>
+          )}
+          {/* tier 3: trend and method */}
+          <div className="mt-2">
+            <TrendDisclosure trend={p.trend} unit={unit} record={formatRange(p.baseline.record)} open />
+            <MethodDisclosure baseline={p.baseline} unit={unit} nEff={d?.test?.nEff ?? null} control={p.baselineControl} open />
+          </div>
+          {p.onCsv && (
+            <button type="button" onClick={p.onCsv} title={S.csvTitle}
+              className="mt-1 text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-ink">
+              {S.csv}
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -121,16 +132,16 @@ export function trendLine(s: TrendStats, unit: string): string {
   return parts.join(", ");
 }
 
-export function TrendDisclosure({ trend: s, unit, record }: { trend: TrendStats; unit: string; record: string }) {
+export function TrendDisclosure({ trend: s, unit, record, open }: { trend: TrendStats; unit: string; record: string; open?: boolean }) {
   const T = COPY.trend;
   return (
-    <details className="group">
+    <details className="group" open={open}>
       <summary className={summaryCls}>
         {chevron}
         <span className="font-semibold text-ink">{T.heading}</span>
         <span className="min-w-0 text-ink-2 tnum">{trendLine(s, unit)}</span>
       </summary>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 pb-3 pl-5 text-sm tnum">
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 pb-3 pl-5 text-sm tnum">
         <dt className="text-ink-2">{T.slope}</dt>
         <dd className="text-ink">{s.senPerDecade == null ? "—" : T.perDecade(num(s.senPerDecade, 2, true), unit)}</dd>
         <dt className="text-ink-2">{T.ci}</dt>
@@ -149,15 +160,16 @@ export function TrendDisclosure({ trend: s, unit, record }: { trend: TrendStats;
   );
 }
 
-export function MethodDisclosure({ baseline: b, unit, nEff }: { baseline: BaselineInfo; unit: string; nEff: number | null }) {
+export function MethodDisclosure({ baseline: b, unit, nEff, control, open }: { baseline: BaselineInfo; unit: string; nEff: number | null; control?: ReactNode; open?: boolean }) {
   const M = COPY.method;
   return (
-    <details className="group border-t border-line">
+    <details className="group" open={open}>
       <summary className={summaryCls}>
         {chevron}
         <span className="font-semibold text-ink">{M.heading}</span>
       </summary>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 pb-3 pl-5 text-sm tnum">
+      {control && <div className="pb-2 pl-5">{control}</div>}
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 pb-3 pl-5 text-sm tnum">
         <dt className="text-ink-2">{M.baseline}</dt>
         <dd className="text-ink">{M.baselineValue(formatRange(b.record), formatRange(b.excluded))} · {M.baselineN(b.n)}</dd>
         <dt className="text-ink-2">{M.sigma}</dt>

@@ -4,7 +4,8 @@ import { describe, it } from "node:test";
 import type { DetectiveQuery } from "./contracts";
 import { suggestedTime } from "./keywords";
 import { LAB_TOOLS } from "./lab";
-import { TEST_IDS, decodeQuery, decodeState, encodeQuery, encodeState, formatRange, suggestTime, urlCodec } from "./url";
+import { TEST_IDS, decodeQuery, decodeState, encodeQuery, encodeState, formatRange, impliedWindow, suggestTime, urlCodec, windowOf } from "./url";
+import { DEFAULT_WINDOW } from "./window";
 
 describe("suggestTime (T from E)", () => {
   it("shares the API parser so input and selector suggestions cannot diverge", () => {
@@ -158,6 +159,44 @@ describe("workbench test (test)", () => {
     assert.equal("test" in decodeQuery("t=2021-02..2021-05&test=mean"), false);
     for (const id of TEST_IDS) assert.equal(decodeState(encodeState({ query, test: id })).test, id);
     assert.deepEqual([...TEST_IDS], [...LAB_TOOLS]);
+  });
+});
+
+describe("view window (win)", () => {
+  const query: Partial<DetectiveQuery> = { event: "x", time: { start: "2021-02", end: "2021-05" }, region: "b4-1", categories: ["soil"] };
+
+  it("is left out at the default and round-trips otherwise", () => {
+    assert.equal(encodeState({ query, window: DEFAULT_WINDOW }).includes("win"), false);
+    assert.equal(encodeState({ query, window: null }).includes("win"), false);
+    for (const w of [{ unit: "week", n: 2 }, { unit: "month", n: 8 }, { unit: "year", n: 3 }, "all"] as const) {
+      const s = encodeState({ query, window: w });
+      assert.match(s, /&win=(2w|8m|3y|all)$/);
+      assert.deepEqual(windowOf(decodeState(s)), w);
+    }
+    assert.equal(encodeState({ query, window: { unit: "month", n: 8 }, test: "mk" }), "e=x&t=2021-02..2021-05&r=b4-1&v=soil&test=mk&win=8m");
+  });
+
+  it("drops junk and clamps out-of-range counts", () => {
+    assert.equal("window" in decodeState("win=9q"), false);
+    assert.equal("window" in decodeState("win="), false);
+    assert.deepEqual(decodeState("win=40y").window, { unit: "year", n: 10 });
+    assert.equal("win" in decodeQuery("win=8m"), false);
+  });
+
+  it("keeps older links that only carry pad: pad stays the baseline exclusion and still sets the view", () => {
+    const old = decodeState("t=2021-02..2021-05&pad=24");
+    assert.equal(old.query.padMonths, 24);
+    assert.equal(old.window, undefined);
+    assert.deepEqual(windowOf(old), { unit: "year", n: 2 });
+    assert.deepEqual(windowOf(decodeState("t=2021-02..2021-05&pad=6")), { unit: "month", n: 6 });
+    assert.deepEqual(windowOf(decodeState("t=2021-02..2021-05")), DEFAULT_WINDOW);
+    assert.deepEqual(impliedWindow(12), DEFAULT_WINDOW);
+    // with a non-default pad, the default window must be written or the link would reopen on ±2 years
+    const q24 = { ...query, padMonths: 24 };
+    const s = encodeState({ query: q24, window: DEFAULT_WINDOW });
+    assert.match(s, /pad=24.*win=12m/);
+    assert.deepEqual(windowOf(decodeState(s)), DEFAULT_WINDOW);
+    assert.equal(encodeState({ query: q24, window: { unit: "year", n: 2 } }).includes("win"), false);
   });
 });
 

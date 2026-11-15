@@ -7,7 +7,8 @@ import type { Decomposition, YearMonth } from "../../lib/detective/contracts";
 import { LAB_GROUPS, LAB_TOOLS, runLabTool, type LabOutcome } from "../../lib/detective/lab";
 import { TEST_IDS, ymFromIndex } from "../../lib/detective/url";
 import { COPY } from "./workbench/copy";
-import { GROUPS, availability, groupOf, overlayFor, pickInGroup, slopeScale, testLog, testsIn } from "./workbench/lab/tests";
+import { GROUPS, analyseMs, availability, groupOf, overlayFor, pickInGroup, slopeScale, staleReason, testLog, testsIn } from "./workbench/lab/tests";
+import { TEST_ICON } from "./workbench/lab/icons";
 import { countText, pText, resultView } from "./workbench/lab/format";
 
 /** a fake decomposition: months, residual and z are what runLabTool reads */
@@ -148,5 +149,29 @@ describe("multiple-testing log", () => {
     ]);
     assert.deepEqual(log.entries.map((e) => e.status), ["holds", "uncorrected-only", "not-significant"]);
     assert.equal(log.significant, 2);
+  });
+});
+
+describe("Analyse", () => {
+  it("paces the progress bar 600–1200 ms by test weight and range; instant with reduced motion", () => {
+    assert.equal(analyseMs("mean", 4), 600);
+    assert.ok(analyseMs("bootstrap", 4) > analyseMs("mean", 4));
+    assert.ok(analyseMs("mk", 120) > analyseMs("mk", 12));
+    for (const t of TEST_IDS) for (const n of [1, 24, 600]) {
+      const ms = analyseMs(t, n);
+      assert.ok(ms >= 600 && ms <= 1200, `${t} ${n}: ${ms}`);
+      assert.equal(analyseMs(t, n, true), 0);
+    }
+  });
+  it("marks a result stale when the range or the test changes", () => {
+    const r = { key: "sm|10..13", test: "mean" as const };
+    assert.equal(staleReason(null, "sm|10..13", "mean"), null);
+    assert.equal(staleReason(r, "sm|10..13", "mean"), null);
+    assert.equal(staleReason(r, "sm|10..14", "mean"), "range");
+    assert.equal(staleReason(r, "sm|10..13", "mk"), "test");
+    assert.equal(staleReason(r, "tws|10..13", "mk"), "range");
+  });
+  it("every test has an icon", () => {
+    for (const t of TEST_IDS) assert.match(TEST_ICON[t], /^M[\d.]/, t);
   });
 });

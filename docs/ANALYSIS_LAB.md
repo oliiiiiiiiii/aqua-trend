@@ -6,24 +6,24 @@
 
 ## 1. 目的
 
-挑戰頁要求「計算變化速率，並用 t 檢定、Mann–Kendall 或信賴區間檢驗顯著性」。工作台的統計面板回答「選取區間是否異常」；**Tests** 區再提供 17 個單變數檢定（分成 Trend、Mean、Extremes、Cycles 四組），對該變數的**殘差序列**（原始值 − 季節循環 − 長期趨勢，也就是 `Decomposition.residual`）在同一個選取範圍上做檢定。
+挑戰頁要求「計算變化速率，並用 t 檢定、Mann–Kendall 或信賴區間檢驗顯著性」。工作台的統計面板回答「選取區間是否異常」；**Tests** 區（大圖下方）再提供 17 個單變數檢定（分成 Trend、Mean、Extremes、Cycles 四組，按 Analyse 才執行），對該變數的**殘差序列**（原始值 − 季節循環 − 長期趨勢，也就是 `Decomposition.residual`）在同一個選取範圍上做檢定。
 
 ## 2. 使用方式
 
 1. 開啟分析工作台，例如 `/detective?e=2021%20Taiwan%20spring%20drought&t=2021-02..2021-05&r=b4-4040046370&v=precip,soil,tws,ndvi&tab=soil`。
-2. 在展開的變數中，統計面板的形狀列（Peak … · n = 4）下方有一行收合的 **▸ Tests**（提示文字：Trend · Mean · Extremes · Cycles）。預設收合，讓選取區間的結論與關鍵數字永遠是第一眼看到的內容。點開即開啟上次用過的檢定（預設 t test）。
-3. **範圍＝工作台的選取區間**，與統計面板相同；工具列的 Before / Event / After 與 Window「All」已涵蓋事件、前後與全時段。Tests 標題列顯示目前範圍（例如「Feb – May 2021 · 4 mo」）；右側的 **Whole record** 勾選框改為對整段資料檢定（預設關閉；整段資料幾乎就是基準期，會出現基準期警告）。
-4. **選工具**：第一列是四個群組（底線標示目前群組，對應 `LAB_GROUPS`），第二列是該群組的檢定：
+2. **Tests** 區在大圖與圖例下方（統計面板在右側抽屜）。標題列顯示目前範圍（例如「Tests on Feb – May 2021 · 4 mo」），右側的 **Whole record** 勾選框改為對整段資料檢定（預設關閉；整段資料幾乎就是基準期，會出現基準期警告）。
+3. **範圍＝工作台的選取區間**，與統計面板相同；工具列的 Before / Event / After 與 Window 已涵蓋事件、前後與全時段。
+4. **選工具**：17 個檢定以圖示按鈕排列（24 px 線條圖示＋下方名稱），依 `LAB_GROUPS` 分成 Trend、Mean、Extremes、Cycles 四組：
    - Trend：Linear（OLS＋t）、Mann–Kendall（＋Sen）、Two-segment（分段迴歸）、Permutation（置換）、Bootstrap（區塊拔靴）
    - Mean：t test、Signed-rank（Wilcoxon）、Vs rest（Welch＋Mann–Whitney）、Spread（Brown–Forsythe）、Shape（Jarque–Bera）、By month（Kruskal–Wallis）
    - Extremes：Cumulative（CUSUM）、Streaks（最長同號連續＋runs test）、Beyond 2σ（二項檢定）、Break（Pettitt）
    - Cycles：Autocorrelation（ACF＋Ljung–Box）、Periodogram（Lomb–Scargle＋紅噪音）
-   精確的檢定名稱在滑鼠提示與螢幕閱讀器描述（`aria-description`）中。兩列都是 radio，方向鍵可切換。月數不足的選項停用，旁邊標示最少月數（「≥10」），提示中寫明原因。手機上第二列改為左右捲動，不換行。換群組時回到該群組上次用過的檢定。
-5. **結果**：一行結論（● 顯著／○ 不顯著，α = 0.05；CUSUM 為描述性，以「–」標示並寫「Descriptive, no p value」）→ 2–4 個關鍵數字（估計值含單位與 95 % CI、檢定統計量、p）→ 需要時一張小圖（ACF、直方圖＋常態曲線、拔靴與置換分布、累積異常、逐月散點、週期圖）→ 收合的 **Details**（df、未修正 p、R²、τ、S、W⁺、效果量 d 等完整數字與方法說明）。未修正自相關的 p 值旁標「uncorrected」，分段迴歸的 p 值標「optimistic」（轉折月份是搜尋出來的）。範圍涵蓋 ≥ 80 % 基準期時顯示一行警告。斜率在範圍 ≥ 10 年時用「/decade」，否則用「/yr」。
-6. **圖上疊線**：有擬合線的工具（Linear、Mann–Kendall、Two-segment、Permutation、Bootstrap、t test、Signed-rank、Vs rest、Streaks、Break）把線段畫在大圖的 **Anomaly** 圖層：細的墨色線加 2 px 底色光暈，Vs rest 的「其餘平均」為虛線；Break 另畫一條虛線直線並標「Break」。在其他圖層時，結果下方有「Show on anomaly」連結。
-7. **重算**：拖曳選取時，一般工具即時重算；模擬類（Bootstrap、Permutation、Streaks，各 2000 次）與 Periodogram 在選取停止 220 ms 後才重算，期間結果變淡並顯示「Computing…」。
+   精確的檢定名稱在滑鼠提示與螢幕閱讀器描述（`aria-description`）中，也寫在選取列旁。按鈕是 radio，方向鍵可切換。月數不足的工具變淡並標示最少月數（「≥10」）。
+5. **Analyse**：選工具**不會**執行。按 **Analyse** 後先跑一條短進度條（600–1200 ms，依工具負擔與範圍長度；`prefers-reduced-motion` 時立即），再出現結果。之後若改變選取區間（或變數）或換工具，結果變淡並顯示「Selection changed — Analyse again」／「Test changed — Analyse again」，圖上的疊線也移除。
+6. **結果**：一行結論（● 顯著／○ 不顯著，α = 0.05；CUSUM 為描述性，以「–」標示並寫「Descriptive, no p value」）→ 2–4 個關鍵數字（估計值含單位與 95 % CI、檢定統計量、p）→ 需要時一張小圖（ACF、直方圖＋常態曲線、拔靴與置換分布、累積異常、逐月散點、週期圖）→ 收合的 **Details**（df、未修正 p、R²、τ、S、W⁺、效果量 d 等完整數字與方法說明）。未修正自相關的 p 值旁標「uncorrected」，分段迴歸的 p 值標「optimistic」。範圍涵蓋 ≥ 80 % 基準期時顯示一行警告。斜率在範圍 ≥ 10 年時用「/decade」，否則用「/yr」。t test 的 Details 註明：這裡的 lag-1 r 由範圍內的月份估計，統計面板用基準期的 r，短範圍兩者 p 可能不同。
+7. **圖上疊線**：有擬合線的工具（Linear、Mann–Kendall、Two-segment、Permutation、Bootstrap、t test、Signed-rank、Vs rest、Streaks、Break）在分析後把線段畫在大圖的 **Anomaly** 圖層：細的墨色線加 2 px 底色光暈，Vs rest 的「其餘平均」為虛線；Break 另畫一條虛線直線並標「Break」。在其他圖層時，結果下方有「Show on anomaly」連結。
 8. **多重檢定紀錄**：見 §3。
-9. **URL**：開啟的檢定寫入 `test=<工具 id>`（例如 `&test=mk`；id 即 `LAB_TOOLS`），收合時移除；同一個檢定在切換變數時保留。Whole record 與紀錄不寫入 URL。
+9. **URL**：選取的工具寫入 `test=<工具 id>`（例如 `&test=mk`；id 即 `LAB_TOOLS`），重新載入後只選取、不執行，需再按 Analyse。同一個工具在切換變數時保留。Whole record 與紀錄不寫入 URL。
 
 ## 3. 工具列表
 
@@ -51,7 +51,7 @@
 
 ### 多重檢定紀錄
 
-同一個範圍跑過兩個以上有 p 值的工具後，結果下方會出現一行可展開的紀錄：「n tests on this range · k with p < 0.05 · x expected by chance」。展開後每個工具一列：符號＋狀態文字（● holds after Holm＝經 Holm 逐步修正後仍顯著；◐ significant before correction only＝單看顯著但修正後不顯著；○ not significant）。不以顏色區分。換範圍（或換變數、換產品）時紀錄重設。每個工具計入紀錄的 p 值見 `primaryP()`（比較取 Welch、拔靴取斜率、連續取「依持續性」模擬、自相關取 Ljung–Box；累積與週期沒有單一 p 值，不計入）。
+同一個範圍按 Analyse 跑過兩個以上有 p 值的工具後，結果下方會出現一行可展開的紀錄：「n tests on this range · k with p < 0.05 · x expected by chance」。展開後每個工具一列：符號＋狀態文字（● holds after Holm＝經 Holm 逐步修正後仍顯著；◐ significant before correction only＝單看顯著但修正後不顯著；○ not significant）。不以顏色區分。換範圍（或換變數、換產品）時紀錄重設。每個工具計入紀錄的 p 值見 `primaryP()`（比較取 Welch、拔靴取斜率、連續取「依持續性」模擬、自相關取 Ljung–Box；累積與週期沒有單一 p 值，不計入）。
 
 
 ## 4. 統計細節
@@ -87,12 +87,13 @@
 
 介面（`web/components/detective/workbench/lab/`，所有文字在 `workbench/copy.ts` 的 `COPY.lab`，英文）：
 
-- `tests.ts`（純函式）：群組（`GROUPS`、`testsIn`、`groupOf`，依 `LAB_GROUPS`）、`availability()`（每個工具是否有足夠月數；Vs rest 與 Spread 另需範圍外 ≥ 12 個月）、`pickInGroup()`、`slopeScale()`（/decade 或 /yr）、`overlayFor()`（線段與 Pettitt 轉折月）、`testLog()`（`primaryP` ＋ `holm` → holds / uncorrected-only / not-significant）。
+- `tests.ts`（純函式）：群組（`GROUPS`、`testsIn`、`groupOf`，依 `LAB_GROUPS`）、`availability()`（每個工具是否有足夠月數；Vs rest 與 Spread 另需範圍外 ≥ 12 個月）、`pickInGroup()`、`slopeScale()`（/decade 或 /yr）、`overlayFor()`（線段與 Pettitt 轉折月）、`testLog()`（`primaryP` ＋ `holm` → holds / uncorrected-only / not-significant）、`analyseMs()`（進度條長度）、`staleReason()`（結果是否過期）。
+- `icons.ts`：每個工具的 24 × 24 線條圖示路徑。
 - `format.ts`（純函式）：`resultView(stats, ctx)` 把一個工具的統計轉成結論、關鍵數字、Details 列、方法說明與要畫的圖。
-- `useLabRun.ts`：在展開的變數上執行目前的工具（範圍＝選取區間或整段資料）、慢速工具與紀錄的去抖動、基準期警告、多重檢定紀錄（以「產品＋範圍」為鍵，範圍改變即重設）。
-- `TestsPanel.tsx`：收合的「Tests」列、範圍標籤、Whole record 勾選框；props `{ lab, run, months, unit, polarity, onShowAnomaly }`。`LabControl`（`test`、`whole`、`onOpen`、`onTest`、`onWhole`）由 `AnalysisView` 保存，所有變數共用。
-- `ToolPicker.tsx`（群組列＋工具列）、`ResultCard.tsx`（結論、數字、圖、Details、紀錄）、`figures.tsx`（ACF、直方圖、拔靴／置換分布、累積異常、逐月散點、週期圖；純 SVG、只用色彩 token）、`overlay.tsx`（圖上的線段與轉折線）。
-- 掛載點（各自以註解標示）：`AnalysisView.tsx` 保存 `test`（URL）與 Whole record 狀態並傳入 `lab`；`Lanes.tsx` 的 `ExpandedLane` 呼叫 `useLabRun` 並把 `<TestsPanel>` 放進 `StatsPanel` 的 `tests` 插槽、把 `overlay` 傳給 `LaneChart`；`LaneChart.tsx` 在 Anomaly 圖層畫 `LabOverlayMarks`；`web/lib/detective/url.ts` 新增 `test` 參數（`TEST_IDS` 與 `LAB_TOOLS` 相同）。
+- `useLabRun.ts`：`useLabAnalysis(lane, sel, test, whole)` 回傳目前範圍的可用性、`analyse()`（進度條後執行 `runLabTool`）、最後一次結果（`LabRun`，含疊線、基準期警告、多重檢定紀錄）與過期原因。紀錄以「產品＋範圍」為鍵，範圍改變即重設。
+- `TestsPanel.tsx`：範圍標題、Whole record、分組圖示按鈕、Analyse 與進度條、過期提示、結果；`LabControl`（`test`、`whole`、`onTest`、`onWhole`）由 `AnalysisView` 保存，所有變數共用。
+- `ResultCard.tsx`（結論、數字、圖、Details、紀錄）、`figures.tsx`（純 SVG、只用色彩 token）、`overlay.tsx`（圖上的線段與轉折線）。
+- 掛載點：`AnalysisView.tsx` 保存 `test`（URL）與 Whole record 並傳入 `lab`；`Lanes.tsx` 的 `ExpandedLane` 呼叫 `useLabAnalysis`，在圖例下方放 `<TestsPanel>`、把結果的 `overlay` 傳給 `LaneChart`；`LaneChart.tsx` 在 Anomaly 圖層畫 `LabOverlayMarks`；`web/lib/detective/url.ts` 的 `test` 參數（`TEST_IDS` 與 `LAB_TOOLS` 相同）。
 
 ## 6. 測試
 
@@ -112,7 +113,7 @@ npx tsx --test lib/detective/lab.test.ts
 npx tsx --test components/detective/lab-ui.test.ts lib/detective/url.test.ts
 ```
 
-涵蓋：分組與 `LAB_GROUPS` 一致、英文標籤、可用性與原因、/decade 與 /yr、疊線（分段兩段、Pettitt 轉折月）、每個工具都有英文結論與 1–4 個數字、uncorrected／optimistic 標記、CUSUM 無 p 值、多重檢定紀錄（排除描述性工具、Holm 三種狀態）、URL `test` 參數。
+涵蓋：分組與 `LAB_GROUPS` 一致、英文標籤、可用性與原因、/decade 與 /yr、疊線（分段兩段、Pettitt 轉折月）、每個工具都有英文結論與 1–4 個數字、uncorrected／optimistic 標記、CUSUM 無 p 值、多重檢定紀錄（排除描述性工具、Holm 三種狀態）、進度條長度與 reduced motion、過期判斷、每個工具都有圖示、URL `test` 參數。
 
 ## 7. 已知限制與後續
 

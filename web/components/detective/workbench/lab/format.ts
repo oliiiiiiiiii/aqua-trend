@@ -69,7 +69,7 @@ export function resultView(s: LabStats, ctx: ResultContext): ResultView {
       ],
       details: [n(s.n), ...corr(s.nEff, s.lag1), { label: R.sd, value: `${num(s.sd)} ${u}` }, { label: R.se, value: `${num(s.se)} ${u}` },
         { label: R.t, value: RV.tdf(num(s.t, 2, true), num(s.df, 1)) }, { label: R.p, value: pValue(s.p) }],
-      method: M.corrected, figure: null,
+      method: `${M.corrected} ${M.meanRho}`, figure: null,
     };
     case "wilcoxon": return {
       significant: sig(s.p), headline: V.shift(sig(s.p), s.z > 0), note: null,

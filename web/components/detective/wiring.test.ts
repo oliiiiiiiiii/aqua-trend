@@ -10,7 +10,9 @@ import type { LayerInfo } from "../../lib/detective/series";
 import { baselineInfo, intervalDetail } from "../../lib/detective/intervalDetail";
 import { LAYER_TEXT, withEnglishText } from "../../lib/detective/layerText";
 import StatsPanel from "./workbench/StatsPanel";
-import { CollapsedLane, ExpandedLane, type Shared } from "./workbench/Lanes";
+import { ExpandedLane, type Shared } from "./workbench/Lanes";
+import { itemsFromLanes } from "./picker/fromLanes";
+import VariableSelect from "./picker/VariableSelect";
 import { COPY } from "./workbench/copy";
 import type { LaneModel, LaneReady } from "./workbench/types";
 import { CATEGORIES, PRESETS, analysis, cleanSelectResponse, requestVotes, variableMetadata } from "./wiring";
@@ -110,7 +112,9 @@ describe("analysis page integration", () => {
     const html = renderToStaticMarkup(createElement(ExpandedLane, lanesOf(f.lane)));
     assert.match(html, /Soil moisture/);
     assert.match(html, /<p role="note"[^>]*>.*Product-specific caution/);
-    assert.match(html, /GLDAS · mm/);
+    // product · unit is named in the variable dropdown above the lane
+    const pick = renderToStaticMarkup(createElement(VariableSelect, { items: itemsFromLanes([f.lane]), value: "soil", onChange: () => {}, view: shared.view, event: shared.event, sel: shared.sel }));
+    assert.match(pick, /GLDAS · mm/);
     assert.doesNotMatch(html, /stand-in|Development build/);
     assert.doesNotMatch(html, CJK);
     const stats = renderToStaticMarkup(createElement(StatsPanel, {
@@ -136,10 +140,12 @@ describe("analysis page integration", () => {
     assert.doesNotMatch(html, /Unusually (low|high)/);
   });
 
-  it("names the unit and product of a lane that has no statistics yet", () => {
+  it("names the unit and product of a variable that has no statistics yet in the dropdown", () => {
     const f = fixture("sm_root", "soil");
-    const html = renderToStaticMarkup(createElement(CollapsedLane, { lane: { ...f.lane, detail: null }, shared, onExpand: () => {}, onRetry: () => {} }));
+    const items = itemsFromLanes([{ ...f.lane, detail: null }]);
+    const html = renderToStaticMarkup(createElement(VariableSelect, { items, value: "soil", onChange: () => {}, view: shared.view, event: shared.event, sel: shared.sel }));
     assert.match(html, /SM_ROOT · mm/);
+    assert.match(html, /Soil moisture/);
   });
 });
 
