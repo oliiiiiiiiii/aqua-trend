@@ -76,8 +76,8 @@ export interface SelectResponse {
   votes: CategoryVote[];
   /** 從 E 解析出的建議時間；解析不到時為 null。 */
   suggestedTime: TimeRange | null;
-  /** 實際使用的方法，畫面上要標示。 */
-  source: "local-model" | "keyword-fallback";
+  /** 實際使用的方法，畫面上要標示。online-model = 選用的線上 API（OpenAI 相容或 Jev 風格）。 */
+  source: "local-model" | "online-model" | "keyword-fallback";
 }
 
 // ---------------------------------------------------------------------------

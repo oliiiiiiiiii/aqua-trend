@@ -3,7 +3,8 @@
 `POST /api/select-variables`（`web/app/api/select-variables/route.ts`）會把事件文字送到這裡的本地服務。服務對 12 個變數類別各問一題是／否，問題用 SPEC §4 的淺白定義，由本地開源的 System One 決策模型回答。不需要 API key，也不會連到外部網路。
 
 - **選定模型：OneJev1.6-0.8B**（Q4_K_M GGUF，經 llama.cpp 在 CPU 上執行）。評估與理由見 [eval.md](eval.md)。
-- **預先勾選規則：關鍵字優先。** 模型可用時，關鍵字表（`web/lib/detective/keywords.ts`）有命中就勾關鍵字表的類別，沒有命中才勾模型 p ≥ 0.5 的類別。機率條一律顯示模型的 p。
+- **預先勾選規則：由模型決定。** 模型可用時，勾選 p ≥ 0.5 的類別，機率條顯示模型的 p。（評估時試過「關鍵字優先」，見 eval.md；決定不採用，讓模型自己判斷，之後換更強的模型時效果才會跟著提升。）
+- **後端選擇：** 環境變數 `SELECTOR_BACKEND`，預設 `local`。也可以接線上 API，見下方「線上 API（選用）」。
 - **備案：** 服務不存在、出錯或 5 秒內沒有回應 → route 回傳 `keyword-fallback`。模型關閉時實測約 0.03 秒回應。
 - **靜態部署：** `next build`（`output: "export"`）會略過這個 route，前端呼叫失敗時直接在瀏覽器呼叫 `keywordSelect()`。
 
@@ -13,6 +14,22 @@
 ```
 
 > 注意 `next.config.ts` 設了 `trailingSlash: true`：請 POST 到 `/api/select-variables/`（結尾有斜線）。不加斜線會收到 308 轉址。
+
+## 線上 API（選用）
+
+想用更強的模型時，不必改程式，設定環境變數即可（寫在 `web/.env.local`，此檔已被 gitignore；範例見 `web/.env.example`）。不綁定任何廠商，金鑰不可 commit。
+
+| `SELECTOR_BACKEND` | 用途 | 需要的變數 |
+|---|---|---|
+| `local`（預設） | 本機 `serve.py` + OneJev，5 秒逾時 | `SELECTOR_URL`（預設 `http://127.0.0.1:8770`） |
+| `openai` | 任何 OpenAI 相容的 `/chat/completions`：OpenAI、OpenRouter、Groq、Together、DeepSeek、自架 vLLM／Ollama… | `SELECTOR_OPENAI_BASE_URL`（預設 `https://api.openai.com/v1`）、`SELECTOR_OPENAI_MODEL`、`SELECTOR_API_KEY` |
+| `systemone` | 任何 Jev 風格 `/v1/systemone` 端點（例如架在別台機器上的 OneJev／qev），每類別一題 `noul` | `SELECTOR_SYSTEMONE_URL`（完整網址）、選填 `SELECTOR_SYSTEMONE_MODEL`、`SELECTOR_API_KEY` |
+| `keyword` | 不呼叫模型，只用關鍵字表 | — |
+
+- 線上後端逾時預設 10 秒（`SELECTOR_ONLINE_TIMEOUT_MS`）；失敗、逾時或回傳格式不符都退回關鍵字表。
+- 回應的 `source` 為 `online-model`，前端要標示「線上模型」。
+- `openai` 後端會要求模型只回一個 JSON 物件 `{類別: 機率}`；不支援 `response_format` 的伺服器若把 JSON 包在 ```` ``` ```` 區塊裡也能解析。
+- 程式在 `web/app/api/select-variables/online.ts`。四種後端都已用假伺服器測過（2026-11-15）。尚未用真實線上模型跑 eval。
 
 ## 檔案
 
