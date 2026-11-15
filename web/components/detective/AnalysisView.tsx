@@ -294,7 +294,7 @@ export default function AnalysisView({
     ? (monthly: React.ReactNode) => (
       <DailyView
         region={q.region} layer={ready.meta.layer} name={ready.meta.name} product={ready.meta.product} unit={ready.meta.unit}
-        event={q.time} weeks={weeks} d={ready.d} fallback={monthly}
+        event={q.exactTime ?? q.time} weeks={weeks} d={ready.d} fallback={monthly}
       />
     )
     : undefined;

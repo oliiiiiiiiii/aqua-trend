@@ -5,7 +5,8 @@ import type { Catalog, Region } from "@/lib/types";
 import type { TimeRange } from "@/lib/detective/contracts";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
-import { formatRange, ymIndex } from "@/lib/detective/url";
+import { formatRange, isDay, ymIndex } from "@/lib/detective/url";
+import { eventDays } from "@/lib/detective/window";
 import { COPY } from "./copy/input";
 import { useSharedStage } from "@/components/shell/HeroGlobe";
 import { Timeline } from "./Timeline";
@@ -124,6 +125,18 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds }: InputPanelPro
   const id = useId();
   const [preview, setPreview] = useState<TimeRange | null>(null);
   const shownTime = preview ?? time;
+  const days = shownTime ? eventDays(shownTime) : null;
+  const changeDay = (edge: "start" | "end", day: string): boolean => {
+    let accepted = false;
+    // Read the current URL range: successive blurs can precede a router render.
+    onTimeChange((current) => {
+      const next = { ...(current ? eventDays(current) : { start: day, end: day }), [edge]: day };
+      if (current && next.start > next.end) return current;
+      accepted = true;
+      return next;
+    });
+    return accepted;
+  };
   // offer the text's period only when the chosen one is not already inside it (Jul–Sep 2022 is inside "2022")
   const inside = !!time && !!timeSuggestion && ymIndex(time.start) >= ymIndex(timeSuggestion.start) && ymIndex(time.end) <= ymIndex(timeSuggestion.end);
   const offer = timeSuggestion && !inside ? timeSuggestion : null;
@@ -132,7 +145,11 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds }: InputPanelPro
     <div role="group" aria-labelledby={`${id}-t`}>
       <p id={`${id}-t`} className="sr-only">{COPY.steps.when}</p>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <p role="status" className="text-base text-on-stage tnum">{shownTime ? formatRange(shownTime) : COPY.when.choose}</p>
+        <div className="flex items-center gap-2 text-base text-on-stage tnum">
+          <DateField label="Start date" value={days?.start ?? ""} onCommit={(day) => changeDay("start", day)} />
+          <span className="text-on-stage-2">–</span>
+          <DateField label="End date" value={days?.end ?? ""} onCommit={(day) => changeDay("end", day)} />
+        </div>
         {offer && (
           <button
             type="button"
@@ -147,6 +164,30 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds }: InputPanelPro
       <Timeline bounds={bounds} time={time} onChange={onTimeChange} onPreviewChange={setPreview} />
     </div>
   );
+}
+
+function DateField({ label, value, onCommit }: { label: string; value: string; onCommit: (day: string) => boolean }) {
+  const formatted = value.replaceAll("-", "/");
+  const [text, setText] = useState(formatted);
+  const editing = useRef(false);
+  useEffect(() => { if (!editing.current) setText(formatted); }, [formatted]);
+  const commit = () => {
+    editing.current = false;
+    const day = text.trim().replaceAll("/", "-");
+    if (!/^\d{4}\/\d{2}\/\d{2}$/.test(text.trim()) || !isDay(day) || !onCommit(day)) setText(formatted);
+    else setText(day.replaceAll("-", "/"));
+  };
+  return <input
+    type="text"
+    aria-label={label}
+    placeholder="YYYY/MM/DD"
+    value={text}
+    onChange={(e) => { editing.current = true; setText(e.target.value); }}
+    onBlur={commit}
+    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }}
+    maxLength={10}
+    className="min-w-0 w-[8.25rem] rounded-ctl border border-stage-line bg-on-stage/5 px-2.5 py-2 text-center text-base text-on-stage tnum placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+  />;
 }
 
 /* ------------------------------------------------------------------ Where */

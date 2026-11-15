@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { progressFrame, progressLines, type ProgressContext } from "./progressTimeline";
+import { createProgressTimeline, progressFrame, progressLines, type ProgressContext } from "./progressTimeline";
 
 /** Mounted only by an explicit Analyse/case action; deep links never run this sequence. */
 export function StartProgress({ context, onDone, onCancel }: {
@@ -14,6 +14,7 @@ export function StartProgress({ context, onDone, onCancel }: {
   const callbacks = useRef({ onDone, onCancel });
   callbacks.current = { onDone, onCancel };
   const fired = useRef(false);
+  const [timeline] = useState(() => createProgressTimeline(Math.floor(Math.random() * 0x100000000)));
   const [frame, setFrame] = useState(() => progressFrame(0));
   const [mounted, setMounted] = useState(false);
   const finish = () => {
@@ -36,7 +37,7 @@ export function StartProgress({ context, onDone, onCancel }: {
     let raf = 0;
     const tick = () => {
       if (fired.current) return;
-      const next = progressFrame(performance.now() - start, reduced);
+      const next = progressFrame(performance.now() - start, reduced, timeline);
       setFrame(next);
       if (next.finished) finish();
       else raf = requestAnimationFrame(tick);
@@ -57,7 +58,7 @@ export function StartProgress({ context, onDone, onCancel }: {
       document.body.style.overflow = overflow;
       if (focus instanceof HTMLElement && focus.isConnected) focus.focus({ preventScroll: true });
     };
-  }, [mounted]);
+  }, [mounted, timeline]);
   if (!mounted) return null;
   const lines = progressLines(context);
   return createPortal(

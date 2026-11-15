@@ -5,6 +5,7 @@
 // Keys (all optional; junk is dropped, never guessed):
 //   e    event text (E)
 //   t    event period "YYYY-MM..YYYY-MM" (T); a single "YYYY-MM" means one month
+//   td   exact event days "YYYY-MM-DD..YYYY-MM-DD"; omitted for full months
 //   r    basin4 sub-basin id (L); only "b4-<digits>" is accepted in the MVP
 //   v    analysed categories, written only by "Start"; r + t + v together open the analysis tabs
 //   l    non-default layer per category, "precip:p_gpcp,soil:sm_m2"  (DetectiveQuery.layers)
@@ -21,7 +22,8 @@
 // The time suggestion is shared with the API's keyword selector.
 import type { CategoryId, DetectiveQuery, LayerId, RegionId, TimeRange, UrlCodec, YearMonth } from "./contracts";
 import { CATEGORY_ORDER } from "./categories";
-import { DEFAULT_WINDOW, decodeWindow, encodeWindow, sameWindow, windowFromPad, type ViewWindow } from "./window";
+import { dayNumber } from "./daily";
+import { DEFAULT_WINDOW, decodeWindow, encodeWindow, eventDays, sameWindow, windowFromPad, type ViewWindow } from "./window";
 
 export const CATEGORY_IDS = CATEGORY_ORDER;
 
@@ -70,6 +72,18 @@ export function parseRange(raw: string | null | undefined): TimeRange | null {
   return ymIndex(a) <= ymIndex(b) ? { start: a, end: b } : null;
 }
 export const encodeRange = (r: TimeRange): string => `${r.start}..${r.end}`;
+
+/** Strict calendar validation, including leap days; never normalize an impossible date. */
+export const isDay = (s: string): boolean => dayNumber(s) !== null;
+export function parseDayRange(raw: string | null | undefined): TimeRange | null {
+  const [start, end, extra] = (raw ?? "").split("..");
+  return extra === undefined && isDay(start) && isDay(end ?? "") && start <= end ? { start, end } : null;
+}
+export const monthsOfDays = (r: TimeRange): TimeRange => ({ start: r.start.slice(0, 7), end: r.end.slice(0, 7) });
+
+function exactDays(days: TimeRange | null, months: TimeRange | undefined): TimeRange | undefined {
+  return days && months && sameRange(monthsOfDays(days), months) && !sameRange(days, eventDays(months)) ? days : undefined;
+}
 
 /** keep known categories once each, in display order */
 export function cleanCategories(list: Iterable<string>): CategoryId[] {
@@ -125,6 +139,8 @@ export function decodeState(search: string): DetectiveUrlState {
 
   const t = parseRange(p.get("t"));
   if (t) q.time = t;
+  const td = exactDays(parseDayRange(p.get("td")), t ?? undefined);
+  if (td) q.exactTime = td;
 
   const r = p.get("r")?.trim() ?? "";
   if (isRegionId(r)) q.region = r;
@@ -168,6 +184,8 @@ export function encodeState(s: {
   const e = q.event?.trim();
   if (e) p.set("e", e.slice(0, MAX_EVENT_CHARS));
   if (q.time && parseRange(encodeRange(q.time))) p.set("t", encodeRange(q.time));
+  const td = exactDays(q.exactTime ? parseDayRange(encodeRange(q.exactTime)) : null, q.time);
+  if (td) p.set("td", encodeRange(td));
   if (q.region && isRegionId(q.region)) p.set("r", q.region);
   const v = cleanCategories(q.categories ?? []);
   if (v.length) p.set("v", v.join(","));

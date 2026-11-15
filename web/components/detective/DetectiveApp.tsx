@@ -14,7 +14,7 @@ import type {
 } from "@/lib/detective/contracts";
 import { loadCatalog } from "@/lib/data";
 import {
-  CATEGORY_IDS, DEFAULT_PAD, decodeState, formatRange,
+  CATEGORY_IDS, DEFAULT_PAD, decodeState, formatRange, monthsOfDays,
   suggestTime, ymIndex, type DetectiveUrlState,
 } from "@/lib/detective/url";
 import {
@@ -210,7 +210,11 @@ function InputStage({
   }, [vc, q.time]);
   const onTimeChange = useCallback((next: TimeRange | ((current: TimeRange | null) => TimeRange)) => {
     timeTouched.current = true;
-    writeUrl((s) => ({ ...s, query: { ...s.query, time: typeof next === "function" ? next(s.query.time ?? null) : next }, draft: s.draft }));
+    writeUrl((s) => {
+      const range = typeof next === "function" ? next(s.query.exactTime ?? s.query.time ?? null) : next;
+      const exact = range.start.length === 10;
+      return { ...s, query: { ...s.query, time: exact ? monthsOfDays(range) : range, exactTime: exact ? range : undefined }, draft: s.draft };
+    });
   }, []);
 
   /* ---------------- L */
@@ -331,7 +335,7 @@ function InputStage({
         event={eventText}
         onEventChange={onEventChange}
         onEventCommit={commitEvent}
-        time={q.time ?? null}
+        time={q.exactTime ?? q.time ?? null}
         onTimeChange={onTimeChange}
         timeSuggestion={suggestTime(eventText)}
         bounds={bounds}

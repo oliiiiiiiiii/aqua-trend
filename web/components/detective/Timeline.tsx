@@ -6,6 +6,8 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { TimeRange } from "@/lib/detective/contracts";
 import { ymFromIndex, ymIndex } from "@/lib/detective/url";
+import { eventDays } from "@/lib/detective/window";
+import { dayNumber, dayString } from "@/lib/detective/daily";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { COPY } from "./copy/input";
 
@@ -18,7 +20,11 @@ const OV_H = 20;
 
 interface View { lo: number; span: number }
 type Mode = "new" | "move" | "start" | "end";
-interface Session { mode: Mode; x0: number; view: View; s: number; e: number; moved: boolean; px: number }
+interface Session { mode: Mode; x0: number; view: View; s: number; e: number; moved: boolean; px: number; range?: TimeRange }
+
+const monthDays = (i: number) => Number(eventDays({ start: ymFromIndex(i), end: ymFromIndex(i) }).end.slice(8, 10));
+const dayIndex = (day: string, end = false) => ymIndex(day) + (Number(day.slice(8, 10)) - (end ? 0 : 1)) / monthDays(ymIndex(day));
+const sessionRange = (s: Session): TimeRange => s.range ?? { start: ymFromIndex(s.s), end: ymFromIndex(s.e) };
 
 export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: TimeRange; time: TimeRange | null; onChange: (r: TimeRange) => void; onPreviewChange: (r: TimeRange | null) => void }) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
@@ -70,7 +76,13 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
   const indexAt = (px: number) => view.lo + (px - PAD_X) / ppm;
 
   const sel = time ? { s: ymIndex(time.start), e: ymIndex(time.end) } : null;
-  const shown = sess ? { s: sess.s, e: sess.e } : sel;
+  const shownDays = sess ? eventDays(sessionRange(sess)) : time ? eventDays(time) : null;
+  const shown = shownDays ? { s: dayIndex(shownDays.start), e: dayIndex(shownDays.end, true) - 1 } : null;
+  const dayAt = (px: number) => {
+    const i = Math.max(a, Math.min(b + 1 - 1e-7, indexAt(px)));
+    const m = Math.floor(i);
+    return dayNumber(`${ymFromIndex(m)}-01`)! + Math.min(monthDays(m) - 1, Math.floor((i - m) * monthDays(m)));
+  };
 
   const zoomAt = useCallback((factor: number, anchorFrac: number) => {
     userView.current = true;
@@ -101,8 +113,8 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
   }, [ref, panBy, zoomAt]);
 
   const zoneAt = (px: number): Mode => {
-    if (sel) {
-      const sx = x(sel.s), ex = x(sel.e + 1);
+    if (shown) {
+      const sx = x(shown.s), ex = x(shown.e + 1);
       const dS = Math.abs(px - sx), dE = Math.abs(px - ex);
       if (Math.min(dS, dE) <= HIT) return dS < dE || (dS === dE && px < sx) ? "start" : "end";
       if (px > sx && px < ex) return "move";
@@ -113,7 +125,7 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
   const begin = (s: Session) => {
     sessRef.current = s;
     setSess(s);
-    onPreviewChange({ start: ymFromIndex(s.s), end: ymFromIndex(s.e) });
+    onPreviewChange(sessionRange(s));
   };
   const down = (e: PointerEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
@@ -122,7 +134,8 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
     ref.current?.focus({ preventScroll: true });
     const mode = zoneAt(px);
     const month = Math.max(a, Math.min(b, Math.floor(indexAt(px))));
-    begin({ mode, x0: e.clientX, view: viewRef.current, s: mode === "new" ? month : sel!.s, e: mode === "new" ? month : sel!.e, moved: false, px });
+    const range = view.span <= 12 ? (mode === "new" ? { start: dayString(dayAt(px)), end: dayString(dayAt(px)) } : eventDays(time!)) : undefined;
+    begin({ mode, x0: e.clientX, view: viewRef.current, s: mode === "new" ? month : sel!.s, e: mode === "new" ? month : sel!.e, moved: false, px, range });
   };
   const move = (e: PointerEvent<SVGSVGElement>) => {
     const cur = sessRef.current;
@@ -132,7 +145,20 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
     if (!moved) return;
     const dm = dx / ppm;
     let next: Session = { ...cur, moved };
-    if (cur.mode === "new") {
+    if (cur.range) {
+      const anchor = dayAt(cur.px), target = dayAt(local(e));
+      const original = time ? eventDays(time) : cur.range;
+      const s0 = dayNumber(original.start)!, e0 = dayNumber(original.end)!;
+      const lo = dayNumber(`${bounds.start}-01`)!, hi = dayNumber(eventDays(bounds).end)!;
+      let s = s0, end = e0;
+      if (cur.mode === "new") { s = Math.min(anchor, target); end = Math.max(anchor, target); }
+      else if (cur.mode === "move") {
+        const delta = Math.max(lo - s0, Math.min(hi - e0, target - anchor));
+        s += delta; end += delta;
+      } else if (cur.mode === "start") s = Math.max(lo, Math.min(e0, s0 + target - anchor));
+      else end = Math.min(hi, Math.max(s0, e0 + target - anchor));
+      next.range = { start: dayString(s), end: dayString(end) };
+    } else if (cur.mode === "new") {
       const anchor = Math.max(a, Math.min(b, Math.floor(cur.view.lo + (cur.px - PAD_X) / ppm)));
       const month = Math.max(a, Math.min(b, Math.floor(indexAt(local(e)))));
       next = { ...next, s: Math.min(anchor, month), e: Math.max(anchor, month) };
@@ -149,7 +175,7 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
     }
     sessRef.current = next;
     setSess(next);
-    onPreviewChange({ start: ymFromIndex(next.s), end: ymFromIndex(next.e) });
+    onPreviewChange(sessionRange(next));
   };
   const up = () => {
     const cur = sessRef.current;
@@ -158,7 +184,7 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
     onPreviewChange(null);
     if (!cur) return;
     if (cur.mode === "new" || cur.moved) {
-      onChange({ start: ymFromIndex(cur.s), end: ymFromIndex(cur.e) });
+      onChange(sessionRange(cur));
     }
   };
   const cancel = () => { sessRef.current = null; setSess(null); onPreviewChange(null); };
@@ -288,7 +314,7 @@ export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: 
           onPointerCancel={() => setOvDrag(null)}
         >
           <rect x={PAD_X} y={7} width={inner} height={6} rx={3} fill="var(--well)" stroke="var(--line)" />
-          {sel && <rect x={ox(sel.s)} y={5} width={Math.max(2, ox(sel.e + 1) - ox(sel.s))} height={10} rx={2} fill="var(--viz-orange)" />}
+          {shown && <rect x={ox(shown.s)} y={5} width={Math.max(2, ox(shown.e + 1) - ox(shown.s))} height={10} rx={2} fill="var(--viz-orange)" />}
           <rect x={ox(view.lo)} y={1} width={Math.max(8, view.span * oppm)} height={18} rx={4} fill="var(--on-stage)" fillOpacity={0.12} stroke="var(--on-stage)" strokeWidth={1.5} style={{ cursor: ovDrag ? "grabbing" : "grab" }} />
         </svg>
       )}

@@ -35,6 +35,8 @@ export interface DetectiveQuery {
   event: string;
   /** T：事件期間。 */
   time: TimeRange;
+  /** Optional inclusive YYYY-MM-DD event days; `time` remains the enclosing monthly span. */
+  exactTime?: { start: string; end: string };
   /** L：子流域。 */
   region: RegionId;
   /** 使用者勾選的變數類別（Step 1 結果，可被使用者修改）。 */

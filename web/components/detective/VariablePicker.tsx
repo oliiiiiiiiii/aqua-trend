@@ -43,7 +43,8 @@ export function AnalyseButton({ picker, onBlocked, className = "" }: { picker: V
 }
 
 export function NeededMarker({ filled = false }: { filled?: boolean }) {
-  return <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${filled ? "border-[var(--status-critical)] bg-[var(--status-critical)] text-white" : "border-[var(--viz-red)] bg-transparent text-[var(--viz-red)]"}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{COPY.needed}</span>;
+  if (!filled) return <span className="shrink-0 text-sm font-semibold text-[var(--viz-red)]">*</span>;
+  return <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--status-critical)] bg-[var(--status-critical)] px-2 py-0.5 text-xs font-semibold text-white"><span className="h-1.5 w-1.5 rounded-full bg-current" />{COPY.needed}</span>;
 }
 
 // Frosted tiles share the stage tokens in every look.

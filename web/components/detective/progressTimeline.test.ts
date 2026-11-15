@@ -1,40 +1,60 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ANALYSIS_MS, DONE_MS, PROGRESS_STAGES, progressFrame, progressLines } from "./progressTimeline";
+import { DONE_MS, PROGRESS_STAGES, createProgressTimeline, progressFrame, progressLines } from "./progressTimeline";
 
-test("six stages advance in order while progress fills continuously", () => {
-  assert.equal(progressFrame(-1).fraction, 0);
-  for (let i = 0; i < PROGRESS_STAGES; i++) {
-    assert.equal(progressFrame(i * ANALYSIS_MS / PROGRESS_STAGES + 1).stage, i);
+const timeline = createProgressTimeline(42);
+const frame = (ms: number) => progressFrame(ms, false, timeline);
+
+test("seeded progress is deterministic, monotonic and non-linear with six uneven stages", () => {
+  assert.deepEqual(createProgressTimeline(42), timeline);
+  assert.notDeepEqual(createProgressTimeline(43), timeline);
+  assert.equal(frame(-1).fraction, 0);
+  let previous = -1, previousStage = 0;
+  const stages = new Set<number>();
+  for (let ms = 0; ms <= timeline.duration + 20; ms += 10) {
+    const f = frame(ms);
+    assert.ok(f.fraction >= previous && f.fraction <= 1);
+    assert.ok(f.stage >= previousStage && f.stage <= PROGRESS_STAGES);
+    stages.add(f.stage);
+    previous = f.fraction; previousStage = f.stage;
   }
-  let previous = -1;
-  for (let ms = 0; ms <= ANALYSIS_MS; ms += 13) {
-    const frame = progressFrame(ms);
-    assert.ok(frame.fraction >= previous);
-    assert.equal(frame.fraction, ms / ANALYSIS_MS);
-    previous = frame.fraction;
-  }
-  assert.ok(progressFrame(325).fraction > 0);
-  assert.ok(progressFrame(325).fraction < 1 / PROGRESS_STAGES);
+  assert.deepEqual([...stages], [0, 1, 2, 3, 4, 5, 6]);
+  const rates = Array.from({ length: 8 }, (_, i) => (frame((i + 1) * 500).fraction - frame(i * 500).fraction) / 500);
+  assert.ok(Math.max(...rates) > Math.min(...rates) * 5);
+  assert.notEqual(frame(1000).fraction, 1000 / timeline.duration);
+  const boundaries = timeline.points.filter((p, i, all) => i > 0 && p.stage !== all[i - 1].stage).map((p) => p.at);
+  const durations = boundaries.map((at, i) => at - (boundaries[i - 1] ?? 0));
+  assert.ok(Math.max(...durations) > Math.min(...durations) * 2);
 });
 
-test("Done holds briefly before finishing within the requested duration", () => {
-  const done = progressFrame(ANALYSIS_MS);
-  assert.equal(done.stage, PROGRESS_STAGES);
-  assert.equal(done.fraction, 1);
-  assert.equal(done.done, true);
-  assert.equal(done.finished, false);
-  assert.equal(progressFrame(ANALYSIS_MS + DONE_MS - 1).finished, false);
-  assert.equal(progressFrame(ANALYSIS_MS + DONE_MS).finished, true);
-  assert.ok(ANALYSIS_MS + DONE_MS >= 3500 && ANALYSIS_MS + DONE_MS <= 4500);
-  assert.equal(progressFrame(99999).fraction, 1);
+test("scoring visibly stalls for about a second, then ends with a quick 90–100% burst", () => {
+  for (const seed of [0, 1, 42, 43, 12345, 0xffffffff]) {
+    const run = createProgressTimeline(seed);
+    const start = run.points.find((p) => p.stage === 3 && p.fraction > 0.67)!;
+    const end = run.points[run.points.indexOf(start) + 1];
+    assert.equal(end.stage, 3);
+    assert.ok(end.at - start.at >= 800 && end.at - start.at <= 1400);
+    assert.ok(start.fraction >= 0.60 && end.fraction <= 0.75);
+    assert.ok(end.fraction - start.fraction >= 0.01 && end.fraction - start.fraction <= 0.025);
+    const final = run.points.at(-2)!;
+    assert.ok(Math.abs(final.fraction - 0.9) < 0.003);
+    assert.ok(run.duration - final.at < 600);
+    assert.ok(run.duration + DONE_MS >= 4000 && run.duration + DONE_MS <= 6000);
+  }
+});
+
+test("Done holds briefly at 100% before finishing", () => {
+  assert.deepEqual(frame(timeline.duration), { stage: PROGRESS_STAGES, fraction: 1, done: true, finished: false });
+  assert.equal(frame(timeline.duration + DONE_MS - 1).finished, false);
+  assert.equal(frame(timeline.duration + DONE_MS).finished, true);
+  assert.equal(frame(99999).fraction, 1);
 });
 
 test("reduced motion completes in 350ms including the Done state", () => {
-  assert.equal(progressFrame(249, true).done, false);
-  assert.equal(progressFrame(250, true).done, true);
-  assert.equal(progressFrame(349, true).finished, false);
-  assert.equal(progressFrame(350, true).finished, true);
+  assert.equal(progressFrame(249, true, timeline).done, false);
+  assert.equal(progressFrame(250, true, timeline).done, true);
+  assert.equal(progressFrame(349, true, timeline).finished, false);
+  assert.equal(progressFrame(350, true, timeline).finished, true);
 });
 
 test("stage labels name the basin, variables, event period and actual first year", () => {
