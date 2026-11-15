@@ -195,7 +195,7 @@ function StageScene({ root }: { root: React.RefObject<HTMLDivElement | null> }) 
           transition: `transform ${move}, width ${move}`,
         }}
       >
-        <h1 id="hero" className="text-balance text-4xl leading-tight sm:text-6xl">Discover the Trend!</h1>
+        <h1 id="hero" className="text-balance text-4xl leading-tight sm:text-6xl">Discover the Weather Trend!</h1>
       </div>
     </>
   );

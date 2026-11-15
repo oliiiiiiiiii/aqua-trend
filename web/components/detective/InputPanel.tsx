@@ -61,6 +61,8 @@ export function InputPanel(p: InputPanelProps) {
   return (
     <div data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-x-20 px-5 pt-8 pb-16 sm:px-8 lg:min-h-[calc(100svh-var(--stage-offset,4rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[auto_1fr] lg:px-16 lg:pt-14">
       <section className={`pointer-events-auto min-w-0 text-on-stage lg:col-start-2 ${reveal}`} aria-label={COPY.steps.what}>
+        <h1 className="text-[2.5rem] sm:text-5xl">{COPY.title}</h1>
+        <p className="mt-4 mb-8 text-lg text-on-stage-2">{COPY.lede}</p>
         <h2 data-needed={missing.event} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.what}{missing.event && <NeededMarker filled={highlighted.event} />}</h2>
         <EventField event={p.event} onEventChange={p.onEventChange} onEventCommit={p.onEventCommit} />
       </section>

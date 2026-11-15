@@ -3,6 +3,7 @@
 // (docs/ux-refresh.md): stage header, sticky selection + window toolbar, the variable dropdown (every variable's
 // sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (the
 // daily anomaly around the selection in a days or weeks window) and the statistics.
+import { AnalysisTutorial } from "./AnalysisTutorial";
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Catalog } from "@/lib/types";
@@ -352,6 +353,7 @@ export default function AnalysisView({
 
   return (
     <>
+      <AnalysisTutorial />
       <StageHeader event={q.event} period={formatRange(q.time)} region={regionName} copied={copied} onEdit={onEdit} onShare={share} />
 
       {allNoData ? (

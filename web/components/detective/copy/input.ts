@@ -17,12 +17,13 @@ export const VARIABLE_LABELS: Partial<Record<CategoryId, string>> = {
 // Every user-visible string of the /detective input step (English only; translate here).
 export const COPY = {
   title: "Trend Detective",
+  lede: "Describe a weather event, say where and when it happened, and pick the variables to check. We show which ones were unusual before, during and after it.",
   needed: "Needed",
   formLabel: "Event, period and sub-basin",
-  steps: { what: "Event", when: "When", where: "Where", variables: "Variables" },
+  steps: { what: "Weather event", when: "When it happened", where: "Where it happened", variables: "Variables" },
   what: {
     edit: "Edit event",
-    label: "What event do you want to investigate?",
+    label: "What weather event do you want to investigate?",
   },
   when: {
     choose: "Select months",

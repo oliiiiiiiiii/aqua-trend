@@ -22,6 +22,13 @@ export function InvestigationHero({ children }: { children?: ReactNode }) {
             <EventForm />
           </div>
         </div>
+        <button
+          type="button"
+          onClick={() => window.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" })}
+          className="pointer-events-auto absolute right-4 bottom-6 z-20 flex items-center gap-2 rounded-full border border-stage-line bg-stage/70 px-4 py-2 text-sm font-semibold text-on-stage backdrop-blur hover:bg-stage sm:right-8"
+        >
+          Scroll down to find an example <span aria-hidden className="animate-bounce">↓</span>
+        </button>
         <div data-stage-globe data-stage-pass className="absolute top-full left-1/2 aspect-square w-[min(116vw,calc(100svh-2rem),68rem)] -translate-x-1/2 -translate-y-1/2" />
       </div>
       {children}
