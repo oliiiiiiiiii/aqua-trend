@@ -179,6 +179,7 @@ LAYERS = {
         name="降水", category="precip", product="GPM IMERG V07 月資料", nasa=True, family="IMERG",
         unit="mm/day", visual="向下雨滴粒子的密度", source_files="gesdisc/imerg/*.subset.nc4", caveat=None)),
     "lst_day_check": dict(gen=modis_layer("modis/lst", "LST_Day_CMG", -273.15), meta=dict(name="check", unit="°C")),
+    "ndvi_check": dict(gen=modis_layer("modis/ndvi", "NDVI"), meta=dict(name="check", unit="NDVI")),
     "lst_night": dict(gen=modis_layer("modis/lst", "LST_Night_CMG", -273.15), meta=dict(
         name="夜間地表溫度", category="tair", product="MODIS Terra MOD11C3 LST_Night（0.05°→0.25°→0.5°）",
         nasa=True, family="MODIS", unit="°C", visual="夜間地表冷暖", source_files="modis/lst/*.nc4",

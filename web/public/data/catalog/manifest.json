@@ -1,5 +1,5 @@
 {
- "dataset_version": "data-2026-11-15",
+ "dataset_version": "data-2026-11-15.2",
  "generated": "2026-11-15",
  "catalogue_version": "variables-fd10b7337959",
  "region_catalogue_version": "regions_0p5-7ddd6e9d56cc",
@@ -358,11 +358,6 @@
    "missing": []
   },
   {
-   "asset": "layer:ndvi (MODIS MOD13C2 re-build / extension)",
-   "status": "pending",
-   "reason": "下載中；既有 ndvi 層（舊管線，到 2026-10）仍可用"
-  },
-  {
    "asset": "event_catalogues",
    "status": "pending",
    "reason": "尚無已核可的事件紀錄資料集（RecordedEvent）；查詢不得把缺資料當成零事件"
@@ -372,6 +367,9 @@
    "status": "pending",
    "reason": "尚無標準指標配方（SPI 等）"
   }
+ ],
+ "notes": [
+  "ndvi：新管線重算（MOD13C2，2000-02 – 2026-10）與既有層 r 中位數 0.997；高緯度少數流域差異較大，推測舊管線另用了 pixel reliability（積雪／雲）篩選。既有層已到最新月份，維持舊值不替換。"
  ],
  "dropped": [
   "OMI OMTO3d（臭氧／UV 氣膠指數，2026-11-15 決定不做；臭氧改用 MERRA-2 TO3）"

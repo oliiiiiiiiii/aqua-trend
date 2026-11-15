@@ -1,4 +1,4 @@
-# web/public/data：給前端的資料說明（v3，`data-2026-11-15`）
+# web/public/data：給前端的資料說明（v3，`data-2026-11-15.2`）
 
 全部是靜態 JSON，用 `fetch()` 讀取，不需要後端或 NASA 帳號；`next build`（`output: "export"`）時會一起打包，部署在任何靜態主機都能用。
 數值缺值一律是 `null`，畫圖時要斷開，**不要當成 0**。
@@ -58,7 +58,7 @@
 | 層級 | 位置 | 誰需要 |
 |---|---|---|
 | 前端資料（本資料夾） | git，隨網站部署 | 所有人；clone 後 `npm run dev` 即可 |
-| 每層區域序列中間檔（`data/interim/layers/*.npz`） | GitHub Release `data-2026-11-15` 的附件 | 想改合併邏輯、重產 JSON 的人（`pipeline/merge_series.py`） |
+| 每層區域序列中間檔（`data/interim/layers/*.npz`） | GitHub Release `data-2026-11-15.2` 的附件 | 想改合併邏輯、重產 JSON 的人（`pipeline/merge_series.py`） |
 | 原始 NASA 檔（約 20 GB） | 團隊分享站 http://meow1.csie.ntu.edu.tw:3266/（`data/share/` 同名資料夾），或用自己的 Earthdata token 跑 `pipeline/fetch_earthdata.py` 重抓 | 重跑整條管線的人 |
 
 ## 重現

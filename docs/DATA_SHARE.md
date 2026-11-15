@@ -111,6 +111,7 @@ https://harmony.earthdata.nasa.gov/<collection concept id>/ogc-api-coverages/1.0
 | 2026-11-15 | `rn_ceres` | Earthdata：CERES EBAF Ed4.2.1 sfc_net_tot_all_mon | 2000-03 – 2026-07 | 1,664（含海洋區域） | 類別 `energy`；與 GLDAS `rn`／MERRA-2 `rn_m2` r 中位數 0.98，偏差中位數約 7–8% |
 | 2026-11-15 | `lst_night` | Earthdata：MODIS Terra MOD11C3 LST_Night | 2000-02 – 2026-10 | 1,600 | 類別 `tair`；同流程重算 `lst_day` 與既有值 r 中位數 1.0000 |
 | 2026-11-15 | GLDAS 5 層（只驗證，不替換） | Earthdata：GLDAS_NOAH025_M 2.1 | 2000-01 – 2026-07 | 1,572 | `et_gldas`、`sm_root`、`runoff`、`swe`、`tair` 重算與既有值 r 中位數 1.0000、偏差 0.00%；既有層已到最新月份，不需延長 |
+| 2026-11-15 | `ndvi`（只驗證，不替換） | Earthdata：MODIS MOD13C2 NDVI | 2000-02 – 2026-10 | 1,553 | r 中位數 0.997、偏差中位數 0.5%；高緯度少數流域差異大（推測舊管線用了 pixel reliability 篩選，新管線沒下載該欄位）。既有層已到最新月份，維持舊值 |
 | 2026-11-15 | `p_imerg`（只驗證，不替換） | Earthdata：GPM IMERG V07 | 1998-01 – 2025-09 | — | 與既有 `p_imerg` r ≥ 0.999，確認新管線與舊管線一致 |
 | 2026-11-15 | `fire_count` | 分享站 `firms/`（`share_firms.py`） | 2000-11 – 2025-12 | 1,664 | 新類別 `fire`；只計 Terra、植被火；無偵測＝0，區域沒有格點＝null |
 | 2026-11-15 | `snow_cover` | 分享站 `mod10cm/`（`share_mod10cm.py`） | 2000-03 – 2026-10 | 1,589 | 類別 `snow`；缺 6 個月 |

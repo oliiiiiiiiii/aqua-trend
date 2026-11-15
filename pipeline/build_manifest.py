@@ -13,11 +13,13 @@ YM = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 
 # Assets that are known but not (yet) delivered in this release.
 PENDING = [
-    dict(asset="layer:ndvi (MODIS MOD13C2 re-build / extension)", status="pending",
-         reason="下載中；既有 ndvi 層（舊管線，到 2026-10）仍可用"),
     dict(asset="event_catalogues", status="pending",
          reason="尚無已核可的事件紀錄資料集（RecordedEvent）；查詢不得把缺資料當成零事件"),
     dict(asset="indicator_registry", status="pending", reason="尚無標準指標配方（SPI 等）"),
+]
+NOTES = [
+    "ndvi：新管線重算（MOD13C2，2000-02 – 2026-10）與既有層 r 中位數 0.997；高緯度少數流域差異較大，"
+    "推測舊管線另用了 pixel reliability（積雪／雲）篩選。既有層已到最新月份，維持舊值不替換。",
 ]
 DROPPED = ["OMI OMTO3d（臭氧／UV 氣膠指數，2026-11-15 決定不做；臭氧改用 MERRA-2 TO3）"]
 
@@ -74,6 +76,7 @@ def main(version):
         quality_policy_version="cover-0.30",
         quality_policy="0.5° 格網 cos(lat) 面積加權；區域內有效面積 < 30% 的月份為 null；null 不可當 0",
         asset_status=status + PENDING,
+        notes=NOTES,
         dropped=DROPPED,
         reproduce="pipeline/README.md",
     )

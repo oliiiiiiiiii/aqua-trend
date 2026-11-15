@@ -51,4 +51,4 @@ python3 -I pipeline/build_manifest.py data-YYYY-MM-DD                  # 驗證�
 
 ## 驗證（2026-11-15）
 
-用本管線從原始檔重算既有層，與舊管線（hub.py）結果比對，全部區域的相關係數中位數：IMERG ≥ 0.999、GLDAS 5 層 1.0000、MERRA-2 陸面 6 層 1.0000、MODIS LST 1.0000。
+用本管線從原始檔重算既有層，與舊管線（hub.py）結果比對，全部區域的相關係數中位數：IMERG ≥ 0.999、GLDAS 5 層 1.0000、MERRA-2 陸面 6 層 1.0000、MODIS LST 1.0000、MODIS NDVI 0.997（高緯度少數流域差異較大，舊值保留）。
