@@ -2,7 +2,8 @@
 // Everything the Days and Weeks windows show and test, in one place (AnalysisView calls it; DailyView draws it; the
 // statistics panel and the Tests area read it):
 //
-//   1. daily values over [month selection − reach, month selection + reach] (useDailyRange)
+//   1. the span [month selection − reach, month selection + reach]; daily values are fetched for the selected days
+//      only (useDailyRange), the rest of the span shows days fetched before
 //   2. the daily normal (monthly trend + seasonal cycle at each day) at the daily product's level, and the anomaly
 //   3. one point per day, or per 7-day block (lib/detective/fine.ts)
 //   4. the reader's own selection of points (URL `dsel`; default the month selection's days)
@@ -72,11 +73,6 @@ export function useFineModel(p: {
   const step: FineStep = p.reach.unit === "week" ? "week" : "day";
   const span = useMemo(() => dailySpan(p.monthSel, p.reach.n, p.reach.unit), [p.monthSel.start, p.monthSel.end, p.reach.n, p.reach.unit]); // eslint-disable-line react-hooks/exhaustive-deps
   const monthDays = useMemo(() => eventDays(p.monthSel), [p.monthSel.start, p.monthSel.end]); // eslint-disable-line react-hooks/exhaustive-deps
-  const st = useDailyRange({ region: p.region, layer: p.layer, start: span.start, end: span.end, focus: monthDays, enabled: p.enabled });
-
-  const comparable = !!p.d && sameUnit(st.unit ?? p.unit, p.unit);
-  const model = useMemo(() => (comparable ? dailyNormal(p.d, st.dates) : st.dates.map(() => null)), [comparable, p.d, st.dates]);
-  const hasModel = model.some((v) => v != null);
 
   // the selection: the reader's days, else the month selection's, clipped to the span (whole points)
   const wanted = p.daySel && p.daySel.end >= span.start && p.daySel.start <= span.end ? p.daySel : monthDays;
@@ -92,6 +88,11 @@ export function useFineModel(p: {
     const s0 = dayNum(span.start), a = dayNum(r.start), b = dayNum(r.end);
     return { start: dayStr(s0 + Math.floor((a - s0) / 7) * 7), end: dayStr(Math.min(dayNum(span.end), s0 + Math.floor((b - s0) / 7) * 7 + 6)) };
   })();
+  // only the selected days are fetched; the selection's change restarts loading (useDailyRange)
+  const st = useDailyRange({ region: p.region, layer: p.layer, start: span.start, end: span.end, fetch: snapped, enabled: p.enabled });
+  const comparable = !!p.d && sameUnit(st.unit ?? p.unit, p.unit);
+  const model = useMemo(() => (comparable ? dailyNormal(p.d, st.dates) : st.dates.map(() => null)), [comparable, p.d, st.dates]);
+  const hasModel = model.some((v) => v != null);
   const yearsWanted = p.baseline.kind === "years" ? p.baseline.years : 0;
   const spans = useMemo(
     () => (yearsWanted ? baselineSpans(snapped, step, yearsWanted, earliest) : []),

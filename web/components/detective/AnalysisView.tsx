@@ -23,7 +23,8 @@ import type { LaneModel, LaneResult } from "./workbench/types";
 import { ExpandedLane, type Shared } from "./workbench/Lanes";
 import { StageHeader, Toolbar } from "./workbench/Toolbar";
 import { selectionCsv } from "./workbench/csv";
-import type { LabControl } from "./workbench/lab/TestsPanel";
+import type { FetchMore, LabControl } from "./workbench/lab/TestsPanel";
+import { dayNum, dayStr } from "@/lib/detective/fine";
 import { DEFAULT_TEST, type TestId } from "./workbench/lab/tests";
 import VariableSelect from "./picker/VariableSelect";
 import { itemsFromLanes } from "./picker/fromLanes";
@@ -324,7 +325,24 @@ export default function AnalysisView({
       />
     )
     : undefined;
+  // what an unavailable test lacks: the days around the selection, or a wider selection (its new days load by themselves)
+  const fineMore: FetchMore = {
+    around: fine.st.aroundMissing > 0 && !fine.st.around
+      ? { days: fine.st.aroundMissing, eta: COPY_DAILY.seconds(fine.st.aroundMissing * 60 / 31), run: fine.st.loadAround }
+      : null,
+    widen: (points) => {
+      const per = fine.step === "week" ? 7 : 1;
+      const lo = dayNum(fine.span.start), hi = dayNum(fine.span.end);
+      let a = dayNum(fine.selDays.start), b = dayNum(fine.selDays.end);
+      const want = points * per;
+      // grow the end first, then the start, inside the window
+      b = Math.min(hi, a + want - 1);
+      if (b - a + 1 < want) a = Math.max(lo, b - want + 1);
+      setDaySel({ start: dayStr(a), end: dayStr(b) });
+    },
+  };
   const fineLane = fineOn && ready ? {
+    more: fineMore,
     source: fine.lab,
     sel: fine.lab?.sel ?? { s: 0, e: 0 },
     axis: fine.lab?.axis ?? pointAxis(fine.step, fine.series.start, fine.series.end),

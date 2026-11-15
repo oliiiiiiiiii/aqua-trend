@@ -197,6 +197,13 @@ function Status({ st }: { st: DailyState }) {
           <button type="button" onClick={st.retry} className={btn} style={r}>{COPY.retry}</button>
         </p>
       )}
+      {st.phase === "done" && st.aroundMissing > 0 && (
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <button type="button" onClick={st.loadAround} title={COPY.fetchAroundTitle} className={btn} style={r}>
+            {COPY.fetchAround(st.aroundMissing, COPY.seconds(st.aroundMissing * 60 / 31))}
+          </button>
+        </p>
+      )}
       {clipped && <p className="text-xs text-ink-3">{clipped}</p>}
     </div>
   );

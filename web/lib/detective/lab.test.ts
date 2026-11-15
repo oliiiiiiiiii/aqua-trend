@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { binomialTest, chiSquareSf, fSf } from "../stats";
 import {
-  acfTest, bootstrapTest, compareTest, cusumTest, effectiveN, extremesTest, holm, labSample, lagCorrelation, meanTest, mkTest,
+  LAB_TOOLS, acfTest, bootstrapTest, compareTest, cusumTest, effectiveN, extremesTest, holm, labSample, lagCorrelation, meanTest, mkTest,
   monthlyTest, normalityTest, olsTest, permutationTest, pettittTest, piecewiseTest, runLabTool, runsTest, spectrumTest,
   varianceTest, wilcoxonTest,
 } from "./lab";
@@ -138,9 +138,9 @@ describe("runLabTool", () => {
   } as unknown as Decomposition;
 
   it("refuses ranges that are too short", () => {
-    const r = runLabTool("acf", d, 0, 11);
+    const r = runLabTool("acf", d, 4, 6); // index 5 is missing: 2 observed
     assert.equal(r.kind, "insufficient");
-    if (r.kind === "insufficient") { assert.equal(r.n, 11); assert.equal(r.need, 24); }
+    if (r.kind === "insufficient") { assert.equal(r.n, 2); assert.equal(r.need, 4); }
   });
   it("draws the fitted line across the range", () => {
     const r = runLabTool("ols", d, 10, 40);
@@ -227,5 +227,30 @@ describe("more tools", () => {
     const r = permutationTest(sample(ar));
     assert.ok(r.p >= r.pNaive);
     assert.equal(permutationTest(sample(ar)).p, r.p);
+  });
+});
+
+describe("short ranges", () => {
+  const steps = (n: number) => {
+    const months = Array.from({ length: n }, (_, i) => new Date(Date.UTC(2021, 2, 1 + i)).toISOString().slice(0, 10));
+    const residual = months.map((_, i) => Math.sin(i) + i * 0.1);
+    return { months, residual, raw: residual, trend: months.map(() => 0), seasonal: months.map(() => 0), z: residual.map(() => null),
+      baseline: { months: [], excluded: { start: "2021-03", end: "2021-03" }, n: 0 } } as unknown as Decomposition;
+  };
+  it("every tool answers or says insufficient on 1, 2, 7 and 30 steps, never throws", () => {
+    for (const n of [1, 2, 7, 30]) {
+      const d = steps(n);
+      for (const t of LAB_TOOLS) {
+        const o = runLabTool(t, d, 0, n - 1);
+        assert.ok(o.kind === "ok" || o.kind === "insufficient", `${t} on ${n}`);
+      }
+    }
+  });
+  it("seven days get a mean test and a trend; one day gets the cumulative anomaly", () => {
+    const d = steps(7);
+    assert.equal(runLabTool("mean", d, 0, 6).kind, "ok");
+    assert.equal(runLabTool("mk", d, 0, 6).kind, "ok");
+    assert.equal(runLabTool("ols", d, 0, 6).kind, "ok");
+    assert.equal(runLabTool("cusum", d, 3, 3).kind, "ok");
   });
 });

@@ -45,13 +45,17 @@ export const LAB_GROUPS: readonly { label: string; tools: readonly LabToolId[] }
 
 export const LAB_TOOLS: readonly LabToolId[] = LAB_GROUPS.flatMap((g) => g.tools);
 
-/** Minimum observed months each tool needs (for compare/variance: the range; the rest needs 12). */
+/**
+ * Minimum observed steps (months, weeks or days) each tool needs: the smallest sample its statistic is defined on, so a
+ * range of a week or a single day still gets an answer where one exists. Small samples give wide intervals and large
+ * p values; the result card shows n. For compare/variance this is the range; the rest needs 12.
+ */
 export const LAB_MIN_N: Record<LabToolId, number> = {
-  ols: 10, mk: 10, piecewise: 24, permutation: 12, bootstrap: 12,
-  mean: 3, wilcoxon: 10, compare: 3, variance: 10, normality: 20, monthly: 24,
-  cusum: 3, runs: 12, extremes: 12, pettitt: 10,
-  acf: 24, spectrum: 48,
-  analog: 3, hmm: 36, forecast: 1, discord: 6, iforest: 6, bocpd: 24, gp: 12,
+  ols: 3, mk: 3, piecewise: 5, permutation: 3, bootstrap: 3,
+  mean: 2, wilcoxon: 2, compare: 2, variance: 3, normality: 4, monthly: 2,
+  cusum: 1, runs: 2, extremes: 1, pettitt: 2,
+  acf: 4, spectrum: 4,
+  analog: 3, hmm: 6, forecast: 1, discord: 3, iforest: 1, bocpd: 3, gp: 4,
 };
 
 /** Tools whose answer is ≈ 0 by construction when the range is the baseline the trend was fitted on. */
@@ -651,7 +655,11 @@ export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end
     }
     case "acf": return { kind: "ok", stats: acfTest(s), segments: [] };
     case "spectrum": return { kind: "ok", stats: spectrumTest(s), segments: [] };
-    case "monthly": return { kind: "ok", stats: monthlyTest(s, d.months), segments: [] };
+    case "monthly": {
+      // Kruskal–Wallis needs at least two calendar months in the range
+      const r = monthlyTest(s, d.months);
+      return r.df < 1 ? short(s.n) : { kind: "ok", stats: r, segments: [] };
+    }
     case "cusum": return { kind: "ok", stats: cusumTest(s), segments: [] };
     case "extremes": return { kind: "ok", stats: extremesTest(labSample(d.z, start, end), opts.extremeRate ?? baselineExtremeRate(d)), segments: [] };
     case "runs": {
@@ -960,7 +968,8 @@ export function piecewiseTest(s: LabSample): PiecewiseResult | null {
   const my = mean(y);
   for (const v of y) syy += (v - my) ** 2;
   const sse1 = (1 - line.r2) * syy;
-  const edge = Math.max(6, Math.floor(0.1 * n));
+  // at least 2 points either side of the hinge; 6 once the range is long enough (≥ 25), as before
+  const edge = Math.max(2, Math.min(6, Math.floor((n - 1) / 4)), Math.floor(0.1 * n));
   let best: { k: number; coef: number[]; sse: number } | null = null;
   for (let i = edge; i < n - edge; i++) {
     const k = x[i];

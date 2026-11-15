@@ -91,9 +91,6 @@ export function StartProgress({ context, onDone, onCancel }: {
               </li>
             ))}
           </ol>
-          <div className="mt-6 flex justify-end">
-            <button type="button" autoFocus onClick={finish} className="min-h-11 rounded-ctl px-4 py-2 text-sm text-on-stage-2 underline underline-offset-4 hover:bg-on-stage/10 hover:text-on-stage focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">Skip</button>
-          </div>
         </div>
       </div>
     </dialog>,
