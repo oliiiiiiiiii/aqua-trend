@@ -1,14 +1,14 @@
 "use client";
 // Step 2 + Step 3 of /detective: run the analysis for every chosen category and show the workbench
 // (docs/ux-refresh.md): stage header, sticky selection + window toolbar, the variable dropdown (every variable's
-// sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (daily
-// in a weeks window) and the statistics.
+// sparkline and numbers for the shared selection), and the chosen variable with the crystal ball, the chart (the
+// daily anomaly around the selection in a days or weeks window) and the statistics.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Catalog } from "@/lib/types";
 import type { CategoryId, DetectiveQuery, LayerId, MonthlySeries, RegionId, TrendStats } from "@/lib/detective/contracts";
 import { DEFAULT_PAD, decodeState, formatRange, windowOf, ymIndex } from "@/lib/detective/url";
-import { monthView, type ViewWindow } from "@/lib/detective/window";
+import { isDailyWindow, workbenchView, type ViewWindow } from "@/lib/detective/window";
 import { categoryAvailability, loadSeries, type VariableCatalog } from "@/lib/detective/series";
 import { baselineInfo, intervalDetail, type IntervalDetail } from "@/lib/detective/intervalDetail";
 import { anomalyPolarity } from "@/lib/detective/polarity";
@@ -124,12 +124,13 @@ export default function AnalysisView({
     for (const c of cats) { const x = results[c]; if (x.kind === "ready") r = r ? { s: Math.min(r.s, x.record.s), e: Math.max(r.e, x.record.e) } : x.record; }
     return r;
   }, [cats, results]);
-  const view = useMemo(() => monthView(win, event, recordUnion), [win, event, recordUnion]);
 
   /* ---------------- the shared selection (URL `sel`, else the event) */
   const urlSel = useMemo(() => decodeState(params.toString()).selection ?? null, [params]);
   const [selState, setSelState] = useState<{ key: string; span: Span }>(() => ({ key: evKey, span: urlSel ? toSpan(urlSel) : event }));
   const selRaw = selState.key === evKey ? selState.span : urlSel ? toSpan(urlSel) : event;
+  // months and years show the event ± n; days and weeks (the daily chart) also reach around the selection, so it is kept
+  const view = useMemo(() => workbenchView(win, event, { s: selRaw.s, e: selRaw.e }, recordUnion), [win, event, selRaw.s, selRaw.e, recordUnion]);
   const sel = clampSpan(selRaw, view, event);
   const [sortSpan, setSortSpan] = useState<Span | null>(null);
 
@@ -259,7 +260,7 @@ export default function AnalysisView({
   const setWin = (w: ViewWindow) => {
     winRef.current = w;
     setWinState(w);
-    const next = clampSpan(selRaw, monthView(w, event, recordUnion), event);
+    const next = clampSpan(selRaw, workbenchView(w, event, selRaw, recordUnion), event);
     setSelState({ key: evKey, span: next });
     urlWith((x) => x, next);
   };
@@ -288,13 +289,20 @@ export default function AnalysisView({
   const allNoData = cats.every((c) => results[c].kind === "nodata");
   const relation = selectionLabel(sel, event).relation;
   const lane = lanes.find((l) => l.c === active) ?? lanes[0];
-  const weeks = win !== "all" && win.unit === "week" ? win.n : null;
+  // a days or weeks window: the daily anomaly around the selection replaces the monthly chart
+  const daily = isDailyWindow(win) ? win : null;
   const ready = lane?.res.kind === "ready" ? lane.res : null;
-  const renderChart = weeks != null && ready
+  const selRange = toRange(sel);
+  const renderChart = daily && ready
     ? (monthly: React.ReactNode) => (
       <DailyView
         region={q.region} layer={ready.meta.layer} name={ready.meta.name} product={ready.meta.product} unit={ready.meta.unit}
-        event={q.time} weeks={weeks} d={ready.d} fallback={monthly}
+        event={q.time} selection={selRange} reach={daily} d={ready.d} polarity={lane.polarity} fallback={monthly}
+        onShift={(months) => {
+          // stay inside the monthly record: a day without a normal has no anomaly
+          const next = { s: sel.s + months, e: sel.e + months };
+          if (!recordUnion || (next.s >= recordUnion.s && next.e <= recordUnion.e)) commitSel(next);
+        }}
       />
     )
     : undefined;

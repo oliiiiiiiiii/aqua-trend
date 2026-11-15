@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Decomposition } from "@/lib/detective/contracts";
-import { autoRange, daysOf, estimateSeconds, monthlyNormalByDay, needsConfirm, planPieces, runs, sameUnit, splitRange } from "./plan";
+import { autoRange, dailyAnomaly, dailyNormal, daysOf, estimateSeconds, needsConfirm, planPieces, runs, sameUnit, selectionSummary, splitRange } from "./plan";
 
 test("days of a range longer than a month, across a leap day", () => {
   const d = daysOf({ start: "2020-02-27", end: "2020-03-02" });
@@ -30,10 +30,70 @@ test("auto-load up to 62 days; about a minute per month", () => {
   assert.equal(Math.round(estimateSeconds(124)), 240);
 });
 
-test("monthly normal per day = trend + seasonal of that month, null outside the record", () => {
-  const d = { months: ["2021-02", "2021-03"], trend: [1, 2], seasonal: [10, 20] } as unknown as Decomposition;
-  assert.deepEqual(monthlyNormalByDay(d, ["2021-01-31", "2021-02-01", "2021-03-15"]), [null, 11, 22]);
-  assert.deepEqual(monthlyNormalByDay(null, ["2021-02-01"]), [null]);
+// 36 months from Jan 2020: trend 100, 101, … and a peaked seasonal cycle (a wet season in June–August)
+const CYCLE = [0, 0, 5, 10, 30, 80, 120, 70, 20, 5, 0, 0];
+const model = {
+  months: Array.from({ length: 36 }, (_, i) => `${2020 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}`),
+  trend: Array.from({ length: 36 }, (_, i) => 100 + i),
+  seasonal: Array.from({ length: 36 }, (_, i) => CYCLE[i % 12]),
+} as unknown as Decomposition;
+const monthOf = (ym: string) => daysOf({ start: `${ym}-01`, end: `${ym}-${new Date(Date.UTC(+ym.slice(0, 4), +ym.slice(5), 0)).getUTCDate()}` });
+const mean = (a: (number | null)[]) => a.reduce<number>((s, v) => s + (v as number), 0) / a.length;
+
+test("daily normal: every month's mean is that month's trend + seasonal normal, with no step on the 1st", () => {
+  // the peak (July 2021: 118 + 120), a trough and the months between: the monthly mean is kept exactly
+  for (const [ym, i] of [["2021-07", 18], ["2021-06", 17], ["2021-01", 12], ["2021-02", 13], ["2020-02", 1]] as const) {
+    const monthly = (model.trend[i] as number) + (model.seasonal[i] as number);
+    assert.ok(Math.abs(mean(dailyNormal(model, monthOf(ym))) - monthly) < 1e-6, `${ym}: ${mean(dailyNormal(model, monthOf(ym)))} vs ${monthly}`);
+  }
+  // asked for a span that crosses months: the same values as month by month
+  const span = dailyNormal(model, daysOf({ start: "2021-05-20", end: "2021-08-10" }));
+  assert.ok(Math.abs(mean(span.slice(12, 42)) - (117 + 80)) < 1e-6); // June 2021
+  // smooth: the step across a month boundary is an ordinary daily step, not the 50 between the monthly normals
+  const steps = span.slice(1).map((v, i) => Math.abs((v as number) - (span[i] as number)));
+  assert.ok(Math.max(...steps) < 4, String(Math.max(...steps)));
+  // the peak of the daily normal is above the July monthly normal, as it must be to keep the mean
+  assert.ok(Math.max(...(span as number[])) > 238);
+});
+
+test("daily normal: a pure linear trend stays on its line; outside the monthly record there is none", () => {
+  const line = { ...model, seasonal: model.seasonal.map(() => 0) } as unknown as Decomposition;
+  const [mid, next] = dailyNormal(line, ["2021-03-16", "2021-03-17"]) as number[];
+  assert.ok(Math.abs(mid - 114) < 0.02, String(mid));          // the middle of March 2021 = its monthly trend value
+  assert.ok(Math.abs(next - mid - 1 / 31) < 0.005, String(next - mid));
+  assert.deepEqual(dailyNormal(model, ["2019-12-31", "2023-01-01"]), [null, null]);
+  assert.ok(dailyNormal(model, ["2020-01-01", "2022-12-31"]).every((v) => v !== null && Number.isFinite(v)));
+  assert.deepEqual(dailyNormal(null, ["2021-02-01"]), [null]);
+});
+
+test("daily normal of a quantity that cannot be negative stays ≥ 0 next to a very wet month", () => {
+  const rain = {
+    months: model.months,
+    trend: model.months.map(() => 0),
+    seasonal: model.months.map((_, i) => (i % 12 === 6 ? 30 : 0.1)),
+  } as unknown as Decomposition;
+  const year = dailyNormal(rain, daysOf({ start: "2021-01-01", end: "2021-12-31" })) as number[];
+  assert.ok(year.every((v) => v >= 0), String(Math.min(...year)));
+  assert.ok(Math.max(...year) > 30);
+});
+
+test("daily anomaly removes that normal; a series that is exactly normal has no anomaly", () => {
+  const days = daysOf({ start: "2021-06-10", end: "2021-06-14" });
+  const normal = dailyNormal(model, days);
+  assert.deepEqual(dailyAnomaly(normal, normal), [0, 0, 0, 0, 0]);
+  const values = normal.map((v, i) => (i === 2 ? null : (v as number) + 5));
+  assert.deepEqual(dailyAnomaly(values, normal).map((v) => (v === null ? null : Math.round(v * 1e9) / 1e9)), [5, 5, null, 5, 5]);
+  assert.deepEqual(dailyAnomaly([3, 4], [null, 1]), [null, 3]);
+});
+
+test("the selection's days are summarised, not the event's or the whole span", () => {
+  const dates = daysOf({ start: "2021-02-26", end: "2021-03-05" });      // 26, 27, 28 Feb, 1–5 Mar
+  const values = [1, 1, 1, 10, null, 20, 30, 1];
+  const anomaly = [0, 0, 0, 2, null, 4, null, 0];
+  const sum = selectionSummary(dates, values, anomaly, { start: "2021-03-01", end: "2021-03-04" });
+  assert.deepEqual(sum, { days: 4, observed: 3, meanValue: 20, n: 2, meanAnomaly: 3 });
+  assert.deepEqual(selectionSummary(dates, values, anomaly, { start: "2021-04-01", end: "2021-04-30" }),
+    { days: 0, observed: 0, meanValue: null, n: 0, meanAnomaly: null });
 });
 
 test("units and runs", () => {

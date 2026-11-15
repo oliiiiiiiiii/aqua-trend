@@ -1,13 +1,13 @@
 // UI strings of the view-window slider and the baseline exclusion stepper. English, few words.
 export const COPY = {
   window: "Window",
-  windowTitle: "How much is shown around the event. The baseline does not change.",
+  windowTitle: "How much is shown: months and years around the event, days and weeks around the selection. The baseline does not change.",
   unit: "Unit",
-  units: { week: "Weeks", month: "Months", year: "Years" },
-  unitTitle: { week: "Daily data around the event, where available", month: "Months around the event", year: "Years around the event" },
+  units: { day: "Days", week: "Weeks", month: "Months", year: "Years" },
+  unitTitle: { day: "Daily anomaly, a few days either side of the selection", week: "Daily anomaly, a few weeks either side of the selection", month: "Months around the event", year: "Years around the event" },
   all: "All",
   allTitle: "Show the whole record",
-  slider: "Window either side of the event",
+  slider: "Window either side of the event (days and weeks: of the selection)",
   dailyHint: "Daily data",
   baseline: "Exclude",
   baselineAfter: "months from baseline",

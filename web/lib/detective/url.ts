@@ -14,7 +14,8 @@
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
 //   sel  the workbench selection "YYYY-MM..YYYY-MM"; left out when it equals the event period (t)
 //   test the method of the expanded row of the workbench's Tests table (one of TEST_IDS); absent = no row expanded
-//   win  the view window around the event ("2w", "8m", "3y", "all"; lib/detective/window.ts). Left out when it equals
+//   win  the view window ("3d", "2w", "8m", "3y", "all"; lib/detective/window.ts): months and years around the event,
+//        days and weeks (the daily chart) around the selection. Left out when it equals
 //        the window the URL implies without it: DEFAULT_WINDOW, or for older links that only carry `pad` (which used to
 //        set the view too) windowFromPad(pad), so those links still open on the same view.
 //
