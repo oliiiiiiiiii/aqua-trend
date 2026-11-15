@@ -22,7 +22,7 @@ docker compose up --build -d
 If you already have the pinned archive, replace `npm run setup` with:
 
 ```sh
-npm run setup -- --file /absolute/path/to/aqua-trend-data-v1.tar.gz
+npm run setup -- --file /absolute/path/to/aqua-trend-data-v2.tar.gz
 ```
 
 Open <http://localhost:8080/detective/>. To change only the published host port, use `PORT=8090 docker compose up --build -d`; the server still listens on 8080 inside the container. Ports are published on the host's network interfaces. Put HTTPS and request limits at a reverse proxy or hosting platform for public deployment.

@@ -5,7 +5,7 @@
 
 > **網站執行與 setup 不連線到分享站。** `npm run setup` 只從 GitHub Release 下載資料 bundle（見 `docs/INTEGRATION.md` 工作線 F）。部分既有資料的原始檔曾取自分享站，來源仍保留在 metadata。分享站隨時可能關閉，只供工作線 F 開發時參考，重跑管線的官方輸入方式見 [`pipeline/README.md`](../pipeline/README.md)。
 
-目前發布的是 [`data-v1`](https://github.com/oliiiiiiiiii/aqua-trend/releases/tag/data-v1)：32 層、17 類別、1,706 個區域序列檔。它沿用 `data-v0`，合併 F `9b7506e` 的資料快照，並標記 SO₂ 為年資料。SO₂ 不提供月尺度異常或趨勢檢定；舊快照可能已將缺測來源當成零，FIRMS 的零值也不代表完整觀測或沒有火災。本次沒有用原始檔重算這兩層；管線修正只影響之後的重跑。
+目前發布的是 [`data-v2`](https://github.com/oliiiiiiiiii/aqua-trend/releases/tag/data-v2)：34 層、17 類別、1,706 個區域序列檔。它沿用 `data-v0`，合併 F `80f3f6b` 的資料快照，並標記 SO₂ 為年資料。SO₂ 不提供月尺度異常或趨勢檢定；舊快照可能已將缺測來源當成零，FIRMS 的零值也不代表完整觀測或沒有火災。本次沒有用原始檔重算這兩層；管線修正只影響之後的重跑。
 
 ## 給 agent 的使用規則
 
@@ -57,7 +57,7 @@
 
 **團隊正在補這些資料，可能在你工作期間陸續出現。** 每次開始處理前重新抓清單，自己判斷哪些可以處理了。
 
-還沒補上時，**繼續使用 `web/data.lock.json` 鎖定的 Release 資料**（`npm run setup` 下載）。既有 GLDAS、IMERG、MERRA-2、MODIS 子流域序列來自 `data-v0`，目前 `data-v1` 再加入下方處理紀錄；也可試 Giovanni（下一節）。
+還沒補上時，**繼續使用 `web/data.lock.json` 鎖定的 Release 資料**（`npm run setup` 下載）。既有 GLDAS、IMERG、MERRA-2、MODIS 子流域序列來自 `data-v0`，目前 `data-v2` 再加入下方處理紀錄；也可試 Giovanni（下一節）。
 
 ## Giovanni（NASA 線上對齊工具）
 
@@ -112,11 +112,15 @@ https://harmony.earthdata.nasa.gov/<collection concept id>/ogc-api-coverages/1.0
 | 2026-11-15 | `aod` | Earthdata：MERRA-2 M2TMNXAER TOTEXTTAU（`fetch_earthdata.py m2aer` → `earthdata_layers.py aod`） | 1980-01 – 2026-09 | 全部區域 1,664／basin4 有格點者皆有 | 新類別 `aod` |
 | 2026-11-15 | `to3_m2`、`tqv` | Earthdata：MERRA-2 M2TMNXSLV TO3、TQV | 1980-01 – 2026-09 | 1,664 | 新類別 `ozone`、`vapor` |
 | 2026-11-15 | `p_m2land`、`et_m2land`、`sm_m2`、`ro_m2`、`rn_m2`、`tsurf_m2`（延長） | Earthdata：MERRA-2 M2TMNXLND | **1980-01** – 2026-09（原本 2000 起） | 1,566（與原本相同） | 2000 後與舊值比對：r 中位數 1.0000、偏差中位數 0.00%；`merge_series.py --only-existing` |
+| 2026-11-15 | `rn_ceres` | Earthdata：CERES EBAF Ed4.2.1 sfc_net_tot_all_mon | 2000-03 – 2026-07 | 1,664（含海洋區域） | 類別 `energy`；與 GLDAS `rn`／MERRA-2 `rn_m2` r 中位數 0.98，偏差中位數約 7–8% |
+| 2026-11-15 | `lst_night` | Earthdata：MODIS Terra MOD11C3 LST_Night | 2000-02 – 2026-10 | 1,600 | 類別 `tair`；同流程重算 `lst_day` 與既有值 r 中位數 1.0000 |
+| 2026-11-15 | GLDAS 5 層（只驗證，不替換） | Earthdata：GLDAS_NOAH025_M 2.1 | 2000-01 – 2026-07 | 1,572 | `et_gldas`、`sm_root`、`runoff`、`swe`、`tair` 重算與既有值 r 中位數 1.0000、偏差 0.00%；既有層已到最新月份，不需延長 |
 | 2026-11-15 | `p_imerg`（只驗證，不替換） | Earthdata：GPM IMERG V07 | 1998-01 – 2025-09 | — | 與既有 `p_imerg` r ≥ 0.999，確認新管線與舊管線一致 |
 | 2026-11-15 | `fire_count` | 分享站 `firms/`（`share_firms.py`） | 2000-11 – 2025-12 | 1,664 | 新類別 `fire`；只計 Terra、植被火；無偵測＝0，區域沒有格點＝null |
 | 2026-11-15 | `snow_cover` | 分享站 `mod10cm/`（`share_mod10cm.py`） | 2000-03 – 2026-10 | 1,589 | 類別 `snow`；缺 6 個月 |
 | 2026-11-15 | `so2_emis` | 分享站 `so2/`（`share_so2.py`） | 2005 – 2025（年值） | 441 | 新類別 `so2`；點源年排放，不是濃度 |
 | 2026-11-15 | `data-v1` 發布 | `data-v0` + F `9b7506e` 快照 | 各層不同 | basin4 1,313；全部區域 1,706 | 新增六層、延長六層；SO₂ 限制與原始檔未重算的說明見上方；下載由 lockfile 校驗 SHA-256 |
+| 2026-11-15 | `data-v2` 發布 | `data-v1` + F `80f3f6b` | 各層不同 | basin4 1,313；全部區域 1,706 | 再新增 `lst_night`、`rn_ceres`；48,567 組既有區域／資料層內容逐一比對不變，保留年度限制並重建 manifest |
 
 ## 和現有 series-2 的關係
 

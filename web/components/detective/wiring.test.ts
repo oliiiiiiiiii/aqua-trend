@@ -5,7 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { keywordSelect } from "../../lib/detective/keywords";
 import { CATEGORY_ORDER } from "../../lib/detective/categories";
 import { decodeQuery, encodeQuery } from "../../lib/detective/url";
-import { CATEGORIES, PRESETS, VariableTab, analysis, cleanSelectResponse, requestVotes } from "./wiring";
+import type { LayerInfo } from "../../lib/detective/series";
+import { CATEGORIES, PRESETS, VariableTab, analysis, cleanSelectResponse, requestVotes, variableMetadata } from "./wiring";
 
 describe("selector integration", () => {
   const originalFetch = globalThis.fetch;
@@ -79,5 +80,42 @@ describe("analysis page integration", () => {
     assert.match(html, /圖層/);
     assert.match(html, /長期趨勢/);
     assert.doesNotMatch(html, /stand-in|Development build/);
+  });
+});
+
+describe("temperature product labels", () => {
+  const info = (id: string): LayerInfo => ({
+    id, category: "tair", name: id, product: id.toUpperCase(), nasa: true, family: null,
+    unit: "°C", temporalResolution: "monthly", start: "2000-01", end: "2019-12", caveat: "Product-specific caution",
+  });
+  const event = { start: "2010-02", end: "2010-05" };
+  const series = {
+    layer: "tair", unit: "°C", start: "2000-01",
+    values: Array.from({ length: 240 }, (_, i) => 20 + i * 0.02 + Math.sin(i * Math.PI / 6) * 4 + Math.cos(i * 1.7)),
+  };
+  const d = analysis.decompose(series, event, 12);
+  for (const [layer, name, definition] of [
+    ["lst_day", "Daytime land-surface temperature", "daytime overpass"],
+    ["lst_night", "Nighttime land-surface temperature", "nighttime overpass"],
+    ["tsurf_m2", "Land-surface temperature", "MERRA-2 reanalysis"],
+  ]) {
+    it(`${layer} names land surface in the heading and conclusion`, () => {
+      const meta = variableMetadata(info(layer));
+      const html = renderToStaticMarkup(createElement(VariableTab, {
+        meta, d, event, padMonths: 12, trend: analysis.trendStats(series), intervalStats: analysis.intervalStats,
+      }));
+      assert.match(html, new RegExp(`<h2[^>]*>${name}</h2>`));
+      assert.ok(html.includes(`${name}比正常`));
+      assert.ok(html.includes(definition));
+      assert.doesNotMatch(html, /Air temperature|Temperature of the air near the ground/);
+      assert.equal(meta.product, layer.toUpperCase());
+      assert.equal(meta.caveat, "Product-specific caution");
+    });
+  }
+
+  it("keeps the actual air-temperature product's E label and definition", () => {
+    const meta = variableMetadata(info("tair"));
+    assert.equal(meta.name, CATEGORIES.tair.name.en);
+    assert.equal(meta.definition, CATEGORIES.tair.definition.en);
   });
 });

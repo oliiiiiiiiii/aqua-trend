@@ -24,7 +24,7 @@ import {
 import { RetryButton, StatusCard } from "@/components/explore/StatusCard";
 import { InputPanel } from "./InputPanel";
 import { VariablePicker } from "./VariablePicker";
-import { CATEGORIES, PRESETS, VariableTab, analysis, requestVotes, type VariableMeta } from "./wiring";
+import { CATEGORIES, PRESETS, VariableTab, analysis, requestVotes, variableMetadata, type VariableMeta } from "./wiring";
 
 /* ------------------------------------------------------------------ small async helper */
 
@@ -456,10 +456,7 @@ function AnalysisView({
       if (!s || !layer) { out[c] = { kind: "nodata" }; continue; }
       if (s instanceof Error) { out[c] = { kind: "error", message: s.message }; continue; }
       const info = vc.layers[layer];
-      const meta: VariableMeta = {
-        category: c, name: CATEGORIES[c].name.en, definition: CATEGORIES[c].definition.en, layer,
-        product: info.product, unit: s.unit || info.unit, caveat: info.caveat,
-      };
+      const meta = variableMetadata(info, s.unit || info.unit);
       try {
         const decomposition = analysis.decompose(s, q.time, pad);
         const eventStats = analysis.intervalStats(decomposition, q.time);

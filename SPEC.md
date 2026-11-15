@@ -106,7 +106,7 @@ flowchart LR
 
 資料層細節（產品、單位、期間、caveat）見 `web/public/data/catalog/variables.json`；caveat 不為 null 時必須顯示。
 
-F 新增資料由 Release `data-v1` 提供。`temporal_resolution: "annual"` 的層不可用於月尺度分解或顯著性檢定；目前 `so2_emis` 把年值重複在月份，前端顯示年資料限制並停用，直接 URL 也不能繞過。火點計數不是燃燒面積，臭氧柱不是近地面臭氧濃度。
+F 新增資料由 Release `data-v2` 提供。`temporal_resolution: "annual"` 的層不可用於月尺度分解或顯著性檢定；目前 `so2_emis` 把年值重複在月份，前端顯示年資料限制並停用，直接 URL 也不能繞過。火點計數不是燃燒面積，臭氧柱不是近地面臭氧濃度。
 
 ## 5. 預設事件
 

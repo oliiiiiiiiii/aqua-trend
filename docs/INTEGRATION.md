@@ -3,7 +3,7 @@
 > 給人類與 agent。先讀 [`SPEC.md`](../SPEC.md)，再讀 [`web/lib/detective/contracts.ts`](../web/lib/detective/contracts.ts)。
 > 基底 branch：`main`。
 >
-> **主線整合狀態（2026-11-15）**：A、B、C、D、E、F 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器使用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。資料更新為 `data-v1`：32 層、17 類別；SO₂ 年資料不提供月分析。台灣預設維持 2021-02..2021-05。
+> **主線整合狀態（2026-11-15）**：A、B、C、D、E、F 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器使用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。資料更新為 `data-v2`：34 層、17 類別；SO₂ 年資料不提供月分析。台灣預設維持 2021-02..2021-05。
 >
 > **開始前先取得網站資料**（資料不在 git 裡）：`cd web && npm i && npm run setup`。
 > repo 是私有的，下載需要已登入的 `gh`（`gh auth login`）或環境變數 `GITHUB_TOKEN`；也可以手動下載 Release 附件後執行 `npm run setup -- --file <檔案>`。`npm run dev` 會在資料不存在時自動執行 setup。
@@ -130,7 +130,7 @@
 | 輸入 | 官方資料來源（GES DISC、NOAA PSL、JPL、FIRMS、HydroSHEDS）、NASA Giovanni；開發時可參考分享站 http://meow1.csie.ntu.edu.tw:3266/ |
 | 輸出 | GitHub Release 上的資料 bundle（`web/public/data` + `web/data`，series-2 格式不變），以及更新後的 `web/data.lock.json` |
 
-**目前狀態**：`data-v1` 在 `data-v0` 上合併 F `9b7506e` 的 32 層快照，新增六層並延長六個 MERRA-2 陸面替代產品。部署只依賴 GitHub Release；分享站產製的三層來源仍如實記在 metadata。管線、重跑依賴與已知限制見 [`pipeline/README.md`](../pipeline/README.md)。原始 `data-v0` 與舊管線仍可從 `5f22f14` 追溯。
+**目前狀態**：`data-v2` 在 `data-v0` 上合併 F `80f3f6b` 的 34 層快照，新增八層並延長六個 MERRA-2 陸面替代產品。相較 `data-v1`，僅新增 `lst_night` 與 `rn_ceres`，原有序列不變。部署只依賴 GitHub Release；分享站產製的三層來源仍如實記在 metadata。管線、重跑依賴與已知限制見 [`pipeline/README.md`](../pipeline/README.md)。原始 `data-v0` 與舊管線仍可從 `5f22f14` 追溯。
 
 **發布流程**（每次更新資料）：
 1. 管線輸出到一個乾淨的目錄，結構是 `web/public/data/...` 與 `web/data/...`。
@@ -204,6 +204,12 @@ Chrome／Playwright 在 1280px 與 375px 驗證三個預設事件、全部變數
 同日 F 整合後，上述 TypeScript 測試增至 168 項且全數通過，typecheck 與正式 Docker build 通過。另有 5 項 selector Python 測試、17 類中英定義一致性檢查及 9 項使用合成資料的管線回歸測試通過。`data-v1` 的 1,706 個序列檔通過 JSON、索引及有限數值檢查；29 組預設／替代產品統計與獨立 Python 重算的最大相對差異低於 1e-10%。這些檢查不代表已從原始觀測重新驗證 F 的所有科學數值。
 
 F 的正式容器也在 Chrome 1280px／375px 驗證：17 類選項、四個新增月類別的真實圖表與 caveat、重新整理與 URL 還原正常；SO₂ 年資料不能勾選，直接開其 URL 也不會產生月尺度 z、百分位或趨勢檢定。無頁面錯誤或水平溢出。原有三個預設事件與台灣事件範圍維持不變。
+
+F 後續更新 `80f3f6b` 以 `data-v2` 納入 MODIS 夜間地表溫度與 CERES 輻射，共 34 層。所有 48,567 組既有區域／資料層物件比對不變；manifest 重建後 34 層皆通過結構驗證，年度 SO₂ 仍不適用月分析。地表溫度產品的圖表標題與定義改為正確的地表溫度，避免沿用類別的氣溫文案。最終 TypeScript 測試 172 項、管線回歸測試 16 項全數通過。
+
+最終 `data-v2` 正式 Docker build 與健康檢查通過；1280px／375px 驗證新增產品切換、caveat、URL 還原、三種地表溫度文案及年度資料限制，無頁面錯誤或水平溢出。
+
+`data-v1` 已在獨立空目錄實際從 Release 下載、校驗與解包；最終 `data-v2` 已用發布檔完成 setup、prep 與容器資料檢查，GitHub 附件的 SHA-256 與 lockfile 一致。完整資料放在 Release，沒有重新加入 Git 追蹤。
 
 真實資料截圖：[台灣](screenshots/taiwan-2021-drought.png)、[巴基斯坦](screenshots/pakistan-2022-flood.png)、[澳洲](screenshots/australia-2019-fire.png)。
 

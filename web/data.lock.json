@@ -1,7 +1,7 @@
 {
   "repo": "oliiiiiiiiii/aqua-trend",
-  "tag": "data-v1",
-  "asset": "aqua-trend-data-v1.tar.gz",
-  "sha256": "5b221380c35dec16f89fc70daea4b915dd1a612afbfdc8492e562c38951d4377",
-  "note": "v1 = data-v0 base plus F@9b7506e series/catalog: 32 layers, 17 categories, extended MERRA-2 records. Added temporal_resolution; annual SO2 is excluded from monthly analysis and its legacy missing-value limitation is documented. Generated data/gen and setup marker are omitted."
+  "tag": "data-v2",
+  "asset": "aqua-trend-data-v2.tar.gz",
+  "sha256": "3fc543130244d98661050844b853b1984a92f654f4f1f4c2028e12e72e193b89",
+  "note": "v2 = data-v0 website assets plus F@80f3f6b: 34 layers, 17 categories, extended MERRA-2 records, MODIS night surface temperature and CERES radiation. SO2 is annual and excluded from monthly analysis; legacy SO2/FIRMS limitations remain documented. Manifest validates schema/index, not scientific reproducibility. Generated data/gen and setup marker are omitted."
 }

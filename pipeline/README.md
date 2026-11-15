@@ -33,6 +33,8 @@ pipeline/.venv/bin/python -I pipeline/fetch_earthdata.py m2aer m2slv --since 202
 pipeline/.venv/bin/python -I pipeline/earthdata_layers.py aod to3_m2 tqv
 ```
 
+`earthdata_layers.py` also builds `lst_night` from the downloaded MODIS LST subset, `rn_ceres` from CERES EBAF `sfc_net_tot_all_mon`, and six MERRA-2 land products. CERES surface radiation combines satellite observations with radiative-transfer calculations; its 1° native grid limits small-region representativeness. GLDAS, IMERG, and daytime LST `*_check` layers are validation intermediates, not products to publish. File reading stays single-threaded because the netCDF-C/HDF4 libraries are not thread-safe.
+
 `--since` limits the earliest granule; there is no end-date limit. Inspect storage requirements before downloading full history. Files already present and nonempty are reused. The `_manifest.json` records product/version, variables, dates, and failures; it does not record a checksum for every raw input. Preserve the exact original inputs and their SHA-256 sums when a release must be reproducible from raw data. Re-querying a live NASA collection can retrieve newer or reprocessed granules. For duplicate MERRA-2 months, `MERRA2_401` is preferred over `MERRA2_400`, consistent with NASA's [reprocessing record](https://docserver.gesdisc.eosdis.nasa.gov/public/project/MERRA/Records_MERRA-2_Data_Reprocessing_and_Service_Changes.pdf).
 
 Three input types are supplied manually through their official providers:
@@ -62,6 +64,14 @@ pipeline/.venv/bin/python -I pipeline/merge_series.py --only-existing p_m2land e
 ```
 
 Only merge layers whose intermediates you deliberately built. Avoid `--all` if the intermediate directory contains validation-only layers such as `p_imerg_check`. The merger does not rebuild legacy `trends/`, `results/`, or the separate GLDAS Explore inputs in `web/data`. `/detective/` computes its statistics from the updated series; treat the other products as separate snapshots until their pipelines are rerun.
+
+After updating the catalogue and series, generate the release manifest with the intended new version:
+
+```sh
+pipeline/.venv/bin/python -I pipeline/build_manifest.py data-YYYY-MM-DD
+```
+
+This checks series files, finite numeric/null values, and catalogue/index consistency, then writes `catalog/manifest.json`. Invalid assets return exit code 1 with asset-specific reasons; pending event catalogues and indicator recipes do not invalidate otherwise usable series. Per-layer entries retain temporal resolution, caveats, and monthly-analysis eligibility. SO₂ can be a structurally ready annual asset while remaining ineligible for monthly analysis. Point-product limitations are separate from the gridded 30% coverage rule. The manifest describes the current MVP's query-time baseline and does not certify scientific reproducibility. Use the same dataset version for the manifest and Release asset, and include the generated manifest in the bundle.
 
 Inspect coverage, null patterns, units, source metadata, and representative regional values before publishing. Package both `web/data` and `web/public/data` into a new Release asset, excluding generated `public/data/gen` and the old `.bundle` marker; calculate the asset SHA-256 and update `web/data.lock.json`. Keep processed datasets in that versioned asset rather than adding them back to Git. Re-run host setup from the new lockfile and rebuild the website image.
 

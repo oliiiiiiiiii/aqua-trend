@@ -1,4 +1,6 @@
 """Small local regressions; no Earthdata credentials, requests, or raw archives needed."""
+import contextlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -12,6 +14,7 @@ import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np
+import build_manifest
 import earthdata_layers
 import fetch_earthdata
 import merge_series
@@ -31,6 +34,10 @@ class ThreeRegions:
 
 
 class PipelineTests(unittest.TestCase):
+    def test_missing_ceres_input_uses_normal_no_input_path(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(earthdata_layers, "SHARE", folder):
+            self.assertEqual(list(earthdata_layers.ceres_layer("sfc_net_tot_all_mon")()), [])
+
     def test_so2_missing_sources_do_not_become_zero_or_partial_totals(self):
         emissions = np.ma.masked_invalid([[2, np.nan, 0, np.nan], [3, 4, 0, np.nan], [7, 8, 0, 9]])
         result = share_so2.annual_region_totals(
@@ -134,6 +141,103 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(trusted.has_header("Authorization"))
         with self.assertRaises(urllib.error.URLError):
             handler.redirect_request(request, None, 302, "Found", {}, "http://example.com/data")
+
+
+class ManifestTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.data = self.root / "web/public/data"
+        (self.data / "catalog").mkdir(parents=True)
+        (self.data / "series").mkdir()
+        (self.root / "data/masks").mkdir(parents=True)
+        (self.root / "data/masks/regions_0p5.npz").write_bytes(b"fixture mask identity")
+        self.layers = {
+            "precip": {"temporal_resolution": "monthly"},
+            "so2_emis": {"temporal_resolution": "annual", "caveat": "Legacy missing-value limitation"},
+            "fire_count": {"temporal_resolution": "monthly", "caveat": "Zero detections do not establish no fire"},
+        }
+        self.index = {"regions": {"r0": list(self.layers)}}
+        self.doc = {"id": "r0", "version": "series-2", "layers": {
+            key: {"start": "2020-01", "values": [0, None, 2.5]} for key in self.layers}}
+        self.write("catalog/variables.json", {"layers": self.layers})
+        self.write("catalog/series_index.json", self.index)
+        self.write("series/r0.json", self.doc)
+
+    def write(self, relative, value):
+        (self.data / relative).write_text(json.dumps(value))
+
+    def run_manifest(self):
+        with patch.object(build_manifest, "REPO", str(self.root)), \
+                patch.object(build_manifest, "DATA", str(self.data)), contextlib.redirect_stdout(io.StringIO()):
+            code = build_manifest.main("test-release")
+        manifest = json.loads((self.data / "catalog/manifest.json").read_text())
+        return code, manifest, {entry["asset"]: entry for entry in manifest["asset_status"]}
+
+    def test_ready_annual_asset_preserves_caveat_and_excludes_monthly_analysis(self):
+        (self.data / "series/.DS_Store").write_bytes(b"ignored sidecar")
+        code, manifest, assets = self.run_manifest()
+        self.assertEqual(code, 0)
+        self.assertEqual(manifest["n_series_files"], 1)
+        annual = assets["layer:so2_emis"]
+        self.assertEqual(annual["status"], "ready")
+        self.assertEqual(annual["temporal_resolution"], "annual")
+        self.assertEqual(annual["caveat"], "Legacy missing-value limitation")
+        self.assertFalse(annual["analysis_eligibility"]["monthly"])
+        self.assertTrue(assets["layer:precip"]["analysis_eligibility"]["monthly"])
+        self.assertEqual(assets["layer:fire_count"]["quality_policy"]["kind"], "point_product")
+        self.assertEqual(manifest["baselines"]["status"], "query_time")
+        del self.layers["so2_emis"]["temporal_resolution"]
+        self.write("catalog/variables.json", {"layers": self.layers})
+        self.assertFalse(self.run_manifest()[2]["layer:so2_emis"]["analysis_eligibility"]["monthly"])
+
+    def test_missing_indexed_file_invalidates_an_otherwise_delivered_layer(self):
+        self.index["regions"]["r1"] = ["precip"]
+        self.write("catalog/series_index.json", self.index)
+        code, _, assets = self.run_manifest()
+        self.assertEqual(code, 1)
+        self.assertEqual(assets["series:r1"]["status"], "invalid")
+        self.assertEqual(assets["layer:precip"]["status"], "invalid")
+
+    def test_unknown_layer_is_reported_even_with_a_matching_index(self):
+        self.index["regions"]["r0"].append("unknown")
+        self.doc["layers"]["unknown"] = {"start": "2020-01", "values": [1]}
+        self.write("catalog/series_index.json", self.index)
+        self.write("series/r0.json", self.doc)
+        code, _, assets = self.run_manifest()
+        self.assertEqual(code, 1)
+        self.assertEqual(assets["layer:unknown"]["status"], "invalid")
+
+    def test_booleans_and_nonfinite_values_are_invalid(self):
+        for value in [True, False, float("nan"), float("inf"), float("-inf")]:
+            with self.subTest(value=value):
+                self.doc["layers"]["precip"]["values"] = [value]
+                self.write("series/r0.json", self.doc)
+                code, _, assets = self.run_manifest()
+                self.assertEqual(code, 1)
+                self.assertEqual(assets["layer:precip"]["status"], "invalid")
+        text = json.dumps(self.doc).replace("-Infinity", "1e999")
+        (self.data / "series/r0.json").write_text(text)
+        self.assertEqual(self.run_manifest()[0], 1)
+
+    def test_malformed_json_and_shapes_are_asset_errors_not_crashes(self):
+        for text in ['{', '[]', '{"id":"r0","version":"series-2","layers":{"precip":null}}']:
+            with self.subTest(text=text):
+                (self.data / "series/r0.json").write_text(text)
+                code, _, assets = self.run_manifest()
+                self.assertEqual(code, 1)
+                self.assertEqual(assets["layer:precip"]["status"], "invalid")
+        (self.data / "catalog/variables.json").write_text('{')
+        self.assertEqual(self.run_manifest()[2]["variables"]["status"], "invalid")
+
+    def test_bad_index_entries_are_reported_without_sorting_invalid_types(self):
+        for entry in [["precip", None], "precip", ["precip", "precip"]]:
+            with self.subTest(entry=entry):
+                self.write("catalog/series_index.json", {"regions": {"r0": entry}})
+                code, _, assets = self.run_manifest()
+                self.assertEqual(code, 1)
+                self.assertEqual(assets["series_index"]["status"], "invalid")
 
 
 if __name__ == "__main__":

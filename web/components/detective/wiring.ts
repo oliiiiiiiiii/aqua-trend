@@ -1,7 +1,9 @@
 import type { AnalysisApi, CategoryId, CategoryVote, LayerId, SelectRequest, SelectResponse } from "@/lib/detective/contracts";
 import { decompose, intervalStats, trendStats } from "@/lib/detective/analysis";
 import { keywordSelect } from "@/lib/detective/keywords";
+import { CATEGORIES } from "@/lib/detective/categories";
 import { CATEGORY_IDS, isCategory, isYearMonth, ymIndex } from "@/lib/detective/url";
+import type { LayerInfo } from "@/lib/detective/series";
 import type { VariableMeta as ChartVariableMeta } from "./VariableTab";
 
 export { default as VariableTab } from "./VariableTab";
@@ -12,6 +14,36 @@ export const analysis: AnalysisApi = { decompose, intervalStats, trendStats };
 
 export interface VariableMeta extends ChartVariableMeta {
   layer: LayerId;
+}
+
+const SURFACE_TEMPERATURE: Partial<Record<LayerId, Pick<VariableMeta, "name" | "definition">>> = {
+  lst_day: {
+    name: "Daytime land-surface temperature",
+    definition: "Temperature of the land surface at the satellite's daytime overpass.",
+  },
+  lst_night: {
+    name: "Nighttime land-surface temperature",
+    definition: "Temperature of the land surface at the satellite's nighttime overpass.",
+  },
+  tsurf_m2: {
+    name: "Land-surface temperature",
+    definition: "Temperature of the land surface estimated by the MERRA-2 reanalysis.",
+  },
+};
+
+/** A category can group related measurements; the chart must name the quantity of the selected product. */
+export function variableMetadata(info: LayerInfo, unit = info.unit): VariableMeta {
+  const category = CATEGORIES[info.category];
+  const surface = info.category === "tair" ? SURFACE_TEMPERATURE[info.id] : undefined;
+  return {
+    category: info.category,
+    layer: info.id,
+    name: surface?.name ?? category.name.en,
+    definition: surface?.definition ?? category.definition.en,
+    product: info.product,
+    unit,
+    caveat: info.caveat,
+  };
 }
 
 const SELECT_API = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/select-variables`;

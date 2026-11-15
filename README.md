@@ -96,7 +96,7 @@ repo 是私有的，下載需要下列其中一種：
 
 各資料層的產品、單位、期間與注意事項（caveat）見 `web/public/data/catalog/variables.json`與 `web/public/data/README.md`（兩者都在 setup 後才有）。資料管線與發布流程見 [`docs/DATA_SHARE.md`](docs/DATA_SHARE.md)。
 
-目前鎖定 `data-v1`：32 個資料層，新增氣膠光學厚度、臭氧柱、可降水量、火點與積雪覆蓋，並延長六個 MERRA-2 替代產品至 1980 年。SO₂ 點源排放是年資料，保留在 bundle 但不參與月尺度分析；其既有快照的缺測處理限制記在 caveat。管線重跑與依賴見 [`pipeline/README.md`](pipeline/README.md)。三個預設事件的日期、區域與預設變數皆維持原設定。
+目前鎖定 `data-v2`：34 個資料層，包含氣膠光學厚度、臭氧柱、可降水量、火點、積雪覆蓋、MODIS 夜間地表溫度與 CERES 輻射，並延長六個 MERRA-2 替代產品至 1980 年。SO₂ 點源排放是年資料，保留在 bundle 但不參與月尺度分析；其既有快照的缺測處理限制記在 caveat。管線重跑與依賴見 [`pipeline/README.md`](pipeline/README.md)。三個預設事件的日期、區域與預設變數皆維持原設定。
 
 ## 授權
 
