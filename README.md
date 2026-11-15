@@ -17,6 +17,7 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 - 分工與整合：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)
 - 介面約定：[`web/lib/detective/contracts.ts`](web/lib/detective/contracts.ts)
 - 預設事件驗證：[`docs/presets-validation.md`](docs/presets-validation.md)
+- 批次問題 CSV 格式：[`docs/batch-questions.md`](docs/batch-questions.md)
 
 ## 公開 repo 部署（Docker）
 
@@ -116,11 +117,24 @@ npm run dev        # http://localhost:3000/detective/
 2. **選變數**：本地開源模型對 17 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示；沒有可分析月資料的類別不能勾選。
 3. **分析**：每個變數一個分頁，有結論卡、可縮放的數線（原始／季節／趨勢／殘差）、選取區間統計，以及長期趨勢面板。
 
+### 批次問題（CSV）
+
+`/batch` 可一次上傳多個問題：CSV 每列一個事件，只有 `question` 欄必填，期間、地點、變數留空時會從問題文字判讀或由選變數模型建議。每列的答案是事件期間各變數的距平檢定結果，可逐列開啟分析工作台，也可整批下載成 CSV。
+
+```csv
+question,time,region,variables,pad
+2021 Taiwan spring drought,2021-02..2021-05,b4-4040046370,precip;soil;tws;ndvi,
+2022 Pakistan floods,2022-07..2022-09,Indus,,
+Heatwave in the Yangtze basin in August 2022,,,,
+```
+
+完整格式、欄位別名、略過列的原因與輸出欄位見 [`docs/batch-questions.md`](docs/batch-questions.md)；範例檔在 [`docs/examples/batch-questions.csv`](docs/examples/batch-questions.csv)。
+
 ### 短區間日資料
 
-月資料 bundle 持續保留。當所選事件期間是 **1 個曆月**，支援的產品會自動透過 `/api/daily-series/` 取得該流域的每日原始值；每次最多讀取 3 天，逐批顯示進度。較長期間不呼叫日資料 API。切換地點、產品或月份會中止舊請求，未啟用服務或 NASA 查詢失敗時仍保留月資料。
+月資料 bundle 持續保留。在分析工作台把 Window 切到 **Days（± 1–14 天）或 Weeks（± 1–5 週）**，支援的產品會透過 `/api/daily-series/` 取得該流域的每日值；每次最多讀取 3 天，逐批顯示進度。範圍以**目前的互動選取區間**為中心（不是原始事件期間），≤ 62 天自動載入，更長則先載入選取區間本身。切換地點、產品或選取區間會中止舊請求，未啟用服務或 NASA 查詢失敗時仍保留月資料。
 
-日資料只補充短期細節；z 值、歷史排名及長期趨勢仍以月資料計算。日資料採原生格網的流域遮罩平均，與月資料的 0.5° 重採樣方法不同，兩者不拼成同一條分析序列。不支援的產品（例如 GRACE 月資料）維持月尺度。
+日視圖預設顯示**日距平**：每日值減去當日常態（月資料分解出的長期趨勢 + 季節循環，內插到每日且保持各月平均不變，並校正日／月產品之間的固定水準差），也可切回原始值。z 值、顯著性、歷史排名及長期趨勢仍以月資料計算。日資料採原生格網的流域遮罩平均，與月資料的 0.5° 重採樣方法不同，兩者不拼成同一條分析序列。不支援的產品（例如 GRACE 月資料）維持月尺度。
 
 本機開發可將 Earthdata token 存入 repo 根目錄的 `.edl.token`，設定檔案權限為 `600`，再於 `web/.env.local` 加入：
 

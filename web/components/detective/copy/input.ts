@@ -47,7 +47,7 @@ export const COPY = {
     noBasinAt: (lat: string, lon: string) => `No sub-basin at ${lat}, ${lon}. Basins cover land only; try nearby land or search.`,
     lookupFailed: (m: string) => `Could not look up sub-basins: ${m}. Search by name instead.`,
   },
-  find: { go: "Suggest", busy: "Suggesting…", again: "Suggest", needEvent: "Describe the event first." },
+  find: { go: "Suggest", busy: "Suggesting…", again: "Suggest", needEvent: "Describe the event first.", batch: "Many questions? Upload a CSV" },
   blocked: {
     finding: "Waiting for suggestions.",
     loading: "Loading variables.",

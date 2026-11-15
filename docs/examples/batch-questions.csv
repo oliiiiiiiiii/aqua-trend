@@ -1,0 +1,5 @@
+question,time,region,variables,pad
+2021 Taiwan spring drought,2021-02..2021-05,b4-4040046370,precip;soil;tws;ndvi,
+2022 Pakistan floods,2022-07..2022-09,Indus,,
+"2019–20 Australian Black Summer, drought and bushfires",2019-09..2020-01,b4-5040070710,precip;soil;tair;ndvi,24
+Heatwave in the Yangtze basin in August 2022,,,,

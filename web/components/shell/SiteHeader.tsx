@@ -6,6 +6,7 @@ import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const NAV = [
   { href: "/detective", label: "Detective" },
+  { href: "/batch", label: "Batch" },
   { href: "/data", label: "Data" },
   { href: "/methods", label: "Methods" },
 ];

@@ -1,11 +1,13 @@
 "use client";
 // Event-led input step. DetectiveApp owns URL state and passes values and callbacks in.
+import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type { PresetEvent, TimeRange } from "@/lib/detective/contracts";
 import { RegionSearch } from "@/components/ui/RegionSearch";
 import { formatArea } from "@/components/ui/regionUtils";
 import { formatRange, ymIndex } from "@/lib/detective/url";
+import { buildRegionHintIndex, regionHints } from "@/lib/detective/regionHints";
 import { COPY } from "./copy/input";
 import { useSharedStage } from "@/components/shell/HeroGlobe";
 import { Timeline } from "./Timeline";
@@ -185,6 +187,9 @@ export function InputPanel(p: InputPanelProps) {
             >
               {p.finding ? COPY.find.busy : p.hasPicker ? COPY.find.again : COPY.find.go}
             </button>
+            <Link href="/batch" className="min-h-11 content-center text-sm text-on-stage-2 underline underline-offset-4 hover:text-on-stage">
+              {COPY.find.batch}
+            </Link>
           </div>
           <section className="border-b border-stage-line py-4" aria-label={COPY.steps.when}>
             <h2 className="text-sm font-semibold">{COPY.steps.when}</h2>
@@ -315,49 +320,11 @@ function RegionField({ event, catalog, catalogError, searchable, countryNames, r
   );
 }
 
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const zhNorm = (s: string) => s.replace(/臺/g, "台");
-/** everyday Chinese names that differ from catalog/countries.json */
-const ZH_ALIASES: [string, string][] = [["澳洲", "AUS"], ["中國", "CHN"], ["韓國", "KOR"], ["美國", "USA"]];
-
 /**
  * Sub-basins the event text seems to name: a river ("Indus") or a country in English ("Pakistan") or Chinese
- * ("巴基斯坦"). River hits first, then the largest basins; at most five.
+ * ("巴基斯坦"). River hits first, then the largest basins; at most five. (lib/detective/regionHints.ts)
  */
 function useRegionHints(text: string, regions: Region[] | null, countryNames: ReadonlyMap<string, string> | null): Region[] {
-  const index = useMemo(() => {
-    if (!regions) return null;
-    const enToIso = new Map<string, string>();
-    const rivers = new Map<string, Region[]>();
-    for (const r of regions) {
-      // names from scripts/prep-data.mjs: "Indus basin (Pakistan)", "Basin 4370 (Taiwan)", "Island basin 123 (Fiji)";
-      // the places in brackets are the first three of r.iso, in the same order
-      const places = /\(([^()]*)\)\s*$/.exec(r.name)?.[1].split(", ").filter((s) => s && s !== "…") ?? [];
-      places.forEach((name, i) => { const iso = r.iso?.[i]; if (iso && !enToIso.has(name.toLowerCase())) enToIso.set(name.toLowerCase(), iso); });
-      const river = /^(.+?) basin\b/.exec(r.name)?.[1];
-      if (river && river !== "Island") {
-        const k = river.toLowerCase();
-        rivers.set(k, [...(rivers.get(k) ?? []), r]);
-      }
-    }
-    return { enToIso, rivers };
-  }, [regions]);
-
-  return useMemo(() => {
-    const t = text.trim();
-    if (!index || !regions || t.length < 2) return [];
-    const lower = t.toLowerCase();
-    const hit = (name: string) => new RegExp(`(^|[^\\p{L}])${escapeRe(name)}($|[^\\p{L}])`, "iu").test(lower);
-    const fromRivers = [...index.rivers.entries()].filter(([k]) => k.length >= 3 && hit(k)).flatMap(([, rs]) => rs);
-    const isos = new Set<string>();
-    for (const [name, iso] of index.enToIso) if (name.length >= 4 && hit(name)) isos.add(iso);
-    const zt = zhNorm(t);
-    for (const [zh, iso] of ZH_ALIASES) if (zt.includes(zh)) isos.add(iso);
-    if (countryNames) for (const [iso, zh] of countryNames) if (zh.length >= 2 && zt.includes(zhNorm(zh))) isos.add(iso);
-    const byArea = (x: Region, y: Region) => y.areaKm2 - x.areaKm2;
-    const fromCountries = isos.size ? regions.filter((r) => r.iso?.some((c) => isos.has(c))).sort(byArea) : [];
-    const out: Region[] = [];
-    for (const r of [...fromRivers.sort(byArea), ...fromCountries]) if (!out.includes(r)) out.push(r);
-    return out.slice(0, 5);
-  }, [text, index, regions, countryNames]);
+  const index = useMemo(() => (regions ? buildRegionHintIndex(regions) : null), [regions]);
+  return useMemo(() => (index && regions ? regionHints(text, index, regions, countryNames) : []), [text, index, regions, countryNames]);
 }
