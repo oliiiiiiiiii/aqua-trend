@@ -143,7 +143,7 @@
 規則：
 - **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)**。
 - **最終管線必須從官方來源下載**，任何人都能用 Earthdata 帳號重跑。開發時可以暫時從分享站取檔加速，但不可寫死在管線裡。
-- 需要 Earthdata 帳號（`~/.netrc`），帳密不可 commit。只有 F 需要；其他工作線只用 setup 下載的 bundle。
+- 重跑管線需要 Earthdata 帳號與 token，憑證不可 commit；一般月資料部署只用 setup 下載的 bundle。選用的按需日資料 API 另由部署者提供伺服器端 `EDL_TOKEN`／`EDL_TOKEN_FILE`，見 `docs/daily-data.md`。
 - 管線要能重跑：同一個資料來源再跑一次，只更新那一層，其他層不動。每個資料層在 `variables.json` 記錄來源（`share` 或 `giovanni`）和處理日期。
 - 優先順序：
   1. 分享站上已有檔案、而且 series-2 還沒有的子流域變數：FIRMS 火點數（`fire_count`）、OMI SO₂、MOD10CM 積雪覆蓋。
@@ -224,3 +224,24 @@ F 後續更新 `80f3f6b` 以 `data-v2` 納入 MODIS 夜間地表溫度與 CERES 
 | 顯著性檢定 | Mann–Kendall p、95% CI、需要幾年才顯著 |
 | 示範案例 | 三個預設事件 |
 | 用 AI 找變數 | 本地開源決策模型 |
+
+## 6. 按需日資料契約
+
+依後續需求保留 monthly bundle，新增 `web/lib/detective/daily.ts` 的 `DailyRequest`／`DailySeries` 契約與 `GET /api/daily-series/`。既有 `MonthlySeries`、`Decomposition`、月尺度統計及預設事件維持原介面。
+
+事件選取一個曆月時，`DailyDetail` 自動按三天分批讀取目前產品的每日原始值；長區間、未來月份與未支援產品不請求。當月只查已結束的 UTC 日期。結果先於月尺度分析成功／失敗狀態呈現，月基準不足不會阻止獨立的日資料查詢。
+
+API 使用伺服器端 Earthdata token，原始格網不落盤，聚合結果快取有容量、有效期與併發限制。每日原生格網的多邊形平均不同於既有月資料 0.5° 重採樣，來源明示方法，圖表不拼接或混算 z 值。單位、完整日覆蓋及缺值規則見 [`daily-data.md`](daily-data.md)。
+
+檢查指令：
+
+```sh
+cd web
+npx tsx --test lib/detective/*.test.ts lib/detective/daily-server/*.test.ts components/detective/*.test.ts app/api/select-variables/*.test.ts app/api/daily-series/*.test.ts
+npm run typecheck
+DAILY_TEST_URL=http://localhost:4319 node scripts/daily-detail.test.mjs
+```
+
+瀏覽器檢查使用明示的測試資料與 mock API，不消耗 NASA 額度；真實 API 的小範圍實測另記於 `daily-data.md`。公開部署與選用憑證掛載見 [`../deploy/README.md`](../deploy/README.md#optional-daily-data)。
+
+本次整合驗收：227 項 TypeScript 測試、型別檢查、production Docker build 通過。瀏覽器涵蓋短期分批載入、部分失敗與重試、切換條件的舊回應、閏日／未來日期、月資料失敗、空資料、鍵盤操作及手機版。正式容器透過唯讀 secret 掛載完成真實 Earthdata 查詢；未替換既有 8080 服務，也未發布到外部主機。

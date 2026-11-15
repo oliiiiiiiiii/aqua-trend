@@ -8,7 +8,7 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 2. 它有**多不尋常**？（z 值、歷史名次）
 3. 背後的**長期趨勢**是什麼、**顯不顯著**？
 
-給高中、大學學生與有科學背景的大眾使用。統計分析在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API；本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
+給高中、大學學生與有科學背景的大眾使用。月資料統計在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API 與選用的日資料查詢；啟用日資料時，由部署者提供 Earthdata token，網站使用者不必登入 NASA。本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
 
 目前主線已整合 A、B、C、D、E、F。啟動後從 `/detective/` 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
 
@@ -115,6 +115,20 @@ npm run dev        # http://localhost:3000/detective/
 1. **輸入**事件文字、期間（`YYYY-MM..YYYY-MM`）與 basin4 子流域（地球上點選或搜尋）；或按一個預設事件。
 2. **選變數**：本地開源模型對 17 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示；沒有可分析月資料的類別不能勾選。
 3. **分析**：每個變數一個分頁，有結論卡、可縮放的數線（原始／季節／趨勢／殘差）、選取區間統計，以及長期趨勢面板。
+
+### 短區間日資料
+
+月資料 bundle 持續保留。當所選事件期間是 **1 個曆月**，支援的產品會自動透過 `/api/daily-series/` 取得該流域的每日原始值；每次最多讀取 3 天，逐批顯示進度。較長期間不呼叫日資料 API。切換地點、產品或月份會中止舊請求，未啟用服務或 NASA 查詢失敗時仍保留月資料。
+
+日資料只補充短期細節；z 值、歷史排名及長期趨勢仍以月資料計算。日資料採原生格網的流域遮罩平均，與月資料的 0.5° 重採樣方法不同，兩者不拼成同一條分析序列。不支援的產品（例如 GRACE 月資料）維持月尺度。
+
+本機開發可將 Earthdata token 存入 repo 根目錄的 `.edl.token`，設定檔案權限為 `600`，再於 `web/.env.local` 加入：
+
+```dotenv
+EDL_TOKEN_FILE=../.edl.token
+```
+
+容器啟用方式見 [`deploy/README.md`](deploy/README.md#optional-daily-data)。token 僅供伺服器執行期使用，不進 Git、映像或前端。來源、門檻實測與限制見 [`docs/daily-data.md`](docs/daily-data.md)。
 
 開發模式的選變數 API 預設連線至本地模型服務，服務未啟動時會使用關鍵字表；Compose 預設直接使用關鍵字表，可透過環境變數啟用模型。模型安裝、評估與選用線上端點見 [`tools/selector/README.md`](tools/selector/README.md)；Docker 連線與環境變數設定見 [`deploy/README.md`](deploy/README.md)。模型權重不包含在網站容器內。
 

@@ -141,18 +141,20 @@ flowchart LR
     P --> A[lib/detective/analysis.ts<br/>瀏覽器內統計]
     P --> R[app/api/select-variables<br/>Next API route]
     R --> M[本地 OneJev 0.8B<br/>或關鍵字表]
+    P -->|短區間| D[app/api/daily-series<br/>有容量上限的記憶體快取]
+    D -->|按區域與日期取子集| O[NASA Cloud OPeNDAP]
 ```
 
 - 前端：Next.js 16、React 19、three.js 地球、d3 圖表、Tailwind 4（沿用 `web-demo`）。
 - 統計：重用 `web/lib/stats.ts`（`mannKendall`、`senSlope`、`monthlyClimatology`、`lag1Autocorrelation`…）。
-- 網站後端與部署：Next.js／Node.js standalone，網站與 `/api/select-variables/` 同一容器。公開部署契約見 §7，操作指令見 [`deploy/README.md`](deploy/README.md)。
+- 網站後端與部署：Next.js／Node.js standalone，網站、`/api/select-variables/` 與 `/api/daily-series/` 同一容器。公開部署契約見 §7，操作指令見 [`deploy/README.md`](deploy/README.md)。
 - AI：本地模型由 Next API route 透過 HTTP 呼叫獨立的選變數服務；模型不可用時退回關鍵字表，前端在 API 不可用時也有同一份備案。模型安裝與評估見 `tools/selector/README.md`。
 
 ## 7. 公開 repo 部署規格
 
 ### 7.1 目標與交付物
 
-任何人都能從公開 repo 與公開資料附件建置完整網站，不需要維護者的 GitHub、NASA 或模型帳號。交付物是可搬到其他主機執行的容器映像，保留網站、資料與選變數 API。目標主機或雲端平台尚未指定，本規格不綁定廠商。
+任何人都能從公開 repo 與公開資料附件建置月資料分析網站，不需要維護者的 GitHub、NASA 或模型帳號。日資料查詢是選用功能，需部署者於執行期提供 Earthdata token。交付物是可搬到其他主機執行的容器映像，保留網站、資料與 API。目標主機或雲端平台尚未指定，本規格不綁定廠商。
 
 | 項目 | 契約 |
 | --- | --- |
@@ -188,9 +190,9 @@ flowchart LR
 ```
 
 - 建置端具備 Git、Node.js 24／npm、Docker／Compose，以及下載和解壓工具。先在主機或 CI runner 準備資料，再交給 Docker build；目前 Dockerfile 會在建置前檢查資料，不會自行補下載。
-- 映像包含 `/detective/`、`/explore/`、`POST /api/select-variables/`、`/healthz/` 與必要靜態資料。部署平台須能保留伺服器端 API；純靜態輸出不滿足本規格。
+- 映像包含 `/detective/`、`/explore/`、`POST /api/select-variables/`、`GET /api/daily-series/`、`/healthz/` 與必要靜態資料。部署平台須能保留伺服器端 API；純靜態輸出不滿足本規格。
 - 執行端只需要映像與容器執行環境。服務在容器內監聽 `0.0.0.0:8080`；外部連接埠與 HTTPS 由主機、反向代理或平台設定。
-- 沿用 Compose 的非 root 使用者、唯讀根檔案系統及暫存目錄設定。資料已封裝在映像中，執行時不再下載 Release、NASA 原始檔或模型權重，也不依賴本機開發伺服器。
+- 沿用 Compose 的非 root 使用者、唯讀根檔案系統及暫存目錄設定。月資料已封裝在映像中，執行時不再下載 Release 或模型權重。啟用日資料時只取指定區域、短日期區間的 NASA 子集，在記憶體內聚合後丟棄原始格網，不建立完整日資料庫，也不依賴本機開發伺服器。
 - 每次發布保存映像 digest。跨 CPU 架構部署時，為目標架構建置並驗證；需要跨次完全重現映像位元組時，另外固定基底映像 digest，目前的 `node:24-alpine` 標籤仍會更新。
 
 ### 7.4 模型與部署憑證
@@ -198,6 +200,8 @@ flowchart LR
 預設使用 `SELECTOR_BACKEND=keyword`，無模型服務或 API key 時仍能完成整個分析流程。選用本地或線上模型時，透過執行期環境變數設定；模型服務與權重另行部署。欄位與預設值以 [`deploy/.env.example`](deploy/.env.example) 為準。
 
 公開讀取原始碼、資料與公開映像不需登入。發布映像、寫入 repo 或操作雲端平台則使用維護者／CI 的寫入權限；這些憑證不進 Git、Docker build argument、映像、前端環境變數或輸出紀錄。模型服務不可用、回應無效或超時時，保留關鍵字備案與來源標示。
+
+日資料使用 `EDL_TOKEN` 或 `EDL_TOKEN_FILE`，由平台 secret 或唯讀掛載提供；變數不得加上 `NEXT_PUBLIC_`。未提供、過期或被拒絕時，日資料顯示服務不可用，月資料功能持續可用。Earthdata token 不參與建置或公開 Release 下載。
 
 ### 7.5 發布、更新與回滾
 
@@ -224,6 +228,17 @@ flowchart LR
 
 截至 2026-11-15，公開 repo、`data-v2` 附件、lockfile、Docker／Compose 與本機容器驗證已具備。`setup` 自動匿名下載、CI/CD、registry 發布、目標主機及外部 HTTPS 驗收仍待實作或選定；本次規格改寫只更新文件。
 
+### 7.7 月資料與按需日資料
+
+- 月資料 bundle、月尺度基準期、z 值、歷史排名與趨勢分析維持既有契約。日資料不填補月缺值，也不套用月尺度的季節模型或標準差。
+- 所選事件期間最多 1 個曆月時，僅對目前開啟且有日資料 adapter 的產品自動呼叫 API；更長期間不呼叫。門檻集中於 `web/lib/detective/daily.ts`，依實測調整，不由 AI 在查詢時決定。
+- 前端將月份分成最多 3 天的請求，順序載入並顯示完成進度；尚未載入、已確認缺值及服務失敗是不同狀態。切換條件或離開分頁會中止舊請求；無論日資料狀態如何，月資料仍可使用。
+- API 只接受已知 basin4、已登錄產品及合法完整 UTC 日期，拒絕任意來源 URL 與大範圍請求。NASA 請求有併發、時間及回應大小上限；憑證只發送到固定 NASA HTTPS 資料端點。
+- 原始子集僅在記憶體中處理。快取只保留聚合後序列，容量與有效期受限；重新啟動可清空，不需要永久磁碟或資料庫。
+- 日資料公開來源版本、單位、UTC 日聚合規則、空間平均方法、取得時間與缺值。每日原生格網中心遮罩／面積權重和月資料 0.5° 方法不同，不宣稱數值完全相同。產品無日資料時不插值、不替換成另一個產品。
+
+API、產品對應及效能證據見 [`docs/daily-data.md`](docs/daily-data.md)。此節依後續確認的按需資料需求新增，取代舊文件對「查詢期間一律不得取得新資料」的限制。
+
 ## 8. 不做（本版）
 
-偵探頁不做 hex／海域／命名區、日資料、跨變數關聯、水晶球、Python 統計後端、全球熱點推薦、使用者帳號。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。
+偵探頁不做 hex／海域／命名區、跨變數關聯、水晶球、Python 統計後端、全球熱點推薦、使用者帳號。日資料限 §7.7 的短期原始值細節，不新增日尺度異常／趨勢模型。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。

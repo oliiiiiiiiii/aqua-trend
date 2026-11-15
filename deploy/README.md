@@ -2,7 +2,7 @@
 
 The repository and pinned GitHub Release assets are public. Deployment requirements and implementation gaps are defined in [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格). This guide describes commands supported by the current code; it does not establish a hosting provider or automatic deployment.
 
-The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
+The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, `GET /api/daily-series/`, and the public monthly dataset. The default container uses keyword selection immediately; monthly analysis requires no model, model download, Python service, or API key. Optional daily queries require an Earthdata credential at runtime.
 
 The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 
@@ -56,6 +56,37 @@ docker compose logs --tail=100 web
 Expected results are `ok` from health, successful data and page responses, 17 category votes with `source: "keyword-fallback"` from the default API, and HTTP 404 for the unknown route and `.bundle`. Invalid API input returns HTTP 400. The healthcheck probes `/healthz/` every 30 seconds; it checks the web server without requiring an optional model service.
 
 Next.js retains `trailingSlash: true`: `/detective`, `/healthz`, and `/api/select-variables` redirect to their slash-ending paths. Use the trailing slash when posting to the API, or use a client that follows the HTTP 308 redirect while preserving the method and body. Hashed Next.js assets receive immutable caching; public data uses Next.js public-file caching with `max-age=0`.
+
+## Optional daily data
+
+Keep the pinned monthly bundle in the image. For a selected event lasting one calendar month, the browser automatically fetches supported daily products in sequential chunks of at most three days. The Next.js API reads small NASA Cloud OPeNDAP subsets, computes basin averages in memory, and caches only the resulting series. It does not download the full daily archive or require a persistent data volume. Longer selections and unsupported products continue to use monthly data.
+
+Provide an Earthdata Login token using **one** of these runtime mechanisms:
+
+- `EDL_TOKEN`: a secret environment variable supplied by your hosting platform or shell. The base Compose file passes this optional variable through.
+- `EDL_TOKEN_FILE`: the path to a readable, mounted secret inside the container. Prefer this when using Compose locally.
+
+For the file option, save the token in the ignored repository-root `.edl.token`, then run from the repository root:
+
+```sh
+chmod 600 .edl.token
+docker compose -f compose.yaml -f deploy/compose.earthdata.yaml up --build -d
+```
+
+The override mounts the token read-only at `/run/secrets/earthdata_token`. Set `EDL_TOKEN_HOST_FILE` to use another host file. Continue to include both `-f` arguments when updating or recreating this service. The token file is excluded from Git and the Docker build context. Never copy it into `web/public`, the Dockerfile, a build argument, or a `NEXT_PUBLIC_` variable. No Earthdata credential is needed during build.
+
+From a running instance with the token configured, a bounded check is:
+
+```sh
+curl --fail --max-time 60 \
+  'http://localhost:8080/api/daily-series/?region=b4-4040046370&layer=tair&start=2021-02-01&end=2021-02-03'
+```
+
+Check `resolution: "daily"`, the three calendar dates, nullable values, and source metadata. A missing or rejected credential produces a controlled error; the monthly application still works. `/healthz/` checks the web server without calling NASA. Route errors never expose the credential or upstream response bodies.
+
+The in-memory result cache is bounded to 32 MiB per process and expires after 24 hours; it is cleared on restart. Public deployments should additionally enforce request limits at the ingress. NASA reads have an application concurrency limit, deadline, and response-size limit. Queries that miss those limits show a daily-data failure while preserving the monthly view. Dataset mappings, units, missing-data rules, and measured limits are in [`docs/daily-data.md`](../docs/daily-data.md).
+
+For development, put `EDL_TOKEN_FILE=../.edl.token` in `web/.env.local`; Compose does not read that file. For a standalone production process, supply the variable directly through its runtime environment.
 
 ## Optional selector backends
 

@@ -13,6 +13,7 @@ RUN node /app/deploy/check-data.mjs \
     && npm run build \
     && test -s .next/standalone/server.js \
     && test -s .next/standalone/.next/server/app/api/select-variables/route.js \
+    && test -s .next/standalone/.next/server/app/api/daily-series/route.js \
     && test -s .next/standalone/public/data/gen/catalog.json \
     && test ! -e .next/standalone/public/data/.bundle
 

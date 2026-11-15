@@ -24,6 +24,7 @@ import {
 import { RetryButton, StatusCard } from "@/components/explore/StatusCard";
 import { InputPanel } from "./InputPanel";
 import { VariablePicker } from "./VariablePicker";
+import DailyDetail from "./DailyDetail";
 import { CATEGORIES, PRESETS, VariableTab, analysis, requestVotes, variableMetadata, type VariableMeta } from "./wiring";
 
 /* ------------------------------------------------------------------ small async helper */
@@ -582,6 +583,15 @@ function AnalysisView({
                     ))}
                   </select>
                 </label>
+              )}
+              {avail?.layer[active] && (
+                <DailyDetail
+                  key={active}
+                  region={q.region}
+                  layer={avail.layer[active]}
+                  time={q.time}
+                  product={vc?.layers[avail.layer[active]]?.product}
+                />
               )}
               {r.kind === "loading" && <StatusCard busy title={`Loading ${CATEGORIES[active].name.en.toLowerCase()}…`} />}
               {r.kind === "nodata" && (
