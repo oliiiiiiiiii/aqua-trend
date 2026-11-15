@@ -1,0 +1,15 @@
+# Gemini on Vertex AI with Google Application Default Credentials (no API key).
+# The credential file is a Workload Identity Federation config (no secret) or any other ADC file.
+# Use with: docker compose -f compose.yaml -f deploy/compose.gemini.yaml up -d
+services:
+  web:
+    environment:
+      SELECTOR_BACKEND: openai
+      SELECTOR_AUTH: google-adc
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google_adc
+    secrets:
+      - google_adc
+
+secrets:
+  google_adc:
+    file: ${GOOGLE_ADC_HOST_FILE:-./gcp-adc.json}

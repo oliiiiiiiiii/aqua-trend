@@ -25,6 +25,7 @@ F 新增 `aod`、`ozone`、`vapor`、`so2`、`fire`。臭氧是整柱總量，�
 |---|---|---|
 | `local`（預設） | 本機 `serve.py` + OneJev，5 秒逾時 | `SELECTOR_URL`（預設 `http://127.0.0.1:8770`） |
 | `openai` | 任何 OpenAI 相容的 `/chat/completions`：OpenAI、OpenRouter、Groq、Together、DeepSeek、自架 vLLM／Ollama… | `SELECTOR_OPENAI_BASE_URL`（預設 `https://api.openai.com/v1`）、`SELECTOR_OPENAI_MODEL`、`SELECTOR_API_KEY` |
+| `openai` + `SELECTOR_AUTH=google-adc` | Vertex AI 上的 Gemini（OpenAI 相容端點），用 Google ADC 取得短效 token，不需要 API key | `SELECTOR_OPENAI_BASE_URL`（`https://aiplatform.googleapis.com/v1/projects/<專案>/locations/global/endpoints/openapi`）、`SELECTOR_OPENAI_MODEL=google/gemini-3.5-flash`、`SELECTOR_OPENAI_REASONING_EFFORT=minimal`；本機先 `gcloud auth application-default login`，伺服器見 `deploy/README.md` |
 | `systemone` | 任何 Jev 風格 `/v1/systemone` 端點（例如架在別台機器上的 OneJev／qev），每類別一題 `noul` | `SELECTOR_SYSTEMONE_URL`（完整網址）、選填 `SELECTOR_SYSTEMONE_MODEL`、`SELECTOR_API_KEY` |
 | `keyword` | 不呼叫模型，只用關鍵字表 | — |
 
