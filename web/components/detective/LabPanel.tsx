@@ -11,6 +11,7 @@ import { Segmented } from "@/components/explore/Segmented";
 import { num, pValue, rangeLabel } from "./format";
 import { Histogram, I, Rows, Sig, Verdict, ci, corrected, dot, slopeUnit, type ToolInfo } from "./LabParts";
 import { MoreResult, MORE_TOOL_INFO } from "./LabMore";
+import { MlResult, ML_TOOL_INFO } from "./LabMl";
 
 export type LabRangeSource = "selection" | "event" | "all";
 
@@ -40,6 +41,7 @@ export interface LabLogEntry { tool: LabToolId; p: number | null; holm: boolean 
 
 export const TOOL_INFO: Record<LabToolId, ToolInfo> = {
   ...MORE_TOOL_INFO,
+  ...ML_TOOL_INFO,
   ols: {
     label: "迴歸", title: "線性迴歸＋t 檢定",
     about: "用最小平方法畫一條直線，斜率代表這段期間異常的變化速率；t 檢定判斷斜率是否可能只是 0 加上隨機起伏。",
@@ -149,7 +151,7 @@ export default function LabPanel(p: LabPanelProps) {
 
           {p.outcome == null ? null : p.outcome.kind === "insufficient" ? (
             <p className="mt-2 text-ink-2">
-              資料不足：這段只有 {p.outcome.n} 個有值的月份，{p.outcome.what}至少需要 {p.outcome.need} 個月。請選長一點的範圍。
+              {p.outcome.note ?? `資料不足：這段只有 ${p.outcome.n} 個有值的月份，${p.outcome.what}至少需要 ${p.outcome.need} 個月。請選長一點的範圍。`}
             </p>
           ) : (
             <>
@@ -278,6 +280,8 @@ function Result({ s, unit, spanMonths, months }: { s: LabStats; unit: string; sp
     case "acf": return <AcfBlock s={s} />;
     case "normality": return <NormalityBlock s={s} unit={unit} />;
     case "bootstrap": return <BootstrapBlock s={s} unit={unit} su={su} />;
+    case "analog": case "hmm": case "forecast": case "discord": case "iforest": case "bocpd": case "gp":
+      return <MlResult s={s} unit={unit} months={months} />;
     default: return <MoreResult s={s} unit={unit} spanMonths={spanMonths} months={months} />;
   }
 }

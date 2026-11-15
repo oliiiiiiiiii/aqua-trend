@@ -112,6 +112,7 @@ export default function VariableTab(p: VariableTabProps) {
   };
   const labBaseline = useMemo(() => baselineShare(d, labStart, labEnd), [d, labStart, labEnd]);
   const overlay = labOutcome?.kind === "ok" ? labOutcome.segments : undefined;
+  const overlayBands = labOutcome?.kind === "ok" ? labOutcome.bands : undefined;
 
   const full = view[0] <= 0 && view[1] >= n;
   const record = n ? `${d.months[0]}..${d.months[n - 1]}` : undefined;
@@ -157,6 +158,7 @@ export default function VariableTab(p: VariableTabProps) {
           selectMode={selectMode}
           label={`${meta.name}數線`}
           overlay={overlay}
+          overlayBands={overlayBands}
         />
 
         <Legend layer={layer} />

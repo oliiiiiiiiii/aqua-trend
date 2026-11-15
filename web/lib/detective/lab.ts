@@ -20,12 +20,19 @@ import {
   tQuantile,
 } from "../stats";
 import type { Decomposition } from "./contracts";
+import {
+  analogSearch, arForecast, bocpd, gpSmooth, hmmRegimes, isolationForest, matrixProfile,
+  type LabBand, type MlStats, type MlToolId,
+} from "./ml";
+
+export type { LabBand } from "./ml";
 
 export type LabToolId =
   | "ols" | "mk" | "piecewise" | "permutation" | "bootstrap"
   | "mean" | "wilcoxon" | "compare" | "variance" | "normality" | "monthly"
   | "cusum" | "runs" | "extremes" | "pettitt"
-  | "acf" | "spectrum";
+  | "acf" | "spectrum"
+  | MlToolId;
 
 /** Toolbar groups, in display order. */
 export const LAB_GROUPS: readonly { label: string; tools: readonly LabToolId[] }[] = [
@@ -33,6 +40,7 @@ export const LAB_GROUPS: readonly { label: string; tools: readonly LabToolId[] }
   { label: "平均與分布", tools: ["mean", "wilcoxon", "compare", "variance", "normality", "monthly"] },
   { label: "持續與極端", tools: ["cusum", "runs", "extremes", "pettitt"] },
   { label: "週期與記憶", tools: ["acf", "spectrum"] },
+  { label: "機器學習", tools: ["analog", "hmm", "forecast", "discord", "iforest", "bocpd", "gp"] },
 ];
 
 export const LAB_TOOLS: readonly LabToolId[] = LAB_GROUPS.flatMap((g) => g.tools);
@@ -43,6 +51,7 @@ export const LAB_MIN_N: Record<LabToolId, number> = {
   mean: 3, wilcoxon: 10, compare: 3, variance: 10, normality: 20, monthly: 24,
   cusum: 3, runs: 12, extremes: 12, pettitt: 10,
   acf: 24, spectrum: 48,
+  analog: 3, hmm: 36, forecast: 1, discord: 6, iforest: 6, bocpd: 24, gp: 12,
 };
 
 /** Tools whose answer is ≈ 0 by construction when the range is the baseline the trend was fitted on. */
@@ -258,11 +267,12 @@ export type LabStats =
   | OlsResult | MkResult | MeanResult | WilcoxonResult | CompareResult
   | PettittResult | AcfResult | NormalityResult | BootstrapResult
   | CusumResult | RunsResult | ExtremesResult | VarianceResult | SpectrumResult
-  | MonthlyResult | PiecewiseResult | PermutationResult;
+  | MonthlyResult | PiecewiseResult | PermutationResult
+  | MlStats;
 
 export type LabOutcome =
-  | { kind: "ok"; stats: LabStats; segments: LabSegment[] }
-  | { kind: "insufficient"; tool: LabToolId; n: number; need: number; what: string };
+  | { kind: "ok"; stats: LabStats; segments: LabSegment[]; bands?: LabBand[] }
+  | { kind: "insufficient"; tool: LabToolId; n: number; need: number; what: string; note?: string };
 
 /* ------------------------------------------------------------------ tools */
 
@@ -491,7 +501,73 @@ const WHAT: Record<LabToolId, string> = {
   pettitt: "轉折點檢定", acf: "自相關", normality: "常態性檢定", bootstrap: "拔靴法",
   piecewise: "分段迴歸", permutation: "置換檢定", variance: "變異比較", monthly: "逐月比較",
   cusum: "累積異常", runs: "連續性檢定", extremes: "極端月份計數", spectrum: "週期分析",
+  analog: "相似期間搜尋", hmm: "狀態模型", forecast: "預測", discord: "罕見片段搜尋",
+  iforest: "孤立森林", bocpd: "貝氏轉折偵測", gp: "高斯過程平滑",
 };
+
+/** Consecutive-month polyline as chart segments. */
+function polyline(x0: number, ys: readonly number[], dashed = false): LabSegment[] {
+  const out: LabSegment[] = [];
+  for (let k = 1; k < ys.length; k++) out.push({ x0: x0 + k - 1, x1: x0 + k, y0: ys[k - 1], y1: ys[k], dashed });
+  return out;
+}
+
+/** Runs of `path === state` as bands. */
+function stateBands(start: number, path: readonly number[], state: number, tone: LabBand["tone"]): LabBand[] {
+  const out: LabBand[] = [];
+  for (let i = 0; i < path.length;) {
+    let j = i;
+    while (j + 1 < path.length && path[j + 1] === path[i]) j++;
+    if (path[i] === state) out.push({ x0: start + i, x1: start + j, tone });
+    i = j + 1;
+  }
+  return out;
+}
+
+function runMlTool(tool: MlToolId, d: Decomposition, start: number, end: number, short: (n: number, note?: string) => LabOutcome): LabOutcome {
+  const v = d.residual;
+  const x0 = Math.max(0, start), x1 = Math.min(v.length - 1, end);
+  switch (tool) {
+    case "analog": {
+      const r = analogSearch(v, x0, x1);
+      if (!r.matches.length) return short(x1 - x0 + 1, "整段資料裡找不到不重疊、資料夠完整的候選期間；請選短一點的範圍。");
+      return { kind: "ok", stats: r, segments: [], bands: r.matches.map((m, k) => ({ x0: m.start, x1: m.start + r.length - 1, tone: "focus", label: String(k + 1) })) };
+    }
+    case "hmm": {
+      const r = hmmRegimes(v, x0, x1);
+      return { kind: "ok", stats: r, segments: [], bands: [...stateBands(x0, r.path, 0, "cool"), ...stateBands(x0, r.path, r.K - 1, "warm")] };
+    }
+    case "forecast": {
+      const r = arForecast(v, x0, x1);
+      if (!r) return short(0, "預測需要範圍開始前至少約 3 年連續的資料來訓練模型；請選較晚開始的範圍。");
+      return { kind: "ok", stats: r, segments: [...polyline(x0, r.forecast), ...polyline(x0, r.lo, true), ...polyline(x0, r.hi, true)] };
+    }
+    case "discord": {
+      const r = matrixProfile(v, x0, x1);
+      const w = r.windows.find((q) => q.m === r.profileM) ?? r.windows[r.windows.length - 1];
+      const bands: LabBand[] = [];
+      if (w?.discord) bands.push({ x0: w.discord.start, x1: w.discord.start + w.m - 1, tone: "warm", label: "罕見" });
+      if (w?.motif) for (const s of [w.motif.a, w.motif.b]) bands.push({ x0: s, x1: s + w.m - 1, tone: "ink", label: "重複" });
+      return { kind: "ok", stats: r, segments: [], bands };
+    }
+    case "iforest": {
+      const r = isolationForest(v, x0, x1);
+      if (r.n < 36) return short(r.n, "孤立森林需要整段資料至少 36 個有完整前 6 個月的月份。");
+      return { kind: "ok", stats: r, segments: [], bands: r.flagged.map((f) => ({ x0: f.x, x1: f.x, tone: f.value >= 0 ? "warm" : "cool" })) };
+    }
+    case "bocpd": {
+      const r = bocpd(v, x0, x1);
+      return { kind: "ok", stats: r, segments: r.segments.map((g) => ({ x0: g.x0, x1: g.x1, y0: g.mean, y1: g.mean })) };
+    }
+    case "gp": {
+      const r = gpSmooth(v, x0, x1);
+      if (!r) return short(0);
+      return { kind: "ok", stats: r, segments: [...polyline(x0, r.mean), ...polyline(x0, r.lo, true), ...polyline(x0, r.hi, true)] };
+    }
+  }
+}
+
+const ML_TOOLS: ReadonlySet<LabToolId> = new Set<MlToolId>(["analog", "hmm", "forecast", "discord", "iforest", "bocpd", "gp"]);
 
 /** Share of baseline months with |z| > 2 (the expected rate of extreme months). */
 function baselineExtremeRate(d: Decomposition): number {
@@ -522,9 +598,13 @@ export function baselineShare(d: Decomposition, start: number, end: number): num
 export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end: number): LabOutcome {
   const s = labSample(d.residual, start, end);
   const need = LAB_MIN_N[tool];
-  const short = (n: number): LabOutcome => ({ kind: "insufficient", tool, n, need, what: WHAT[tool] });
+  const short = (n: number, note?: string): LabOutcome => ({ kind: "insufficient", tool, n, need, what: WHAT[tool], note });
   const x0 = Math.max(0, start), x1 = Math.min(d.months.length - 1, end);
 
+  if (ML_TOOLS.has(tool)) {
+    if (s.n < need) return short(s.n);
+    return runMlTool(tool as MlToolId, d, start, end, short);
+  }
   if (tool === "variance") {
     const rest = restSample(d.residual, start, end);
     if (s.n < need || rest.n < 12) return short(s.n);
@@ -593,6 +673,7 @@ export function runLabTool(tool: LabToolId, d: Decomposition, start: number, end
       const r = bootstrapTest(s);
       return { kind: "ok", stats: r, segments: [{ x0, x1, y0: r.slope.intercept + r.slope.est * x0, y1: r.slope.intercept + r.slope.est * x1 }] };
     }
+    default: return short(s.n);
   }
 }
 
@@ -961,7 +1042,9 @@ export function primaryP(s: LabStats): number | null {
     case "acf": return s.ljungBox.p;
     case "bootstrap": return s.slope.p;
     case "runs": return s.pPersistent;
-    case "cusum": case "spectrum": return null;
+    case "forecast": return s.pValue;
+    case "cusum": case "spectrum": case "analog": case "hmm": case "discord": case "iforest": case "bocpd": case "gp":
+      return null;
   }
 }
 

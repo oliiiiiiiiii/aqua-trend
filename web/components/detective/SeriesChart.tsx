@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type P
 import { scaleLinear } from "d3-scale";
 import { line } from "d3-shape";
 import type { Decomposition, TimeRange } from "@/lib/detective/contracts";
-import type { LabSegment } from "@/lib/detective/lab";
+import type { LabBand, LabSegment } from "@/lib/detective/lab";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { ChartTooltip, TipRow } from "@/components/charts/ChartTooltip";
 import { num, ymIndex } from "./format";
@@ -34,6 +34,8 @@ export interface SeriesChartProps {
   height?: number;
   /** analysis-lab fit lines, in residual units; drawn on the residual layer only */
   overlay?: LabSegment[];
+  /** analysis-lab shaded month spans (analogues, regimes, flagged months), drawn on every layer */
+  overlayBands?: LabBand[];
 }
 
 export const MIN_SPAN = 6;
@@ -282,6 +284,19 @@ export default function SeriesChart(p: SeriesChartProps) {
                   <line x1={selBand.x + selBand.width} x2={selBand.x + selBand.width} y1={0} y2={ih} strokeWidth={1.5} style={{ stroke: "var(--focus)" }} />
                 </g>
               )}
+
+              {p.overlayBands?.map((g, k) => {
+                const r = band(g.x0, g.x1);
+                if (!r) return null;
+                const c = g.tone === "cool" ? "var(--viz-cool)" : g.tone === "warm" ? "var(--viz-warm)" : g.tone === "ink" ? "var(--ink-2)" : "var(--focus)";
+                return (
+                  <g key={`b${k}`}>
+                    <rect {...r} y={0} height={ih} style={{ fill: c, opacity: 0.13 }} />
+                    <rect {...r} y={ih - 4} height={4} style={{ fill: c, opacity: 0.85 }} />
+                    {g.label && r.width > 10 && <text x={r.x + r.width / 2} y={ih - 8} textAnchor="middle" style={{ fill: c, fontSize: 10, fontWeight: 700 }}>{g.label}</text>}
+                  </g>
+                );
+              })}
 
               {crossesZero && <line x1={0} x2={iw} y1={y(0)} y2={y(0)} strokeWidth={1.25} style={{ stroke: "var(--ink-3)" }} />}
 

@@ -100,3 +100,45 @@ export function MiniLine({ xs, ys, ys2, spans = [], logX = false, zero = true, l
     </svg>
   );
 }
+
+/** Several series on one small chart, x = month index; optional shaded band (lo..hi) and month spans. */
+export function MultiLine({ x0, lines, band, spans = [], label, height = 110 }: {
+  x0: number;
+  lines: { ys: readonly (number | null)[]; color: string; dashed?: boolean; width?: number }[];
+  band?: { lo: readonly number[]; hi: readonly number[] };
+  spans?: { x0: number; x1: number; color: string }[];
+  label: string;
+  height?: number;
+}) {
+  const W = 320, H = height;
+  const len = Math.max(...lines.map((l) => l.ys.length), band?.lo.length ?? 0);
+  if (len < 2) return null;
+  const vals = [...lines.flatMap((l) => l.ys.filter((v): v is number => v != null && Number.isFinite(v))), ...(band ? [...band.lo, ...band.hi] : []), 0];
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (lo === hi) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.06;
+  const sx = (k: number) => (k / (len - 1)) * W;
+  const sy = (v: number) => H - ((v - lo + pad) / (hi - lo + 2 * pad)) * H;
+  const path = (ys: readonly (number | null)[]) => {
+    let d = "", pen = false;
+    ys.forEach((v, k) => {
+      if (v == null || !Number.isFinite(v)) { pen = false; return; }
+      d += `${pen ? "L" : "M"}${sx(k).toFixed(2)},${sy(v).toFixed(2)}`;
+      pen = true;
+    });
+    return d;
+  };
+  const area = band ? `M${band.hi.map((v, k) => `${sx(k)},${sy(v)}`).join("L")}L${band.lo.map((v, k) => `${sx(k)},${sy(v)}`).reverse().join("L")}Z` : "";
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 block w-full max-w-md" style={{ height: H }} preserveAspectRatio="none" aria-label={label}>
+      {spans.map((s, k) => (
+        <rect key={k} x={sx(s.x0 - x0)} width={Math.max(1, sx(s.x1 - x0 + 1) - sx(s.x0 - x0))} y={0} height={H} style={{ fill: s.color, opacity: 0.18 }} />
+      ))}
+      {band && <path d={area} style={{ fill: "var(--focus)", opacity: 0.15 }} />}
+      {lo < 0 && hi > 0 && <line x1={0} x2={W} y1={sy(0)} y2={sy(0)} vectorEffect="non-scaling-stroke" style={{ stroke: "var(--ink-3)" }} />}
+      {lines.map((l, k) => (
+        <path key={k} d={path(l.ys)} fill="none" strokeWidth={l.width ?? 2} strokeDasharray={l.dashed ? "4 3" : undefined} vectorEffect="non-scaling-stroke" style={{ stroke: l.color }} />
+      ))}
+    </svg>
+  );
+}
