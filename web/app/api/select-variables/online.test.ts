@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { ALL_CATEGORIES } from "@/lib/detective/keywords";
-import { onlineProbabilities } from "./online";
+import { googleTokenSource, onlineProbabilities } from "./online";
 
 const realFetch = globalThis.fetch;
 const savedEnv = { ...process.env };
@@ -143,5 +143,52 @@ describe("online selector adapters", () => {
     });
     await assert.rejects(onlineProbabilities("openai", "drought"), { name: "TimeoutError" });
     assert.equal(aborted, true);
+  });
+
+  describe("Google ADC authentication (SELECTOR_AUTH=google-adc)", () => {
+    beforeEach(() => {
+      process.env.SELECTOR_AUTH = "google-adc";
+      process.env.SELECTOR_OPENAI_BASE_URL = "https://aiplatform.googleapis.com/v1/projects/p/locations/global/endpoints/openapi";
+      process.env.SELECTOR_OPENAI_MODEL = "google/gemini-2.5-flash";
+    });
+
+    it("sends the ADC access token to the Vertex AI OpenAI-compatible endpoint and ignores SELECTOR_API_KEY", async () => {
+      process.env.SELECTOR_API_KEY = "static-key-must-not-be-sent";
+      let tokenCalls = 0;
+      mock.method(googleTokenSource, "get", async () => { tokenCalls++; return "ya29.adc-token"; });
+      globalThis.fetch = async (url, init) => {
+        assert.equal(url, "https://aiplatform.googleapis.com/v1/projects/p/locations/global/endpoints/openapi/chat/completions");
+        assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer ya29.adc-token");
+        assert.equal(JSON.parse(String(init?.body)).model, "google/gemini-2.5-flash");
+        return Response.json(openaiReply(JSON.stringify(probabilities())));
+      };
+      assert.deepEqual(Object.fromEntries(await onlineProbabilities("openai", "2022 Pakistan floods")), probabilities());
+      assert.equal(tokenCalls, 1);
+    });
+
+    it("fails without fetching when ADC cannot provide a token", async () => {
+      mock.method(googleTokenSource, "get", async () => { throw new Error("google ADC token unavailable"); });
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; throw new Error("must not fetch"); };
+      await assert.rejects(onlineProbabilities("openai", "drought"), /ADC token unavailable/);
+      assert.equal(calls, 0);
+    });
+
+    it("counts a slow token lookup against the same deadline", async () => {
+      process.env.SELECTOR_ONLINE_TIMEOUT_MS = "20";
+      mock.method(googleTokenSource, "get", () => new Promise<string>((resolve) => setTimeout(() => resolve("late"), 500)));
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; throw new Error("must not fetch"); };
+      await assert.rejects(onlineProbabilities("openai", "drought"), { name: "TimeoutError" });
+      assert.equal(calls, 0);
+    });
+
+    it("rejects an unknown SELECTOR_AUTH value before fetching", async () => {
+      process.env.SELECTOR_AUTH = "gcloud";
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; throw new Error("must not fetch"); };
+      await assert.rejects(onlineProbabilities("openai", "drought"), /unknown SELECTOR_AUTH/);
+      assert.equal(calls, 0);
+    });
   });
 });

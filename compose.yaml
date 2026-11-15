@@ -15,6 +15,7 @@ services:
       SELECTOR_SYSTEMONE_MODEL: "${SELECTOR_SYSTEMONE_MODEL:-}"
       SELECTOR_ONLINE_TIMEOUT_MS: "${SELECTOR_ONLINE_TIMEOUT_MS:-5000}"
       SELECTOR_API_KEY: "${SELECTOR_API_KEY:-}"
+      SELECTOR_AUTH: "${SELECTOR_AUTH:-}"
       EDL_TOKEN: "${EDL_TOKEN:-}"
     extra_hosts:
       - "host.docker.internal:host-gateway"

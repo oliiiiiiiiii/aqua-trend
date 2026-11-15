@@ -147,3 +147,6 @@ data/share/
 web/public/data/
 web/data/
 dist/
+
+# Google ADC / Workload Identity Federation credential config for the Gemini selector
+gcp-adc.json

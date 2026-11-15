@@ -3,6 +3,12 @@
 //   systemone 任何 Jev 風格的 /v1/systemone 端點（state + noul 問題 → 機率），例如遠端架的 OneJev
 // 兩者都回完整類別各一個 0–1 機率，與本地模型同一形式；任何錯誤、逾時或格式不符都丟例外，
 // 由 route.ts 退回關鍵字備案。金鑰只從環境變數讀，不可 commit。
+//
+// 驗證方式（SELECTOR_AUTH）：
+//   bearer（預設）  有設 SELECTOR_API_KEY 就送 Authorization: Bearer <金鑰>
+//   google-adc     用 Google Application Default Credentials 取得短效 access token（例如 Vertex AI 的
+//                  Gemini OpenAI 相容端點）。token 由 google-auth-library 快取並自動更新；取 token 的時間
+//                  也算在同一個逾時內。此模式不會送出 SELECTOR_API_KEY。
 
 import type { CategoryId } from "@/lib/detective/contracts";
 import { ALL_CATEGORIES } from "@/lib/detective/keywords";
@@ -31,11 +37,50 @@ function definition(category: CategoryId): string {
 
 const STATE = (event: string) => `A student wants to study this Earth event with NASA satellite data: ${event}`;
 
-function authHeaders(): Record<string, string> {
-  const apiKey = env("SELECTOR_API_KEY");
+const GOOGLE_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
+let googleAuth: Promise<{ getAccessToken(): Promise<string | null | undefined> }> | undefined;
+
+/** 可在測試中替換；正式環境用 ADC（GOOGLE_APPLICATION_CREDENTIALS、gcloud ADC 或雲端中繼資料）。 */
+export const googleTokenSource = {
+  async get(): Promise<string> {
+    // 專案 ID 取自 Vertex 端點網址；先給定可避免函式庫另外呼叫 Resource Manager 查專案
+    // （會多花數秒，且服務帳戶需要額外權限）。
+    const projectId = env("SELECTOR_OPENAI_BASE_URL")?.match(/\/projects\/([^/]+)\//)?.[1];
+    googleAuth ??= import("google-auth-library").then(({ GoogleAuth }) =>
+      new GoogleAuth({ scopes: GOOGLE_SCOPE, ...(projectId ? { projectId } : {}) }));
+    let token: string | null | undefined;
+    try {
+      token = await (await googleAuth).getAccessToken();
+    } catch {
+      googleAuth = undefined; // 下次重新建立，例如憑證檔稍後才掛上
+      throw new Error("google ADC token unavailable");
+    }
+    if (!token) throw new Error("google ADC returned no token");
+    return token;
+  },
+};
+
+function withDeadline<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
+  if (signal.aborted) return Promise.reject(signal.reason);
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(signal.reason);
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (value) => { signal.removeEventListener("abort", onAbort); resolve(value); },
+      (error) => { signal.removeEventListener("abort", onAbort); reject(error); },
+    );
+  });
+}
+
+async function authHeaders(signal: AbortSignal): Promise<Record<string, string>> {
+  const mode = env("SELECTOR_AUTH") ?? "bearer";
+  let token: string | undefined;
+  if (mode === "google-adc") token = await withDeadline(googleTokenSource.get(), signal);
+  else if (mode === "bearer") token = env("SELECTOR_API_KEY");
+  else throw new Error("unknown SELECTOR_AUTH");
   return {
     "Content-Type": "application/json",
-    ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
 
@@ -54,11 +99,12 @@ function toProbabilities(values: unknown, answerObjects = false): Map<CategoryId
 }
 
 async function postJson(url: string, body: unknown): Promise<unknown> {
+  const signal = AbortSignal.timeout(timeoutMs());
   const res = await fetch(url, {
     method: "POST",
-    headers: authHeaders(),
+    headers: await authHeaders(signal),
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(timeoutMs()),
+    signal,
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`online selector HTTP ${res.status}`);
