@@ -90,6 +90,36 @@ function betaInc(a: number, b: number, x: number): number {
   return x < (a + 1) / (a + b + 2) ? (bt * betacf(a, b, x)) / a : 1 - (bt * betacf(b, a, 1 - x)) / b;
 }
 
+/** Regularised upper incomplete gamma Q(a, x) (series below a + 1, Lentz continued fraction above). */
+function gammaQ(a: number, x: number): number {
+  if (!(x > 0)) return 1;
+  const lga = lgamma(a);
+  if (x < a + 1) {
+    let sum = 1 / a, del = sum, ap = a;
+    for (let k = 0; k < 500; k++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-15) break; }
+    return Math.max(0, 1 - sum * Math.exp(-x + a * Math.log(x) - lga));
+  }
+  const TINY = 1e-300;
+  let b = x + 1 - a, c = 1 / TINY, d = 1 / b, h = d;
+  for (let i = 1; i <= 500; i++) {
+    const an = -i * (i - a);
+    b += 2;
+    d = an * d + b; if (Math.abs(d) < TINY) d = TINY;
+    c = b + an / c; if (Math.abs(c) < TINY) c = TINY;
+    d = 1 / d;
+    const del = d * c;
+    h *= del;
+    if (Math.abs(del - 1) < 1e-15) break;
+  }
+  return Math.exp(-x + a * Math.log(x) - lga) * h;
+}
+
+/** Upper tail P(X >= x) of the chi-square distribution with df degrees of freedom. */
+export function chiSquareSf(x: number, df: number): number {
+  if (!(df > 0) || Number.isNaN(x)) return NaN;
+  return gammaQ(df / 2, x / 2);
+}
+
 /** CDF of Student's t with df degrees of freedom. */
 export function tCdf(t: number, df: number): number {
   const x = df / (df + t * t);

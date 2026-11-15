@@ -7,6 +7,8 @@ import { Segmented } from "@/components/explore/Segmented";
 import SeriesChart, { clampView, zoomView, type ChartLayer, type MonthSelection, type ViewWindow } from "./SeriesChart";
 import ConclusionCard from "./ConclusionCard";
 import TrendPanel from "./TrendPanel";
+import LabPanel, { type LabRangeSource } from "./LabPanel";
+import { BASELINE_SENSITIVE, baselineShare, runLabTool, type LabToolId } from "@/lib/detective/lab";
 import { num, pct, rangeLabel, ymIndex } from "./format";
 
 /** Display metadata for one variable (built by the page from categories.ts + variables.json). */
@@ -64,10 +66,30 @@ export default function VariableTab(p: VariableTabProps) {
   const [view, setView] = useState<ViewWindow>(eventView);
   const [selection, setSelection] = useState<MonthSelection | null>(null);
   const [selectMode, setSelectMode] = useState(false);
+  const [labTool, setLabTool] = useState<LabToolId | null>(null);
+  const [labSource, setLabSource] = useState<LabRangeSource>("all");
+  const onSelectionChange = useCallback((s: MonthSelection | null) => {
+    setSelection(s);
+    if (s) setLabSource("selection");
+  }, []);
 
   const eventStats = useMemo(() => p.intervalStats(d, event), [p.intervalStats, d, event]); // eslint-disable-line react-hooks/exhaustive-deps
   const selRange: TimeRange | null = selection ? { start: d.months[selection[0]], end: d.months[selection[1]] } : null;
   const selStats = useMemo(() => (selRange ? p.intervalStats(d, selRange) : null), [selRange?.start, selRange?.end, d]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // the lab range: the selection, the event, or the whole record (inclusive month indices)
+  const source: LabRangeSource = labSource === "selection" && !selection ? "all" : labSource;
+  const [labStart, labEnd] = source === "selection" && selection
+    ? selection
+    : source === "event"
+      ? [Math.max(0, ymIndex(event.start) - base), Math.min(n - 1, ymIndex(event.end) - base)]
+      : [0, n - 1];
+  const labOutcome = useMemo(
+    () => (labTool && n ? runLabTool(labTool, d, labStart, labEnd) : null),
+    [labTool, d, labStart, labEnd, n],
+  );
+  const labBaseline = useMemo(() => baselineShare(d, labStart, labEnd), [d, labStart, labEnd]);
+  const overlay = labOutcome?.kind === "ok" ? labOutcome.segments : undefined;
 
   const full = view[0] <= 0 && view[1] >= n;
   const record = n ? `${d.months[0]}..${d.months[n - 1]}` : undefined;
@@ -109,9 +131,10 @@ export default function VariableTab(p: VariableTabProps) {
         <SeriesChart
           d={d} layer={layer} unit={meta.unit} event={event}
           view={view} onViewChange={setView}
-          selection={selection} onSelectionChange={setSelection}
+          selection={selection} onSelectionChange={onSelectionChange}
           selectMode={selectMode}
           label={`${meta.name}數線`}
+          overlay={overlay}
         />
 
         <Legend layer={layer} />
@@ -124,13 +147,26 @@ export default function VariableTab(p: VariableTabProps) {
               <span>z = {num(selStats.meanZ, 1, true)}</span>
               <span>百分位 {pct(selStats.percentile)}</span>
               {selStats.rank && <span>第 {selStats.rank.position}／{selStats.rank.of} {selStats.rank.direction === "low" ? "低" : "高"}</span>}
-              <button type="button" className="ml-auto text-link underline underline-offset-2" onClick={() => setSelection(null)}>清除</button>
+              <button type="button" className="ml-auto text-link underline underline-offset-2" onClick={() => onSelectionChange(null)}>清除</button>
             </div>
           ) : (
             <span className="text-ink-2">拖曳平移、滾輪縮放；按住 Shift 拖曳（或開啟「選取」）來選一段時間，看它有多不尋常。</span>
           )}
         </div>
       </div>
+
+      <LabPanel
+        tool={labTool} onToolChange={setLabTool}
+        source={source} onSourceChange={setLabSource}
+        hasSelection={selection != null}
+        range={n && labEnd >= labStart ? { start: d.months[labStart], end: d.months[labEnd] } : null}
+        outcome={labOutcome}
+        unit={meta.unit}
+        months={d.months}
+        spanMonths={labEnd - labStart}
+        baselineWarning={labTool != null && BASELINE_SENSITIVE.has(labTool) && labBaseline >= 0.8}
+        onShowResidual={layer !== "residual" ? () => setLayer("residual") : undefined}
+      />
 
       <TrendPanel stats={p.trend} unit={meta.unit} record={record} />
     </div>

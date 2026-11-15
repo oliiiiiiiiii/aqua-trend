@@ -6,6 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type P
 import { scaleLinear } from "d3-scale";
 import { line } from "d3-shape";
 import type { Decomposition, TimeRange } from "@/lib/detective/contracts";
+import type { LabSegment } from "@/lib/detective/lab";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { ChartTooltip, TipRow } from "@/components/charts/ChartTooltip";
 import { num, ymIndex } from "./format";
@@ -31,6 +32,8 @@ export interface SeriesChartProps {
   /** accessible name */
   label: string;
   height?: number;
+  /** analysis-lab fit lines, in residual units; drawn on the residual layer only */
+  overlay?: LabSegment[];
 }
 
 export const MIN_SPAN = 6;
@@ -307,6 +310,16 @@ export default function SeriesChart(p: SeriesChartProps) {
                   })}
                 </>
               )}
+
+              {layer === "residual" && p.overlay?.map((g, k) => {
+                const pts = { x1: cx(g.x0), x2: cx(g.x1), y1: y(g.y0), y2: y(g.y1) };
+                return (
+                  <g key={k}>
+                    <line {...pts} strokeWidth={5} strokeLinecap="round" style={{ stroke: surface, opacity: 0.85 }} />
+                    <line {...pts} strokeWidth={2.25} strokeLinecap="round" strokeDasharray={g.dashed ? "6 4" : undefined} style={{ stroke: "var(--ink)" }} />
+                  </g>
+                );
+              })}
 
               {hover != null && (
                 <>
