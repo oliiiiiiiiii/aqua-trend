@@ -127,7 +127,7 @@ export default function GlobeCanvas({
     "grid h-10 w-10 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
 
   return (
-    <div className={`relative overflow-hidden ${className}`} aria-hidden={interactive ? undefined : true}>
+    <div data-plane-cursor className={`relative overflow-hidden ${className}`} aria-hidden={interactive ? undefined : true}>
       <div
         ref={hostRef}
         className="group absolute inset-0 rounded-card focus-visible:outline-offset-[-3px]"

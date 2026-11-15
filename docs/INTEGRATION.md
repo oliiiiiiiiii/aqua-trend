@@ -55,7 +55,7 @@
 規則：
 - 現有 `TimeSeriesChart` 沒有縮放；以 d3 加上滾輪縮放、拖曳平移、Shift+拖曳（或按鈕切換）選取區間。
 - 預設視窗 = 事件前後 `padMonths`；事件期間用色塊標示；「全時段」按鈕。
-- 圖層切換：原始／季節／趨勢／殘差（Segmented，沿用 `components/explore/Segmented.tsx`）。
+- 圖層切換：原始／季節／趨勢／殘差（Segmented，沿用 `components/ui/Segmented.tsx`）。
 - 選取區間時呼叫 `intervalStats`（由 props 傳入函式，不直接 import A 的實作以便先用假資料開發）。
 - 結論卡文字格式見 SPEC §3 Step 3。趨勢面板預設收合。
 
@@ -71,7 +71,7 @@
 | 負責檔案 | `web/app/detective/page.tsx`、`web/components/detective/InputPanel.tsx`、`VariablePicker.tsx`、`DetectiveApp.tsx`、`web/lib/detective/url.ts`、`web/lib/detective/series.ts` |
 | 輸入 | 預設事件（E）、`SelectResponse`（D）、`AnalysisApi`（A）、`<VariableTab>`（B） |
 | 輸出 | `/detective` 完整流程 |
-| 重用 | `components/globe/GlobeCanvas.tsx`、`components/explore/GlobePane.tsx`、`RegionSearch.tsx`、`regionUtils.ts` |
+| 重用 | `components/globe/GlobeCanvas.tsx`、`components/ui/RegionSearch.tsx`、`regionUtils.ts`（`GlobePane` 已隨 /explore 移除） |
 
 規則：
 - 地球只開 basin4 圖層。注意：`web-demo` 的地球讀 `public/data/gen`（`npm run prep` 產生），序列則讀 `public/data/series/<id>.json`（series-2）。先確認兩邊 basin4 的 id 一致；不一致時在 `series.ts` 建對照，並回報。

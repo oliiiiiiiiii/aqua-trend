@@ -221,7 +221,7 @@ export default function CrystalBall({
   if (compact) {
     // small static comparison orb: the same scene and data channels, no controls, no legend
     return (
-      <div className={`@container ${className}`}>
+      <div data-plane-cursor className={`@container ${className}`}>
         <div
           ref={hostRef}
           role="img"
@@ -246,7 +246,7 @@ export default function CrystalBall({
   }
 
   return (
-    <div ref={rootRef} className={`@container ${className}`}>
+    <div ref={rootRef} data-plane-cursor className={`@container ${className}`}>
       <div className={`flex h-full w-full gap-4 ${outer}`}>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center gap-3 @min-[28rem]:flex-row @min-[28rem]:items-stretch">
           <div

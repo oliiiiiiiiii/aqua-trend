@@ -90,11 +90,67 @@ function betaInc(a: number, b: number, x: number): number {
   return x < (a + 1) / (a + b + 2) ? (bt * betacf(a, b, x)) / a : 1 - (bt * betacf(b, a, 1 - x)) / b;
 }
 
+/** Regularised upper incomplete gamma Q(a, x) (series below a + 1, Lentz continued fraction above). */
+function gammaQ(a: number, x: number): number {
+  if (!(x > 0)) return 1;
+  const lga = lgamma(a);
+  if (x < a + 1) {
+    let sum = 1 / a, del = sum, ap = a;
+    for (let k = 0; k < 500; k++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-15) break; }
+    return Math.max(0, 1 - sum * Math.exp(-x + a * Math.log(x) - lga));
+  }
+  const TINY = 1e-300;
+  let b = x + 1 - a, c = 1 / TINY, d = 1 / b, h = d;
+  for (let i = 1; i <= 500; i++) {
+    const an = -i * (i - a);
+    b += 2;
+    d = an * d + b; if (Math.abs(d) < TINY) d = TINY;
+    c = b + an / c; if (Math.abs(c) < TINY) c = TINY;
+    d = 1 / d;
+    const del = d * c;
+    h *= del;
+    if (Math.abs(del - 1) < 1e-15) break;
+  }
+  return Math.exp(-x + a * Math.log(x) - lga) * h;
+}
+
+/** Upper tail P(X >= x) of the chi-square distribution with df degrees of freedom. */
+export function chiSquareSf(x: number, df: number): number {
+  if (!(df > 0) || Number.isNaN(x)) return NaN;
+  return gammaQ(df / 2, x / 2);
+}
+
 /** CDF of Student's t with df degrees of freedom. */
 export function tCdf(t: number, df: number): number {
   const x = df / (df + t * t);
   const tail = 0.5 * betaInc(df / 2, 0.5, x);
   return t >= 0 ? 1 - tail : tail;
+}
+
+/** Upper tail P(X >= F) of the F distribution with (d1, d2) degrees of freedom. */
+export function fSf(F: number, d1: number, d2: number): number {
+  if (!(d1 > 0 && d2 > 0) || Number.isNaN(F)) return NaN;
+  if (F <= 0) return 1;
+  return betaInc(d2 / 2, d1 / 2, d2 / (d2 + d1 * F));
+}
+
+/** Exact binomial test of k successes in n trials with success probability p. */
+export function binomialTest(k: number, n: number, p: number): { pTwoSided: number; pUpper: number; pLower: number } {
+  if (!(n >= 0) || !(p >= 0 && p <= 1) || k < 0 || k > n) return { pTwoSided: NaN, pUpper: NaN, pLower: NaN };
+  const logPmf = (i: number) => {
+    if (p === 0) return i === 0 ? 0 : -Infinity;
+    if (p === 1) return i === n ? 0 : -Infinity;
+    return lgamma(n + 1) - lgamma(i + 1) - lgamma(n - i + 1) + i * Math.log(p) + (n - i) * Math.log(1 - p);
+  };
+  const pmf = Array.from({ length: n + 1 }, (_, i) => Math.exp(logPmf(i)));
+  const at = pmf[k];
+  let two = 0, upper = 0, lower = 0;
+  pmf.forEach((v, i) => {
+    if (v <= at * (1 + 1e-7)) two += v;
+    if (i >= k) upper += v;
+    if (i <= k) lower += v;
+  });
+  return { pTwoSided: Math.min(1, two), pUpper: Math.min(1, upper), pLower: Math.min(1, lower) };
 }
 
 /** Quantile (inverse CDF) of Student's t, by bisection on the exact CDF. p in (0, 1). */

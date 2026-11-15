@@ -12,6 +12,8 @@
 //   tab  the open variable tab (one of v)
 // Extension beyond the contract (see encodeState / decodeState):
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
+//   sel  the workbench selection "YYYY-MM..YYYY-MM"; left out when it equals the event period (t)
+//   test the open test of the workbench "Tests" area (one of TEST_IDS); absent = Tests closed
 //
 // The time suggestion is shared with the API's keyword selector.
 import type { CategoryId, DetectiveQuery, LayerId, RegionId, TimeRange, UrlCodec, YearMonth } from "./contracts";
@@ -72,6 +74,19 @@ export function cleanCategories(list: Iterable<string>): CategoryId[] {
 }
 const parseList = (raw: string | null): CategoryId[] => (raw ? cleanCategories(raw.split(",").map((s) => s.trim())) : []);
 
+/* ------------------------------------------------------------------ workbench tests (`test`) */
+
+/** Tests of the workbench "Tests" area: the lab's tool ids (lib/detective/lab.ts LAB_TOOLS, same order). */
+export const TEST_IDS = [
+  "ols", "mk", "piecewise", "permutation", "bootstrap",
+  "mean", "wilcoxon", "compare", "variance", "normality", "monthly",
+  "cusum", "runs", "extremes", "pettitt",
+  "acf", "spectrum",
+] as const;
+export type TestId = (typeof TEST_IDS)[number];
+const TEST_SET = new Set<string>(TEST_IDS);
+export const isTestId = (s: string): s is TestId => TEST_SET.has(s);
+
 /* ------------------------------------------------------------------ codec */
 
 /** Everything the page keeps in its URL: the contract's query plus the Step 1 draft. */
@@ -81,6 +96,10 @@ export interface DetectiveUrlState {
   draft: CategoryId[] | null;
   /** a `?r=` value that was dropped because it is not a basin4 id, so the page can say why */
   rejectedRegion: string | null;
+  /** the analysis workbench's selected sub-interval (`sel`); absent when it is the event period */
+  selection?: TimeRange;
+  /** the open workbench test (`test`); absent when the Tests area is closed */
+  test?: TestId;
 }
 
 export function decodeState(search: string): DetectiveUrlState {
@@ -113,14 +132,19 @@ export function decodeState(search: string): DetectiveUrlState {
   if (isCategory(tab) && (!q.categories || q.categories.includes(tab))) q.active = tab;
 
   const c = p.get("c");
-  return {
+  const out: DetectiveUrlState = {
     query: q,
     draft: c === null ? null : parseList(c),
     rejectedRegion: r && !isRegionId(r) ? r : null,
   };
+  const sel = parseRange(p.get("sel"));
+  if (sel && !sameRange(sel, q.time)) out.selection = sel;
+  const test = p.get("test")?.trim() ?? "";
+  if (isTestId(test)) out.test = test;
+  return out;
 }
 
-export function encodeState(s: { query: Partial<DetectiveQuery>; draft?: CategoryId[] | null }): string {
+export function encodeState(s: { query: Partial<DetectiveQuery>; draft?: CategoryId[] | null; selection?: TimeRange | null; test?: TestId | null }): string {
   const q = s.query;
   const p = new URLSearchParams();
   const e = q.event?.trim();
@@ -138,6 +162,8 @@ export function encodeState(s: { query: Partial<DetectiveQuery>; draft?: Categor
     p.set("pad", String(Math.max(PAD_MIN, Math.min(PAD_MAX, Math.round(q.padMonths)))));
   }
   if (q.active && v.includes(q.active)) p.set("tab", q.active);
+  if (s.selection && parseRange(encodeRange(s.selection)) && !sameRange(s.selection, q.time)) p.set("sel", encodeRange(s.selection));
+  if (s.test && isTestId(s.test)) p.set("test", s.test);
   if (s.draft) p.set("c", cleanCategories(s.draft).join(","));
   // commas, colons and dots stay readable in shared links
   return p.toString().replace(/%2C/gi, ",").replace(/%3A/gi, ":");

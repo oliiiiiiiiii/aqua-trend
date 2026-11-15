@@ -66,19 +66,3 @@ export interface TrendGrid {
   sen: Float32Array;
   p: Float32Array;
 }
-
-/** A recommendation card. In this demo every Lead is SYNTHETIC (see lib/synthetic.ts). */
-export interface Lead {
-  id: string;
-  target: VarId;
-  candidate: {
-    name: string;        // e.g. "Land surface temperature (day)"
-    product: string;     // e.g. "MOD11C3 v061"
-    agency: string;      // "NASA" etc.
-    domain: string;      // "temperature", "vegetation", "radiation", …
-    kind: "continuous" | "static" | "categorical";
-  };
-  relation: "temporal-anomaly" | "lagged" | "spatial-trend";
-  /** If the candidate maps onto a crystal-ball colour channel that exists in the real data, name it. */
-  orbColorBy?: VarId | null;
-}

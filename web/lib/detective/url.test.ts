@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { DetectiveQuery } from "./contracts";
 import { suggestedTime } from "./keywords";
-import { decodeQuery, decodeState, encodeQuery, encodeState, formatRange, suggestTime, urlCodec } from "./url";
+import { LAB_TOOLS } from "./lab";
+import { TEST_IDS, decodeQuery, decodeState, encodeQuery, encodeState, formatRange, suggestTime, urlCodec } from "./url";
 
 describe("suggestTime (T from E)", () => {
   it("shares the API parser so input and selector suggestions cannot diverge", () => {
@@ -112,6 +113,51 @@ describe("URL codec", () => {
       layers: { aod: "aod", ozone: "to3_m2", vapor: "tqv", so2: "so2_emis", fire: "fire_count" },
     };
     assert.deepEqual(decodeQuery(encodeQuery(query)), query);
+  });
+});
+
+describe("workbench selection (sel)", () => {
+  const query: Partial<DetectiveQuery> = { event: "x", time: { start: "2021-02", end: "2021-05" }, region: "b4-1", categories: ["soil"] };
+
+  it("round-trips a selection that differs from the event", () => {
+    const s = encodeState({ query, selection: { start: "2020-11", end: "2021-01" } });
+    assert.equal(s, "e=x&t=2021-02..2021-05&r=b4-1&v=soil&sel=2020-11..2021-01");
+    assert.deepEqual(decodeState(s).selection, { start: "2020-11", end: "2021-01" });
+    assert.deepEqual(decodeState(s).query, query);
+  });
+
+  it("leaves the selection out when it equals the event", () => {
+    assert.equal(encodeState({ query, selection: { start: "2021-02", end: "2021-05" } }).includes("sel"), false);
+    assert.equal("selection" in decodeState("t=2021-02..2021-05&sel=2021-02..2021-05"), false);
+    assert.equal(encodeState({ query, selection: null }).includes("sel"), false);
+  });
+
+  it("drops a malformed or reversed selection and keeps it out of the contract query", () => {
+    assert.equal(decodeState("sel=2021-05..2021-02").selection, undefined);
+    assert.equal(decodeState("sel=junk").selection, undefined);
+    assert.deepEqual(decodeState("sel=2021-03").selection, { start: "2021-03", end: "2021-03" });
+    assert.equal("selection" in decodeQuery("t=2021-02..2021-05&sel=2020-01..2020-02"), false);
+  });
+});
+
+describe("workbench test (test)", () => {
+  const query: Partial<DetectiveQuery> = { event: "x", time: { start: "2021-02", end: "2021-05" }, region: "b4-1", categories: ["soil"] };
+
+  it("round-trips a known test after the selection", () => {
+    const s = encodeState({ query, selection: { start: "2020-11", end: "2021-01" }, test: "mk" });
+    assert.equal(s, "e=x&t=2021-02..2021-05&r=b4-1&v=soil&sel=2020-11..2021-01&test=mk");
+    assert.equal(decodeState(s).test, "mk");
+    assert.deepEqual(decodeState(s).query, query);
+  });
+
+  it("is absent when closed and drops unknown ids", () => {
+    assert.equal(encodeState({ query, test: null }).includes("test"), false);
+    assert.equal("test" in decodeState("t=2021-02..2021-05"), false);
+    assert.equal(decodeState("test=bogus").test, undefined);
+    assert.equal(decodeState("test=bootmean").test, undefined);
+    assert.equal("test" in decodeQuery("t=2021-02..2021-05&test=mean"), false);
+    for (const id of TEST_IDS) assert.equal(decodeState(encodeState({ query, test: id })).test, id);
+    assert.deepEqual([...TEST_IDS], [...LAB_TOOLS]);
   });
 });
 

@@ -4,17 +4,14 @@ import { keywordSelect } from "@/lib/detective/keywords";
 import { CATEGORIES } from "@/lib/detective/categories";
 import { CATEGORY_IDS, isCategory, isYearMonth, ymIndex } from "@/lib/detective/url";
 import type { LayerInfo } from "@/lib/detective/series";
-import type { VariableMeta as ChartVariableMeta } from "./VariableTab";
+import { withEnglishText } from "@/lib/detective/layerText";
+import type { VariableMeta } from "./workbench/types";
 
-export { default as VariableTab } from "./VariableTab";
+export type { VariableMeta } from "./workbench/types";
 export { CATEGORIES, type CategoryInfo } from "@/lib/detective/categories";
 export { PRESET_EVENTS as PRESETS } from "@/lib/detective/presets";
 
 export const analysis: AnalysisApi = { decompose, intervalStats, trendStats };
-
-export interface VariableMeta extends ChartVariableMeta {
-  layer: LayerId;
-}
 
 const SURFACE_TEMPERATURE: Partial<Record<LayerId, Pick<VariableMeta, "name" | "definition">>> = {
   lst_day: {
@@ -32,7 +29,8 @@ const SURFACE_TEMPERATURE: Partial<Record<LayerId, Pick<VariableMeta, "name" | "
 };
 
 /** A category can group related measurements; the chart must name the quantity of the selected product. */
-export function variableMetadata(info: LayerInfo, unit = info.unit): VariableMeta {
+export function variableMetadata(layerInfo: LayerInfo, unit = layerInfo.unit): VariableMeta {
+  const info = withEnglishText(layerInfo);
   const category = CATEGORIES[info.category];
   const surface = info.category === "tair" ? SURFACE_TEMPERATURE[info.id] : undefined;
   return {

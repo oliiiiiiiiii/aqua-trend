@@ -6,7 +6,6 @@ import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const NAV = [
   { href: "/detective", label: "Detective" },
-  { href: "/explore", label: "Explore" },
   { href: "/data", label: "Data" },
   { href: "/methods", label: "Methods" },
 ];
@@ -43,7 +42,7 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <ThemeSwitcher />
         </div>
       </div>

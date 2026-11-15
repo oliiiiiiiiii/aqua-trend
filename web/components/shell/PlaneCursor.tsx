@@ -11,8 +11,9 @@ import { cssVar } from "@/lib/theme";
  *   toward it (time-based, shortest way round). Pointer stops -> last heading is kept.
  * - Trail: timestamped points (coalesced pointer events), drawn as smooth quadratic segments that widen and
  *   soften while their alpha fades over LIFE ms. The rAF loop stops itself once everything has settled.
- * - Native cursor is hidden through a class on <html> (only after a real mouse/pen move), except over text
- *   fields, where the native I-beam is kept and the plane is hidden.
+ * - Opt-in: the plane shows only while the pointer is over an element inside `[data-plane-cursor]` (globe, crystal
+ *   ball). Elsewhere the native cursor shows and nothing is drawn or tracked. Inside those areas, buttons, links,
+ *   inputs and other controls keep the native cursor. The native cursor is hidden through a class on <html>.
  * - Disabled on touch / coarse / no-hover devices. With prefers-reduced-motion: static plane, no trail.
  */
 
@@ -22,17 +23,16 @@ const TAIL = 30; // plane length in px (nose at origin, body toward -x)
 const REST = -Math.PI * 0.75; // nose up-left, like the arrow it replaces
 const HIDE_CLASS = "plane-cursor-on";
 
-const TEXT_SEL =
-  'input:not([type]),input[type="text" i],input[type="search" i],input[type="email" i],input[type="url" i],input[type="password" i],input[type="number" i],input[type="tel" i],textarea,[contenteditable]:not([contenteditable="false" i])';
-const ACTION_SEL =
-  'a[href],button,summary,select,label,canvas,[role="button"],[role="link"],[role="tab"],[role="switch"],[role="slider"],[role="menuitem"],[role="option"],input[type="checkbox" i],input[type="radio" i],input[type="range" i],input[type="button" i],input[type="submit" i],[data-cursor="action"]';
+const AREA_SEL = "[data-plane-cursor]";
+// Controls inside an area keep the native cursor (the area's own canvas is not one of them).
+const NATIVE_SEL =
+  'a[href],button,summary,select,input,textarea,label,[contenteditable]:not([contenteditable="false" i]),[role="button"],[role="link"],[role="tab"],[role="switch"],[role="slider"],[role="menuitem"],[role="option"],[data-cursor="action"]';
 
 const CSS = `
 html.${HIDE_CLASS}, html.${HIDE_CLASS} *, html.${HIDE_CLASS} ::backdrop { cursor: none !important; }
 /* The canvas is a manual popover so it can sit in the top layer, above modal <dialog>s. */
 canvas.plane-cursor-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; margin: 0; padding: 0; border: 0;
   background: transparent; overflow: visible; pointer-events: none; z-index: 2147483000; max-width: none; max-height: none; }
-html.${HIDE_CLASS} :is(${TEXT_SEL}) { cursor: text !important; }
 `;
 
 type Pt = { x: number; y: number; t: number; brk: boolean };
@@ -78,7 +78,7 @@ export function PlaneCursor() {
     let dpr = 1, w = 0, h = 0;
     let fill = "#fff", line = "#12233a";
     let x = 0, y = 0, seen = false, active = false;
-    let vis = 0, alpha = 0, scale = 1, wantScale = 1;
+    let vis = 0, alpha = 0;
     let angle = REST, target = REST;
     let svx = 0, svy = 0, sx = 0, sy = 0; // smoothed direction + last heading sample point
     let brk = true;
@@ -124,7 +124,13 @@ export function PlaneCursor() {
     };
 
     const onMove = (e: PointerEvent) => {
-      if (e.pointerType === "touch") { setActive(false); return; }
+      const el = e.target as Element | null;
+      const show = e.pointerType !== "touch" && !!el?.closest?.(AREA_SEL) && !el.closest(NATIVE_SEL);
+      if (!show) {
+        // Outside the opt-in areas (or over a control): native cursor, plane fades out, no tracking work.
+        if (active || vis) { setActive(false); brk = true; }
+        return;
+      }
       const now = performance.now();
       const evs = e.getCoalescedEvents?.();
       const list = evs && evs.length ? evs : [e];
@@ -134,11 +140,8 @@ export function PlaneCursor() {
         sample(c.clientX, c.clientY);
       }
       x = e.clientX; y = e.clientY;
-      const el = e.target as Element | null;
-      const text = !!el?.closest?.(TEXT_SEL);
-      wantScale = !text && el?.closest?.(ACTION_SEL) ? 1.18 : 1;
-      setActive(!text); // over text fields: native I-beam, plane hidden
-      vis = text ? 0 : 1;
+      setActive(true);
+      vis = 1;
       kick();
     };
     const onLeave = () => { vis = 0; brk = true; kick(); };
@@ -150,7 +153,6 @@ export function PlaneCursor() {
       const dt = Math.min(50, now - last); last = now;
       const k = (ms: number) => 1 - Math.exp(-dt / ms);
       alpha += (vis - alpha) * k(70);
-      scale += (wantScale - scale) * k(80);
 
       let diff = 0;
       if (reduced) angle = REST;
@@ -161,8 +163,7 @@ export function PlaneCursor() {
       while (trail.length && now - trail[0].t > LIFE) trail.shift();
       draw(now);
       const busy =
-        trail.length > 1 || Math.abs(diff) > 0.003 || Math.abs(vis - alpha) > 0.01 ||
-        Math.abs(wantScale - scale) > 0.004;
+        trail.length > 1 || Math.abs(diff) > 0.003 || Math.abs(vis - alpha) > 0.01;
       if (busy) raf = requestAnimationFrame(frame);
     }
 
@@ -175,7 +176,7 @@ export function PlaneCursor() {
       // (within one body length of the nose) and end the trail at the tail point of the drawn plane.
       const trail = recorded.slice();
       if (trail.length && seen) {
-        const L = TAIL_X * scale;
+        const L = TAIL_X;
         const tx = x - L * Math.cos(angle), ty = y - L * Math.sin(angle);
         let cut = trail.length;
         while (cut > 0 && !trail[cut - 1].brk && Math.hypot(trail[cut - 1].x - x, trail[cut - 1].y - y) < L) cut--;
@@ -208,7 +209,7 @@ export function PlaneCursor() {
       if (alpha > 0.01 && seen) {
         ctx!.globalAlpha = alpha;
         ctx!.save();
-        ctx!.translate(x, y); ctx!.rotate(angle); ctx!.scale(scale, scale);
+        ctx!.translate(x, y); ctx!.rotate(angle);
         ctx!.shadowColor = "rgba(10,25,50,0.5)"; ctx!.shadowBlur = 6; ctx!.shadowOffsetY = 1.5;
         // No outline and no hover ring (user request): the soft drop shadow alone separates the plane from light panels.
         ctx!.fillStyle = fill; ctx!.fill(shape);

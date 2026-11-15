@@ -1,6 +1,6 @@
 # Container deployment
 
-The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
+The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/` (the old `/explore` demo was removed in the 2026-11-15 UI refresh), `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
 
 The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 
