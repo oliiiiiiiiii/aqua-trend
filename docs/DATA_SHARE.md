@@ -21,9 +21,9 @@
 | `grace/` | GRACE/GRACE-FO JPL mascon 陸地總儲水 | 1 個 `.nc`（46 MB） | 2002-04 – 2026-09，月 | 可用遮罩平均 → `tws` |
 | `gpcp/` | GPCP 月降水 | 1 個 `.nc`（20 MB） | 1979 –，月 | 可用遮罩平均 → `p_gpcp` |
 | `oisst/` | NOAA OISST 海表溫度 | 1 個 `.nc`（**2.2 GB**） | 1982 –，月 | 只有海洋，子流域通常沒有 |
-| `so2/` | OMI SO₂ L4（MSAQSO2L4） | 1 個 `.nc`（1.8 MB） | 2005 – 2025 | **新變數**，可用遮罩平均（火山、污染事件） |
+| `so2/` | MSAQSO2L4 v2 多衛星 SO₂ **點源年排放目錄**（780 個污染源／火山，kt/yr） | 1 個 `.nc`（1.8 MB） | 2005 – 2025，**年** | 不是網格：依點位加總成每區年排放 → `so2_emis`（年值重複 12 個月） |
 | `firms/` | MODIS FIRMS 野火熱點，各國 | 26 個 `.zip`，每年一個 | 2000 – 2025 | **新變數**：點資料 → 每月每子流域火點數。適合澳洲野火預設事件 |
-| `mod10cm/` | MODIS MOD10CM 月積雪覆蓋率 | 315 個 `.hdf` | 2000-03 – 2026-10，月 | **新變數**，可用遮罩平均 |
+| `mod10cm/` | MODIS MOD10CM 月積雪覆蓋率 | 315 個 `.hdf` | 2000-03 – 2026-10，月；缺 2000-08、2001-06、2002-03、2003-12、2016-02、2022-10；A2001182／A2001184 重複（同為 2001-07） | 已處理 → `snow_cover` |
 | `hydrobasins/` | HydroBASINS lev03、lev04 shapefile（`unz/` 是解壓後的檔案） | `.zip`、`.shp` | — | basin3／basin4 邊界的來源 |
 | `nasassh/` | NASA-SSH 網格海面高度 | 1,776 個 `.nc`（每 7 天一個） | 1992-10 – 2026-11 | 海洋，不適用子流域 |
 | `nsidc/`、`nsidc_tif/` | NSIDC 海冰範圍（csv）與濃度（tif） | 24 個 `.csv`、222 個 `.tif` | 1979 –，月 | 極區，不適用子流域 |
@@ -59,17 +59,56 @@
 
 [Giovanni](https://giovanni.gsfc.nasa.gov/) 是 NASA GES DISC 的線上分析工具，可以對指定範圍產生「區域平均時間序列」，並處理不同產品的格網對齊。它涵蓋的產品大多正好是上面空著的資料夾：GLDAS、IMERG、MERRA-2（含 AOD）、MODIS、OMI 等。
 
-- **用途**：分享站沒有的資料，或要快速取得某個子流域的月序列時使用。
-- **限制，需要實測確認**：需要 Earthdata 帳號；區域通常用經緯度框或內建形狀，不一定能直接用 HydroBASINS 多邊形；大量子流域逐一查詢可能很慢。
-- **建議做法**：先只對三個預設事件的子流域試，用經緯度框或上傳形狀，比對結果和現有 series-2 的差異。可行再擴大範圍。
-- **試不通就算了**：繼續用現有 series-2 和分享站，把原因寫在下方「處理紀錄」。
-- Earthdata 帳密不可 commit，用 `~/.netrc` 或環境變數。
+### 實測結果（2026-11-15，工作線 F）
+
+**Giovanni 可用，但管線改用直接下載。** 測試請求（GLDAS Noah 2.1 `Evap_tavg`，台灣經緯度框 120–122E、21.9–25.3N，2020 全年）約 1 分鐘回傳 CSV：
+
+```
+https://harmony.earthdata.nasa.gov/<collection concept id>/ogc-api-coverages/1.0.0/collections/parameter_vars/coverage/rangeset
+  ?variable=<ShortName>_<版本點換底線>_<變數>     # 例：GLDAS_NOAH025_M_2_1_Evap_tavg
+  &subset=lat(21.9:25.3)&subset=lon(120:122)&subset=time("2020-01-01T00:00:00Z":"2020-12-31T23:59:59Z")
+  &format=text/csv&average=area
+```
+
+- 回傳的是非同步 job（JSON）；輪詢 `https://harmony.earthdata.nasa.gov/jobs/<jobID>`，完成後 `links[rel=data]` 是 CSV。
+- 限制：只接受**經緯度框**，不能用 HydroBASINS 多邊形；1,313 個 basin4 要逐一送 job，而且每個框會混入框內的其他流域。MERRA-2 在 Harmony 上沒有 Giovanni 區域平均服務。
+- 因此管線改成**直接下載全球格網，再用我們自己的遮罩（`data/masks/regions_0p5.npz`）平均**：區域定義和既有 series-2 完全一致，一次處理全部區域。Giovanni 只建議拿來對單一區域做交叉檢查。
+
+### 直接下載（`pipeline/fetch_earthdata.py`）
+
+- 認證：Earthdata Login **token**（Bearer），從 `$EDL_TOKEN` 或 repo 根目錄的 `.edl.token`（已 gitignore）讀取，不用帳號密碼、不用 `~/.netrc`。token 在 https://urs.earthdata.nasa.gov/ → Generate Token 產生，有效 60 天；GES DISC、LP DAAC 要先在帳號內核准 EULA／application。
+- 下載位置 `data/share/<資料夾>/`，和分享站同樣的資料夾名稱，方便之後上傳到分享站。每個資料夾有 `_manifest.json`（產品、版本、變數、期間、下載時間、錯誤）。
+- 可重跑：已完成的檔案會跳過。`python3 -I pipeline/fetch_earthdata.py --list` 列出所有產品。
+- 為了節省空間（全量約 255 GB），只取需要的變數：
+
+| 資料夾 | 產品 | 方式 | 內容 |
+| --- | --- | --- | --- |
+| `gesdisc/gldas/` | GLDAS_NOAH025_M 2.1 | 原檔 | 2000-01 起，全部變數 |
+| `gesdisc/gldas_1deg/` | GLDAS_NOAH10_M 2.1 | 原檔 | 2000-01 起 |
+| `gesdisc/imerg/` | GPM_3IMERGM V07 | OPeNDAP 子集 | 只有 `precipitation`（mm/hr），1998-01 起 |
+| `gesdisc/m2aer/` | M2TMNXAER | OPeNDAP 子集 | TOTEXTTAU、TOTANGSTR、DUEXTTAU、BCEXTTAU、OCEXTTAU，1980 起 |
+| `gesdisc/m2flx/` | M2TMNXFLX | OPeNDAP 子集 | PRECTOTCORR、PRECTOT、EVAP |
+| `gesdisc/m2int/` | M2TMNXINT | OPeNDAP 子集 | UFLXQV、VFLXQV（水氣通量） |
+| `gesdisc/m2lnd/` | M2TMNXLND | OPeNDAP 子集 | PRECTOTLAND、EVLAND、GWET*、RUNOFF、BASEFLOW、SWLAND、LWLAND、TSURF、SNOMAS、TWLAND |
+| `gesdisc/m2slv/` | M2TMNXSLV | OPeNDAP 子集 | TO3（臭氧柱）、TQV（可降水量）、T2M |
+| `modis/ndvi/` | MOD13C2 061 | 下載 HDF → 只留 NDVI | 0.05° 以 5×5 平均成 0.25°，附有效像素比例 |
+| `modis/lst/` | MOD11C3 061 | 下載 HDF → 只留 LST 日／夜 | 同上，單位 K |
+| `ceres/` | CERES EBAF Ed4.2.1 | 原檔（單一 nc） | 2000-03 起 |
+
+- 不下載：OMI OMTO3d（臭氧、UV 氣膠指數；日資料 8,000 多個檔，2026-11-15 決定先不做，臭氧改用 MERRA-2 TO3）。
+- 還沒下載：`obdaac/chl/`（MODIS-Aqua 葉綠素 9 km 月資料，約 4.5 GB，海洋，MVP 不用；`fetch_earthdata.py chl` 可下載）、`oaflux/`（WHOI，非 NASA，不需帳號）。
+- OPeNDAP 子集網址格式：`https://opendap.earthdata.nasa.gov/collections/<collection id>/granules/<GranuleUR，冒號要編碼>.dap.nc4?dap4.ce=/VAR1;/VAR2;/lat;/lon;/time`，回傳壓縮的 netCDF-4。
+- 讀 HDF4／netCDF 時不要多執行緒平行（會 segfault）；下載可以平行。
 
 ## 處理紀錄
 
 | 日期 | 資料層 | 來源 | 期間 | 子流域數 | 備註 |
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-14 | 現有 26 層 | GES DISC 等（舊管線） | 各層不同 | basin4 1,313 | 見 `web/public/data/README.md` |
+| 2026-11-15 | `aod` | Earthdata：MERRA-2 M2TMNXAER TOTEXTTAU（`fetch_earthdata.py m2aer` → `earthdata_layers.py aod`） | 1980-01 – 2026-09 | 全部區域 1,664／basin4 有格點者皆有 | 新類別 `aod` |
+| 2026-11-15 | `fire_count` | 分享站 `firms/`（`share_firms.py`） | 2000-11 – 2025-12 | 1,664 | 新類別 `fire`；只計 Terra、植被火；無偵測＝0，區域沒有格點＝null |
+| 2026-11-15 | `snow_cover` | 分享站 `mod10cm/`（`share_mod10cm.py`） | 2000-03 – 2026-10 | 1,589 | 類別 `snow`；缺 6 個月 |
+| 2026-11-15 | `so2_emis` | 分享站 `so2/`（`share_so2.py`） | 2005 – 2025（年值） | 441 | 新類別 `so2`；點源年排放，不是濃度 |
 
 ## 和現有 series-2 的關係
 

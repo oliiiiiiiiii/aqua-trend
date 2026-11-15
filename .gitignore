@@ -142,3 +142,6 @@ data/hub_export/
 
 # 從團隊分享站下載的原始資料
 data/share/
+
+# Raw downloads (team share mirror / NASA Earthdata) - never commit
+data/share/
