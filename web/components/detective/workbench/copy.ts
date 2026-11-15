@@ -209,6 +209,7 @@ export const COPY = {
       gp: "Gaussian-process smoothing (RBF kernel) with a 95 % uncertainty band",
     },
     needs: (k: number) => `Needs ≥ ${k} months`,
+    monthlyOnly: "Monthly series only",
     needsRest: (k: number) => `Needs ≥ ${k} months outside the range`,
     have: (n: number) => `${n} in range`,
     minHint: (k: number) => `≥${k}`,

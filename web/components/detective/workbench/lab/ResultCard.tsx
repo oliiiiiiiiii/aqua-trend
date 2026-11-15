@@ -3,8 +3,6 @@
 // an inline figure where a picture says more, then a collapsed "Details" table with the method, and
 // the multiple-testing log. No boxes: whitespace, alignment and a hairline or two.
 import { Fragment } from "react";
-import type { YearMonth } from "@/lib/detective/contracts";
-import { formatRange, formatYm } from "@/lib/detective/url";
 import { pValue } from "../../format";
 import { COPY } from "../copy";
 import {
@@ -12,7 +10,8 @@ import {
   MonthlyFigure, NormalFigure, PermFigure, SpectrumFigure,
 } from "./figures";
 import { resultView, type Tag } from "./format";
-import { slopeScale, type HolmStatus, type TestLog } from "./tests";
+import { type HolmStatus, type TestLog } from "./tests";
+import { labCopy, slopeFor, useLabCopy, type LabAxis } from "./step";
 import type { LabRun } from "./useLabRun";
 
 type MarkState = "sig" | "not" | "half" | "none";
@@ -35,7 +34,7 @@ function LabMark({ state, title, size = 13 }: { state: MarkState; title: string;
 
 export function TagNote({ tag }: { tag?: Tag }) {
   if (!tag) return null;
-  const T = COPY.lab.tag;
+  const T = useLabCopy().tag;
   return (
     <span title={tag === "uncorrected" ? T.uncorrectedTitle : T.optimisticTitle} className="ml-1.5 text-[10px] font-semibold tracking-wide text-synthetic">
       {tag === "uncorrected" ? T.uncorrected : T.optimistic}
@@ -46,20 +45,20 @@ export function TagNote({ tag }: { tag?: Tag }) {
 const summaryCls = "flex cursor-pointer list-none flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1 text-sm [&::-webkit-details-marker]:hidden";
 const chevron = <span aria-hidden="true" className="inline-block w-3 text-ink-3 transition-transform group-open:rotate-90">▸</span>;
 
-export default function ResultCard({ run, unit, months, polarity, onShowAnomaly }: {
+export default function ResultCard({ run, unit, axis, polarity, onShowAnomaly }: {
   run: LabRun;
   unit: string;
-  /** d.months of the lane */
-  months: readonly YearMonth[];
+  /** names the points of the tested series (months, weeks or days) */
+  axis: LabAxis;
   polarity: "cool" | "warm";
   /** set when the test draws on the chart but the chart shows another layer */
   onShowAnomaly?: () => void;
 }) {
-  const L = COPY.lab;
+  const L = labCopy(axis.step);
   const o = run.outcome;
   const n = run.span.e - run.span.s + 1;
-  const monthLabel = (i: number) => (months[i] ? formatYm(months[i]) : "—");
-  const monthSpan = (a: number, b: number) => (months[a] && months[b] ? formatRange({ start: months[a], end: months[b] }) : "—");
+  const monthLabel = axis.label;
+  const monthSpan = axis.span;
 
   if (o.kind === "insufficient" || !run.avail[run.test].ok) {
     return (
@@ -74,9 +73,9 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
     );
   }
 
-  const v = resultView(o.stats, { unit, months: n, monthLabel, monthSpan });
+  const v = resultView(o.stats, { unit, months: n, monthLabel, monthSpan, step: axis.step });
   const s = o.stats;
-  const k = slopeScale(n).k;
+  const k = slopeFor(axis.step, n).k;
   return (
     <div className="mt-3">
       <div aria-live="polite" className={`transition-opacity ${run.pending ? "opacity-55" : ""}`}>
@@ -104,16 +103,16 @@ export default function ResultCard({ run, unit, months, polarity, onShowAnomaly 
         {s.tool === "normality" && <NormalFigure s={s} unit={unit} />}
         {s.tool === "bootstrap" && <BootFigure s={s} k={k} unit={unit} />}
         {s.tool === "permutation" && <PermFigure s={s} k={k} unit={unit} />}
-        {s.tool === "cusum" && <CusumFigure s={s} months={months} polarity={polarity} />}
+        {s.tool === "cusum" && <CusumFigure s={s} label={axis.label} polarity={polarity} />}
         {s.tool === "monthly" && <MonthlyFigure s={s} polarity={polarity} unit={unit} />}
         {s.tool === "spectrum" && <SpectrumFigure s={s} />}
         {s.tool === "analog" && <AnalogFigure s={s} />}
-        {s.tool === "hmm" && <HmmFigure s={s} months={months} polarity={polarity} />}
-        {s.tool === "forecast" && <ForecastFigure s={s} months={months} />}
-        {s.tool === "discord" && <DiscordFigure s={s} months={months} />}
-        {s.tool === "iforest" && <IforestFigure s={s} months={months} polarity={polarity} />}
-        {s.tool === "bocpd" && <BocpdFigure s={s} months={months} />}
-        {s.tool === "gp" && <GpFigure s={s} months={months} residual={run.residual} />}
+        {s.tool === "hmm" && <HmmFigure s={s} label={axis.label} polarity={polarity} />}
+        {s.tool === "forecast" && <ForecastFigure s={s} label={axis.label} />}
+        {s.tool === "discord" && <DiscordFigure s={s} label={axis.label} />}
+        {s.tool === "iforest" && <IforestFigure s={s} label={axis.label} polarity={polarity} />}
+        {s.tool === "bocpd" && <BocpdFigure s={s} label={axis.label} />}
+        {s.tool === "gp" && <GpFigure s={s} label={axis.label} residual={run.residual} />}
 
         {v.caveat && <p role="note" className="mt-2 text-xs text-ink-3">{v.caveat}</p>}
 
@@ -151,7 +150,7 @@ const STATUS_MARK: Record<HolmStatus, MarkState> = { holds: "sig", "uncorrected-
 
 /** One collapsed line once two or more tests with a p value have run on this range; Holm per test inside. */
 function LogLine({ log, pending }: { log: TestLog; pending: boolean }) {
-  const G = COPY.lab.log;
+  const LAB = useLabCopy(), G = LAB.log;
   if (pending || log.entries.length < 2) return null;
   const text: Record<HolmStatus, string> = { holds: G.holds, "uncorrected-only": G.uncorrectedOnly, "not-significant": G.notSig };
   return (
@@ -164,7 +163,7 @@ function LogLine({ log, pending }: { log: TestLog; pending: boolean }) {
         {log.entries.map((e) => (
           <li key={e.test} className="grid grid-cols-[1rem_minmax(7rem,auto)_4.5rem_1fr] items-baseline gap-x-2 py-0.5">
             <LabMark state={STATUS_MARK[e.status]} title={text[e.status]} size={11} />
-            <span className="text-ink">{COPY.lab.test[e.test]}</span>
+            <span className="text-ink">{LAB.test[e.test]}</span>
             <span className="text-ink-2">{pValue(e.p)}</span>
             <span className="text-ink-2">{text[e.status]}</span>
           </li>

@@ -209,3 +209,15 @@ describe("formatRange", () => {
     assert.equal(formatRange({ start: "2022-08", end: "2022-08" }), "Aug 2022");
   });
 });
+
+describe("dsel: the daily view's own selection of days", () => {
+  it("round-trips, and junk is dropped", async () => {
+    const { parseDayRange } = await import("./url");
+    const qs = encodeState({ query: { event: "x", time: { start: "2021-02", end: "2021-05" }, region: "b4-1", categories: ["soil"] }, daySelection: { start: "2021-03-04", end: "2021-03-17" } });
+    assert.match(qs, /dsel=2021-03-04\.\.2021-03-17/);
+    assert.deepEqual(decodeState(qs).daySelection, { start: "2021-03-04", end: "2021-03-17" });
+    assert.deepEqual(parseDayRange("2021-03-04"), { start: "2021-03-04", end: "2021-03-04" });
+    for (const bad of ["2021-02-30..2021-03-01", "2021-03-17..2021-03-04", "2021-03", "x..y", "2021-03-01..2021-03-02..2021-03-03"]) assert.equal(parseDayRange(bad), null, bad);
+    assert.equal(decodeState("dsel=2021-13-01..2021-13-02").daySelection, undefined);
+  });
+});

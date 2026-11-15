@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supportsDaily, type DailySeries } from "@/lib/detective/daily";
 import { DailyLoadError, completedDailyRange, requestDailySeries } from "@/lib/detective/daily-client";
 import { AUTO_DELAY_MS, autoRange, daysOf, estimateSeconds, needsConfirm, planPieces, type DayRange } from "./plan";
+import { pieceKey, pieces, remember } from "./pieces";
 
 export type DailyPhase =
   | "unsupported" // the layer has no daily product
@@ -46,16 +47,6 @@ export interface DailyState {
   stop: () => void;
   retry: () => void;
 }
-
-/* session cache of finished pieces, bounded */
-const pieces = new Map<string, DailySeries>();
-const MAX_PIECES = 800;
-function remember(key: string, s: DailySeries) {
-  pieces.delete(key);
-  pieces.set(key, s);
-  while (pieces.size > MAX_PIECES) pieces.delete(pieces.keys().next().value!);
-}
-const pieceKey = (region: string, layer: string, r: DayRange) => `${region}|${layer}|${r.start}|${r.end}`;
 
 export function useDailyRange({ region, layer, start, end, focus = null, enabled = true }: {
   region: string; layer: string; start: string; end: string;

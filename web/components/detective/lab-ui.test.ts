@@ -205,3 +205,41 @@ describe("Analyse", () => {
     for (const t of TEST_IDS) assert.match(TEST_ICON[t], /^M[\d.]/, t);
   });
 });
+
+describe("the Tests area in days and weeks", () => {
+  it("speaks in the step of the series: month words become day or week words, slopes per week", async () => {
+    const { labCopy, unitize, slopeFor, pointAxis, monthAxis, formatDays } = await import("./workbench/lab/step");
+    assert.equal(unitize("Needs ≥ 12 months", "day"), "Needs ≥ 12 days");
+    assert.equal(unitize("3-month means, 6-month SD and the monthly change", "week"), "3-week means, 6-week SD and the weekly change");
+    assert.equal(unitize("Largest deficit over 4 mo", "day"), "Largest deficit over 4 d");
+    assert.equal(unitize("Months with |z| > 2", "week"), "Weeks with |z| > 2");
+    assert.equal(unitize("A forecast needs about 3 years of unbroken data before the range", "day"), "A forecast needs about 30 days of unbroken data before the range");
+    assert.equal(unitize("Needs ≥ 12 months", "month"), "Needs ≥ 12 months");
+    const day = labCopy("day");
+    assert.equal(day.needs(3), "Needs ≥ 3 days");
+    assert.equal(day.perYear("mm"), "mm/wk");
+    assert.equal(day.fig.lag, "lag (d)");
+    assert.equal(day.fig.period(10), "10 d");
+    assert.equal(day.fig.period(21), "3 wk");
+    assert.equal(labCopy("week").fig.period(4), "4 wk");
+    assert.equal(labCopy("month"), labCopy("month"));
+    assert.deepEqual(slopeFor("day", 30), { k: 7, per: "year" });
+    assert.deepEqual(slopeFor("month", 150), { k: 120, per: "decade" });
+    const ax = pointAxis("week", ["2021-03-01", "2021-03-08"], ["2021-03-07", "2021-03-14"]);
+    assert.equal(ax.label(0), "1 – 7 Mar 2021");
+    assert.equal(ax.span(0, 1), "1 – 14 Mar 2021");
+    assert.equal(ax.count(2), "2 weeks");
+    assert.equal(monthAxis(["2021-02", "2021-03"]).span(0, 1), "Feb – Mar 2021");
+    assert.equal(formatDays("2020-12-28", "2021-01-03"), "28 Dec 2020 – 3 Jan 2021");
+    assert.equal(formatDays("2021-02-28", "2021-03-06"), "28 Feb – 6 Mar 2021");
+  });
+  it("the calendar-month test is not offered on days or weeks", async () => {
+    const { availability } = await import("./workbench/lab/tests");
+    const v = Array.from({ length: 60 }, (_, i) => Math.sin(i));
+    assert.equal(availability(v, 0, 59).monthly.ok, true);
+    const a = availability(v, 0, 59, "day");
+    assert.equal(a.monthly.ok, false);
+    assert.equal(a.monthly.reason, "Monthly series only");
+    assert.equal(availability(v, 0, 1, "week").mean.reason, "Needs ≥ 3 weeks (2 in range)");
+  });
+});

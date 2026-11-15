@@ -13,6 +13,8 @@
 // Extension beyond the contract (see encodeState / decodeState):
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
 //   sel  the workbench selection "YYYY-MM..YYYY-MM"; left out when it equals the event period (t)
+//   dsel the daily view's own selection of days "YYYY-MM-DD..YYYY-MM-DD" (Days and Weeks windows); absent = the days of
+//        `sel` (or of the event)
 //   test the method of the expanded row of the workbench's Tests table (one of TEST_IDS); absent = no row expanded
 //   win  the view window ("3d", "2w", "8m", "3y", "all"; lib/detective/window.ts): months and years around the event,
 //        days and weeks (the daily chart) around the selection. Left out when it equals
@@ -108,6 +110,18 @@ export interface DetectiveUrlState {
   test?: TestId;
   /** the view window (`win`) as written; absent when the URL has none (see impliedWindow) */
   window?: ViewWindow;
+  /** the daily view's selection of days (`dsel`); absent = the days of the month selection */
+  daySelection?: { start: string; end: string };
+}
+
+const DAY_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+const isDay = (s: string) => DAY_RE.test(s) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+/** "2021-03-04..2021-03-17" (or one day) -> range; anything else -> null */
+export function parseDayRange(raw: string | null | undefined): { start: string; end: string } | null {
+  if (!raw) return null;
+  const [a, b = a, extra] = raw.trim().split("..");
+  if (extra !== undefined || !isDay(a) || !isDay(b) || b < a) return null;
+  return { start: a, end: b };
 }
 
 /** The view window a URL without `win` stands for: older links set the view with `pad`. */
@@ -158,11 +172,14 @@ export function decodeState(search: string): DetectiveUrlState {
   if (isTestId(test)) out.test = test;
   const win = decodeWindow(p.get("win"));
   if (win) out.window = win;
+  const dsel = parseDayRange(p.get("dsel"));
+  if (dsel) out.daySelection = dsel;
   return out;
 }
 
 export function encodeState(s: {
   query: Partial<DetectiveQuery>; draft?: CategoryId[] | null; selection?: TimeRange | null; test?: TestId | null; window?: ViewWindow | null;
+  daySelection?: { start: string; end: string } | null;
 }): string {
   const q = s.query;
   const p = new URLSearchParams();
@@ -184,6 +201,7 @@ export function encodeState(s: {
   if (s.selection && parseRange(encodeRange(s.selection)) && !sameRange(s.selection, q.time)) p.set("sel", encodeRange(s.selection));
   if (s.test && isTestId(s.test)) p.set("test", s.test);
   if (s.window && !sameWindow(s.window, impliedWindow(q.padMonths))) p.set("win", encodeWindow(s.window));
+  if (s.daySelection && parseDayRange(`${s.daySelection.start}..${s.daySelection.end}`)) p.set("dsel", `${s.daySelection.start}..${s.daySelection.end}`);
   if (s.draft) p.set("c", cleanCategories(s.draft).join(","));
   // commas, colons and dots stay readable in shared links
   return p.toString().replace(/%2C/gi, ",").replace(/%3A/gi, ":");

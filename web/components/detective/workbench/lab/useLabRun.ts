@@ -5,8 +5,9 @@
 // one range goes into the multiple-testing log (Holm), which resets when the range changes.
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BASELINE_SENSITIVE, baselineShare, runLabTool, type LabOutcome } from "@/lib/detective/lab";
+import type { Decomposition } from "@/lib/detective/contracts";
 import type { Span } from "../model";
-import type { LaneReady } from "../types";
+import type { LabStep } from "./step";
 import { analyseMs, availability, overlayFor, staleReason, testLog, type Availability, type LabOverlay, type TestId, type TestLog } from "./tests";
 
 /** One analysed test, as ResultCard reads it. */
@@ -51,11 +52,30 @@ const useReducedMotion = () => useSyncExternalStore(subscribeReduced, () => wind
 
 interface Result { key: string; test: TestId; span: Span; outcome: LabOutcome; share: number }
 
-export function useLabAnalysis(lane: LaneReady | null, sel: Span, test: TestId, whole: boolean): LabAnalysis | null {
+/**
+ * What the Tests area tests: a lane's monthly decomposition (LaneReady fits), or the day / week series of the daily view
+ * (lib/detective/fine.ts fineDecomposition) with its step, its baseline's extreme rate and a key naming that series.
+ */
+export interface LabSource {
+  d: Decomposition;
+  /** absolute index of d.months[0] (months: ymIndex; days and weeks: 0) */
+  base: number;
+  record: Span;
+  meta: { layer: string };
+  step?: LabStep;
+  /** share of baseline points with |z| > 2 when the baseline is not part of d */
+  extremeRate?: number;
+  /** what else identifies the series (the baseline in use), so a result on another one reads as stale */
+  key?: string;
+}
+
+export function useLabAnalysis(lane: LabSource | null, sel: Span, test: TestId, whole: boolean): LabAnalysis | null {
   const reduced = useReducedMotion();
   const span: Span = lane && whole ? lane.record : sel;
   const layer = lane?.meta.layer ?? "";
-  const key = `${layer}|${span.s}..${span.e}`;
+  const step = lane?.step ?? "month";
+  const extremeRate = lane?.extremeRate;
+  const key = `${layer}|${step}|${lane?.key ?? ""}|${span.s}..${span.e}`;
   const [result, setResult] = useState<Result | null>(null);
   const [log, setLog] = useState<{ key: string; runs: { test: TestId; outcome: LabOutcome }[] }>({ key: "", runs: [] });
   const [running, setRunning] = useState<{ ms: number; token: number } | null>(null);
@@ -68,7 +88,7 @@ export function useLabAnalysis(lane: LaneReady | null, sel: Span, test: TestId, 
     const s = span.s - base, e = span.e - base;
     const done = () => {
       timer.current = null;
-      const outcome = runLabTool(test, d, s, e);
+      const outcome = runLabTool(test, d, s, e, { extremeRate });
       setResult({ key, test, span, outcome, share: baselineShare(d, s, e) });
       setLog((l) => {
         const runs = l.key === key ? l.runs.filter((r) => r.test !== test) : [];
@@ -81,14 +101,14 @@ export function useLabAnalysis(lane: LaneReady | null, sel: Span, test: TestId, 
     if (ms === 0) { done(); return; }
     setRunning((r) => ({ ms, token: (r?.token ?? 0) + 1 }));
     timer.current = window.setTimeout(done, ms);
-  }, [d, base, span.s, span.e, test, key, reduced]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [d, base, span.s, span.e, test, key, reduced, extremeRate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!lane || !d) return null;
-  const avail = availability(d.residual, span.s - base, span.e - base);
+  const avail = availability(d.residual, span.s - base, span.e - base, step);
   const stale = staleReason(result, key, test);
   const run: LabRun | null = result ? {
     test: result.test, span: result.span, outcome: result.outcome,
-    avail: availability(d.residual, result.span.s - base, result.span.e - base),
+    avail: availability(d.residual, result.span.s - base, result.span.e - base, step),
     overlay: stale ? null : overlayFor(result.outcome),
     residual: d.residual,
     pending: stale != null,

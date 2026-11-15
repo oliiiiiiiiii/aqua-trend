@@ -1,6 +1,6 @@
 // UI strings of the daily view (daily/DailyView). English, few words.
 export const COPY = {
-  title: { anomaly: "Daily anomaly", observed: "Daily values" },
+  title: { anomaly: "Daily anomaly", observed: "Daily values", weeklyAnomaly: "Weekly anomaly", weeklyObserved: "Weekly means" },
   modes: "Layer",
   mode: { anomaly: "Anomaly", observed: "Observed" },
   modeTitle: {
@@ -24,6 +24,8 @@ export const COPY = {
   missing: "Missing",
   notLoaded: "Not loaded",
   raw: "Daily value",
+  weeklyMean: "Weekly mean",
+  daysObserved: (k: number, of: number) => `${k} of ${of} days observed`,
   anomaly: "Anomaly",
   above: "above normal",
   below: "below normal",
@@ -42,7 +44,7 @@ export const COPY = {
   method: (offset: string, days: number, months: number) =>
     `Anomaly = daily value − normal. The normal is the monthly series' long-term trend and seasonal cycle, read at each day. Daily and monthly values are averaged over the basin differently, so the normal is moved by a constant that matches the daily level to the monthly series: ${offset}, ${
       months ? `from ${months === 1 ? "the whole month" : `the ${months} whole months`} loaded; those daily anomalies average to the monthly anomaly` : `provisional, from ${days} ${days === 1 ? "day" : "days"} until a whole month has loaded`
-    }. No daily σ is computed: significance stays with the monthly statistics.`,
+    }. The statistics beside the chart test the selected days against the baseline chosen there.`,
   coverage: (obs: number, done: number) => `${obs} of ${done} days observed`,
   source: "Source",
   chartLabel: (name: string, what: string) => `${name}, ${what}. Left and right arrows step through days.`,

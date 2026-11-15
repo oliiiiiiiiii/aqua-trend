@@ -8,20 +8,19 @@ import type {
   AcfResult, BootstrapResult, CusumResult, HistBin, MonthlyResult, NormalityResult, PermutationResult, SpectrumResult,
 } from "@/lib/detective/lab";
 import type { AnalogResult, BocpdResult, DiscordResult, ForecastResult, GpResult, HmmResult, IForestResult } from "@/lib/detective/ml";
-import type { YearMonth } from "@/lib/detective/contracts";
-import { formatYm } from "@/lib/detective/url";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { num } from "../../format";
 import { COPY } from "../copy";
 import { anomalyColor } from "../types";
 import { bandColor } from "./overlay";
+import { useLabCopy } from "./step";
 
 const H = 104, TOP = 8, BOTTOM = 18, LEFT = 38, RIGHT = 10;
 const axisText = { fill: "var(--ink-2)", fontSize: 10 } as const;
 const mutedText = { ...axisText, fill: "var(--ink-3)" } as const;
-const F = COPY.lab.fig;
 
 function Frame({ label, children, height = H }: { label: string; children: (w: number) => ReactNode; height?: number }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const [ref, width] = useElementWidth<HTMLDivElement>();
   return (
     <div ref={ref} role="img" aria-label={label} className="mt-3 w-full max-w-[32rem]" style={{ height }}>
@@ -33,6 +32,7 @@ function Frame({ label, children, height = H }: { label: string; children: (w: n
 type Swatch = "bar" | "curve" | "est" | "ci" | "zero" | "dash" | "dot" | "band";
 
 function FigLegend({ items }: { items: { swatch: Swatch; text: string; color?: string }[] }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const vline = (sw: Swatch) => (
     <line x1={7} x2={7} y1={0} y2={10} strokeWidth={sw === "est" ? 2 : 1} strokeDasharray={sw === "ci" ? "3 2" : sw === "zero" ? "1 2" : undefined}
       style={{ stroke: sw === "zero" ? "var(--ink-3)" : "var(--ink)" }} />
@@ -59,6 +59,7 @@ function FigLegend({ items }: { items: { swatch: Swatch; text: string; color?: s
 /* ------------------------------------------------------------------ ACF */
 
 export function AcfFigure({ s }: { s: AcfResult }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const ih = H - TOP - BOTTOM;
   const rs = s.acf.filter((r): r is number => r != null);
   const M = Math.min(1, Math.ceil(Math.max(s.band, ...rs.map(Math.abs)) * 1.15 * 10) / 10) || 1;
@@ -109,6 +110,7 @@ function Histogram({ bins, label, marks = [], curve, fmt }: {
   curve?: (x: number) => number;
   fmt: (v: number) => string;
 }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   if (!bins.length) return null;
   const ih = H - TOP - BOTTOM;
   let lo = bins[0].x0, hi = bins[bins.length - 1].x1;
@@ -160,6 +162,7 @@ function Histogram({ bins, label, marks = [], curve, fmt }: {
 }
 
 export function NormalFigure({ s, unit }: { s: NormalityResult; unit: string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const w = s.hist.length ? s.hist[0].x1 - s.hist[0].x0 : 1;
   const pdf = (x: number) => (s.sd > 0 ? Math.exp(-((x - s.mean) ** 2) / (2 * s.sd * s.sd)) / (s.sd * Math.sqrt(2 * Math.PI)) : 0);
   return (
@@ -178,6 +181,7 @@ const nearZero = (bins: HistBin[]) => {
 };
 
 export function BootFigure({ s, k, unit }: { s: BootstrapResult; k: number; unit: string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const b = s.slope;
   const fmt = (v: number) => num(v * k, 2, true);
   const zero = nearZero(b.hist);
@@ -196,6 +200,7 @@ export function BootFigure({ s, k, unit }: { s: BootstrapResult; k: number; unit
 }
 
 export function PermFigure({ s, k, unit }: { s: PermutationResult; k: number; unit: string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const fmt = (v: number) => num(v * k, 2, true);
   const marks: Mark[] = [
     { at: -s.slope, kind: "ci", label: fmt(-s.slope) },
@@ -212,7 +217,8 @@ export function PermFigure({ s, k, unit }: { s: PermutationResult; k: number; un
 
 /* ------------------------------------------------------------------ line figures */
 
-export function CusumFigure({ s, months, polarity }: { s: CusumResult; months: readonly YearMonth[]; polarity: "cool" | "warm" }) {
+export function CusumFigure({ s, label, polarity }: { s: CusumResult; label: (i: number) => string; polarity: "cool" | "warm" }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   if (!s.points.length) return null;
   const ih = H - TOP - BOTTOM;
   const xs = s.points.map((p) => p.x), cs = s.points.map((p) => p.c);
@@ -242,16 +248,16 @@ export function CusumFigure({ s, months, polarity }: { s: CusumResult; months: r
               {[hi, lo].map((v) => (
                 <text key={v} x={LEFT - 5} y={y(v)} dy="0.32em" textAnchor="end" className="tnum" style={axisText}>{num(v, 2, true)}</text>
               ))}
-              <text x={LEFT} y={H - 4} className="tnum" style={axisText}>{months[x0] ? formatYm(months[x0]) : ""}</text>
-              <text x={LEFT + iw} y={H - 4} textAnchor="end" className="tnum" style={axisText}>{months[x1 - 1] ? formatYm(months[x1 - 1]) : ""}</text>
+              <text x={LEFT} y={H - 4} className="tnum" style={axisText}>{label(x0)}</text>
+              <text x={LEFT + iw} y={H - 4} textAnchor="end" className="tnum" style={axisText}>{label(x1 - 1)}</text>
             </>
           );
         }}
       </Frame>
       <FigLegend items={[
         { swatch: "curve", text: F.cusum },
-        ...(s.deficit ? [{ swatch: "band" as const, text: COPY.lab.cell.deficit, color: deficitColor }] : []),
-        ...(s.surplus ? [{ swatch: "band" as const, text: COPY.lab.cell.surplus, color: surplusColor }] : []),
+        ...(s.deficit ? [{ swatch: "band" as const, text: LAB.cell.deficit, color: deficitColor }] : []),
+        ...(s.surplus ? [{ swatch: "band" as const, text: LAB.cell.surplus, color: surplusColor }] : []),
       ]} />
     </>
   );
@@ -260,6 +266,7 @@ export function CusumFigure({ s, months, polarity }: { s: CusumResult; months: r
 const PERIOD_TICKS = [3, 6, 12, 24, 60, 120, 240];
 
 export function SpectrumFigure({ s }: { s: SpectrumResult }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   if (!s.freq.length) return null;
   const ih = H - TOP - BOTTOM;
   // period on a log axis, long periods on the left
@@ -305,6 +312,7 @@ export function SpectrumFigure({ s }: { s: SpectrumResult }) {
 const MONTH_INITIAL = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
 export function MonthlyFigure({ s, polarity, unit }: { s: MonthlyResult; polarity: "cool" | "warm"; unit: string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const ih = H - TOP - BOTTOM;
   const vals = s.byMonth.flatMap((g) => g.values);
   let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
@@ -350,7 +358,6 @@ export function MonthlyFigure({ s, polarity, unit }: { s: MonthlyResult; polarit
 
 /* ------------------------------------------------------------------ machine-learning figures */
 
-const FM = COPY.lab.ml.fig;
 type Num = number | null | undefined;
 const fin = (v: Num): v is number => v != null && Number.isFinite(v);
 
@@ -366,11 +373,12 @@ function brokenPath(vals: readonly Num[], x: (k: number) => number, y: (v: numbe
 }
 
 /** first and last month under a time-based figure */
-function MonthEnds({ x0, x1, months, left, right, y }: { x0: number; x1: number; months: readonly YearMonth[]; left: number; right: number; y: number }) {
+function MonthEnds({ x0, x1, label, left, right, y }: { x0: number; x1: number; label: (i: number) => string; left: number; right: number; y: number }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   return (
     <>
-      <text x={left} y={y} className="tnum" style={axisText}>{months[x0] ? formatYm(months[x0]) : ""}</text>
-      <text x={right} y={y} textAnchor="end" className="tnum" style={axisText}>{months[x1] ? formatYm(months[x1]) : ""}</text>
+      <text x={left} y={y} className="tnum" style={axisText}>{label(x0)}</text>
+      <text x={right} y={y} textAnchor="end" className="tnum" style={axisText}>{label(x1)}</text>
     </>
   );
 }
@@ -386,6 +394,7 @@ function extent(vals: readonly Num[], keepZero = false): [number, number] {
 }
 
 function YEnds({ lo, hi, y, left, digits = 2 }: { lo: number; hi: number; y: (v: number) => number; left: number; digits?: number }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   return (
     <>
       {[hi, lo].map((v) => (
@@ -396,6 +405,7 @@ function YEnds({ lo, hi, y, left, digits = 2 }: { lo: number; hi: number; y: (v:
 }
 
 export function AnalogFigure({ s }: { s: AnalogResult }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const ih = H - TOP - BOTTOM;
   const L = s.query.length;
   const [lo, hi] = extent([...s.query, ...s.matches.flatMap((m) => m.values)]);
@@ -424,12 +434,13 @@ export function AnalogFigure({ s }: { s: AnalogResult }) {
           );
         }}
       </Frame>
-      <FigLegend items={[{ swatch: "curve", text: FM.range, color: "var(--ink)" }, { swatch: "curve", text: COPY.lab.band.similar, color: "var(--viz-blue)" }]} />
+      <FigLegend items={[{ swatch: "curve", text: FM.range, color: "var(--ink)" }, { swatch: "curve", text: LAB.band.similar, color: "var(--viz-blue)" }]} />
     </>
   );
 }
 
-export function HmmFigure({ s, months, polarity }: { s: HmmResult; months: readonly YearMonth[]; polarity: "cool" | "warm" }) {
+export function HmmFigure({ s, label, polarity }: { s: HmmResult; label: (i: number) => string; polarity: "cool" | "warm" }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const n = s.path.length;
   if (!n) return null;
   const SH = 40, h = SH + 22;
@@ -450,14 +461,14 @@ export function HmmFigure({ s, months, polarity }: { s: HmmResult; months: reado
                     {ph > 0.01 && <rect x={x} width={bw} y={TOP} height={SH * ph} style={{ fill: highC, opacity: 0.85 }} />}
                     {pl > 0.01 && <rect x={x} width={bw} y={TOP + SH * (1 - pl)} height={SH * pl} style={{ fill: lowC, opacity: 0.85 }} />}
                     <rect x={x} width={Math.max(col, 1)} y={TOP} height={SH} fill="transparent">
-                      <title>{FM.pState(months[s.start + k] ? formatYm(months[s.start + k]) : "", Math.round(pl * 100), Math.round(ph * 100))}</title>
+                      <title>{FM.pState(label(s.start + k), Math.round(pl * 100), Math.round(ph * 100))}</title>
                     </rect>
                   </g>
                 );
               })}
               <text x={LEFT - 5} y={TOP} dy="0.9em" textAnchor="end" style={axisText}>{FM.pHigh.split(" ")[0]}</text>
               <text x={LEFT - 5} y={TOP + SH} textAnchor="end" style={axisText}>{FM.pLow.split(" ")[0]}</text>
-              <MonthEnds x0={s.start} x1={s.start + n - 1} months={months} left={LEFT} right={LEFT + iw} y={h - 4} />
+              <MonthEnds x0={s.start} x1={s.start + n - 1} label={label} left={LEFT} right={LEFT + iw} y={h - 4} />
             </>
           );
         }}
@@ -467,7 +478,8 @@ export function HmmFigure({ s, months, polarity }: { s: HmmResult; months: reado
   );
 }
 
-export function ForecastFigure({ s, months }: { s: ForecastResult; months: readonly YearMonth[] }) {
+export function ForecastFigure({ s, label }: { s: ForecastResult; label: (i: number) => string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const n = s.forecast.length;
   const ih = H - TOP - BOTTOM;
   const [lo, hi] = extent([...s.lo, ...s.hi, ...s.actual], true);
@@ -490,7 +502,7 @@ export function ForecastFigure({ s, months }: { s: ForecastResult; months: reado
                 <circle key={k} cx={x(k)} cy={y(v)} r={3} strokeWidth={1.5} style={{ fill: "var(--paper)", stroke: "var(--viz-blue)" }} />
               ))}
               <YEnds lo={lo} hi={hi} y={y} left={LEFT} />
-              <MonthEnds x0={s.start} x1={s.start + n - 1} months={months} left={LEFT} right={LEFT + iw} y={H - 4} />
+              <MonthEnds x0={s.start} x1={s.start + n - 1} label={label} left={LEFT} right={LEFT + iw} y={H - 4} />
             </>
           );
         }}
@@ -504,7 +516,8 @@ export function ForecastFigure({ s, months }: { s: ForecastResult; months: reado
   );
 }
 
-export function DiscordFigure({ s, months }: { s: DiscordResult; months: readonly YearMonth[] }) {
+export function DiscordFigure({ s, label }: { s: DiscordResult; label: (i: number) => string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   if (!s.profile.length) return null;
   const ih = H - TOP - BOTTOM;
   const w0 = s.windows.find((q) => q.m === s.profileM);
@@ -525,10 +538,10 @@ export function DiscordFigure({ s, months }: { s: DiscordResult; months: readonl
               {w0 && Number.isFinite(w0.typical) && <line x1={LEFT} x2={LEFT + iw} y1={y(w0.typical)} y2={y(w0.typical)} strokeWidth={1.25} strokeDasharray="4 3" style={{ stroke: "var(--ink-2)" }} />}
               <path d={d} fill="none" strokeWidth={1.75} strokeLinejoin="round" style={{ stroke: "var(--viz-blue)" }} />
               <circle cx={x(peak.x)} cy={y(peak.d)} r={3.5} strokeWidth={1.5} style={{ fill: "var(--viz-blue)", stroke: "var(--paper)" }}>
-                <title>{FM.score(months[peak.x] ? formatYm(months[peak.x]) : "", num(peak.d, 2))}</title>
+                <title>{FM.score(label(peak.x), num(peak.d, 2))}</title>
               </circle>
               <YEnds lo={0} hi={hi} y={y} left={LEFT} />
-              <MonthEnds x0={x0} x1={x1} months={months} left={LEFT} right={LEFT + iw} y={H - 4} />
+              <MonthEnds x0={x0} x1={x1} label={label} left={LEFT} right={LEFT + iw} y={H - 4} />
             </>
           );
         }}
@@ -538,7 +551,8 @@ export function DiscordFigure({ s, months }: { s: DiscordResult; months: readonl
   );
 }
 
-export function IforestFigure({ s, months, polarity }: { s: IForestResult; months: readonly YearMonth[]; polarity: "cool" | "warm" }) {
+export function IforestFigure({ s, label, polarity }: { s: IForestResult; label: (i: number) => string; polarity: "cool" | "warm" }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const n = s.scores.length;
   const ih = H - TOP - BOTTOM;
   const vals = s.scores.filter(fin);
@@ -560,28 +574,29 @@ export function IforestFigure({ s, months, polarity }: { s: IForestResult; month
                 const fill = f != null ? bandColor(f >= 0 ? "high" : "low", polarity) : "var(--ink-3)";
                 return (
                   <rect key={k} x={LEFT + col * k} width={bw} y={y(v)} height={Math.max(0.75, y(lo) - y(v))} style={{ fill, opacity: f != null ? 0.95 : 0.55 }}>
-                    <title>{FM.score(months[s.start + k] ? formatYm(months[s.start + k]) : "", num(v, 2))}</title>
+                    <title>{FM.score(label(s.start + k), num(v, 2))}</title>
                   </rect>
                 );
               })}
               <line x1={LEFT} x2={LEFT + iw} y1={y(s.threshold)} y2={y(s.threshold)} strokeWidth={1.25} strokeDasharray="4 3" style={{ stroke: "var(--ink)" }} />
               <text x={LEFT + iw} y={y(s.threshold) - 3} textAnchor="end" style={mutedText}>{FM.cutoff}</text>
               <YEnds lo={lo} hi={hi} y={y} left={LEFT} />
-              <MonthEnds x0={s.start} x1={s.start + n - 1} months={months} left={LEFT} right={LEFT + iw} y={H - 4} />
+              <MonthEnds x0={s.start} x1={s.start + n - 1} label={label} left={LEFT} right={LEFT + iw} y={H - 4} />
             </>
           );
         }}
       </Frame>
       <FigLegend items={[
-        { swatch: "bar", text: COPY.lab.band.flaggedHigh, color: bandColor("high", polarity) },
-        { swatch: "bar", text: COPY.lab.band.flaggedLow, color: bandColor("low", polarity) },
+        { swatch: "bar", text: LAB.band.flaggedHigh, color: bandColor("high", polarity) },
+        { swatch: "bar", text: LAB.band.flaggedLow, color: bandColor("low", polarity) },
         { swatch: "dash", text: FM.cutoff },
       ]} />
     </>
   );
 }
 
-export function BocpdFigure({ s, months }: { s: BocpdResult; months: readonly YearMonth[] }) {
+export function BocpdFigure({ s, label }: { s: BocpdResult; label: (i: number) => string }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   if (!s.prob.length) return null;
   const ih = H - TOP - BOTTOM;
   const x0 = s.prob[0].x, x1 = s.prob[s.prob.length - 1].x;
@@ -599,12 +614,12 @@ export function BocpdFigure({ s, months }: { s: BocpdResult; months: readonly Ye
               <line x1={LEFT} x2={LEFT + iw} y1={y(0.5)} y2={y(0.5)} strokeWidth={1} strokeDasharray="1 3" style={{ stroke: "var(--ink-3)" }} />
               {s.prob.map((q) => (
                 <rect key={q.x} x={x(q.x)} width={bw} y={y(q.p)} height={Math.max(0.5, y(0) - y(q.p))} style={{ fill: changes.has(q.x) ? "var(--ink)" : "var(--viz-blue)", opacity: changes.has(q.x) ? 1 : 0.7 }}>
-                  <title>{FM.prob(months[q.x] ? formatYm(months[q.x]) : "", Math.round(q.p * 100))}</title>
+                  <title>{FM.prob(label(q.x), Math.round(q.p * 100))}</title>
                 </rect>
               ))}
               {s.changes.map((c) => <circle key={c.x} cx={x(c.x) + col / 2} cy={y(1) - 1} r={3} style={{ fill: "var(--ink)" }} />)}
               {[1, 0].map((v) => <text key={v} x={LEFT - 5} y={y(v)} dy="0.32em" textAnchor="end" className="tnum" style={axisText}>{v * 100} %</text>)}
-              <MonthEnds x0={x0} x1={x1} months={months} left={LEFT} right={LEFT + iw} y={H - 4} />
+              <MonthEnds x0={x0} x1={x1} label={label} left={LEFT} right={LEFT + iw} y={H - 4} />
             </>
           );
         }}
@@ -614,7 +629,8 @@ export function BocpdFigure({ s, months }: { s: BocpdResult; months: readonly Ye
   );
 }
 
-export function GpFigure({ s, months, residual }: { s: GpResult; months: readonly YearMonth[]; residual: readonly Num[] }) {
+export function GpFigure({ s, label, residual }: { s: GpResult; label: (i: number) => string; residual: readonly Num[] }) {
+  const LAB = useLabCopy(), F = LAB.fig, FM = LAB.ml.fig; void F; void FM;
   const n = s.mean.length;
   const ih = H - TOP - BOTTOM;
   const obs = Array.from({ length: n }, (_, k) => residual[s.start + k]);
@@ -635,7 +651,7 @@ export function GpFigure({ s, months, residual }: { s: GpResult; months: readonl
               {obs.map((v, k) => fin(v) && <circle key={k} cx={x(k)} cy={y(v)} r={1.8} style={{ fill: "var(--ink-3)" }} />)}
               <path d={brokenPath(s.mean, x, y)} fill="none" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" style={{ stroke: "var(--viz-blue)" }} />
               <YEnds lo={lo} hi={hi} y={y} left={LEFT} />
-              <MonthEnds x0={s.start} x1={s.start + n - 1} months={months} left={LEFT} right={LEFT + iw} y={H - 4} />
+              <MonthEnds x0={s.start} x1={s.start + n - 1} label={label} left={LEFT} right={LEFT + iw} y={H - 4} />
             </>
           );
         }}

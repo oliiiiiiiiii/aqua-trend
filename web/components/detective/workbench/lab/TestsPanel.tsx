@@ -5,11 +5,8 @@
 // chart overlay, collapsed details and the multiple-testing log) appears. A result whose range or test no longer
 // matches is dimmed with "Selection changed — Analyse again". The picked test is the URL `test`.
 import { useEffect, useId, useState } from "react";
-import type { YearMonth } from "@/lib/detective/contracts";
-import { formatRange } from "@/lib/detective/url";
-import { COPY } from "../copy";
-import { toRange } from "../model";
 import ResultCard from "./ResultCard";
+import { LabStepContext, labCopy, useLabCopy, type LabAxis } from "./step";
 import { TEST_ICON } from "./icons";
 import { GROUPS, testsIn, type TestId } from "./tests";
 import type { LabAnalysis } from "./useLabRun";
@@ -27,8 +24,10 @@ export interface LabControl {
 export interface TestsPanelProps {
   lab: LabControl;
   analysis: LabAnalysis | null;
-  /** d.months of the lane, to name months */
-  months: readonly YearMonth[];
+  /** names the points of the tested series (months, or the daily view's days and weeks) */
+  axis: LabAxis;
+  /** absolute index of the series' first point (analysis.span is absolute) */
+  base: number;
   unit: string;
   /** which sign reads cool (anomaly colours in the figures) */
   polarity: "cool" | "warm";
@@ -36,17 +35,17 @@ export interface TestsPanelProps {
   onShowAnomaly?: () => void;
 }
 
-export default function TestsPanel({ lab, analysis: a, months, unit, polarity, onShowAnomaly }: TestsPanelProps) {
-  const L = COPY.lab;
+export default function TestsPanel({ lab, analysis: a, axis, base, unit, polarity, onShowAnomaly }: TestsPanelProps) {
+  const L = labCopy(axis.step);
   const uid = useId();
   if (!a) return null;
-  const range = toRange(a.span);
   const ok = a.avail[lab.test].ok;
   return (
+    <LabStepContext.Provider value={axis.step}>
     <section aria-labelledby={`${uid}-h`} className="border-t border-line pt-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 id={`${uid}-h`} className="font-[family-name:var(--font-body-active)] text-sm font-semibold text-ink">
-          {L.heading} <span className="font-normal text-ink-2 tnum">{L.on(formatRange(range), COPY.toolbar.months(a.span.e - a.span.s + 1))}</span>
+          {L.heading} <span className="font-normal text-ink-2 tnum">{L.on(axis.span(a.span.s - base, a.span.e - base), axis.count(a.span.e - a.span.s + 1))}</span>
         </h3>
         <label title={L.wholeTitle} className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-2 hover:text-ink">
           <input type="checkbox" checked={lab.whole} onChange={(e) => lab.onWhole(e.target.checked)} className="h-3.5 w-3.5 accent-[var(--focus)]" />
@@ -95,7 +94,7 @@ export default function TestsPanel({ lab, analysis: a, months, unit, polarity, o
             {!a.running && a.stale && <p role="status" className="mt-2 text-sm text-synthetic">{L.stale[a.stale]}</p>}
             {a.run && (
               <div className={a.running ? "opacity-40 transition-opacity" : ""}>
-                <ResultCard run={a.run} unit={unit} months={months} polarity={polarity} onShowAnomaly={onShowAnomaly} />
+                <ResultCard run={a.run} unit={unit} axis={axis} polarity={polarity} onShowAnomaly={onShowAnomaly} />
               </div>
             )}
             {!a.run && !a.running && <p className="mt-3 text-sm text-ink-3">{L.pickHint}</p>}
@@ -103,13 +102,14 @@ export default function TestsPanel({ lab, analysis: a, months, unit, polarity, o
         </div>
       </div>
     </section>
+    </LabStepContext.Provider>
   );
 }
 
 function TestButton({ name, t, group, first, on, avail, onPick }: {
   name: string; t: TestId; group: string; first: boolean; on: boolean; avail: { ok: boolean; need: number; reason: string | null }; onPick: () => void;
 }) {
-  const L = COPY.lab;
+  const L = useLabCopy();
   return (
     <label
       title={`${group}: ${L.testTitle[t]}${avail.ok ? "" : `. ${avail.reason}`}`}
@@ -131,7 +131,7 @@ function Progress({ ms }: { ms: number }) {
   const [go, setGo] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setGo(true)); return () => cancelAnimationFrame(id); }, []);
   return (
-    <span role="progressbar" aria-label={COPY.lab.analysing} className="relative block h-[3px] w-full max-w-60 overflow-hidden rounded-full bg-well">
+    <span role="progressbar" aria-label={useLabCopy().analysing} className="relative block h-[3px] w-full max-w-60 overflow-hidden rounded-full bg-well">
       <span className="absolute inset-y-0 left-0 rounded-full bg-focus" style={{ width: go ? "100%" : "0%", transition: `width ${ms}ms linear` }} />
     </span>
   );
