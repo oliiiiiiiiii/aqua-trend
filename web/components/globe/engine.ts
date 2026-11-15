@@ -7,8 +7,8 @@ import {
 import { PLANET, luminance, type RGB } from "./palette";
 import { atmosphereFragment, atmosphereVertex, planetFragment, planetVertex } from "./shaders";
 import {
-  blankTexture, climateTexture, dilateClimate, gridTexture, namedMaskTexture, sdfTexture, trendScale, trendTexture,
-  type DivergingColors, type TrendScale,
+  blankTexture, climateTexture, dilateClimate, gridTexture, namedMaskTexture, regionalColor, regionalPalette,
+  sdfTexture, trendScale, trendTexture, type DivergingColors, type RegionalOverlay, type TrendScale,
 } from "./textures";
 import { buildScenery, dirOf, type Scenery } from "./scenery";
 
@@ -87,7 +87,7 @@ export class GlobeEngine {
   private lastHoverSent = 0;
   private lastHoverRegion: Region | null | undefined = undefined;
   private boundaryLayer: LayerId | null = null;
-  private overlayVar: VarId | null = null;
+  private overlayVar: VarId | RegionalOverlay | null = null;
   private overlayAmt = 0;
   private selected: Region | null = null;
   private selToken = 0;
@@ -164,7 +164,8 @@ export class GlobeEngine {
     this.uniforms = {
       uSdf: { value: sdfT }, uClimate: { value: climT },
       uBound: { value: this.blank }, uSel: { value: this.blank }, uMask: { value: this.blank }, uTrend: { value: this.blank },
-      uBoundOn: { value: 0 }, uHoverId: { value: 0 }, uSelMode: { value: 0 }, uSelId: { value: 0 },
+      uRegionGrid: { value: this.blank }, uRegional: { value: 0 }, uStudyFill: { value: new THREE.Vector3() },
+      uBoundOn: { value: 0 }, uHoverId: { value: 0 }, uInspectId: { value: 0 }, uSelMode: { value: 0 }, uSelId: { value: 0 },
       uMaskBox: { value: new THREE.Vector4(0, 0, 1, 1) },
       uOverlay: { value: 0 }, uTime: { value: 0 }, uLight: { value: new THREE.Vector3(0, 0, 1) },
       uWaterShallow: { value: c3(PLANET.waterShallow) }, uWaterMid: { value: c3(PLANET.waterMid) },
@@ -192,7 +193,6 @@ export class GlobeEngine {
 
     this.applyTheme();
     if (this.boundaryLayer) void this.setBoundaryLayer(this.boundaryLayer);
-    if (this.overlayVar) void this.setOverlay(this.overlayVar);
     if (this.selected) void this.setSelected(this.selected, false);
     this.dirty = true;
     this.kick();
@@ -213,12 +213,18 @@ export class GlobeEngine {
     this.kick();
   }
 
+  setInspectedIndex(id: number) {
+    if (!this.uniforms.uInspectId) return;
+    this.uniforms.uInspectId.value = id;
+    this.dirty = true;
+    this.kick();
+  }
+
   setReducedMotion(v: boolean) { this.reduced = v; this.dirty = true; this.kick(); }
 
   setTheme(t: ThemeColors) {
     this.theme = t;
     this.applyTheme();
-    if (this.overlayVar) void this.setOverlay(this.overlayVar);
   }
 
   private applyTheme() {
@@ -260,11 +266,28 @@ export class GlobeEngine {
     this.kick();
   }
 
-  async setOverlay(v: VarId | null) {
+  async setOverlay(v: VarId | RegionalOverlay | null) {
     this.overlayVar = v;
     const token = ++this.overlayToken;
     if (!this.uniforms.uTrend) return;
+    this.uniforms.uRegional.value = 0;
     if (!v) { this.onTrend(null); this.kick(); return; }
+    if (typeof v !== "string") {
+      const grid = v.layer ? await this.grid(v.layer) : this.blank;
+      if (token !== this.overlayToken || this.disposed || !this.catalog) return;
+      const regions = v.layer ? this.catalog.byGrid[v.layer] : [];
+      const tex = regionalPalette(regions, v, this.theme.diverging);
+      this.trendTex?.dispose();
+      this.trendTex = tex;
+      this.uniforms.uTrend.value = tex;
+      this.uniforms.uRegionGrid.value = grid;
+      this.uniforms.uRegional.value = 1;
+      const selected = v.selectedSlope === null ? PLANET.noData : regionalColor(v.selectedSlope, v.limit, this.theme.diverging);
+      this.uniforms.uStudyFill.value.set(...selected);
+      this.dirty = true;
+      this.kick();
+      return;
+    }
     const g = await loadTrendGrid(v);
     if (token !== this.overlayToken || this.disposed) return;
     const scale = trendScale(g);

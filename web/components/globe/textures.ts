@@ -1,7 +1,7 @@
 // Data textures for the planet shader. All equirectangular rasters: row 0 = north, col 0 = 180°W.
 // DataTextures are not flipped (flipY = false), so v = (90 - lat) / 180 samples row 0 at the top.
 import * as THREE from "three";
-import type { TrendGrid, VarId } from "@/lib/types";
+import type { LayerId, Region, TrendGrid, VarId } from "@/lib/types";
 import type { NamedFeature } from "@/lib/data";
 import { VARIABLES } from "@/lib/variables";
 import type { RGB } from "./palette";
@@ -133,6 +133,33 @@ export function trendScale(g: TrendGrid): TrendScale {
 }
 
 export interface DivergingColors { cool: RGB; warm: RGB; mid: RGB }
+
+export interface RegionalOverlay {
+  layer: LayerId | null;
+  slopes: ReadonlyMap<string, number>;
+  selectedSlope: number | null;
+  limit: number;
+}
+
+export function regionalColor(slope: number, limit: number, colors: DivergingColors): RGB {
+  const amount = limit > 0 ? Math.min(1, Math.abs(slope) / limit) : 0;
+  const end = slope < 0 ? colors.cool : colors.warm;
+  return colors.mid.map((mid, i) => mid + (end[i] - mid) * amount) as RGB;
+}
+
+/** The pick raster stores a region index. One texel per index keeps every basin boundary sharp. */
+export function regionalPalette(regions: (Region | undefined)[], overlay: RegionalOverlay, colors: DivergingColors) {
+  const width = Math.max(1, regions.length);
+  const rgba = new Uint8Array(width * 4);
+  for (const region of regions) {
+    if (!region?.gridIndex) continue;
+    const slope = overlay.slopes.get(region.id);
+    if (slope === undefined || !Number.isFinite(slope)) continue;
+    const color = regionalColor(slope, overlay.limit, colors);
+    rgba.set([...color.map(c => Math.round(c * 255)), 255], region.gridIndex * 4);
+  }
+  return dataTex(rgba, width, 1, THREE.RGBAFormat, THREE.NearestFilter);
+}
 
 /** Per-cell colours for the 1° trend map. A = 0 marks cells without GLDAS data (drawn grey on land). */
 export function trendTexture(g: TrendGrid, v: VarId, scale: TrendScale, cols: DivergingColors): THREE.DataTexture {

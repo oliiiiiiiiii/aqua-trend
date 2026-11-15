@@ -11,6 +11,7 @@ from .evidence import METHOD_VERSION, attach, family, ledger
 from .indicators import analyze_indicator
 from .presets import PresetPolicy
 from .science import analyze_series
+from .spatial import SpatialTrends
 from .store import Store, digest
 
 MONTH = re.compile(r"(?!0000)[0-9]{4}-(0[1-9]|1[0-2])\Z")
@@ -280,6 +281,7 @@ class ResearchService:
     def __init__(self, engine, workers=2):
         self.engine = engine
         self.store = engine.store
+        self.spatial = SpatialTrends(engine.catalogue)
         self.store.resume_after_restart()
         self.pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="research")
 

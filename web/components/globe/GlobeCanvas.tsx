@@ -7,6 +7,7 @@ import { cssVar, useThemeId } from "@/lib/theme";
 import { GlobeEngine, type EngineCallbacks, type ThemeColors, type TrendInfo, type View } from "./engine";
 import { PLANET, parseCssColor } from "./palette";
 import TrendLegend from "./TrendLegend";
+import type { RegionalOverlay } from "./textures";
 
 export interface GlobeCanvasExtraProps {
   /** where the camera starts and where "Reset view" returns; default { lon: 15, lat: 18, zoom: 1 } */
@@ -16,6 +17,10 @@ export interface GlobeCanvasExtraProps {
   /** show the on-canvas zoom buttons (default true when interactive) */
   showControls?: boolean;
   motionPaused?: boolean;
+  regionalOverlay?: RegionalOverlay;
+  focusAt?: View;
+  inspectedGridIndex?: number;
+  onInteractiveChange?: (available: boolean) => void;
 }
 
 const DEFAULT_VIEW: View = { lon: 15, lat: 18, zoom: 1 };
@@ -49,12 +54,18 @@ export default function GlobeCanvas({
   ariaLabel = DEFAULT_LABEL,
   showControls = true,
   motionPaused = false,
+  regionalOverlay,
+  focusAt,
+  inspectedGridIndex,
+  onInteractiveChange,
 }: GlobeCanvasProps & GlobeCanvasExtraProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<GlobeEngine | null>(null);
   const cbRef = useRef<EngineCallbacks>({});
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
+  const [overlayError, setOverlayError] = useState(false);
+  const [renderedRegional, setRenderedRegional] = useState<RegionalOverlay>();
   const [trend, setTrend] = useState<TrendInfo | null>(null);
   const [cursor, setCursor] = useState("");
   const themeId = useThemeId();
@@ -108,22 +119,43 @@ export default function GlobeCanvas({
 
   useEffect(() => { engineRef.current?.setReducedMotion(reducedMotion || motionPaused); }, [reducedMotion, motionPaused]);
   useEffect(() => { engineRef.current?.setInteractive(interactive); }, [interactive]);
-  useEffect(() => { void engineRef.current?.setBoundaryLayer(boundaryLayer ?? null).catch(() => {}); }, [boundaryLayer]);
-  useEffect(() => {
-    const e = engineRef.current;
-    if (!e) return;
-    if (!overlay) setTrend(null);
-    void e.setOverlay(overlay ?? null).catch(() => {});
-  }, [overlay]);
+  useEffect(() => { engineRef.current?.setTheme(readTheme()); }, [themeId]);
   const selectedKey = selected?.id ?? null;
   const selectedRef = useRef(selected);
   useLayoutEffect(() => { selectedRef.current = selected; });
   useEffect(() => {
-    void engineRef.current?.setSelected(selectedRef.current ?? null).catch(() => {});
-  }, [selectedKey]);
-  useEffect(() => { engineRef.current?.setTheme(readTheme()); }, [themeId]);
+    if (!regionalOverlay) void engineRef.current?.setBoundaryLayer(boundaryLayer ?? null).catch(() => {});
+  }, [boundaryLayer, regionalOverlay]);
+  useEffect(() => {
+    if (!regionalOverlay) void engineRef.current?.setSelected(selectedRef.current ?? null).catch(() => {});
+  }, [selectedKey, regionalOverlay]);
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine || status !== "ready") return;
+    let active = true;
+    let painted = 0;
+    setOverlayError(false);
+    if (!overlay) setTrend(null);
+    const loading = regionalOverlay
+      ? Promise.all([
+          engine.setBoundaryLayer(boundaryLayer ?? null),
+          engine.setSelected(selectedRef.current ?? null, false),
+          engine.setOverlay(regionalOverlay),
+        ])
+      : engine.setOverlay(overlay ?? null);
+    void loading.then(() => {
+      if (active && regionalOverlay) {
+        painted = requestAnimationFrame(() => setRenderedRegional(regionalOverlay));
+      }
+    }).catch(() => { if (active) setOverlayError(true); });
+    return () => { active = false; cancelAnimationFrame(painted); };
+  }, [overlay, regionalOverlay, boundaryLayer, selectedKey, themeId, status]);
+  useEffect(() => { if (focusAt) engineRef.current?.flyTo(focusAt); }, [focusAt]);
+  useEffect(() => { engineRef.current?.setInspectedIndex(inspectedGridIndex ?? 0); }, [inspectedGridIndex, status]);
 
-  const live = interactive && status !== "error";
+  const waitingForLayer = regionalOverlay && renderedRegional !== regionalOverlay;
+  const live = interactive && status !== "error" && !overlayError && !waitingForLayer;
+  useEffect(() => { onInteractiveChange?.(Boolean(live && status === "ready")); }, [live, status, onInteractiveChange]);
   const btn =
     "grid h-10 w-10 place-items-center rounded-ctl border border-line bg-paper text-ink shadow-card hover:bg-well";
 
@@ -136,7 +168,7 @@ export default function GlobeCanvas({
         aria-roledescription={live ? "globe" : undefined}
         aria-label={live ? ariaLabel : undefined}
         tabIndex={live ? 0 : -1}
-        style={{ cursor: live ? cursor || "grab" : "default" }}
+        style={{ cursor: live ? cursor || "grab" : "default", visibility: waitingForLayer || overlayError ? "hidden" : undefined }}
         onKeyDown={(e) => {
           if (engineRef.current?.handleKey(e.nativeEvent)) e.preventDefault();
         }}
@@ -149,20 +181,20 @@ export default function GlobeCanvas({
         )}
       </div>
 
-      {status === "loading" && (
+      {(status === "loading" || (waitingForLayer && status === "ready" && !overlayError)) && (
         <div className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="grid aspect-square w-[min(60%,60vh)] place-items-center rounded-full border border-stage-line bg-on-stage/5">
-            <p className="text-sm text-on-stage-2">Loading the planet…</p>
+            <p className="text-sm text-on-stage-2">{regionalOverlay ? "Loading trend boundaries…" : "Loading the planet…"}</p>
           </div>
         </div>
       )}
 
-      {status === "error" && (
+      {(status === "error" || overlayError) && (
         <div className="absolute inset-0 grid place-items-center p-4" role="alert">
           <div className="max-w-sm rounded-card border border-line bg-paper p-4 text-sm text-ink shadow-card">
-            <p className="font-display text-base">The 3D globe could not start</p>
-            <p className="mt-1 text-ink-2">{error}</p>
-            <p className="mt-2 text-ink-2">You can still choose a region from the region list.</p>
+            <p className="font-display text-base">{overlayError ? "The trend layer could not load" : "The 3D globe could not start"}</p>
+            {!regionalOverlay && <p className="mt-1 text-ink-2">{error}</p>}
+            <p className="mt-2 text-ink-2">{regionalOverlay ? "Use the region list to inspect the same trend values." : "You can still choose a region from the region list."}</p>
           </div>
         </div>
       )}

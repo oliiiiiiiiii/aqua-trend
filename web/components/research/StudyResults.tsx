@@ -1,5 +1,6 @@
 "use client";
 import { useState, type Ref, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import {
   numberText,
   periodText,
@@ -12,6 +13,13 @@ import {
   type VariableResult,
 } from "@/lib/research";
 import { SeriesView } from "./SeriesView";
+
+const TrendCrystalBalls = dynamic(() => import("./TrendCrystalBalls"), {
+  loading: () => <p role="status">Loading crystal balls…</p>,
+});
+const TrendEarth = dynamic(() => import("./TrendEarth"), {
+  loading: () => <p role="status">Loading trend globe…</p>,
+});
 
 function Field({ name, children }: { name: string; children: ReactNode }) {
   return (
@@ -177,6 +185,12 @@ export function StudyResults({
   const preset = resolved?.preset;
   const request = result.user_constraints;
   const variables = result.variables ?? [];
+  const [viewedId, setViewedId] = useState<string | null>(null);
+  const viewed = variables.find((item) => item.variable_id === viewedId)
+    ?? variables.find((item) => Number.isFinite(item.trend?.slope_per_decade))
+    ?? variables.find((item) => item.full_history?.values?.some((value) => Number.isFinite(value)))
+    ?? variables[0];
+  const rate = viewed?.trend?.slope_per_decade;
   const roleOf = (v: VariableResult) =>
     v.role ??
     selection?.variable_set?.find((r) => r.variable_id === v.variable_id)?.role ??
@@ -192,6 +206,9 @@ export function StudyResults({
             <h2 ref={headingRef} id="results-heading" tabIndex={-1} className="mt-1 text-3xl sm:text-4xl">
               {selection?.phenomenon || request?.phenomenon_query || "Study results"}
             </h2>
+            <p className="mt-2 text-ink-2">
+              {[resolved?.region_name || resolved?.region_id, resolved?.period && periodText(resolved.period)].filter(Boolean).join(" · ")}
+            </p>
           </div>
           <div className="flex gap-3">
             <a className="research-button" href={root + "json"} download>
@@ -202,6 +219,42 @@ export function StudyResults({
             </a>
           </div>
         </div>
+        {viewed && (
+          <div className="study-visualizations">
+            <div className="study-visual-tools">
+              {variables.length > 1 ? (
+                <label>
+                  Visualized variable
+                  <select value={viewed.variable_id} onChange={(event) => setViewedId(event.target.value)}>
+                    {variables.map((item) => (
+                      <option key={item.variable_id} value={item.variable_id}>{item.label || item.variable_id}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <p>Visualized variable <strong>{viewed.label || viewed.variable_id}</strong></p>
+              )}
+              <nav aria-label="Study views">
+                <a href="#study-crystal-balls">Crystal balls</a>
+                <a href="#study-trend-map">Trend globe</a>
+                <a href="#study-evidence">Data and evidence</a>
+              </nav>
+            </div>
+            {rate != null && Number.isFinite(rate) && (
+              <p className="study-visual-rate">
+                Regional trend estimate <strong>{rate > 0 ? "+" : ""}{numberText(rate)} {viewed.unit} per decade</strong>
+                {viewed.trend?.significant != null &&
+                  (viewed.trend.significant ? " · Statistically significant after correction" : " · Not statistically significant after correction")}
+              </p>
+            )}
+            <div id="study-crystal-balls" tabIndex={-1}>
+              <TrendCrystalBalls result={result} variable={viewed} />
+            </div>
+            <div id="study-trend-map" tabIndex={-1}>
+              <TrendEarth result={result} variable={viewed} />
+            </div>
+          </div>
+        )}
         <div className="result-section">
           <h3>Study conditions</h3>
           <dl className="research-facts mt-3">
@@ -259,7 +312,7 @@ export function StudyResults({
             </div>
           )}
         </div>
-        <div className="result-section">
+        <div className="result-section" id="study-evidence" tabIndex={-1}>
           <h3>Selected variables</h3>
           {selection?.selection_source === "model" && selection.selector_provider === "ollama" && selection.model_version && (
             <p className="mt-2 text-sm text-ink-2">Selected from the prepared catalogue by the local model ({selection.model_version}).</p>

@@ -96,17 +96,22 @@ class Handler(BaseHTTPRequestHandler):
             except (UnicodeError, ValueError, RecursionError) as exc:
                 raise ResearchError("invalid_json", "Invalid JSON request.", status=400) from exc
             return self.send_data(202, service.submit(data))
-        match = re.fullmatch(r"/api/research/([0-9a-f]{32})(/export)?", route)
+        match = re.fullmatch(r"/api/research/([0-9a-f]{32})(/export|/spatial)?", route)
         if match:
-            job_id, export = match.groups()
-            if self.command == "DELETE" and not export:
+            job_id, resource = match.groups()
+            if self.command == "DELETE" and not resource:
                 service.store.finish(job_id, "cancelled")
             job = service.store.job(job_id)
-            if job and self.command in {"GET", "DELETE"} and not export:
+            if job and self.command in {"GET", "DELETE"} and not resource:
                 return self.send_data(200, job)
-            if job and self.command == "GET" and export:
+            if job and self.command == "GET" and resource:
                 if job["result"] is None:
                     raise ResearchError("result_unavailable", "This study has no completed result.", status=409)
+                if resource == "/spatial":
+                    variables = parse_qs(url.query).get("variable", [])
+                    if len(variables) != 1:
+                        raise ResearchError("invalid_variable", "Provide one study variable for the globe.", "variable")
+                    return self.send_data(200, service.spatial.for_study(job["result"], variables[0]))
                 fmt = parse_qs(url.query).get("format", ["json"])[0]
                 if fmt == "json":
                     return self.send_data(200, job["result"], filename=f"aqua-trend-{job_id}.json")

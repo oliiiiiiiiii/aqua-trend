@@ -538,8 +538,10 @@ class Catalogue:
                 raise
             raise AssetError("invalid_asset", f"Invalid regional series. {error}") from error
 
-    def _prepared(self, rid, pid, vid, layers):
-        row = layers.get(pid)
+    def product_series(self, rid, pid, vid):
+        if pid not in self.concepts[vid]["approved_product_ids"] or pid not in self.index.get(rid, ()):
+            raise AssetError("data_required", "This product has no approved regional series for this quantity.")
+        row = self._layers(rid).get(pid)
         if not isinstance(row,dict):
             raise AssetError("data_required","The indexed product has no prepared series.")
         issue = self._product_issue(rid,pid)
@@ -586,7 +588,7 @@ class Catalogue:
                 attempts.append({"product_id":pid,"status":"data_required","reason":"No indexed regional series."})
                 continue
             try:
-                series = self._prepared(region_id,pid,variable_id,self._layers(region_id))
+                series = self.product_series(region_id,pid,variable_id)
             except AssetError as error:
                 attempts.append({"product_id":pid,"status":error.code,"reason":str(error)})
                 continue

@@ -26,6 +26,7 @@ export interface FrameInput {
 export interface ThemeInput {
   cool: RGB; mid: RGB; warm: RGB; precip: RGB; runoff: RGB; soilTop: RGB; rootZone: RGB;
   hatchA: RGB; hatchB: RGB; rim: RGB; night: boolean;
+  temperatureTint?: { surface: "air" | "land" | "ocean"; color: RGB };
 }
 export type AnchorName = "cloud" | "puffs" | "runoff" | "peak" | "soilTop" | "rootZone" | "deep";
 export interface Counts { precip: number; et: number; runoff: number }
@@ -272,6 +273,7 @@ export class OrbScene {
   private diorama = new THREE.Group();
   private toonGradient: THREE.DataTexture;
   private propMat: THREE.MeshToonMaterial;
+  private groundMat: THREE.MeshToonMaterial;
   private leafMat: LeafMaterial;
   private leaves: THREE.Mesh | null = null;
   private leafTarget: LeafState = NEUTRAL_LEAVES;
@@ -386,6 +388,7 @@ export class OrbScene {
     this.scene.add(sun);
 
     this.propMat = new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: this.toonGradient });
+    this.groundMat = this.propMat.clone();
     this.leafMat = makeLeafMaterial(this.toonGradient);
     this.cloudMat = new THREE.MeshToonMaterial({ color: 0xffffff, vertexColors: true, gradientMap: this.toonGradient, emissive: 0x6a7480 });
     this.snowMat = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: this.toonGradient, emissive: 0x7d8a99 });
@@ -528,7 +531,7 @@ export class OrbScene {
     const L = makeLayout(plan, rnd);
     this.layout = L;
     for (const m of [this.ground, this.props, this.leaves, this.snow]) if (m) { this.diorama.remove(m); m.geometry.dispose(); }
-    this.ground = new THREE.Mesh(buildGround(L, rnd), this.propMat);
+    this.ground = new THREE.Mesh(buildGround(L, rnd), this.groundMat);
     const bp = buildProps(L, rnd);
     this.props = new THREE.Mesh(bp.props, this.propMat);
     this.leaves = bp.leaves ? new THREE.Mesh(bp.leaves, this.leafMat.material) : null;
@@ -598,8 +601,19 @@ export class OrbScene {
     // natural daylight sky inside the glass; a little dimmer at night so the ball does not glare
     const horizon: RGB = t.night ? [0.78, 0.86, 0.9] : [0.9, 0.96, 0.97];
     const zenith: RGB = t.night ? [0.47, 0.66, 0.84] : [0.55, 0.78, 0.93];
-    this.skyMat.uniforms.uHorizon.value.copy(vec3(horizon));
-    this.skyMat.uniforms.uZenith.value.copy(vec3(zenith));
+    const tint = t.temperatureTint;
+    const air = tint?.surface === "air" ? tint.color : null;
+    this.skyMat.uniforms.uHorizon.value.copy(vec3(air ? mixRgb(horizon, air, 0.42) : horizon));
+    this.skyMat.uniforms.uZenith.value.copy(vec3(air ?? zenith));
+    const water = tint?.surface === "ocean" ? tint.color : null;
+    this.waterMat.uniforms.uShallow.value.set(...(water ?? WATER_SHALLOW));
+    this.waterMat.uniforms.uDeepW.value.set(...(water ? mixRgb(water, [0.05, 0.1, 0.21], 0.28) : WATER_DEEP));
+    const ground = tint?.surface === "land" ? tint.color : null;
+    if (this.groundMat.vertexColors !== !ground) {
+      this.groundMat.vertexColors = !ground;
+      this.groundMat.needsUpdate = true;
+    }
+    this.groundMat.color.copy(ground ? srgb(ground) : new THREE.Color(0xffffff));
     this.dropMat.uniforms.uColor.value.copy(vec3(t.precip));
     this.streakMat.uniforms.uColor.value.copy(vec3(t.runoff));
     this.beadMat.uniforms.uColor.value.copy(vec3(mixRgb(t.precip, [1, 1, 1], 0.3)));
@@ -715,6 +729,7 @@ export class OrbScene {
     cancelAnimationFrame(this.raf);
     window.clearTimeout(this.anchorTimer);
     this.leafMat.material.dispose();
+    this.groundMat.dispose();
     this.canvas.removeEventListener("pointerdown", this.onDown);
     this.canvas.removeEventListener("wheel", this.onWheel);
     window.removeEventListener("pointermove", this.onMove);

@@ -140,9 +140,14 @@ export default function ResearchWorkspace() {
   }, [result]);
 
   useEffect(() => {
-    if (result) resultHeadingRef.current?.focus();
-    else if (error) noticeRef.current?.focus();
-  }, [result, error]);
+    if (result) {
+      const id = window.location.hash.slice(1);
+      const linkedView = linkedStudy === result.identity.id && ["study-crystal-balls", "study-trend-map", "study-evidence"].includes(id)
+        ? document.getElementById(id)
+        : null;
+      (linkedView ?? resultHeadingRef.current)?.focus();
+    } else if (error) noticeRef.current?.focus();
+  }, [result, error, linkedStudy]);
 
   function fieldChanged() {
     discard();
@@ -243,7 +248,7 @@ export default function ResearchWorkspace() {
           <div className="research-entry">
             <h1 className="text-4xl sm:text-[2.8rem]">Earth System Trend Detective</h1>
             <p className="mt-2 max-w-xl text-on-stage-2">
-              Describe a phenomenon to see how its indicators and related variables have changed over time.
+              Play a region’s history in the crystal balls and compare its trends on the globe.
             </p>
             <form onSubmit={submit} noValidate className="research-form research-paper mt-5">
               <label htmlFor="phenomenon">What would you like to investigate?</label>

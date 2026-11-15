@@ -24,8 +24,12 @@ uniform sampler2D uBound;
 uniform sampler2D uSel;
 uniform sampler2D uMask;
 uniform sampler2D uTrend;
+uniform sampler2D uRegionGrid;
+uniform int uRegional;
+uniform vec3 uStudyFill;
 uniform int uBoundOn;
 uniform int uHoverId;
+uniform int uInspectId;
 uniform int uSelMode;   // 0 none, 1 grid id, 2 polygon mask
 uniform int uSelId;
 uniform vec4 uMaskBox;  // west, south, east, north
@@ -134,6 +138,15 @@ void main() {
   wc = mix(wc, mix(wc, vec3(dot(wc, vec3(0.3, 0.55, 0.15))), 0.35), uOverlay);
 
   vec3 col = mix(wc, lc, land);
+  if (uRegional == 1) {
+    int regionId = idAt(uRegionGrid, ll);
+    int paletteWidth = textureSize(uTrend, 0).x;
+    vec4 rate = texelFetch(uTrend, ivec2(clamp(regionId, 0, paletteWidth - 1), 0), 0);
+    vec3 base = mix(vec3(0.23, 0.38, 0.48), vec3(0.78, 0.80, 0.78), land);
+    if (regionId > 0) base = rate.a > 0.5 ? rate.rgb : uNoData;
+    if (selAt(ll) > 0.5) base = uStudyFill;
+    col = mix(col, base, uOverlay);
+  }
 
   // ---- region outlines and highlights
   vec2 ox = vec2(0.75 * px / coslat, 0.0);
@@ -149,15 +162,16 @@ void main() {
       diff += (a4 != c0 && a4 != 0) ? 1.0 : 0.0;
     }
     col = mix(col, uLineCol, min(diff, 2.0) * 0.16);
-    if (uHoverId > 0) {
-      float h0 = c0 == uHoverId ? 1.0 : 0.0;
+    int highlightId = uHoverId > 0 ? uHoverId : uInspectId;
+    if (highlightId > 0) {
+      float h0 = c0 == highlightId ? 1.0 : 0.0;
       vec2 ox2 = ox * 1.6, oy2 = oy * 1.6;
       float hd = 0.0;
-      hd += abs(h0 - (idAt(uBound, ll + ox2) == uHoverId ? 1.0 : 0.0));
-      hd += abs(h0 - (idAt(uBound, ll - ox2) == uHoverId ? 1.0 : 0.0));
-      hd += abs(h0 - (idAt(uBound, ll + oy2) == uHoverId ? 1.0 : 0.0));
-      hd += abs(h0 - (idAt(uBound, ll - oy2) == uHoverId ? 1.0 : 0.0));
-      col = mix(col, uHoverCol, h0 * 0.22);
+      hd += abs(h0 - (idAt(uBound, ll + ox2) == highlightId ? 1.0 : 0.0));
+      hd += abs(h0 - (idAt(uBound, ll - ox2) == highlightId ? 1.0 : 0.0));
+      hd += abs(h0 - (idAt(uBound, ll + oy2) == highlightId ? 1.0 : 0.0));
+      hd += abs(h0 - (idAt(uBound, ll - oy2) == highlightId ? 1.0 : 0.0));
+      col = mix(col, uHoverCol, h0 * 0.22 * (1.0 - uOverlay));
       col = mix(col, uHoverCol, min(hd, 1.0) * 0.9);
     }
   }

@@ -69,7 +69,12 @@ The browser regression test runs against an already-started server. It covers a 
 ```sh
 AQUA_WEB_URL=http://127.0.0.1:3000 node web/scripts/check-research.mjs
 AQUA_WEB_URL=http://127.0.0.1:3000 node web/scripts/check-research-races.mjs
+AQUA_WEB_URL=http://127.0.0.1:3000 node web/scripts/check-research-visuals.mjs
 ```
+
+In a completed study, **Visualized variable** controls the crystal balls and the trend globe together. The outer balls show the start and end of the study window. Play or scrub the center ball to inspect a month. **Fitted trend** shows the fitted departure from the seasonal reference in the measurement’s own units. **Monthly values** shows the prepared observations or model estimates. Changing the playback month leaves the fitted period fixed.
+
+The globe compares descriptive rates per decade across regions with a usable series for the same product and fitted period. Its land, marine and ice layers use prepared boundaries. Select a region on the globe or from its inspection list to read its value. The selected study region retains the slope in its saved export. Use `GET /api/research/{study_id}/spatial?variable={variable_id}` to retrieve the mapped values and coverage.
 
 ## Acceptance record
 
