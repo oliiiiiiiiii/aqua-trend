@@ -87,7 +87,7 @@
 
 | | |
 | --- | --- |
-| 負責檔案 | `web/app/api/select-variables/route.ts`、`web/lib/detective/keywords.ts`、`tools/selector/`（本地模型啟動腳本與說明） |
+| 負責檔案 | `web/app/api/select-variables/`（`route.ts`、`online.ts`）、`web/lib/detective/keywords.ts`、`web/.env.example`、`tools/selector/`（本地模型啟動腳本與說明） |
 | 輸入 | `SelectRequest` |
 | 輸出 | `SelectResponse` |
 
@@ -97,6 +97,7 @@
 - 逾時 5 秒或模型不可用 → `keywords.ts` 中英文關鍵字表，`source: "keyword-fallback"`。
 - `suggestedTime` 用正規表示式從 E 抽取（可與 C 共用函式，放在 `keywords.ts` 匯出）。
 - 靜態部署時 API route 不存在：前端（C）收到錯誤時直接在瀏覽器端呼叫 `keywords.ts`。
+- 選用線上後端：`SELECTOR_BACKEND=openai`（任何 OpenAI 相容 API）或 `systemone`（遠端 Jev 風格 API），預設仍是本地模型。此時 `source` 為 `online-model`（[contract change]），C 要顯示對應標示。設定見 `tools/selector/README.md`。
 
 完成檢查：
 - [ ] `tools/selector/eval.md`：10 個事件（乾旱、洪水、熱浪、野火、暴雪、颱風季、聖嬰…）的投票結果與人工判斷對照。
