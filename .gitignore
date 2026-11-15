@@ -142,3 +142,8 @@ data/hub_export/
 
 # 從團隊分享站下載的原始資料
 data/share/
+
+# 網站資料不進 git：由 npm run setup 從 GitHub Release 下載
+web/public/data/
+web/data/
+dist/

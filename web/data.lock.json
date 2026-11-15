@@ -1,0 +1,7 @@
+{
+  "repo": "oliiiiiiiiii/aqua-trend",
+  "tag": "data-v0",
+  "asset": "aqua-trend-data-v0.tar.gz",
+  "sha256": "e54c6ed397de7c7212f4bff5925ecccada7a993d0befad40ea5aa42e7717db80",
+  "note": "v0 = last committed data (main@5f22f14: web/public/data + web/data). Workstream F publishes newer bundles and bumps this file."
+}

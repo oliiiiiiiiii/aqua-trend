@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "node scripts/setup-data.mjs",
     "prep": "node scripts/prep-data.mjs",
-    "predev": "node scripts/prep-data.mjs --if-missing",
-    "prebuild": "node scripts/prep-data.mjs --if-missing",
+    "predev": "node scripts/setup-data.mjs --if-missing && node scripts/prep-data.mjs --if-missing",
+    "prebuild": "node scripts/setup-data.mjs --if-missing && node scripts/prep-data.mjs --if-missing",
     "dev": "next dev",
     "build": "next build",
     "start": "npx serve out",

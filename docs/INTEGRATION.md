@@ -1,16 +1,20 @@
 # 實作分工與整合說明
 
 > 給人類與 agent。先讀 [`SPEC.md`](../SPEC.md)，再讀 [`web/lib/detective/contracts.ts`](../web/lib/detective/contracts.ts)。
-> 基底 branch：`trend-detective`（= `web-demo` + `main` 的 `web/public/data`）。
+> 基底 branch：`main`。
+>
+> **開始前先取得網站資料**（資料不在 git 裡）：`cd web && npm i && npm run setup`。
+> repo 是私有的，下載需要已登入的 `gh`（`gh auth login`）或環境變數 `GITHUB_TOKEN`；也可以手動下載 Release 附件後執行 `npm run setup -- --file <檔案>`。`npm run dev` 會在資料不存在時自動執行 setup。
 
 ## 0. 規則
 
-1. 每條工作線開自己的 branch：`td/a-stats`、`td/b-chart`、`td/c-input`、`td/d-ai`、`td/e-data`、`td/f-pipeline`，從 `trend-detective` 分出，PR 回 `trend-detective`。
+1. 每條工作線開自己的 branch：`td/a-stats`、`td/b-chart`、`td/c-input`、`td/d-ai`、`td/e-data`、`td/f-pipeline`，從 `main` 分出，PR 回 `main`。
 2. **只改自己負責的檔案**（下表）。需要改 `contracts.ts` 時，PR 標題加 `[contract change]`，並同步更新本文件。
 3. 依賴尚未完成時，用 contracts 裡的型別寫假資料先做，不要等。
 4. 開始寫 Next.js 程式前，先讀 `web/AGENTS.md`（Next 16 有破壞性變更）。
-5. 不要動 `web/public/data/**` 的既有檔案（E 的新增檔案除外）。缺值是 `null`，不可當 0。
-   **原始資料在團隊分享站 http://meow1.csie.ntu.edu.tw:3266/**。任何需要原始資料的工作，先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)（盤點結果、哪些資料夾還是空的、下載與使用規則），原始檔不可 commit。
+5. `web/public/data/` 與 `web/data/` 是 setup 下載的產物，已被 `.gitignore` 忽略，**不可 commit**。要改資料只能由 F 發布新的 bundle。缺值是 `null`，不可當 0。
+   程式碼裡的小型設定檔（例如 E 的 `presets.ts`、`categories.ts`）放在 `web/lib/detective/`，不要放進 `web/public/data/`。
+   團隊分享站 http://meow1.csie.ntu.edu.tw:3266/ 是**暫時的**，只供 F 開發時參考；網站、setup 與最終管線都不可依賴它。詳見 [`docs/DATA_SHARE.md`](DATA_SHARE.md)。
 6. 介面精簡：每加一個控制項，先問「能不能收進面板」。
 7. 完成條件 = 該工作線的「完成檢查」全部打勾，且 `cd web && npm run typecheck` 通過。
 
@@ -119,19 +123,29 @@
 
 | | |
 | --- | --- |
-| 負責檔案 | `pipeline/`（新資料夾：下載、遮罩平均、寫出 series-2 的腳本）、`web/public/data/series/*.json`、`catalog/variables.json`、`catalog/series_index.json`、`docs/DATA_SHARE.md` |
-| 輸入 | 分享站 http://meow1.csie.ntu.edu.tw:3266/、NASA Giovanni、`data/masks/regions_0p5.npz`、HydroBASINS lev04 |
-| 輸出 | 更新或新增的 basin4 月序列（series-2 格式不變） |
+| 負責檔案 | `pipeline/`（新資料夾：下載、遮罩平均、寫出 series-2、打包 bundle 的腳本）、`web/data.lock.json`、`web/scripts/setup-data.mjs`、`docs/DATA_SHARE.md` |
+| 輸入 | 官方資料來源（GES DISC、NOAA PSL、JPL、FIRMS、HydroSHEDS）、NASA Giovanni；開發時可參考分享站 http://meow1.csie.ntu.edu.tw:3266/ |
+| 輸出 | GitHub Release 上的資料 bundle（`web/public/data` + `web/data`，series-2 格式不變），以及更新後的 `web/data.lock.json` |
 
-**前提：資料會在你工作期間陸續上傳。** 目前 `gesdisc/`、`modis/`、`ceres/` 等資料夾是空的，團隊正在補。不要假設清單固定，也不要因為某個資料夾是空的就停下來。
+**目前狀態**：Release `data-v0` 的 bundle 是 git 歷史中最後一版資料（`5f22f14` 的 `web/public/data` + `web/data`），讓其他工作線可以馬上開工。舊的管線腳本也在 `5f22f14`：`download_global.py`、`build_regions.py`、`fetch_regions.sh`、`analysis/hub_export.py`、`analysis/export_web2.py`、`data/masks/`。用 `git show 5f22f14:<路徑>` 取回，再改寫進 `pipeline/`。
+
+**發布流程**（每次更新資料）：
+1. 管線輸出到一個乾淨的目錄，結構是 `web/public/data/...` 與 `web/data/...`。
+2. `tar -czf aqua-trend-data-vN.tar.gz web`，計算 `sha256sum`。
+3. 建立 GitHub Release，tag 為 `data-vN`，上傳 tar 檔。
+4. 更新 `web/data.lock.json` 的 `tag`、`asset`、`sha256`，開 PR。其他人 pull 之後執行 `npm run setup` 就拿到新資料。
+
+**前提：分享站的資料會在你工作期間陸續上傳。** 目前 `gesdisc/`、`modis/`、`ceres/` 等資料夾是空的。不要假設清單固定，也不要因為某個資料夾是空的就停下來。
 
 規則：
-- **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)**，再抓分享站的最新清單，自己判斷哪些資料可以處理了。
+- **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)**。
+- **最終管線必須從官方來源下載**，任何人都能用 Earthdata 帳號重跑。開發時可以暫時從分享站取檔加速，但不可寫死在管線裡。
+- 需要 Earthdata 帳號（`~/.netrc`），帳密不可 commit。只有 F 需要；其他工作線只用 setup 下載的 bundle。
 - 管線要能重跑：同一個資料來源再跑一次，只更新那一層，其他層不動。每個資料層在 `variables.json` 記錄來源（`share` 或 `giovanni`）和處理日期。
 - 優先順序：
   1. 分享站上已有檔案、而且 series-2 還沒有的子流域變數：FIRMS 火點數（`fire_count`）、OMI SO₂、MOD10CM 積雪覆蓋。
   2. 分享站補上 `gesdisc/`、`modis/` 後，重算或延長既有資料層；補上 `m2aer` 時加 AOD。
-  3. 分享站沒有或還是空的時，試 **NASA Giovanni**（見 DATA_SHARE.md「Giovanni」一節）。Giovanni 試不通就跳過，**繼續用 repo 裡現有的 series-2**，不要卡住。
+  3. 官方來源下載太慢或不可行時，試 **NASA Giovanni**（見 DATA_SHARE.md「Giovanni」一節）。Giovanni 試不通就跳過，**繼續用 `data-v0` 的資料**，不要卡住。
 - 新增類別時要改 `contracts.ts` 的 `CategoryId`，PR 標 `[contract change]`，並通知 D（關鍵字表）和 E（淺白定義）。
 - 每次更新資料，在 `docs/DATA_SHARE.md` 的「處理紀錄」補一行：日期、資料層、來源、涵蓋期間、子流域數量。
 
@@ -140,6 +154,8 @@
 - [ ] 新序列抽查 3 個子流域，數值範圍與單位合理，缺值是 `null`。
 - [ ] Giovanni：可用的話寫下用法與限制；不可用的話寫下原因。兩種情況都記在 DATA_SHARE.md。
 - [ ] 重跑管線不會改到其他資料層。
+- [ ] 新 bundle 已發布成 Release，`web/data.lock.json` 已更新，在乾淨的 clone 上 `npm run setup && npm run dev` 能跑。
+- [ ] 管線不讀分享站也能完整跑完。
 
 ## 2. 相依關係
 
@@ -159,7 +175,7 @@ flowchart LR
 
 ## 3. 整合步驟（任何 agent 可執行）
 
-1. `git checkout trend-detective && git pull`
+1. `git checkout main && git pull && cd web && npm i && npm run setup`
 2. 依序合併：F → E → A → D → B → C（C 最後，因為它把其他部分接起來）。F 之後若又更新資料，可以隨時再合併。每合併一個跑 `cd web && npm run typecheck`。
 3. 衝突處理：除 `contracts.ts` 外，檔案擁有者的版本優先；`contracts.ts` 衝突時以較新的 `[contract change]` PR 為準並修正呼叫端。
 4. 把 C 中的假資料替換成真實匯入：`analysis.ts`（A）、`VariableTab`（B）、`/api/select-variables`（D）、`presets.ts`／`categories.ts`（E）。

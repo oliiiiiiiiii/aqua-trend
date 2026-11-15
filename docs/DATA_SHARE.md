@@ -3,6 +3,8 @@
 > **http://meow1.csie.ntu.edu.tw:3266/**：Python `http.server` 的目錄清單，沒有帳密，暫時使用。
 > 清單盤點日期：2026-11-15。只盤點了檔名，還沒有人逐一打開檔案驗證。
 
+> **網站資料不從這裡來。** 網站與 `npm run setup` 只從 GitHub Release 下載資料 bundle（見 `docs/INTEGRATION.md` 工作線 F）。分享站隨時可能關閉，只供工作線 F 開發時參考，最終管線必須從官方來源下載。
+
 ## 給 agent 的使用規則
 
 1. **先讀本文件，再去讀分享站**。要看最新清單時，直接抓目錄頁（HTML `<a href>` 清單），例如 `curl -s http://meow1.csie.ntu.edu.tw:3266/grace/`。
@@ -53,7 +55,7 @@
 
 **團隊正在補這些資料，可能在你工作期間陸續出現。** 每次開始處理前重新抓清單，自己判斷哪些可以處理了。
 
-還沒補上時，**繼續使用 repo 裡已經算好的 `web/public/data/series/*.json`**，它們已經包含 GLDAS、IMERG、MERRA-2、MODIS 的子流域序列（2026-11-14 產生）；或試 Giovanni（下一節）。
+還沒補上時，**繼續使用 Release `data-v0` 的資料**（`npm run setup` 下載），它已經包含 GLDAS、IMERG、MERRA-2、MODIS 的子流域序列（2026-11-14 產生）；或試 Giovanni（下一節）。
 
 ## Giovanni（NASA 線上對齊工具）
 
