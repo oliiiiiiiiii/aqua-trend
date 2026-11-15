@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   Aqua Trend design tokens. Two looks, switched with
+   <html data-theme="terrarium | night"> (light | dark; follows the OS until the user picks). Components use the Tailwind
+   names mapped below (bg-paper, text-ink-2, rounded-card …) and never raw hex.
+   ===================================================================== */
+
+:root,
+:root[data-theme="terrarium"] {
+  color-scheme: light;
+  /* stage = the sky the planet and the crystal ball float in */
+  --stage: #4f7db5;
+  --stage-2: #6f9bcd;
+  --on-stage: #ffffff;
+  --on-stage-2: #eaf2fc;
+  --stage-line: rgba(255, 255, 255, 0.28);
+  /* paper = the research bench: panels, charts, tables */
+  --paper: #fbfcfe;
+  --well: #edf2f9;
+  --ink: #12233a;
+  --ink-2: #44566f;
+  --ink-3: #6f8098;
+  --line: #d3dce9;
+  --action: #ffcf3f;
+  --action-hover: #ffc21a;
+  --on-action: #12233a;
+  --link: #0b6a8c;
+  --focus: #0b6a8c;
+  --water: #19b4d8;
+  --leaf: #58a63c;
+  --sand: #e9d6ae;
+  --r-card: 20px;
+  --r-ctl: 999px;
+  --shadow-card: 0 10px 30px -18px rgba(18, 35, 58, 0.55);
+  --font-display-active: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  --font-body-active: var(--font-figtree), system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.01em;
+
+  /* provenance badges */
+  --real: #0d6b3f;
+  --real-bg: #dff3e6;
+  --synthetic: #7a3e00;
+  --synthetic-bg: #ffe9c7;
+
+  /* data-viz tokens (reference palette, light steps) */
+  --viz-surface: var(--paper);
+  --viz-grid: #e3e9f1;
+  --viz-axis: #b9c5d4;
+  --viz-blue: #2a78d6;
+  --viz-orange: #eb6834;
+  --viz-aqua: #1baf7a;
+  --viz-yellow: #eda100;
+  --viz-magenta: #e87ba4;
+  --viz-green: #008300;
+  --viz-violet: #6250d6;
+  --viz-red: #e34948;
+  --viz-ink: #44566f;
+  /* diverging pair + neutral midpoint */
+  --viz-cool: #2a78d6;
+  --viz-warm: #e34948;
+  --viz-mid: #eceff3;
+  --viz-map-mid: #eceff3;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+}
+
+:root[data-theme="night"] {
+  color-scheme: dark;
+  --stage: #0d1a35;
+  --stage-2: #1c3260;
+  --on-stage: #f1f6fd;
+  --on-stage-2: #b9c9e2;
+  --stage-line: rgba(255, 255, 255, 0.16);
+  --paper: #13233f;
+  --well: #1a2e52;
+  --ink: #ecf2fb;
+  --ink-2: #b7c5dc;
+  --ink-3: #8798b5;
+  --line: #2a4069;
+  --action: #7fe3d2;
+  --action-hover: #9aeede;
+  --on-action: #0b1c33;
+  --link: #8fd3ff;
+  --focus: #8fd3ff;
+  --water: #3cc6ea;
+  --leaf: #6fbf52;
+  --sand: #d8c59c;
+  --shadow-card: 0 12px 32px -18px rgba(0, 0, 0, 0.8);
+  --real: #8fe3b0;
+  --real-bg: #153d33;
+  --synthetic: #ffd08a;
+  --synthetic-bg: #4a3212;
+  --viz-grid: #223659;
+  --viz-axis: #36507f;
+  --viz-blue: #3987e5;
+  --viz-orange: #d95926;
+  --viz-aqua: #199e70;
+  --viz-yellow: #c98500;
+  --viz-magenta: #d55181;
+  --viz-green: #0ca30c;
+  --viz-violet: #9085e9;
+  --viz-red: #e66767;
+  --viz-ink: #b7c5dc;
+  --viz-cool: #3987e5;
+  --viz-warm: #e66767;
+  --viz-mid: #2a3a57;
+  --viz-map-mid: #77839a;
+}
+
+@theme inline {
+  --color-stage: var(--stage);
+  --color-stage-2: var(--stage-2);
+  --color-on-stage: var(--on-stage);
+  --color-on-stage-2: var(--on-stage-2);
+  --color-stage-line: var(--stage-line);
+  --color-paper: var(--paper);
+  --color-well: var(--well);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-on-action: var(--on-action);
+  --color-link: var(--link);
+  --color-focus: var(--focus);
+  --color-water: var(--water);
+  --color-leaf: var(--leaf);
+  --color-sand: var(--sand);
+  --color-real: var(--real);
+  --color-real-bg: var(--real-bg);
+  --color-synthetic: var(--synthetic);
+  --color-synthetic-bg: var(--synthetic-bg);
+  --color-viz-grid: var(--viz-grid);
+  --color-viz-axis: var(--viz-axis);
+  --font-display: var(--font-display-active);
+  --font-sans: var(--font-body-active);
+  --radius-card: var(--r-card);
+  --radius-ctl: var(--r-ctl);
+  --shadow-card: var(--shadow-card);
+}
+
+@layer base {
+  html {
+    background: var(--stage);
+    color: var(--ink);
+    font-family: var(--font-body-active);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100dvh;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display-active);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    line-height: 1.12;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  /* on the stage the focus ring must contrast with the sky, not with paper */
+  .on-stage :focus-visible {
+    outline-color: var(--on-stage);
+  }
+  ::selection {
+    background: var(--action);
+    color: var(--on-action);
+  }
+}
+
+@layer utilities {
+  /* numbers that line up in tables, axes and read-outs */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-sky {
+    background: linear-gradient(180deg, var(--stage) 0%, var(--stage-2) 100%);
+    color: var(--on-stage);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
