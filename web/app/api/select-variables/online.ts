@@ -10,8 +10,18 @@ import { ALL_CATEGORIES } from "@/lib/detective/keywords";
 export type OnlineBackend = "openai" | "systemone";
 
 const env = (k: string) => process.env[k]?.trim() || undefined;
-const API_KEY = env("SELECTOR_API_KEY");
-const TIMEOUT_MS = Number(env("SELECTOR_ONLINE_TIMEOUT_MS")) || 10000;
+const MAX_TIMEOUT_MS = 5000;
+
+function timeoutMs(): number {
+  const configured = Number(env("SELECTOR_ONLINE_TIMEOUT_MS"));
+  return Number.isFinite(configured) && configured > 0
+    ? Math.max(1, Math.min(Math.floor(configured), MAX_TIMEOUT_MS))
+    : MAX_TIMEOUT_MS;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
 
 /** 類別淺白定義（同 tools/selector/selector.py 的英文版）。 */
 const DEFINITIONS: Record<CategoryId, string> = {
@@ -32,17 +42,22 @@ const DEFINITIONS: Record<CategoryId, string> = {
 const STATE = (event: string) => `A student wants to study this Earth event with NASA satellite data: ${event}`;
 
 function authHeaders(): Record<string, string> {
+  const apiKey = env("SELECTOR_API_KEY");
   return {
     "Content-Type": "application/json",
-    ...(API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {}),
+    ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
   };
 }
 
-function toProbabilities(get: (c: CategoryId) => unknown): Map<CategoryId, number> {
+function toProbabilities(values: unknown, answerObjects = false): Map<CategoryId, number> {
+  if (!isRecord(values) || Object.keys(values).length !== ALL_CATEGORIES.length) {
+    throw new Error("online selector returned incomplete categories");
+  }
   const p = new Map<CategoryId, number>();
   for (const c of ALL_CATEGORIES) {
-    const v = Number(get(c));
-    if (!Number.isFinite(v) || v < 0 || v > 1) throw new Error(`bad probability for ${c}`);
+    const answer = values[c];
+    const v = answerObjects && isRecord(answer) ? answer.noul : answerObjects ? undefined : answer;
+    if (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 1) throw new Error(`bad probability for ${c}`);
     p.set(c, v);
   }
   return p;
@@ -53,7 +68,7 @@ async function postJson(url: string, body: unknown): Promise<unknown> {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(TIMEOUT_MS),
+    signal: AbortSignal.timeout(timeoutMs()),
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`online selector HTTP ${res.status}`);
@@ -74,7 +89,7 @@ async function openaiProbabilities(event: string): Promise<Map<CategoryId, numbe
     "Categories:",
     ...ALL_CATEGORIES.map((c) => `- ${c}: ${DEFINITIONS[c]}`),
   ].join("\n");
-  const data = (await postJson(`${base}/chat/completions`, {
+  const data = await postJson(`${base}/chat/completions`, {
     model,
     temperature: 0,
     response_format: { type: "json_object" },
@@ -82,12 +97,14 @@ async function openaiProbabilities(event: string): Promise<Map<CategoryId, numbe
       { role: "system", content: system },
       { role: "user", content: STATE(event) },
     ],
-  })) as { choices?: { message?: { content?: string } }[] };
-  const text = data.choices?.[0]?.message?.content ?? "";
-  // 部分相容伺服器不支援 response_format，會包在 ```json 區塊裡；取第一個 {...}。
-  const json = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
-  const obj = JSON.parse(json) as Record<string, unknown>;
-  return toProbabilities((c) => obj[c]);
+  });
+  const choice = isRecord(data) && Array.isArray(data.choices) ? data.choices[0] : undefined;
+  const message = isRecord(choice) ? choice.message : undefined;
+  const content = isRecord(message) ? message.content : undefined;
+  if (typeof content !== "string") throw new Error("online selector returned no text");
+  const text = content.trim();
+  const fenced = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return toProbabilities(JSON.parse(fenced ? fenced[1] : text));
 }
 
 /** Jev 風格 /v1/systemone：每類別一個 noul 問題（與 tools/selector/selector.py 的 onejev 格式相同）。 */
@@ -98,12 +115,12 @@ async function systemoneProbabilities(event: string): Promise<Map<CategoryId, nu
   const questions = Object.fromEntries(
     ALL_CATEGORIES.map((c) => [c, { type: "noul", instructions: `Is this event related to ${DEFINITIONS[c]}?` }]),
   );
-  const data = (await postJson(url, {
+  const data = await postJson(url, {
     ...(model ? { model } : {}),
     state: { event: STATE(event) },
     questions,
-  })) as { answers?: Record<string, { noul?: unknown }> };
-  return toProbabilities((c) => data.answers?.[c]?.noul);
+  });
+  return toProbabilities(isRecord(data) ? data.answers : undefined, true);
 }
 
 export function onlineProbabilities(backend: OnlineBackend, event: string): Promise<Map<CategoryId, number>> {

@@ -265,20 +265,9 @@ function enMonth(s: string): number {
 }
 function range(y1: number, m1: number, y2: number, m2: number): TimeRange | null {
   if (!(m1 >= 1 && m1 <= 12 && m2 >= 1 && m2 <= 12)) return null;
-  // 「2020 年 11 月到 2 月」這種跨年的寫法：結束月較小就算到隔年。
-  if (y2 === y1 && m2 < m1) y2 += 1;
   if (y2 * 12 + m2 < y1 * 12 + m1) return null;
   return { start: ym(y1, m1), end: ym(y2, m2) };
 }
-
-const SEASONS: { zh: string[]; en: string[]; months: [number, number] }[] = [
-  // 只收兩字詞：單字「夏」會誤中「夏威夷」。
-  { zh: ["春季", "春天", "春旱"], en: ["spring"], months: [3, 5] },
-  { zh: ["夏季", "夏天", "夏旱"], en: ["summer"], months: [6, 8] },
-  { zh: ["秋季", "秋天"], en: ["autumn", "fall"], months: [9, 11] },
-  // 冬季跨年：「2021 冬季」取 2020-12..2021-02（例如 2021 年 2 月德州寒流）。
-  { zh: ["冬季", "冬天", "暖冬"], en: ["winter"], months: [12, 2] },
-];
 
 /**
  * 從事件文字抽取建議期間。支援（依優先順序）：
@@ -287,7 +276,7 @@ const SEASONS: { zh: string[]; en: string[]; months: [number, number] }[] = [
  * - 英文：`Feb–May 2021`、`February 2021`、`2021 February`、`Nov 2020 to Feb 2021`
  * - 年份區間：`2019–20`、`2019-2020`、`2019 到 2020 年`
  * - 年代：`1990s`、`1990 年代` → 整個十年
- * - 單一年份（可帶季節，例如「2021 春季」→ 2021-03..2021-05）；無月份時為全年。
+ * - 沒有明確月份時使用全年；季節因南北半球不同，不從季節詞猜月份。
  * 解析不到年份時回傳 null。
  */
 export function suggestedTime(event: string): TimeRange | null {
@@ -299,7 +288,11 @@ export function suggestedTime(event: string): TimeRange | null {
   if (m && (m[0].includes("月") || m[4])) {
     const y1 = Number(m[1]);
     const m1 = zhMonth(m[2]);
-    if (m[4]) return range(y1, m1, m[3] ? Number(m[3]) : y1, zhMonth(m[4]));
+    if (m[4]) {
+      const m2 = zhMonth(m[4]);
+      const y2 = m[3] ? Number(m[3]) : y1 + Number(m2 < m1);
+      return range(y1, m1, y2, m2);
+    }
     if (m[0].includes("月")) return range(y1, m1, y1, m1);
   }
 
@@ -316,7 +309,7 @@ export function suggestedTime(event: string): TimeRange | null {
   m = t.match(new RegExp(`(?<![a-z])${MONTH_EN}(?:\\s+${YEAR})?${DASH}${MONTH_EN}\\s+${YEAR}${NA}`, "i"));
   if (m) {
     const y2 = Number(m[4]);
-    const y1 = m[2] ? Number(m[2]) : y2;
+    const y1 = m[2] ? Number(m[2]) : y2 - Number(enMonth(m[1]) > enMonth(m[3]));
     return range(y1, enMonth(m[1]), y2, enMonth(m[3]));
   }
   m = t.match(new RegExp(`(?<![a-z])${MONTH_EN},?\\s+${YEAR}${NA}`, "i"));
@@ -336,21 +329,10 @@ export function suggestedTime(event: string): TimeRange | null {
   m = t.match(new RegExp(`${NB}((?:19|20)\\d0)\\s*(?:'?s(?![a-z])|年代)`, "i"));
   if (m) return { start: ym(Number(m[1]), 1), end: ym(Number(m[1]) + 9, 12) };
 
-  // 單一年份（＋季節）；多個年份取最早到最晚。
+  // 沒有明確月份時取全年；多個年份取最早到最晚。
   const years = [...t.matchAll(new RegExp(`${NB}${YEAR}${NA}`, "g"))].map((x) => Number(x[1]));
   if (!years.length) return null;
   const y1 = Math.min(...years);
   const y2 = Math.max(...years);
-  if (y1 === y2) {
-    const lower = t.toLowerCase();
-    for (const s of SEASONS) {
-      const hit = s.zh.some((k) => t.includes(k)) ||
-        s.en.some((k) => new RegExp(`(?<![a-z])${k}(?![a-z])`).test(lower));
-      if (hit) {
-        const [a, b] = s.months;
-        return b < a ? { start: ym(y1 - 1, a), end: ym(y1, b) } : { start: ym(y1, a), end: ym(y1, b) };
-      }
-    }
-  }
   return { start: ym(y1, 1), end: ym(y2, 12) };
 }

@@ -4,7 +4,7 @@
     GET  /health                    ->  {"ok": true, "backend", "model"}
 
 It forwards one System One request (12 noul questions, see selector.py) to a model server that is
-already running (start.sh starts both). Binds to 127.0.0.1 only. Standard library only.
+already running (start-onejev.sh starts both). Binds to 127.0.0.1 by default. Standard library only.
 
     .venv/bin/python -I serve.py --backend onejev --upstream http://127.0.0.1:8811
 """
@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # -I drops the script dir; add it back explicitly
 from selector import BACKENDS, DEFAULT_PROMPT, PROMPTS, ask  # noqa: E402
 
-# Pre-select threshold per backend, used by the route only when the keyword table finds nothing (eval.md).
+# Pre-select threshold per backend; the route selects every model probability at or above it.
 THRESHOLDS = {"onejev": 0.5, "jev-style": 0.3, "phocinae": 0.5}
 MAX_EVENT_CHARS = 500
 
@@ -32,6 +32,7 @@ def main() -> None:
     ap.add_argument("--upstream", default="http://127.0.0.1:8811", help="model server base URL")
     ap.add_argument("--prompt", choices=tuple(PROMPTS), default=DEFAULT_PROMPT)
     ap.add_argument("--port", type=int, default=8770)
+    ap.add_argument("--host", default="127.0.0.1", help="selector bind address; use 0.0.0.0 only on a trusted network")
     ap.add_argument("--threshold", type=float, help="override the backend's pre-select threshold")
     ap.add_argument("--timeout", type=float, default=20, help="seconds to wait for the model server")
     args = ap.parse_args()
@@ -83,8 +84,8 @@ def main() -> None:
                         cache.popitem(last=False)
             self._send(200, hit)
 
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"selector: {args.backend} via {args.upstream} on http://127.0.0.1:{args.port}", file=sys.stderr)
+    server = ThreadingHTTPServer((args.host, args.port), Handler)
+    print(f"selector: {args.backend} via {args.upstream} on http://{args.host}:{args.port}", file=sys.stderr)
     server.serve_forever()
 
 

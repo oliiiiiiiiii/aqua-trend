@@ -21,6 +21,7 @@ export interface VariablePickerProps {
 
 const SOURCE_LABEL: Record<SelectResponse["source"], string> = {
   "local-model": "Suggested by the local AI model",
+  "online-model": "Suggested by the online AI model",
   "keyword-fallback": "Suggested by the keyword list (the AI model is not available)",
 };
 
@@ -65,10 +66,10 @@ export function VariablePicker({ categories, response, loading, checked, onChang
                   />
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center justify-between gap-x-3">
-                      <span className="font-semibold">{info.name}</span>
+                      <span className="font-semibold">{info.name.en}</span>
                       {ok ? vote && <Probability p={vote.p} keyword={response?.source === "keyword-fallback"} /> : <span className="text-xs text-ink-3">No data for this sub-basin</span>}
                     </span>
-                    <span className="block text-sm text-ink-3">{info.plain}</span>
+                    <span className="block text-sm text-ink-3">{info.definition.en}</span>
                   </span>
                 </label>
               </li>

@@ -13,8 +13,7 @@
 // Extension beyond the contract (see encodeState / decodeState):
 //   c    Step 1 checkboxes before "Start" (draft), so a reload keeps the user's picks
 //
-// Also exports the month helpers and `suggestTime`, the regular-expression reader of T from E (SPEC §3 Step 0).
-// Workstream D may re-export `suggestTime` from keywords.ts for `SelectResponse.suggestedTime`.
+// The time suggestion is shared with the API's keyword selector.
 import type { CategoryId, DetectiveQuery, LayerId, RegionId, TimeRange, UrlCodec, YearMonth } from "./contracts";
 
 /** the 12 categories in display order (mirror of the `CategoryId` type) */
@@ -157,87 +156,4 @@ export const urlCodec: UrlCodec = {
 };
 export const { encodeQuery, decodeQuery } = urlCodec;
 
-/* ------------------------------------------------------------------ T from E */
-
-const MONTH_WORDS: Record<string, number> = {
-  jan: 1, january: 1, feb: 2, february: 2, mar: 3, march: 3, apr: 4, april: 4, may: 5, jun: 6, june: 6,
-  jul: 7, july: 7, aug: 8, august: 8, sep: 9, sept: 9, september: 9, oct: 10, october: 10, nov: 11, november: 11,
-  dec: 12, december: 12,
-};
-// a month name or its abbreviation, not the start of a longer word ("mar" in "marine")
-const MONTH_WORD = "(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)(?![a-z])\\.?";
-const YEAR = "((?:19|20)\\d{2})";
-const DASH = "\\s*(?:\\.\\.|[-–—~～至到]|to|through|until|thru)\\s*";
-const NOT_DIGIT_BEFORE = "(?<!\\d)";
-const NOT_DIGIT_AFTER = "(?!\\d)";
-
-function make(y0: number, m0: number, y1: number, m1: number): TimeRange | null {
-  if (![m0, m1].every((m) => m >= 1 && m <= 12)) return null;
-  const a = ym(y0, m0), b = ym(y1, m1);
-  return ymIndex(a) <= ymIndex(b) ? { start: a, end: b } : null;
-}
-
-/** Each reader returns a range or null; the first hit wins, so the most specific patterns come first. */
-const READERS: ((s: string) => TimeRange | null)[] = [
-  // 2021-02..2021-05, 2021/2 – 2021/5
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}[-/.](\\d{1,2})${DASH}${YEAR}[-/.](\\d{1,2})${NOT_DIGIT_AFTER}`).exec(s);
-    return m ? make(+m[1], +m[2], +m[3], +m[4]) : null;
-  },
-  // 2021 年 2 月到 5 月, 2019 年 9 月至 2020 年 1 月, 2021年2-5月
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}\\s*年\\s*(\\d{1,2})\\s*月?${DASH}(?:${YEAR}\\s*年\\s*)?(\\d{1,2})\\s*月`).exec(s);
-    return m ? make(+m[1], +m[2], m[3] ? +m[3] : +m[1], +m[4]) : null;
-  },
-  // 2021 年 2 月
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}\\s*年\\s*(\\d{1,2})\\s*月`).exec(s);
-    return m ? make(+m[1], +m[2], +m[1], +m[2]) : null;
-  },
-  // Feb 2021 – May 2021, Feb – May 2021, September 2019 to January 2020
-  (s) => {
-    const m = new RegExp(`\\b${MONTH_WORD}(?:\\s+${YEAR})?${DASH}${MONTH_WORD}\\s+${YEAR}${NOT_DIGIT_AFTER}`, "i").exec(s);
-    if (!m) return null;
-    const m0 = MONTH_WORDS[m[1].toLowerCase()], m1 = MONTH_WORDS[m[3].toLowerCase()];
-    const y1 = +m[4];
-    const y0 = m[2] ? +m[2] : m0 <= m1 ? y1 : y1 - 1;
-    return make(y0, m0, y1, m1);
-  },
-  // 2021-05 (one month)
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}[-/](\\d{1,2})${NOT_DIGIT_AFTER}`).exec(s);
-    return m ? make(+m[1], +m[2], +m[1], +m[2]) : null;
-  },
-  // February 2021
-  (s) => {
-    const m = new RegExp(`\\b${MONTH_WORD}\\s+${YEAR}${NOT_DIGIT_AFTER}`, "i").exec(s);
-    return m ? make(+m[2], MONTH_WORDS[m[1].toLowerCase()], +m[2], MONTH_WORDS[m[1].toLowerCase()]) : null;
-  },
-  // 2019–20, 2019-2020, 2019 to 2021, 2019 至 2020 年 (whole years, at most 10)
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}${DASH}(\\d{4}|\\d{2})${NOT_DIGIT_AFTER}`).exec(s);
-    if (!m) return null;
-    const y0 = +m[1];
-    const y1 = m[2].length === 2 ? Math.floor(y0 / 100) * 100 + +m[2] : +m[2];
-    return y1 > y0 && y1 - y0 <= 10 ? make(y0, 1, y1, 12) : null;
-  },
-  // 2021 (the whole year)
-  (s) => {
-    const m = new RegExp(`${NOT_DIGIT_BEFORE}${YEAR}${NOT_DIGIT_AFTER}`).exec(s);
-    return m ? make(+m[1], 1, +m[1], 12) : null;
-  },
-];
-
-/**
- * Suggested event period from the event text: "YYYY" or "YYYY 年 M 月" (and ranges of either, ISO and English month
- * names). A year without a month means the whole calendar year. Returns null when the text names no year.
- * The user's choice in the time picker always wins over this suggestion.
- */
-export function suggestTime(text: string): TimeRange | null {
-  const s = text.normalize("NFKC");
-  for (const read of READERS) {
-    const r = read(s);
-    if (r) return r;
-  }
-  return null;
-}
+export { suggestedTime as suggestTime } from "./keywords";

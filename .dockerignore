@@ -3,8 +3,8 @@
 !Dockerfile
 !.dockerignore
 !deploy/
-!deploy/nginx.conf
 !deploy/check-data.mjs
+!deploy/prepare-standalone.mjs
 !web/
 !web/package.json
 !web/package-lock.json

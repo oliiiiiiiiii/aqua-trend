@@ -1,66 +1,117 @@
 # Container deployment
 
-The image builds the current Next.js static export with Node 24 and serves it with nginx on port 8080. The runtime runs as UID/GID `101:101`; it contains the exported website and public data, without Node.js, source files, or GitHub credentials. Compose uses a read-only filesystem with temporary nginx files in `/tmp`.
+The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/`, `/explore/`, `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
 
-## Prepare the data and start
+The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 
-Install Docker with Compose and start its engine. Data preparation also needs Node.js 24 and npm on the host. From the repository root:
+## Build on a new host
+
+Install Git, Node.js 24 with npm, and Docker with Compose. Start the Docker engine. Obtain a checkout of this private repository, then prepare its pinned data on the host:
 
 ```sh
-cd web
+git clone git@github.com:oliiiiiiiiii/aqua-trend.git
+cd aqua-trend/web
 npm ci
 npm run setup
 cd ..
 docker compose up --build -d
 ```
 
-`npm run setup` downloads the private GitHub Release bundle pinned by `web/data.lock.json`, verifies its SHA-256, and extracts `web/data` and `web/public/data`. Authenticate the host's GitHub CLI with access to the repository, or supply `GITHUB_TOKEN` to the host setup command. Credentials are not passed to Docker.
+`npm run setup` downloads the private GitHub Release asset pinned by `web/data.lock.json`, verifies its SHA-256, and extracts `web/data` and `web/public/data`. Authenticate the host's GitHub CLI with repository access, or supply `GITHUB_TOKEN` to the host setup command. Repository checkout authentication and Release access must both be available. Docker receives neither GitHub credentials nor a token build argument.
 
-To use an already downloaded bundle, replace `npm run setup` with:
+If you already have the pinned archive, replace `npm run setup` with:
 
 ```sh
 npm run setup -- --file /absolute/path/to/aqua-trend-data-v0.tar.gz
 ```
 
-Open <http://localhost:8080>. Use another host port with `PORT=8090 docker compose up --build -d`; nginx still listens on 8080 inside the container. Ports are published on the host's network interfaces. For a public deployment, put HTTPS at the reverse proxy or hosting platform in front of this HTTP service.
+Open <http://localhost:8080/detective/>. To change only the published host port, use `PORT=8090 docker compose up --build -d`; the server still listens on 8080 inside the container. Ports are published on the host's network interfaces. Put HTTPS and request limits at a reverse proxy or hosting platform for public deployment.
 
-The build requires the bundle marker to match the lockfile and the preprocessing inputs to exist. Missing, stale, or incomplete data stops the build with setup instructions. `.dockerignore` includes the website's source data, excludes generated `public/data/gen`, and keeps raw repository datasets, credentials, Git history, dependencies, build outputs, and duplicate files out of the context. The browser data is regenerated during the build. When adding a new top-level website source directory or config file, update this allowlist too.
+The Docker build checks the bundle marker against the lockfile and verifies the preprocessing inputs before building. Missing, stale, or incomplete data stops the build with setup instructions. The browser's generated `data/gen` is rebuilt inside the image. `.dockerignore` allows only website inputs and required deployment scripts; it excludes environment files, secrets, Git history, dependencies, local build outputs, raw repository datasets, and duplicate files. Update this allowlist when adding a new top-level website source directory or config file.
 
-## Check and operate
+## Check the running service
 
 ```sh
 docker compose ps
-curl --fail http://localhost:8080/healthz
+curl --fail http://localhost:8080/healthz/
 curl --fail http://localhost:8080/data/gen/catalog.json -o /dev/null
-curl -I http://localhost:8080/explore/
-curl -I http://localhost:8080/this-route-does-not-exist
+curl --fail http://localhost:8080/data/catalog/variables.json -o /dev/null
+curl --fail http://localhost:8080/api/select-variables/ \
+  -H 'Content-Type: application/json' \
+  -d '{"event":"2022 Pakistan floods"}'
+curl -I http://localhost:8080/detective/
+curl -I http://localhost:8080/this-route-does-not-exist/
+curl -I http://localhost:8080/data/.bundle
 docker compose logs --tail=100 web
 ```
 
-Expected responses are `ok`, successful data and page responses, and HTTP 404 for the unknown route. The image healthcheck probes `/healthz` every 30 seconds. `/explore` redirects to `/explore/`, including when a different host port or reverse proxy is used. Unknown routes and missing data/assets return 404. Hashed `/_next/static/` assets get a one-year immutable cache; HTML, navigation payloads, and data revalidate on each request.
+Expected results are `ok` from health, successful data and page responses, 12 category votes with `source: "keyword-fallback"` from the default API, and HTTP 404 for the unknown route and `.bundle`. Invalid API input returns HTTP 400. The healthcheck probes `/healthz/` every 30 seconds; it checks the web server without requiring an optional model service.
 
-After changing code or the data lockfile, run setup again if the pinned bundle changed, then rebuild:
+Next.js retains `trailingSlash: true`: `/detective`, `/healthz`, and `/api/select-variables` redirect to their slash-ending paths. Use the trailing slash when posting to the API, or use a client that follows the HTTP 308 redirect while preserving the method and body. Hashed Next.js assets receive immutable caching; public data uses Next.js public-file caching with `max-age=0`.
+
+## Optional selector backends
+
+Selector settings are runtime environment variables. Compose reads them from the shell or the repository-root `.env`; it does not read `web/.env.local`. Copy the example if you want a local configuration file:
+
+```sh
+cp deploy/.env.example .env
+# Edit .env, then recreate the service with those runtime settings.
+docker compose up -d
+```
+
+The root `.env` is ignored by Git and excluded from the build context. Set API keys there or in the deployment platform's runtime secret environment, never in a Dockerfile, build argument, or `NEXT_PUBLIC_` variable. Changing selector settings requires recreating the container, not rebuilding the image.
+
+| Variable | Container default | Purpose |
+| --- | --- | --- |
+| `SELECTOR_BACKEND` | `keyword` | `keyword`, `local`, `openai`, or `systemone` |
+| `SELECTOR_URL` | `http://host.docker.internal:8770` | Base URL of the optional local selector's `/select` service; an explicit empty value disables it |
+| `SELECTOR_OPENAI_BASE_URL` | `https://api.openai.com/v1` | OpenAI-compatible API base URL |
+| `SELECTOR_OPENAI_MODEL` | empty | Model name required by the `openai` backend |
+| `SELECTOR_SYSTEMONE_URL` | empty | Full `/v1/systemone` endpoint required by the `systemone` backend |
+| `SELECTOR_SYSTEMONE_MODEL` | empty | Optional model name for the `systemone` backend |
+| `SELECTOR_API_KEY` | empty | Optional bearer credential sent only by the server to the selected online backend |
+| `SELECTOR_ONLINE_TIMEOUT_MS` | `5000` | Online deadline in milliseconds, capped at 5000 by the application |
+
+The development server defaults to `local`; this container explicitly defaults to `keyword`. Model errors, invalid responses, or a missed deadline fall back to keywords. `source` is `local-model` or `online-model` only when that backend returns valid probabilities. Remote backends receive the user's event text.
+
+For an OpenAI-compatible service, set `SELECTOR_BACKEND=openai`, `SELECTOR_OPENAI_BASE_URL`, `SELECTOR_OPENAI_MODEL`, and any required `SELECTOR_API_KEY`. For a remotely hosted OneJev/qev service, use `SELECTOR_BACKEND=systemone` and the full `SELECTOR_SYSTEMONE_URL`. Actual model quality and availability depend on that separately operated service; the website image does not install it.
+
+For the optional OneJev service on the Docker host, follow the separate installation and model instructions in [`tools/selector/README.md`](../tools/selector/README.md), then start it with a bind address containers can reach:
+
+```sh
+SELECTOR_HOST=0.0.0.0 ONEJEV_GGUF=/absolute/path/to/model.gguf \
+  tools/selector/start-onejev.sh
+```
+
+In another terminal, from the repository root:
+
+```sh
+SELECTOR_BACKEND=local \
+SELECTOR_URL=http://host.docker.internal:8770 \
+docker compose up -d
+```
+
+Compose maps `host.docker.internal` to Docker's host gateway, including on Linux. Container `127.0.0.1` refers to the container itself. A host selector bound only to `127.0.0.1` is not reachable through the Linux bridge, so the example binds the selector to all host interfaces; restrict port 8770 to the Docker network or use a specific reachable bind address. The model server can remain on host loopback. For a selector in another container on the same Compose network, use its service name, for example `SELECTOR_URL=http://selector:8770`, and bind that service to `0.0.0.0` inside its container. These networking rules follow [Docker's Compose networking guidance](https://docs.docker.com/compose/how-tos/networking/).
+
+## Update, move, and stop
+
+After changing code, rebuild. If `web/data.lock.json` changed, run host setup again first:
 
 ```sh
 docker compose up --build -d
 ```
 
-Stop and remove the container with `docker compose down`. Website data is baked into the image, so there is no runtime data volume to initialize or preserve. Publishing an image also publishes its exported public dataset; keep the image registry private if that dataset must remain private.
+Stop and remove the service with `docker compose down`. Public data is baked into the image, so there is no runtime data volume to initialize or preserve. Temporary caches disappear when the container is recreated. If future changes add ISR or other persistent writes, revisit the read-only filesystem and cache configuration.
 
-For a registry-based deployment, build and tag from the prepared checkout:
+For a registry deployment, build and push from a prepared checkout:
 
 ```sh
 docker build -t YOUR_REGISTRY/aqua-trend:YOUR_TAG .
 docker push YOUR_REGISTRY/aqua-trend:YOUR_TAG
 ```
 
-Run that image on port 8080 with a writable `/tmp`; the Compose file shows the filesystem and capability settings. Build for the deployment machine's architecture when it differs from the build host, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep a previous image tag for rollback.
+The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Publishing the image also publishes its public dataset, so use a private registry if the dataset must remain private. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep a previous image tag for rollback.
 
-## Current scope
+For a local production run without Docker, run `npm run build` and `npm start` from `web`. The postbuild script prepares `.next/standalone` with public and Next.js static assets; `npm start` starts that packaged server. Set `HOSTNAME=0.0.0.0 PORT=8080 SELECTOR_BACKEND=keyword` to match the container's network and selector settings.
 
-- `/explore/` is available in this build.
-- `/dev/detective-chart/` previews the merged chart components with explicitly labeled fake data. It is a development preview.
-- The full `/detective/` interface from workstream C has not been integrated and is not a deployment acceptance target yet.
-- This image has no dynamic API server. Integrating workstream D's request-time API will require a Node.js server deployment or a separate backend, plus an update to the static-export configuration and container design.
-
-The runtime uses the [NGINX unprivileged image](https://github.com/nginx/docker-nginx-unprivileged), with nginx `1.30.6` pinned. The build uses the [official Node 24 Alpine image](https://hub.docker.com/_/node). Tags can receive base-image updates; use reviewed digest pins if a deployment requires identical base-image bytes on every build. The routing follows [Next.js static-export hosting](https://nextjs.org/docs/app/guides/static-exports) and nginx's [`try_files` behavior](https://nginx.org/en/docs/http/ngx_http_core_module.html#try_files).
+The configuration follows the installed Next.js [standalone output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output) and [self-hosting](https://nextjs.org/docs/app/guides/self-hosting) guides. Both image stages use `node:24-alpine`; the tag can receive updates. Use reviewed digest pins if deployment requires identical base-image bytes across builds.

@@ -8,9 +8,9 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 2. 它有**多不尋常**？（z 值、歷史名次）
 3. 背後的**長期趨勢**是什麼、**顯不顯著**？
 
-給高中、大學學生與有科學背景的大眾使用。全部分析在瀏覽器內完成，沒有 Python 後端，也不需要 NASA 帳號。
+給高中、大學學生與有科學背景的大眾使用。統計分析在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API；本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
 
-目前主線已整合 A 的統計函式、B 的圖表元件與 E 的類別／預設事件設定。圖表可在 [`/dev/detective-chart`](http://localhost:3000/dev/detective-chart) 以假資料試用；C 的 `/detective` 完整流程與 D 的 AI 選變數服務尚未整合，因此目前不能從事件輸入直接取得真實資料分析。
+目前主線已整合 A、B、C、D、E。從 [`/detective`](http://localhost:3000/detective/) 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
 
 - 產品規格：[`SPEC.md`](SPEC.md)
 - 分工與整合：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)
@@ -19,12 +19,12 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 
 ## 如何執行
 
-需要 Node.js 20 以上。
+建議使用 Node.js 24，與容器建置版本一致。
 
 ```bash
 cd web
 npm i
-npm run dev        # 圖表示範：http://localhost:3000/dev/detective-chart（假資料）
+npm run dev        # http://localhost:3000/detective/
 ```
 
 網站資料（月時間序列、目錄、區域邊界）**不在 git 裡**，而是放在 GitHub Release 的附件。`npm run dev` 第一次執行時會自動呼叫 `npm run setup`，依 [`web/data.lock.json`](web/data.lock.json) 下載並驗證 sha256，解壓到 `web/public/data` 與 `web/data`。
@@ -43,14 +43,17 @@ repo 是私有的，下載需要下列其中一種：
 | --- | --- |
 | `npm run setup` | 重新下載網站資料 |
 | `npm run typecheck` | TypeScript 型別檢查 |
-| `npm run build` | 產生靜態網站（`out/`） |
+| `npm run build` | 建置 Next.js 網站與 API（含 standalone 伺服器） |
+| `npm run start` | 啟動已建置的 Next.js 正式伺服器 |
 | `python3 -I tools/validate_presets.py` | 在 repo 根目錄重算三個預設事件的 z 值（需要 numpy）；台灣原訂事件窗未達門檻，因此目前結束碼為 1 |
 
-## 預定使用流程（待 C／D 整合）
+## 使用流程
 
 1. **輸入**事件文字、期間（`YYYY-MM..YYYY-MM`）與 basin4 子流域（地球上點選或搜尋）；或按一個預設事件。
 2. **選變數**：本地開源模型對 12 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示。
 3. **分析**：每個變數一個分頁，有結論卡、可縮放的數線（原始／季節／趨勢／殘差）、選取區間統計，以及長期趨勢面板。
+
+開發模式的選變數 API 預設連線至本地模型服務，服務未啟動時會使用關鍵字表；Compose 預設直接使用關鍵字表，可透過環境變數啟用模型。模型安裝、評估與選用線上端點見 [`tools/selector/README.md`](tools/selector/README.md)；Docker 連線與環境變數設定見 [`deploy/README.md`](deploy/README.md)。模型權重不包含在網站容器內。
 
 預設事件（[`web/lib/detective/presets.ts`](web/lib/detective/presets.ts)）：
 
@@ -64,13 +67,13 @@ repo 是私有的，下載需要下列其中一種：
 
 | 官方要求 | 對應功能 | 實作位置 |
 | --- | --- | --- |
-| **選擇變數**（variable selection） | 已有 12 類別的淺白定義與預設資料層；AI 投票、checkbox 與切換產品待 C／D 整合 | `web/lib/detective/categories.ts`；規劃位置見 `docs/INTEGRATION.md` 工作線 C／D |
-| **取得特定區域資料**（region） | 資料 bundle 有 1,313 個 basin4 子流域；偵探頁的地球點選、搜尋與序列載入待 C 整合 | `web/public/data/series/`（setup 下載）；規劃位置見工作線 C |
-| **產生並視覺化時間序列**（time series） | 已有月序列數線，可縮放、拖曳選取、切換原始／季節／趨勢／殘差，並標記事件期間；開發頁以假資料示範 | `web/components/detective/SeriesChart.tsx`、`VariableTab.tsx` |
+| **選擇變數**（variable selection） | 12 類別的淺白定義、模型投票或關鍵字備案、checkbox 與同類產品切換 | `web/lib/detective/categories.ts`、`components/detective/VariablePicker.tsx`、`app/api/select-variables/route.ts` |
+| **取得特定區域資料**（region） | 1,313 個 basin4 子流域，可用地球點選或文字搜尋；載入 bundle 中的月序列 | `web/components/detective/InputPanel.tsx`、`lib/detective/series.ts` |
+| **產生並視覺化時間序列**（time series） | 真實月序列數線，可縮放、拖曳選取、切換原始／季節／趨勢／殘差，並標記事件期間 | `web/components/detective/SeriesChart.tsx`、`VariableTab.tsx` |
 | **變化速率**（rate of change） | 長期趨勢面板：Sen's slope，以「原單位／十年」表示，附 95% 信賴區間；結論卡另顯示事件期間的平均異常 | `web/lib/detective/analysis.ts` 的 `trendStats`、`components/detective/TrendPanel.tsx` |
 | **顯著性檢定**（significance testing） | Mann–Kendall 檢定（自相關修正）的 p 值與是否顯著；不顯著時估計還需要幾年資料；事件異常以 z 值與歷史同長度區間的百分位、名次呈現 | `analysis.ts` 的 `trendStats`、`intervalStats` |
-| 示範案例 | 三個預設事件已有 Python／A 交叉驗證；巴基斯坦與澳洲通過 \|z\| ≥ 2，台灣保留原訂 2–5 月而未達門檻；一鍵開啟待 C 整合 | `web/lib/detective/presets.ts`、`docs/presets-validation.md` |
-| 用 AI 找變數 | 規劃本地開源模型與關鍵字備案，尚未整合 | `docs/INTEGRATION.md` 工作線 D |
+| 示範案例 | 一鍵開啟三個預設事件，已有 Python／A 交叉驗證；巴基斯坦與澳洲通過 \|z\| ≥ 2，台灣保留原訂 2–5 月而未達門檻 | `web/lib/detective/presets.ts`、`docs/presets-validation.md` |
+| 用 AI 找變數 | 本地 OneJev 模型服務、選用線上模型端點與關鍵字備案 | `web/app/api/select-variables/`、`tools/selector/` |
 
 ## 方法摘要
 

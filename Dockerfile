@@ -8,23 +8,27 @@ COPY web/package.json web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 COPY web/ ./
-COPY deploy/check-data.mjs /app/deploy/check-data.mjs
+COPY deploy/check-data.mjs deploy/prepare-standalone.mjs /app/deploy/
 RUN node /app/deploy/check-data.mjs \
     && npm run build \
-    && test -s out/index.html \
-    && test -s out/404.html \
-    && test -s out/data/gen/catalog.json \
-    && rm -f out/data/.bundle
+    && test -s .next/standalone/server.js \
+    && test -s .next/standalone/.next/server/app/api/select-variables/route.js \
+    && test -s .next/standalone/public/data/gen/catalog.json \
+    && test ! -e .next/standalone/public/data/.bundle
 
-FROM nginx/nginx-unprivileged:1.30.6-alpine AS runtime
-COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/web/out/ /usr/share/nginx/html/
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    HOSTNAME=0.0.0.0 \
+    PORT=8080 \
+    SELECTOR_BACKEND=keyword
+COPY --from=build --chown=node:node /app/web/.next/standalone/ ./
+RUN mkdir -p .next/cache && chown node:node .next/cache
 
-USER 101:101
+USER node:node
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1
+    CMD ["node", "-e", "fetch('http://127.0.0.1:8080/healthz/', {signal: AbortSignal.timeout(2000)}).then(async r => {if (!r.ok || await r.text() !== 'ok\\n') process.exit(1)}).catch(() => process.exit(1))"]
 
-# The configuration is complete; skip entrypoint scripts that rewrite it at startup.
-ENTRYPOINT ["nginx"]
-CMD ["-g", "daemon off;"]
+CMD ["node", "server.js"]

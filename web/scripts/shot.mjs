@@ -36,7 +36,7 @@ for (let i = 2; i < args.length; i++) {
   else { console.error("unknown option", a); process.exit(1); }
 }
 const cacheDir = path.join(os.homedir(), ".cache", "ms-playwright");
-const chromeDir = fs.readdirSync(cacheDir).filter((d) => /^chromium-\d+$/.test(d)).sort().pop();
+const chromeDir = process.env.CHROME_PATH ? null : fs.readdirSync(cacheDir).filter((d) => /^chromium-\d+$/.test(d)).sort().pop();
 const executablePath = process.env.CHROME_PATH ?? path.join(cacheDir, chromeDir, "chrome-linux64", "chrome");
 const url = /^https?:/.test(target) ? target : `http://localhost:${process.env.PORT ?? 3000}${target.startsWith("/") ? "" : "/"}${target}`;
 

@@ -6,10 +6,24 @@ services:
     image: aqua-trend-web:local
     ports:
       - "${PORT:-8080}:8080"
+    environment:
+      SELECTOR_BACKEND: "${SELECTOR_BACKEND:-keyword}"
+      SELECTOR_URL: "${SELECTOR_URL-http://host.docker.internal:8770}"
+      SELECTOR_OPENAI_BASE_URL: "${SELECTOR_OPENAI_BASE_URL:-https://api.openai.com/v1}"
+      SELECTOR_OPENAI_MODEL: "${SELECTOR_OPENAI_MODEL:-}"
+      SELECTOR_SYSTEMONE_URL: "${SELECTOR_SYSTEMONE_URL:-}"
+      SELECTOR_SYSTEMONE_MODEL: "${SELECTOR_SYSTEMONE_MODEL:-}"
+      SELECTOR_ONLINE_TIMEOUT_MS: "${SELECTOR_ONLINE_TIMEOUT_MS:-5000}"
+      SELECTOR_API_KEY: "${SELECTOR_API_KEY:-}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+      - /app/.next/cache:rw,noexec,nosuid,size=64m,uid=1000,gid=1000,mode=0700
     cap_drop:
       - ALL
     security_opt:

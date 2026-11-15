@@ -10,12 +10,12 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { Catalog, Region } from "@/lib/types";
 import type {
-  CategoryId, CategoryVote, Decomposition, DetectiveQuery, IntervalStats, LayerId, MonthlySeries, PresetEvent,
-  RegionId, SelectRequest, SelectResponse, TimeRange, TrendStats,
+  CategoryId, Decomposition, DetectiveQuery, IntervalStats, LayerId, MonthlySeries, PresetEvent,
+  RegionId, SelectResponse, TimeRange, TrendStats,
 } from "@/lib/detective/contracts";
 import { loadCatalog } from "@/lib/data";
 import {
-  CATEGORY_IDS, DEFAULT_PAD, PAD_MAX, PAD_MIN, decodeState, encodeState, formatRange, isCategory, isYearMonth,
+  CATEGORY_IDS, DEFAULT_PAD, PAD_MAX, PAD_MIN, decodeState, encodeState, formatRange,
   sameRange, suggestTime, ymIndex, type DetectiveUrlState,
 } from "@/lib/detective/url";
 import {
@@ -24,7 +24,7 @@ import {
 import { RetryButton, StatusCard } from "@/components/explore/StatusCard";
 import { InputPanel } from "./InputPanel";
 import { VariablePicker } from "./VariablePicker";
-import { CATEGORIES, PRESETS, USING_STANDINS, VariableTab, analysis, keywordVotes, type VariableMeta } from "./wiring";
+import { CATEGORIES, PRESETS, VariableTab, analysis, requestVotes, type VariableMeta } from "./wiring";
 
 /* ------------------------------------------------------------------ small async helper */
 
@@ -49,59 +49,6 @@ function useLoad<T>(make: () => Promise<T>): [Load<T>, () => void] {
 }
 const ready = <T,>(l: Load<T>): T | null => (l.status === "ready" ? l.data : null);
 
-/* ------------------------------------------------------------------ Step 1 request (D) */
-
-const SELECT_API = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/select-variables`;
-/** longer than D's own 5 s model timeout, so a slow model still returns D's keyword answer */
-const SELECT_TIMEOUT_MS = 8000;
-
-/** keep a well-formed SelectResponse; null for anything else */
-function cleanResponse(raw: unknown): SelectResponse | null {
-  if (!raw || typeof raw !== "object") return null;
-  const r = raw as Partial<SelectResponse>;
-  if (!Array.isArray(r.votes) || (r.source !== "local-model" && r.source !== "keyword-fallback")) return null;
-  const byCat = new Map<CategoryId, CategoryVote>();
-  for (const v of r.votes as Partial<CategoryVote>[]) {
-    if (!v || typeof v.category !== "string" || !isCategory(v.category) || typeof v.p !== "number" || !Number.isFinite(v.p)) continue;
-    const p = Math.max(0, Math.min(1, v.p));
-    byCat.set(v.category, { category: v.category, p, selected: typeof v.selected === "boolean" ? v.selected : p >= 0.5 });
-  }
-  if (!byCat.size) return null;
-  const t = r.suggestedTime;
-  const suggestedTime = t && typeof t.start === "string" && typeof t.end === "string" && isYearMonth(t.start) && isYearMonth(t.end) && ymIndex(t.start) <= ymIndex(t.end) ? t : null;
-  return {
-    votes: CATEGORY_IDS.map((c) => byCat.get(c) ?? { category: c, p: 0, selected: false }),
-    suggestedTime,
-    source: r.source,
-  };
-}
-
-/**
- * POST /api/select-variables (workstream D). Any failure (no route in a static export, model down, timeout, bad JSON)
- * falls back to the keyword table in the browser (SPEC §3 Step 1), so Step 1 always answers.
- */
-async function requestVotes(event: string, signal: AbortSignal): Promise<SelectResponse> {
-  const ctl = new AbortController();
-  const stop = () => ctl.abort();
-  signal.addEventListener("abort", stop);
-  const timer = window.setTimeout(stop, SELECT_TIMEOUT_MS);
-  try {
-    const res = await fetch(SELECT_API, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ event } satisfies SelectRequest),
-      signal: ctl.signal,
-    });
-    const data = res.ok ? cleanResponse(await res.json()) : null;
-    if (data) return data;
-  } catch {
-    if (signal.aborted) throw new DOMException("Aborted", "AbortError");
-  } finally {
-    window.clearTimeout(timer);
-    signal.removeEventListener("abort", stop);
-  }
-  return keywordVotes(event);
-}
 
 /* ------------------------------------------------------------------ URL writes */
 
@@ -130,7 +77,7 @@ function timeBounds(vc: VariableCatalog | null): TimeRange {
 }
 
 const presetFor = (q: Partial<DetectiveQuery>): PresetEvent | undefined =>
-  PRESETS.find((p) => p.region === q.region && sameRange(p.time, q.time));
+  PRESETS.find((p) => p.event === q.event && p.region === q.region && sameRange(p.time, q.time));
 
 /** one shared empty set, so memos keyed on "layers of this region" stay stable for regions without a series */
 const NO_LAYERS: ReadonlySet<LayerId> = new Set();
@@ -169,11 +116,6 @@ export default function DetectiveApp() {
       ) : (
         <InputStage url={url} vc={vc} index={index} catalog={catalog} catalogError={catalogLoad.status === "error" ? catalogLoad.message : null} onRetryCatalog={retryCatalog} />
       )}
-      {USING_STANDINS && (
-        <p className="mx-auto max-w-[90rem] px-4 pb-6 text-xs text-ink-3 sm:px-6 lg:px-8">
-          Development build: the statistics, chart, AI vote and preset events are stand-ins until workstreams A, B, D and E are merged (see components/detective/wiring.ts).
-        </p>
-      )}
     </>
   );
 }
@@ -205,14 +147,63 @@ function InputStage({
   const urlEvent = q.event ?? "";
   const [eventText, setEventText] = useState(urlEvent);
   const synced = useRef(urlEvent);
-  useEffect(() => {
-    // follow the URL when it changes from outside (a preset, Back, an edited link)
-    if (urlEvent !== synced.current) { synced.current = urlEvent; setEventText(urlEvent); }
-  }, [urlEvent]);
-
-  /** the period picker wins over the text: once the user (or a link) set T, typing no longer changes it */
+  const currentEvent = useRef(urlEvent);
+  const [vote, setVote] = useState<{ event: string; response: SelectResponse } | null>(null);
+  const [finding, setFinding] = useState(false);
+  const findCtl = useRef<AbortController | null>(null);
+  const picksTouched = useRef(false);
+  const reasked = useRef<string | null>(null);
   const timeTouched = useRef(!!q.time);
   const pending = useRef<number | null>(null);
+
+  const cancelRequest = useCallback(() => {
+    findCtl.current?.abort();
+    findCtl.current = null;
+    setFinding(false);
+  }, []);
+  useEffect(() => () => {
+    findCtl.current?.abort();
+    reasked.current = null;
+  }, []);
+  useEffect(() => {
+    const onBack = () => {
+      cancelRequest();
+      if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
+      const next = decodeState(window.location.search).query;
+      currentEvent.current = next.event ?? "";
+      synced.current = currentEvent.current;
+      reasked.current = null;
+      timeTouched.current = !!next.time;
+      setEventText(currentEvent.current);
+      setVote(null);
+    };
+    window.addEventListener("popstate", onBack);
+    return () => window.removeEventListener("popstate", onBack);
+  }, [cancelRequest]);
+
+  useEffect(() => {
+    // follow the URL when it changes from outside (a preset, Back, an edited link)
+    if (urlEvent !== synced.current) {
+      synced.current = urlEvent;
+      currentEvent.current = urlEvent;
+      timeTouched.current = !!q.time;
+      reasked.current = null;
+      if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
+      cancelRequest();
+      setVote(null);
+      setEventText(urlEvent);
+    }
+  }, [urlEvent, q.time, cancelRequest]);
+
+  const onEventChange = (text: string) => {
+    currentEvent.current = text.trim();
+    reasked.current = text.trim();
+    cancelRequest();
+    setVote(null);
+    setEventText(text);
+  };
+
+  /** the period picker wins over the text: once the user (or a link) set T, typing no longer changes it */
   const commitEvent = useCallback((text: string) => {
     if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
     const e = text.trim();
@@ -274,22 +265,19 @@ function InputStage({
   );
 
   /* ---------------- Step 1 */
-  const [vote, setVote] = useState<{ event: string; response: SelectResponse } | null>(null);
-  const [finding, setFinding] = useState(false);
-  const findCtl = useRef<AbortController | null>(null);
-  useEffect(() => () => findCtl.current?.abort(), []);
   const draft = url.draft ?? (q.categories?.length ? q.categories : null);
 
   const ask = useCallback(async (e: string, applyPicks: boolean) => {
     findCtl.current?.abort();
     const ctl = new AbortController();
     findCtl.current = ctl;
+    picksTouched.current = false;
     setFinding(true);
     try {
       const response = await requestVotes(e, ctl.signal);
-      if (ctl.signal.aborted) return;
+      if (ctl.signal.aborted || currentEvent.current !== e || decodeState(window.location.search).query.event !== e) return;
       setVote({ event: e, response });
-      if (applyPicks) {
+      if (applyPicks && !picksTouched.current) {
         const picks = response.votes.filter((v) => v.selected).map((v) => v.category);
         const auto = !timeTouched.current && response.suggestedTime ? response.suggestedTime : null;
         writeUrl((s) => ({ query: { ...s.query, event: e, time: auto ?? s.query.time }, draft: picks }));
@@ -309,25 +297,31 @@ function InputStage({
   };
 
   // a reload (or Back) in Step 1 keeps the user's ticks from the URL; ask again only to show the probabilities
-  const reasked = useRef(false);
   useEffect(() => {
-    if (reasked.current || vote || finding || draft === null || !urlEvent) return;
-    reasked.current = true;
+    if (reasked.current === urlEvent || vote || finding || draft === null || !urlEvent || currentEvent.current !== urlEvent) return;
+    reasked.current = urlEvent;
     void ask(urlEvent, false);
   }, [vote, finding, draft, urlEvent, ask]);
 
-  const onPicks = (c: CategoryId[]) => writeUrl((s) => ({ query: s.query, draft: c }));
+  const onPicks = (c: CategoryId[]) => {
+    picksTouched.current = true;
+    writeUrl((s) => ({ query: s.query, draft: c }));
+  };
 
   const startable = (draft ?? []).filter((c) => !available || available[c]);
-  const blocked = !q.time
-    ? "Choose when it happened."
-    : !q.region
-      ? "Choose a sub-basin."
-      : noData
-        ? "This sub-basin has no data."
-        : !startable.length
-          ? "Tick at least one variable."
-          : null;
+  const blocked = finding
+    ? "Waiting for the variable suggestions."
+    : !vc || !index
+      ? "Loading available variables."
+      : !q.time
+        ? "Choose when it happened."
+        : !q.region
+          ? "Choose a sub-basin."
+          : noData
+            ? "This sub-basin has no data."
+            : !startable.length
+              ? "Tick at least one variable."
+              : null;
   const onStart = () => {
     if (blocked) return;
     if (eventText.trim() !== urlEvent) commitEvent(eventText);
@@ -336,6 +330,7 @@ function InputStage({
   };
 
   const onPreset = (p: PresetEvent) => {
+    cancelRequest();
     timeTouched.current = true;
     if (pending.current != null) { window.clearTimeout(pending.current); pending.current = null; }
     writeUrl(() => ({
@@ -353,7 +348,7 @@ function InputStage({
     <div className="on-stage stage-sky">
       <InputPanel
         event={eventText}
-        onEventChange={setEventText}
+        onEventChange={onEventChange}
         presets={PRESETS}
         onPreset={onPreset}
         time={q.time ?? null}
@@ -374,7 +369,7 @@ function InputStage({
         {showPicker && (
           <VariablePicker
             categories={CATEGORIES}
-            response={vote?.response ?? null}
+            response={vote?.event === eventText.trim() ? vote.response : null}
             loading={finding}
             checked={draft ?? []}
             onChange={onPicks}
@@ -461,8 +456,8 @@ function AnalysisView({
       if (s instanceof Error) { out[c] = { kind: "error", message: s.message }; continue; }
       const info = vc.layers[layer];
       const meta: VariableMeta = {
-        category: c, name: CATEGORIES[c].name, definition: CATEGORIES[c].plain, layer, layerName: info.name,
-        product: info.product, unit: s.unit || info.unit, nasa: info.nasa, caveat: info.caveat,
+        category: c, name: CATEGORIES[c].name.en, definition: CATEGORIES[c].definition.en, layer,
+        product: info.product, unit: s.unit || info.unit, caveat: info.caveat,
       };
       try {
         const decomposition = analysis.decompose(s, q.time, pad);
@@ -564,7 +559,7 @@ function AnalysisView({
                     onKeyDown={(e) => onTabKey(e, i)}
                     className={`-mb-px shrink-0 rounded-t-card border-b-3 px-4 py-2 text-left whitespace-nowrap ${on ? "border-link font-semibold text-ink" : "border-transparent text-ink-2 hover:text-ink"}`}
                   >
-                    {CATEGORIES[c].name}
+                    {CATEGORIES[c].name.en}
                     {z != null && <span className="ml-2 text-xs text-ink-3 tnum">z {z >= 0 ? "+" : "−"}{Math.abs(z).toFixed(1)}</span>}
                     {res.kind === "nodata" && <span className="ml-2 text-xs text-ink-3">no data</span>}
                   </button>
@@ -589,10 +584,10 @@ function AnalysisView({
                   </select>
                 </label>
               )}
-              {r.kind === "loading" && <StatusCard busy title={`Loading ${CATEGORIES[active].name.toLowerCase()}…`} />}
+              {r.kind === "loading" && <StatusCard busy title={`Loading ${CATEGORIES[active].name.en.toLowerCase()}…`} />}
               {r.kind === "nodata" && (
-                <StatusCard title={`No ${CATEGORIES[active].name.toLowerCase()} series here`}>
-                  <p>{regionName} has no {CATEGORIES[active].name.toLowerCase()} data in the bundle. Missing data is not zero.</p>
+                <StatusCard title={`No ${CATEGORIES[active].name.en.toLowerCase()} series here`}>
+                  <p>{regionName} has no {CATEGORIES[active].name.en.toLowerCase()} data in the bundle. Missing data is not zero.</p>
                 </StatusCard>
               )}
               {r.kind === "error" && (
@@ -610,14 +605,13 @@ function AnalysisView({
                     </p>
                   )}
                   <VariableTab
-                    key={`${active}:${r.meta.layer}`}
+                    key={`${q.region}:${q.event}:${q.time.start}:${q.time.end}:${pad}:${active}:${r.meta.layer}`}
                     meta={r.meta}
-                    decomposition={r.decomposition}
+                    d={r.decomposition}
                     event={q.time}
                     padMonths={pad}
-                    eventStats={r.eventStats}
                     trend={r.trend}
-                    intervalStats={(range) => analysis.intervalStats(r.decomposition, range)}
+                    intervalStats={analysis.intervalStats}
                     expected={expected[active]}
                   />
                 </>

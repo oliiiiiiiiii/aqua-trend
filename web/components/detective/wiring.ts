@@ -1,78 +1,65 @@
-// Integration seam of workstream C: the only file that names the other workstreams' modules.
-//
-// Until A, B, D and E are on main, every export below is a stand-in written against contracts.ts only
-// (docs/INTEGRATION.md §0 rule 3). At integration (§3 step 4) point each export at the real module, adapt the
-// adapter if its shape differs, then delete ./standins/. Nothing else in workstream C imports a stand-in directly.
-//
-//   analysis       A  @/lib/detective/analysis        (AnalysisApi: decompose, intervalStats, trendStats)
-//   VariableTab    B  @/components/detective/VariableTab
-//   keywordVotes   D  @/lib/detective/keywords         (browser-side fallback when /api/select-variables fails)
-//   PRESETS        E  @/lib/detective/presets
-//   CATEGORIES     E  @/lib/detective/categories
-import type { ComponentType } from "react";
-import type {
-  AnalysisApi, CategoryId, Decomposition, IntervalStats, LayerId, PresetEvent, SelectResponse, TimeRange, TrendStats,
-} from "@/lib/detective/contracts";
-import { standinAnalysis } from "./standins/analysis";
-import { STANDIN_CATEGORIES } from "./standins/categories";
-import { standinKeywordVotes } from "./standins/keywords";
-import { STANDIN_PRESETS } from "./standins/presets";
-import StandinVariableTab from "./standins/VariableTab";
+import type { AnalysisApi, CategoryId, CategoryVote, LayerId, SelectRequest, SelectResponse } from "@/lib/detective/contracts";
+import { decompose, intervalStats, trendStats } from "@/lib/detective/analysis";
+import { keywordSelect } from "@/lib/detective/keywords";
+import { CATEGORY_IDS, isCategory, isYearMonth, ymIndex } from "@/lib/detective/url";
+import type { VariableMeta as ChartVariableMeta } from "./VariableTab";
 
-/* ------------------------------------------------------------------ what C needs from E */
+export { default as VariableTab } from "./VariableTab";
+export { CATEGORIES, type CategoryInfo } from "@/lib/detective/categories";
+export { PRESET_EVENTS as PRESETS } from "@/lib/detective/presets";
 
-/** One of the 12 categories, as shown in the picker and on the tabs. */
-export interface CategoryInfo {
-  id: CategoryId;
-  /** short English name, e.g. "Precipitation" */
-  name: string;
-  nameZh: string;
-  /** one plain sentence for students (SPEC §4); also the question text D asks the model */
-  plain: string;
-  plainZh: string;
-}
+export const analysis: AnalysisApi = { decompose, intervalStats, trendStats };
 
-/* ------------------------------------------------------------------ what C hands to B */
-
-/** Layer metadata for one tab (from variables.json). `caveat` must be shown when not null. */
-export interface VariableMeta {
-  category: CategoryId;
-  /** category name and plain definition (E) */
-  name: string;
-  definition: string;
+export interface VariableMeta extends ChartVariableMeta {
   layer: LayerId;
-  /** layer name from the catalogue */
-  layerName: string;
-  product: string;
-  unit: string;
-  /** false for NOAA products: name the agency */
-  nasa: boolean;
-  caveat: string | null;
 }
 
-export interface VariableTabProps {
-  meta: VariableMeta;
-  /** A's decomposition of the whole series (baseline = all months outside event ± pad) */
-  decomposition: Decomposition;
-  event: TimeRange;
-  padMonths: number;
-  /** A's intervalStats over the event period (for the conclusion card) */
-  eventStats: IntervalStats;
-  /** A's trendStats over the whole series (for the collapsed trend panel) */
-  trend: TrendStats;
-  /** A's intervalStats bound to this decomposition, for the user's own selection on the chart */
-  intervalStats: (range: TimeRange) => IntervalStats;
-  /** hypothesis from a preset event, when the query is one */
-  expected?: "high" | "low";
+const SELECT_API = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/select-variables`;
+// Allow the API's five-second timeout to return its own keyword fallback first.
+const SELECT_TIMEOUT_MS = 8000;
+
+export function cleanSelectResponse(raw: unknown): SelectResponse | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Partial<SelectResponse>;
+  if (!Array.isArray(r.votes) || !["local-model", "online-model", "keyword-fallback"].includes(r.source ?? "")) return null;
+  const byCat = new Map<CategoryId, CategoryVote>();
+  for (const v of r.votes as Partial<CategoryVote>[]) {
+    if (!v || typeof v.category !== "string" || !isCategory(v.category) || typeof v.p !== "number" || !Number.isFinite(v.p)) continue;
+    const p = Math.max(0, Math.min(1, v.p));
+    byCat.set(v.category, { category: v.category, p, selected: typeof v.selected === "boolean" ? v.selected : p >= 0.5 });
+  }
+  if (!byCat.size) return null;
+  const t = r.suggestedTime;
+  const suggestedTime = t && typeof t.start === "string" && typeof t.end === "string" && isYearMonth(t.start) && isYearMonth(t.end) && ymIndex(t.start) <= ymIndex(t.end) ? t : null;
+  return {
+    votes: CATEGORY_IDS.map((c) => byCat.get(c) ?? { category: c, p: 0, selected: false }),
+    suggestedTime,
+    source: r.source as SelectResponse["source"],
+  };
 }
 
-/* ------------------------------------------------------------------ exports (swap at integration) */
-
-export const analysis: AnalysisApi = standinAnalysis;
-export const VariableTab: ComponentType<VariableTabProps> = StandinVariableTab;
-export const keywordVotes: (event: string) => SelectResponse = standinKeywordVotes;
-export const PRESETS: readonly PresetEvent[] = STANDIN_PRESETS;
-export const CATEGORIES: Readonly<Record<CategoryId, CategoryInfo>> = STANDIN_CATEGORIES;
-
-/** true while any export above is still a stand-in; the page shows a small "development build" note */
-export const USING_STANDINS = true;
+/** Static exports and failed API requests use the same keyword selector as the server. */
+export async function requestVotes(event: string, signal: AbortSignal): Promise<SelectResponse> {
+  signal.throwIfAborted();
+  const ctl = new AbortController();
+  const stop = () => ctl.abort();
+  signal.addEventListener("abort", stop, { once: true });
+  const timer = globalThis.setTimeout(stop, SELECT_TIMEOUT_MS);
+  try {
+    const res = await fetch(SELECT_API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ event } satisfies SelectRequest),
+      signal: ctl.signal,
+    });
+    const data = res.ok ? cleanSelectResponse(await res.json()) : null;
+    signal.throwIfAborted();
+    if (data) return data;
+  } catch {
+    signal.throwIfAborted();
+  } finally {
+    globalThis.clearTimeout(timer);
+    signal.removeEventListener("abort", stop);
+  }
+  return keywordSelect(event);
+}

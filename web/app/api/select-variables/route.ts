@@ -8,31 +8,30 @@
 // 模型可用時：p 是模型的機率，預先勾選 p ≥ 門檻的類別（由模型決定）。
 // 靜態部署沒有這個 route；前端收到錯誤時直接在瀏覽器呼叫 keywordSelect()。
 
-import type { CategoryId, CategoryVote, SelectRequest, SelectResponse } from "@/lib/detective/contracts";
+import type { CategoryId, CategoryVote, SelectResponse } from "@/lib/detective/contracts";
 import { ALL_CATEGORIES, SELECT_THRESHOLD, keywordSelect, suggestedTime } from "@/lib/detective/keywords";
 import { onlineProbabilities } from "./online";
 
-type Backend = "local" | "openai" | "systemone" | "keyword";
-const BACKEND = (process.env.SELECTOR_BACKEND?.trim() || "local") as Backend;
-
-/** 本地選變數服務位址；設成空字串可完全停用模型。 */
-const SELECTOR_URL = process.env.SELECTOR_URL ?? "http://127.0.0.1:8770";
 const MODEL_TIMEOUT_MS = 5000;
 const MAX_EVENT_CHARS = 500;
 
-interface SelectorReply {
-  votes: { category: string; p: number }[];
-  threshold?: number;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-function isCategory(c: string): c is CategoryId {
-  return (ALL_CATEGORIES as readonly string[]).includes(c);
+function isCategory(c: unknown): c is CategoryId {
+  return typeof c === "string" && (ALL_CATEGORIES as readonly string[]).includes(c);
+}
+
+function isProbability(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
 }
 
 /** 向本地模型要 12 類別的機率；任何錯誤、逾時或格式不符都丟出例外。 */
 async function localProbabilities(event: string): Promise<{ p: Map<CategoryId, number>; threshold: number }> {
-  if (!SELECTOR_URL) throw new Error("selector disabled");
-  const res = await fetch(`${SELECTOR_URL}/select`, {
+  const url = (process.env.SELECTOR_URL ?? "http://127.0.0.1:8770").trim().replace(/\/+$/, "");
+  if (!url) throw new Error("selector disabled");
+  const res = await fetch(`${url}/select`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ event }),
@@ -40,13 +39,19 @@ async function localProbabilities(event: string): Promise<{ p: Map<CategoryId, n
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`selector HTTP ${res.status}`);
-  const data = (await res.json()) as SelectorReply;
-  const threshold = typeof data.threshold === "number" ? data.threshold : SELECT_THRESHOLD;
-  const p = new Map<CategoryId, number>();
-  for (const v of data.votes ?? []) {
-    if (isCategory(v.category) && typeof v.p === "number" && v.p >= 0 && v.p <= 1) p.set(v.category, v.p);
+  const data: unknown = await res.json();
+  if (!isRecord(data) || !Array.isArray(data.votes) || data.votes.length !== ALL_CATEGORIES.length) {
+    throw new Error("selector returned incomplete votes");
   }
-  if (p.size !== ALL_CATEGORIES.length) throw new Error("selector returned incomplete votes");
+  const threshold = data.threshold === undefined ? SELECT_THRESHOLD : data.threshold;
+  if (!isProbability(threshold)) throw new Error("selector returned invalid threshold");
+  const p = new Map<CategoryId, number>();
+  for (const v of data.votes) {
+    if (!isRecord(v) || !isCategory(v.category) || !isProbability(v.p) || p.has(v.category)) {
+      throw new Error("selector returned invalid vote");
+    }
+    p.set(v.category, v.p);
+  }
   return { p, threshold };
 }
 
@@ -58,14 +63,15 @@ function toVotes(p: Map<CategoryId, number>, threshold: number): CategoryVote[] 
 }
 
 async function modelResponse(event: string): Promise<SelectResponse> {
-  switch (BACKEND) {
+  const backend = process.env.SELECTOR_BACKEND?.trim() || "local";
+  switch (backend) {
     case "local": {
       const { p, threshold } = await localProbabilities(event);
       return { votes: toVotes(p, threshold), suggestedTime: suggestedTime(event), source: "local-model" };
     }
     case "openai":
     case "systemone": {
-      const p = await onlineProbabilities(BACKEND, event);
+      const p = await onlineProbabilities(backend, event);
       return { votes: toVotes(p, SELECT_THRESHOLD), suggestedTime: suggestedTime(event), source: "online-model" };
     }
     default:
@@ -74,13 +80,13 @@ async function modelResponse(event: string): Promise<SelectResponse> {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  let body: Partial<SelectRequest>;
+  let body: unknown;
   try {
-    body = (await request.json()) as Partial<SelectRequest>;
+    body = await request.json();
   } catch {
     return Response.json({ error: "body must be JSON {\"event\": string}" }, { status: 400 });
   }
-  const event = typeof body?.event === "string" ? body.event.trim() : "";
+  const event = isRecord(body) && typeof body.event === "string" ? body.event.trim() : "";
   if (!event || event.length > MAX_EVENT_CHARS) {
     return Response.json({ error: `event must be a non-empty string of at most ${MAX_EVENT_CHARS} characters` }, { status: 400 });
   }

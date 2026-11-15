@@ -233,12 +233,13 @@ export class GlobeEngine {
     this.kick();
   }
 
-  private async grid(layer: LayerId): Promise<THREE.DataTexture> {
+  private async grid(layer: LayerId): Promise<THREE.DataTexture | null> {
+    if (this.disposed) return null;
     let t = this.gridTex.get(layer);
     if (!t) {
       const g = await loadGrid(layer);
+      if (this.disposed) return null;
       t = this.gridTex.get(layer) ?? gridTexture(g);
-      if (this.disposed) { t.dispose(); throw new Error("disposed"); }
       this.gridTex.set(layer, t);
     }
     return t;
@@ -252,7 +253,7 @@ export class GlobeEngine {
     this.uniforms.uHoverId.value = 0;
     if (!layer) { this.uniforms.uBoundOn.value = 0; this.dirty = true; this.kick(); return; }
     const t = await this.grid(layer);
-    if (token !== this.boundToken || this.disposed) return;
+    if (!t || token !== this.boundToken || this.disposed) return;
     this.uniforms.uBound.value = t;
     this.uniforms.uBoundOn.value = 1;
     this.hoverDirty = true;
@@ -298,7 +299,7 @@ export class GlobeEngine {
       this.uniforms.uSelMode.value = 2;
     } else if (r.gridIndex) {
       const t = await this.grid(r.type);
-      if (token !== this.selToken || this.disposed) return;
+      if (!t || token !== this.selToken || this.disposed) return;
       this.uniforms.uSel.value = t;
       this.uniforms.uSelId.value = r.gridIndex;
       this.uniforms.uSelMode.value = 1;

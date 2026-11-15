@@ -5,6 +5,7 @@ import { Mark } from "./Mark";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const NAV = [
+  { href: "/detective", label: "Detective" },
   { href: "/explore", label: "Explore" },
   { href: "/data", label: "Data" },
   { href: "/methods", label: "Methods" },

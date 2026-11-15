@@ -1,12 +1,12 @@
 # tools/selector：本地 AI 選變數（工作線 D）
 
-`POST /api/select-variables`（`web/app/api/select-variables/route.ts`）會把事件文字送到這裡的本地服務。服務對 12 個變數類別各問一題是／否，問題用 SPEC §4 的淺白定義，由本地開源的 System One 決策模型回答。不需要 API key，也不會連到外部網路。
+`POST /api/select-variables`（`web/app/api/select-variables/route.ts`）預設會把事件文字送到這裡的本地服務。服務對 12 個變數類別各問一題是／否，問題用 SPEC §4 的淺白定義，由本地開源的 System One 決策模型回答。本地模式不需要 API key；權重與 tokenizer 已備妥時可離線推論。明確選擇 `openai` 或 `systemone` 時，事件文字會送到設定的服務位址。
 
 - **選定模型：OneJev1.6-0.8B**（Q4_K_M GGUF，經 llama.cpp 在 CPU 上執行）。評估與理由見 [eval.md](eval.md)。
 - **預先勾選規則：由模型決定。** 模型可用時，勾選 p ≥ 0.5 的類別，機率條顯示模型的 p。（評估時試過「關鍵字優先」，見 eval.md；決定不採用，讓模型自己判斷，之後換更強的模型時效果才會跟著提升。）
 - **後端選擇：** 環境變數 `SELECTOR_BACKEND`，預設 `local`。也可以接線上 API，見下方「線上 API（選用）」。
 - **備案：** 服務不存在、出錯或 5 秒內沒有回應 → route 回傳 `keyword-fallback`。模型關閉時實測約 0.03 秒回應。
-- **靜態部署：** `next build`（`output: "export"`）會略過這個 route，前端呼叫失敗時直接在瀏覽器呼叫 `keywordSelect()`。
+- **部署：** 目前使用 Next.js standalone Node 服務，保留這個 POST route。純靜態網站沒有選變數 API；若另行製作靜態版本，前端呼叫失敗時會在瀏覽器呼叫 `keywordSelect()`。不要把 `output: "export"` 當成會自動略過 POST route 的部署方式。
 
 ```
 瀏覽器 ──POST /api/select-variables/──▶ route.ts ──POST /select (5 s)──▶ serve.py :8770 ──/v1/systemone──▶ qev serve :8811 ──▶ llama-server（OneJev GGUF）
@@ -26,10 +26,11 @@
 | `systemone` | 任何 Jev 風格 `/v1/systemone` 端點（例如架在別台機器上的 OneJev／qev），每類別一題 `noul` | `SELECTOR_SYSTEMONE_URL`（完整網址）、選填 `SELECTOR_SYSTEMONE_MODEL`、`SELECTOR_API_KEY` |
 | `keyword` | 不呼叫模型，只用關鍵字表 | — |
 
-- 線上後端逾時預設 10 秒（`SELECTOR_ONLINE_TIMEOUT_MS`）；失敗、逾時或回傳格式不符都退回關鍵字表。
+- 線上後端逾時預設且最多 5 秒（`SELECTOR_ONLINE_TIMEOUT_MS`，可設為 1–5000 毫秒）；失敗、逾時或回傳格式不符都退回關鍵字表。
 - 回應的 `source` 為 `online-model`，前端要標示「線上模型」。
-- `openai` 後端會要求模型只回一個 JSON 物件 `{類別: 機率}`；不支援 `response_format` 的伺服器若把 JSON 包在 ```` ``` ```` 區塊裡也能解析。
-- 程式在 `web/app/api/select-variables/online.ts`。四種後端都已用假伺服器測過（2026-11-15）。尚未用真實線上模型跑 eval。
+- `openai` 後端會送出 `response_format: { type: "json_object" }`，服務必須接受此參數。回應可為純 JSON 或單一 ```` ```json ```` 區塊，必須包含完整 12 類別與 0–1 的數值；不會把 `null`、字串或布林值轉成機率。
+- 程式在 `web/app/api/select-variables/online.ts`。四種後端有離線自動測試，涵蓋請求、回應格式、錯誤與逾時；實際關閉本地連接埠的測試檢查 1 秒內備案。尚未用真實線上模型跑 eval，也未驗證上述每一家服務的相容性。
+- 既有 OneJev 評估在 10 個事件上的平均 F1 為 0.48；0.91 是已放棄的「關鍵字優先」規則，不是目前模型決策流程的分數。模型最慢一次超過 5 秒，屆時會退回關鍵字表。這份小樣本評估不是獨立測試集，詳見 [eval.md](eval.md)。
 
 ## 檔案
 
@@ -78,7 +79,8 @@ curl -s localhost:3000/api/select-variables/ -H 'content-type: application/json'
 | 變數 | 預設值 | 說明 |
 |---|---|---|
 | `ONEJEV_GGUF` | （必填） | OneJev GGUF 檔路徑 |
-| `ONEJEV_PORT` / `SELECTOR_PORT` | 8811 / 8770 | 模型伺服器／選變數服務的連接埠，都只綁 127.0.0.1 |
+| `ONEJEV_PORT` / `SELECTOR_PORT` | 8811 / 8770 | 模型伺服器／選變數服務的連接埠，預設都綁 127.0.0.1 |
+| `SELECTOR_HOST` | `127.0.0.1` | 選變數服務的綁定位址；容器要連到主機服務時可改為 `0.0.0.0`，需限制在可信任網路，服務沒有驗證機制；模型仍只綁 loopback |
 | `ONEJEV_PARALLEL` | 4 | llama-server 平行槽數（12 題分給 4 槽，延遲約 5 s → 2.9 s） |
 | `SELECTOR_URL`（Next 端） | `http://127.0.0.1:8770` | route 呼叫的服務位址；設成空字串會完全停用模型 |
 
@@ -86,7 +88,14 @@ curl -s localhost:3000/api/select-variables/ -H 'content-type: application/json'
 
 ## 重跑評估
 
-三個候選都裝在同一個 venv（torch 用 CPU 版）：
+不啟動模型的整合測試（從 repo 根目錄）：
+
+```sh
+cd web
+npx tsx --test app/api/select-variables/*.test.ts lib/detective/keywords.test.ts
+```
+
+以下是重新執行模型評估的步驟，需要另備權重；本次整合只跑上面的離線測試，沒有重跑模型。三個候選都裝在同一個 venv（torch 用 CPU 版）：
 
 ```sh
 VIRTUAL_ENV=.venv uv pip install --index-url https://download.pytorch.org/whl/cpu \

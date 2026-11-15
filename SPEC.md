@@ -17,10 +17,10 @@
 | 使用者 | 高中、大學學生與具科學背景的大眾 |
 | 介面原則 | 精簡、不雜亂；主畫面只放數線與結論卡，其餘收進面板 |
 | 區域 | **只用 basin4 子流域**（1,313 個有序列）；不支援 hex、海域、命名區 |
-| 資料 | 只用月資料；讀取 `web/public/data/series/<區域>.json`（series-2），不在查詢時下載，沒有 Python 後端 |
+| 資料 | 只用月資料；讀取 `web/public/data/series/<區域>.json`（series-2），不在查詢時下載，統計不需要 Python 後端 |
 | 資料發布 | 網站資料**不進 git**。工作線 F 從官方來源跑管線，打包成 GitHub Release 附件；`npm run setup` 依 `web/data.lock.json` 下載並驗證。網站與 setup **絕不使用**暫時的團隊分享站 |
 | 變數 | 以 12 個「類別」為單位（降水、蒸散、土壤水…），每類預設一個資料層，可切換同類其他產品 |
-| AI | 本地開源決策模型（`jev-style` 0.8B，無 API key），對每個類別問「是／否有關」；失敗時退回關鍵字表 |
+| AI | D 評估後選用本地 OneJev1.6-0.8B（無 API key），對每個類別問「是／否有關」；失敗時退回關鍵字表。另可明確設定線上端點，回應標示 `online-model` |
 | 基準期 | 全期間扣除 `[事件起 − pad, 事件止 + pad]`，用來擬合趨勢與季節循環 |
 | 頁面 | 單一路由 `/detective`，變數用分頁切換，完整狀態寫入 URL |
 | 前端基底 | `web-demo` 的 Next.js 元件與樣式；branch `main` |
@@ -131,13 +131,14 @@ flowchart LR
     J --> P[/detective 頁面/]
     P --> A[lib/detective/analysis.ts<br/>瀏覽器內統計]
     P --> R[app/api/select-variables<br/>Next API route]
-    R --> M[本地 jev-style 0.8B<br/>或關鍵字表]
+    R --> M[本地 OneJev 0.8B<br/>或關鍵字表]
 ```
 
 - 前端：Next.js 16、React 19、three.js 地球、d3 圖表、Tailwind 4（沿用 `web-demo`）。
 - 統計：重用 `web/lib/stats.ts`（`mannKendall`、`senSlope`、`monthlyClimatology`、`lag1Autocorrelation`…）。
-- AI：本地模型由 Next API route 透過子程序或本地 HTTP 呼叫；部署到靜態主機時自動退回關鍵字表。
+- 網站後端與部署：Next.js／Node.js standalone，網站與 `/api/select-variables/` 同一容器。設定見 `deploy/README.md`。
+- AI：本地模型由 Next API route 透過 HTTP 呼叫獨立的選變數服務；模型不可用時退回關鍵字表，前端在 API 不可用時也有同一份備案。模型安裝與評估見 `tools/selector/README.md`。
 
 ## 7. 不做（本版）
 
-hex／海域／命名區、日資料、跨變數關聯、水晶球、Python 後端、全球熱點推薦、使用者帳號。
+偵探頁不做 hex／海域／命名區、日資料、跨變數關聯、水晶球、Python 統計後端、全球熱點推薦、使用者帳號。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。

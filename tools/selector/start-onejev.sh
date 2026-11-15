@@ -1,5 +1,5 @@
 #!/bin/sh
-# Start OneJev1.6-0.8B (GGUF, llama.cpp, CPU) on 127.0.0.1:8811 and the selector service on 127.0.0.1:8770.
+# Start OneJev on loopback and the selector on SELECTOR_HOST (loopback by default).
 # Requires: llama-server on PATH, the venv from README.md, and ONEJEV_GGUF pointing at a local .gguf.
 set -eu
 cd "$(dirname "$0")"
@@ -18,5 +18,5 @@ until curl -sf -m 1 "http://127.0.0.1:$MODEL_PORT/v1/models" >/dev/null; do
   kill -0 $MODEL_PID 2>/dev/null || { echo "model server exited" >&2; exit 1; }
   sleep 1
 done
-exec_selector() { .venv/bin/python -I serve.py --backend onejev --upstream "http://127.0.0.1:$MODEL_PORT" --port "$SELECTOR_PORT"; }
+exec_selector() { .venv/bin/python -I serve.py --backend onejev --upstream "http://127.0.0.1:$MODEL_PORT" --host "${SELECTOR_HOST:-127.0.0.1}" --port "$SELECTOR_PORT"; }
 exec_selector

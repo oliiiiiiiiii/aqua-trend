@@ -2,9 +2,14 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { DetectiveQuery } from "./contracts";
+import { suggestedTime } from "./keywords";
 import { decodeQuery, decodeState, encodeQuery, encodeState, formatRange, suggestTime, urlCodec } from "./url";
 
 describe("suggestTime (T from E)", () => {
+  it("shares the API parser so input and selector suggestions cannot diverge", () => {
+    assert.equal(suggestTime, suggestedTime);
+    assert.deepEqual(suggestTime("2021 年二月至五月乾旱"), { start: "2021-02", end: "2021-05" });
+  });
   const cases: [string, string | null][] = [
     ["2021 台灣春季大旱", "2021-01..2021-12"],
     ["2022 年 7 月巴基斯坦洪水", "2022-07..2022-07"],

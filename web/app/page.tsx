@@ -54,6 +54,9 @@ export default function Home() {
               >
                 Open the globe
               </Link>
+              <Link href="/detective" className="text-on-stage underline underline-offset-4">
+                Investigate an Earth event
+              </Link>
               <Link href="/methods" className="text-on-stage underline underline-offset-4">
                 How the numbers are made
               </Link>

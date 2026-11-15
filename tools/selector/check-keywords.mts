@@ -1,7 +1,7 @@
 // 關鍵字表與時間解析的快速檢查：node tools/selector/check-keywords.mts（Node 22.6+ 會自動剝除型別）
 import { suggestedTime, keywordSelect, matchedRules } from "../../web/lib/detective/keywords.ts";
 const cases: [string, string|null][] = [
- ["2021 台灣春季大旱","2021-03..2021-05"],
+ ["2021 台灣春季大旱","2021-01..2021-12"],
  ["2021 年 2 月到 5 月台灣乾旱","2021-02..2021-05"],
  ["2021年2-5月台灣乾旱","2021-02..2021-05"],
  ["2020 年 11 月至 2021 年 2 月","2020-11..2021-02"],
@@ -18,7 +18,8 @@ const cases: [string, string|null][] = [
  ["2019-2020 fires","2019-01..2020-12"],
  ["2019–20 澳洲黑色夏季","2019-01..2020-12"],
  ["2022 Pakistan floods","2022-01..2022-12"],
- ["Texas winter storm 2021","2020-12..2021-02"],
+ ["Texas winter storm 2021","2021-01..2021-12"],
+ ["Nov – Feb 2020","2019-11..2020-02"],
  ["夏威夷 2023 野火","2023-01..2023-12"],
  ["Amazon drought","null"],
  ["b4-4040046370 drought","null"],
