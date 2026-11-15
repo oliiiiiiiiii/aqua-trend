@@ -1,25 +1,33 @@
 # Container deployment
 
-The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/` (the old `/explore` demo was removed in the 2026-11-15 UI refresh), `POST /api/select-variables/`, and the public dataset. The default container uses keyword selection immediately; no model, model download, Python service, or API key is required.
+The repository and pinned GitHub Release assets are public. Deployment requirements and implementation gaps are defined in [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格). This guide describes commands supported by the current code; it does not establish a hosting provider or automatic deployment.
+
+The image runs the Next.js standalone server with Node.js 24 on port 8080. It serves `/detective/` (the old `/explore` demo was removed in the 2026-11-15 UI refresh), `POST /api/select-variables/`, `GET /api/daily-series/`, and the public monthly dataset. The default container uses keyword selection immediately; monthly analysis requires no model, model download, Python service, or API key. Optional daily queries require an Earthdata credential at runtime.
 
 The runtime runs as UID/GID `1000:1000`. Compose keeps its filesystem read-only, with writable temporary mounts at `/tmp` and `/app/.next/cache`. Compiled application files, required Node dependencies, and public data are included in the image. The data setup marker `public/data/.bundle` is excluded from the served output.
 
 ## Build on a new host
 
-Install Git, Node.js 24 with npm, and Docker with Compose. Start the Docker engine. Obtain a checkout of this private repository, then prepare its pinned data on the host:
+Install Git, Node.js 24 with npm, curl, tar, and Docker with Compose. Start the Docker engine. Clone over HTTPS and prepare the pinned public data on the host. The commands stop at the first failure:
 
 ```sh
-git clone git@github.com:oliiiiiiiiii/aqua-trend.git
-cd aqua-trend/web
-npm ci
-npm run setup
-cd ..
+git clone https://github.com/oliiiiiiiiii/aqua-trend.git &&
+cd aqua-trend/web &&
+npm ci &&
+AQUA_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
+AQUA_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/aqua-data.XXXXXX")" &&
+curl --fail --location --retry 3 "$AQUA_DATA_URL" --output "$AQUA_DATA_FILE" &&
+npm run setup -- --file "$AQUA_DATA_FILE" &&
+rm -f "$AQUA_DATA_FILE" &&
+cd .. &&
 docker compose up --build -d
 ```
 
-`npm run setup` downloads the private GitHub Release asset pinned by `web/data.lock.json`, verifies its SHA-256, and extracts `web/data` and `web/public/data`. Authenticate the host's GitHub CLI with repository access, or supply `GITHUB_TOKEN` to the host setup command. Repository checkout authentication and Release access must both be available. Docker receives neither GitHub credentials nor a token build argument.
+This flow needs no GitHub login, SSH key, `gh`, or token. The URL comes from `web/data.lock.json`; `setup --file` verifies SHA-256 before replacing and extracting `web/data` and `web/public/data`. For a release deployment, check out the intended commit before preparing the data and record that SHA. A failed download or setup can leave the temporary archive for inspection; remove it after resolving the failure.
 
-If you already have the pinned archive, replace `npm run setup` with:
+**Current implementation gap:** `npm run setup` without `--file` still selects the GitHub CLI or a token-based API path. Public visibility alone does not change that script. Use the anonymous download above until the automatic public-download requirement in the SPEC is implemented. The Dockerfile requires prepared data in its build context; a bare `docker compose up --build` on an empty checkout cannot bootstrap it.
+
+If you already have the pinned archive, skip the download and prepare it from `web/` with:
 
 ```sh
 npm run setup -- --file /absolute/path/to/aqua-trend-data-v2.tar.gz
@@ -48,6 +56,37 @@ docker compose logs --tail=100 web
 Expected results are `ok` from health, successful data and page responses, 17 category votes with `source: "keyword-fallback"` from the default API, and HTTP 404 for the unknown route and `.bundle`. Invalid API input returns HTTP 400. The healthcheck probes `/healthz/` every 30 seconds; it checks the web server without requiring an optional model service.
 
 Next.js retains `trailingSlash: true`: `/detective`, `/healthz`, and `/api/select-variables` redirect to their slash-ending paths. Use the trailing slash when posting to the API, or use a client that follows the HTTP 308 redirect while preserving the method and body. Hashed Next.js assets receive immutable caching; public data uses Next.js public-file caching with `max-age=0`.
+
+## Optional daily data
+
+Keep the pinned monthly bundle in the image. For a selected event lasting one calendar month, the browser automatically fetches supported daily products in sequential chunks of at most three days. The Next.js API reads small NASA Cloud OPeNDAP subsets, computes basin averages in memory, and caches only the resulting series. It does not download the full daily archive or require a persistent data volume. Longer selections and unsupported products continue to use monthly data.
+
+Provide an Earthdata Login token using **one** of these runtime mechanisms:
+
+- `EDL_TOKEN`: a secret environment variable supplied by your hosting platform or shell. The base Compose file passes this optional variable through.
+- `EDL_TOKEN_FILE`: the path to a readable, mounted secret inside the container. Prefer this when using Compose locally.
+
+For the file option, save the token in the ignored repository-root `.edl.token`, then run from the repository root:
+
+```sh
+chmod 600 .edl.token
+docker compose -f compose.yaml -f deploy/compose.earthdata.yaml up --build -d
+```
+
+The override mounts the token read-only at `/run/secrets/earthdata_token`. Set `EDL_TOKEN_HOST_FILE` to use another host file. Continue to include both `-f` arguments when updating or recreating this service. The token file is excluded from Git and the Docker build context. Never copy it into `web/public`, the Dockerfile, a build argument, or a `NEXT_PUBLIC_` variable. No Earthdata credential is needed during build.
+
+From a running instance with the token configured, a bounded check is:
+
+```sh
+curl --fail --max-time 60 \
+  'http://localhost:8080/api/daily-series/?region=b4-4040046370&layer=tair&start=2021-02-01&end=2021-02-03'
+```
+
+Check `resolution: "daily"`, the three calendar dates, nullable values, and source metadata. A missing or rejected credential produces a controlled error; the monthly application still works. `/healthz/` checks the web server without calling NASA. Route errors never expose the credential or upstream response bodies.
+
+The in-memory result cache is bounded to 32 MiB per process and expires after 24 hours; it is cleared on restart. Public deployments should additionally enforce request limits at the ingress. NASA reads have an application concurrency limit, deadline, and response-size limit. Queries that miss those limits show a daily-data failure while preserving the monthly view. Dataset mappings, units, missing-data rules, and measured limits are in [`docs/daily-data.md`](../docs/daily-data.md).
+
+For development, put `EDL_TOKEN_FILE=../.edl.token` in `web/.env.local`; Compose does not read that file. For a standalone production process, supply the variable directly through its runtime environment.
 
 ## Optional selector backends
 
@@ -95,7 +134,7 @@ Compose maps `host.docker.internal` to Docker's host gateway, including on Linux
 
 ## Update, move, and stop
 
-After changing code, rebuild. If `web/data.lock.json` changed, run host setup again first:
+After changing code, rebuild. If `web/data.lock.json` changed, repeat the public download and `setup --file` preparation using the new lockfile first:
 
 ```sh
 docker compose up --build -d
@@ -110,7 +149,7 @@ docker build -t YOUR_REGISTRY/aqua-trend:YOUR_TAG .
 docker push YOUR_REGISTRY/aqua-trend:YOUR_TAG
 ```
 
-The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Publishing the image also publishes its public dataset, so use a private registry if the dataset must remain private. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep a previous image tag for rollback.
+The destination host needs Docker and the built image; it does not need Node.js, source data setup, GitHub credentials, or model files for keyword mode. Run the image on container port 8080, preserving the Compose runtime settings. Configure the image as publicly readable when publishing the public distribution; pushing it still requires registry write permission. `YOUR_REGISTRY` and `YOUR_TAG` are placeholders, and no published registry image is established by these examples. Build for the destination architecture when needed, for example `docker buildx build --platform linux/amd64 -t YOUR_REGISTRY/aqua-trend:YOUR_TAG --push .`. Keep the previous image digest for rollback.
 
 For a local production run without Docker, run `npm run build` and `npm start` from `web`. The postbuild script prepares `.next/standalone` with public and Next.js static assets; `npm start` starts that packaged server. Set `HOSTNAME=0.0.0.0 PORT=8080 SELECTOR_BACKEND=keyword` to match the container's network and selector settings.
 

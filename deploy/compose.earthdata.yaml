@@ -1,0 +1,10 @@
+services:
+  web:
+    environment:
+      EDL_TOKEN_FILE: /run/secrets/earthdata_token
+    secrets:
+      - earthdata_token
+
+secrets:
+  earthdata_token:
+    file: ${EDL_TOKEN_HOST_FILE:-./.edl.token}

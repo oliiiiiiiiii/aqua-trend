@@ -3,6 +3,7 @@
 > NASA Space Apps Challenge 2026「Be An Earth System Trend Detective!」。更新日期：2026-11-15（Asia/Taipei）。
 > 流程來源：[`docs/FLOW.md`](docs/FLOW.md)。實作分工與整合方式：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)。
 > 介面約定：[`web/lib/detective/contracts.ts`](web/lib/detective/contracts.ts)。
+> 公開 repo 部署規格：本文件 §7。建置、資料下載或 CI/CD 工作先讀該節；現有操作指令見 [`deploy/README.md`](deploy/README.md)。
 > 原始資料：團隊分享站 http://meow1.csie.ntu.edu.tw:3266/（暫時，只供開發參考），盤點與使用規則見 [`docs/DATA_SHARE.md`](docs/DATA_SHARE.md)。網站資料由 `npm run setup` 從 GitHub Release 下載。
 > 本文件取代 `docs/earth-system-*.md`（舊研究者導向規格，保留作參考，衝突時以本文件為準）。
 
@@ -18,7 +19,8 @@
 | 介面原則 | 精簡、不雜亂；主畫面只放數線與結論卡，其餘收進面板 |
 | 區域 | **只用 basin4 子流域**（1,313 個有序列）；不支援 hex、海域、命名區 |
 | 資料 | 只用月資料；讀取 `web/public/data/series/<區域>.json`（series-2），不在查詢時下載，統計不需要 Python 後端 |
-| 資料發布 | 網站資料**不進 git**。工作線 F 從官方來源跑管線，打包成 GitHub Release 附件；`npm run setup` 依 `web/data.lock.json` 下載並驗證。網站與 setup **絕不使用**暫時的團隊分享站 |
+| 原始碼發布 | GitHub public repo：`https://github.com/oliiiiiiiiii/aqua-trend`；使用 HTTPS 匿名 clone，部署以明確的 commit SHA 為版本 |
+| 資料發布 | 網站資料**不進 git**。工作線 F 將處理後資料發布為公開 GitHub Release 附件；以 `web/data.lock.json` 的版本與 SHA-256 下載、驗證。匿名建置的要求與現況見 §7；網站與 setup 不依賴暫時的團隊分享站 |
 | 變數 | 以 17 個「類別」為單位（降水、蒸散、土壤水…），每類預設一個資料層，可切換同類其他產品；只提供年資料的 SO₂ 暫不開放月分析 |
 | AI | D 評估後選用本地 OneJev1.6-0.8B（無 API key），對每個類別問「是／否有關」；失敗時退回關鍵字表。另可明確設定線上端點，回應標示 `online-model` |
 | 基準期 | 全期間扣除 `[事件起 − pad, 事件止 + pad]`，用來擬合趨勢與季節循環 |
@@ -139,15 +141,106 @@ flowchart LR
     P --> A[lib/detective/analysis.ts<br/>瀏覽器內統計]
     P --> R[app/api/select-variables<br/>Next API route]
     R --> M[本地 OneJev 0.8B<br/>或關鍵字表]
+    P -->|短區間| D[app/api/daily-series<br/>有容量上限的記憶體快取]
+    D -->|按區域與日期取子集| O[NASA Cloud OPeNDAP]
 ```
 
 - 前端：Next.js 16、React 19、three.js 地球、d3 圖表、Tailwind 4（沿用 `web-demo`）。
 - 統計：重用 `web/lib/stats.ts`（`mannKendall`、`senSlope`、`monthlyClimatology`、`lag1Autocorrelation`…）。
-- 網站後端與部署：Next.js／Node.js standalone，網站與 `/api/select-variables/` 同一容器。設定見 `deploy/README.md`。
+- 網站後端與部署：Next.js／Node.js standalone，網站、`/api/select-variables/` 與 `/api/daily-series/` 同一容器。公開部署契約見 §7，操作指令見 [`deploy/README.md`](deploy/README.md)。
 - AI：本地模型由 Next API route 透過 HTTP 呼叫獨立的選變數服務；模型不可用時退回關鍵字表，前端在 API 不可用時也有同一份備案。模型安裝與評估見 `tools/selector/README.md`。
 
-## 7. 不做（本版）
+## 7. 公開 repo 部署規格
 
-偵探頁不做 hex／海域／命名區、日資料、跨變數關聯、水晶球、Python 統計後端、全球熱點推薦、使用者帳號。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。
+### 7.1 目標與交付物
 
-2026-11-15 UI 改版已推翻其中「不做水晶球」一項：偵探頁現在使用水晶球（見 `docs/ux-refresh.md`），舊的 `/explore` 展示頁與合成 leads 已刪除。
+任何人都能從公開 repo 與公開資料附件建置月資料分析網站，不需要維護者的 GitHub、NASA 或模型帳號。日資料查詢是選用功能，需部署者於執行期提供 Earthdata token。交付物是可搬到其他主機執行的容器映像，保留網站、資料與 API。目標主機或雲端平台尚未指定，本規格不綁定廠商。
+
+| 項目 | 契約 |
+| --- | --- |
+| 原始碼 | `https://github.com/oliiiiiiiiii/aqua-trend.git`；`main` 為整合分支，每次部署記錄實際 commit SHA |
+| 網站資料 | 公開 GitHub Release 附件；`web/data.lock.json` 的 `repo`、`tag`、`asset`、`sha256` 是唯一版本依據 |
+| 資料封裝 | 包含 `web/public/data` 與 `web/data`；包含目錄、區域序列與地球前處理輸入，略過可重建的 `public/data/gen` 與 `.bundle` 標記 |
+| 執行映像 | 由 Dockerfile 建置的 Next.js／Node.js standalone；包含驗證後資料、前端資源與 API |
+| 部署紀錄 | 原始碼 SHA、資料 tag／SHA-256、映像 tag／digest、目標平台、正式 URL、健康檢查結果 |
+
+資料 `.tar.gz` 是建置輸入；容器映像是可執行的發布產物。下載資料附件不等於取得容器映像，repo 公開也不代表網站已經上線。
+
+### 7.2 匿名取得原始碼與資料
+
+1. 以公開 HTTPS URL clone repo，切到預定部署的 commit。
+2. 讀取該 commit 的 `web/data.lock.json`，以匿名 HTTPS 取得對應 Release 附件。
+3. 先比對完整 SHA-256；一致後才解壓並寫入 `.bundle`。下載失敗或校驗不符時，建置須失敗，保留原有可用資料。
+4. 解壓後檢查目錄、前處理輸入與索引引用的區域序列檔，再進入建置。
+
+公開來源的讀取不以 SSH key、`gh auth login`、`GITHUB_TOKEN` 或 Earthdata token 為必要條件。`--file <archive>` 保留為離線或預先下載的入口，仍執行相同校驗。資料更新使用新的 Release 版本與 lockfile，不以同名附件替換既有版本。
+
+**自動化目標**：乾淨的建置環境執行 `npm ci`、`npm run setup` 即可匿名取得鎖定資料。現行腳本仍需補上匿名下載路徑；在完成之前，使用 [`deploy/README.md`](deploy/README.md#build-on-a-new-host) 的公開下載加 `setup --file` 流程。這個差異是待實作項目，不能將目標流程寫成已驗證功能。
+
+### 7.3 建置與執行邊界
+
+```mermaid
+flowchart LR
+    G[公開 GitHub repo<br/>固定 commit] --> B[建置環境]
+    R[公開 Release<br/>lockfile + SHA-256] --> B
+    B --> C[驗證資料與產生地球資源]
+    C --> I[Next.js standalone 容器映像]
+    I --> H[主機或容器平台<br/>HTTPS 網址]
+    H --> U[瀏覽器<br/>月序列統計與圖表]
+```
+
+- 建置端具備 Git、Node.js 24／npm、Docker／Compose，以及下載和解壓工具。先在主機或 CI runner 準備資料，再交給 Docker build；目前 Dockerfile 會在建置前檢查資料，不會自行補下載。
+- 映像包含 `/detective/`、`POST /api/select-variables/`、`GET /api/daily-series/`、`/healthz/` 與必要靜態資料。部署平台須能保留伺服器端 API；純靜態輸出不滿足本規格。
+- 執行端只需要映像與容器執行環境。服務在容器內監聽 `0.0.0.0:8080`；外部連接埠與 HTTPS 由主機、反向代理或平台設定。
+- 沿用 Compose 的非 root 使用者、唯讀根檔案系統及暫存目錄設定。月資料已封裝在映像中，執行時不再下載 Release 或模型權重。啟用日資料時只取指定區域、短日期區間的 NASA 子集，在記憶體內聚合後丟棄原始格網，不建立完整日資料庫，也不依賴本機開發伺服器。
+- 每次發布保存映像 digest。跨 CPU 架構部署時，為目標架構建置並驗證；需要跨次完全重現映像位元組時，另外固定基底映像 digest，目前的 `node:24-alpine` 標籤仍會更新。
+
+### 7.4 模型與部署憑證
+
+預設使用 `SELECTOR_BACKEND=keyword`，無模型服務或 API key 時仍能完成整個分析流程。選用本地或線上模型時，透過執行期環境變數設定；模型服務與權重另行部署。欄位與預設值以 [`deploy/.env.example`](deploy/.env.example) 為準。
+
+公開讀取原始碼、資料與公開映像不需登入。發布映像、寫入 repo 或操作雲端平台則使用維護者／CI 的寫入權限；這些憑證不進 Git、Docker build argument、映像、前端環境變數或輸出紀錄。模型服務不可用、回應無效或超時時，保留關鍵字備案與來源標示。
+
+日資料使用 `EDL_TOKEN` 或 `EDL_TOKEN_FILE`，由平台 secret 或唯讀掛載提供；變數不得加上 `NEXT_PUBLIC_`。未提供、過期或被拒絕時，日資料顯示服務不可用，月資料功能持續可用。Earthdata token 不參與建置或公開 Release 下載。
+
+### 7.5 發布、更新與回滾
+
+發布順序為：固定原始碼版本 → 匿名取得鎖定資料 → 型別與必要測試 → 建置映像 → 容器驗收 → 發布映像 → 更新目標服務 → 外部網址驗收。任何前置階段失敗，都不替換目前服務。
+
+若建立 CI/CD，PR 執行檢查但不更新正式環境；正式發布使用指定的 `main` commit 或發布 tag。平台、registry、環境與觸發規則須記錄在部署設定，不能僅因 repo 可公開讀取就推定已設定自動部署。目前 repo 尚未建立這套工作流程。
+
+映像使用能對應 commit 的 tag，部署保存 digest，保留上一版可用映像。資料 lockfile 改變時重新取得資料並建置；回滾時切回上一版映像，程式與資料一起回復。單純更改模型執行期設定時，重新建立服務即可。
+
+### 7.6 驗收與目前狀態
+
+部署完成須同時滿足下列條件；本機容器通過不等於外部部署已完成：
+
+| 驗收 | 通過條件 |
+| --- | --- |
+| 匿名建置 | 無 GitHub／NASA token、未登入 `gh` 的乾淨環境，可從公開 repo 和鎖定 Release 完成資料準備與建置 |
+| 資料校驗 | 缺檔、錯誤 SHA-256、舊 `.bundle` 標記皆停止建置；不將缺測值改為零 |
+| 服務 | `/healthz/` 回傳 HTTP 200 與 `ok`；網站、目錄與區域序列可讀取 |
+| API | 預設回傳 17 類投票及 `source: "keyword-fallback"`；無效輸入回傳 400；無需先啟動模型 |
+| 操作流程 | 三個預設事件、變數／產品切換、圖表、URL 重新整理與 375px 手機流程可用 |
+| 資料限制 | 年度 SO₂ 保持月分析停用，各產品 caveat 顯示；科學驗收沿用 §4–5 |
+| 發布內容 | `.env`、`data/.bundle` 與不存在路徑回傳 404；映像可在另一台目標架構主機啟動 |
+| 正式上線 | 外部 HTTPS 網址的頁面、資料及 API 驗收通過，並記錄版本組合與回滾版本 |
+
+截至 2026-11-15，公開 repo、`data-v2` 附件、lockfile、Docker／Compose 與本機容器驗證已具備。`setup` 自動匿名下載、CI/CD、registry 發布、目標主機及外部 HTTPS 驗收仍待實作或選定；本次規格改寫只更新文件。
+
+### 7.7 月資料與按需日資料
+
+- 月資料 bundle、月尺度基準期、z 值、歷史排名與趨勢分析維持既有契約。日資料不填補月缺值，也不套用月尺度的季節模型或標準差。
+- 所選事件期間最多 1 個曆月時，僅對目前開啟且有日資料 adapter 的產品自動呼叫 API；更長期間不呼叫。門檻集中於 `web/lib/detective/daily.ts`，依實測調整，不由 AI 在查詢時決定。
+- 前端將月份分成最多 3 天的請求，順序載入並顯示完成進度；尚未載入、已確認缺值及服務失敗是不同狀態。切換條件或離開分頁會中止舊請求；無論日資料狀態如何，月資料仍可使用。
+- API 只接受已知 basin4、已登錄產品及合法完整 UTC 日期，拒絕任意來源 URL 與大範圍請求。NASA 請求有併發、時間及回應大小上限；憑證只發送到固定 NASA HTTPS 資料端點。
+- 原始子集僅在記憶體中處理。快取只保留聚合後序列，容量與有效期受限；重新啟動可清空，不需要永久磁碟或資料庫。
+- 日資料公開來源版本、單位、UTC 日聚合規則、空間平均方法、取得時間與缺值。每日原生格網中心遮罩／面積權重和月資料 0.5° 方法不同，不宣稱數值完全相同。產品無日資料時不插值、不替換成另一個產品。
+
+API、產品對應及效能證據見 [`docs/daily-data.md`](docs/daily-data.md)。此節依後續確認的按需資料需求新增，取代舊文件對「查詢期間一律不得取得新資料」的限制。
+
+## 8. 不做（本版）
+
+偵探頁不做 hex／海域／命名區、跨變數關聯、Python 統計後端、全球熱點推薦、使用者帳號。日資料限 §7.7 的短期原始值細節，不新增日尺度異常／趨勢模型。選用的本地 AI 服務可使用 Python，與瀏覽器內的統計分析分開。
+
+2026-11-15 UI 改版：偵探頁改用水晶球（推翻原「不做水晶球」），舊的 `/explore` 展示頁與合成 leads 已刪除；見 `docs/ux-refresh.md`。

@@ -5,8 +5,8 @@
 >
 > **主線整合狀態（2026-11-15）**：A、B、C、D、E、F 已合併；`/detective` 使用真實統計、圖表、類別與預設事件，選變數呼叫 D API，失敗時使用共用關鍵字備案。容器使用 Next.js／Node.js standalone，見 [`deploy/README.md`](../deploy/README.md)。資料更新為 `data-v2`：34 層、17 類別；SO₂ 年資料不提供月分析。台灣預設維持 2021-02..2021-05。
 >
-> **開始前先取得網站資料**（資料不在 git 裡）：`cd web && npm i && npm run setup`。
-> repo 是私有的，下載需要已登入的 `gh`（`gh auth login`）或環境變數 `GITHUB_TOKEN`；也可以手動下載 Release 附件後執行 `npm run setup -- --file <檔案>`。`npm run dev` 會在資料不存在時自動執行 setup。
+> **開始前先取得網站資料**（資料不在 git 裡）：repo 與 Release 已公開，先依 [`deploy/README.md`](../deploy/README.md#build-on-a-new-host) 匿名下載鎖定附件，再用 `npm run setup -- --file <檔案>` 校驗與安裝。
+> 建置、資料下載或 CI/CD 工作先讀 [`SPEC.md` §7](../SPEC.md#7-公開-repo-部署規格)。現行 setup 的自動匿名下載仍待實作；公開部署不以 `gh` 登入或 `GITHUB_TOKEN` 為前提。
 
 ## 0. 規則
 
@@ -143,7 +143,7 @@
 規則：
 - **先讀 [`docs/DATA_SHARE.md`](DATA_SHARE.md)**。
 - **最終管線必須從官方來源下載**，任何人都能用 Earthdata 帳號重跑。開發時可以暫時從分享站取檔加速，但不可寫死在管線裡。
-- 需要 Earthdata 帳號（`~/.netrc`），帳密不可 commit。只有 F 需要；其他工作線只用 setup 下載的 bundle。
+- 重跑管線需要 Earthdata 帳號與 token，憑證不可 commit；一般月資料部署只用 setup 下載的 bundle。選用的按需日資料 API 另由部署者提供伺服器端 `EDL_TOKEN`／`EDL_TOKEN_FILE`，見 `docs/daily-data.md`。
 - 管線要能重跑：同一個資料來源再跑一次，只更新那一層，其他層不動。每個資料層在 `variables.json` 記錄來源（`share` 或 `giovanni`）和處理日期。
 - 優先順序：
   1. 分享站上已有檔案、而且 series-2 還沒有的子流域變數：FIRMS 火點數（`fire_count`）、OMI SO₂、MOD10CM 積雪覆蓋。
@@ -178,7 +178,7 @@ flowchart LR
 
 ## 3. 整合步驟（任何 agent 可執行）
 
-1. `git checkout main && git pull && cd web && npm i && npm run setup`
+1. 切到最新 `main`，在 `web/` 執行 `npm ci`，依部署說明匿名下載 lockfile 指定的 Release 附件，再執行 `npm run setup -- --file <檔案>`。
 2. 依序合併：F → E → A → D → B → C（C 最後，因為它把其他部分接起來）。F 之後若又更新資料，可以隨時再合併。每合併一個跑 `cd web && npm run typecheck`。
 3. 衝突處理：除 `contracts.ts` 外，檔案擁有者的版本優先；`contracts.ts` 衝突時以較新的 `[contract change]` PR 為準並修正呼叫端。
 4. 把 C 中的假資料替換成真實匯入：`analysis.ts`（A）、`VariableTab`（B）、`/api/select-variables`（D）、`presets.ts`／`categories.ts`（E）。
@@ -224,3 +224,24 @@ F 後續更新 `80f3f6b` 以 `data-v2` 納入 MODIS 夜間地表溫度與 CERES 
 | 顯著性檢定 | Mann–Kendall p、95% CI、需要幾年才顯著 |
 | 示範案例 | 三個預設事件 |
 | 用 AI 找變數 | 本地開源決策模型 |
+
+## 6. 按需日資料契約
+
+依後續需求保留 monthly bundle，新增 `web/lib/detective/daily.ts` 的 `DailyRequest`／`DailySeries` 契約與 `GET /api/daily-series/`。既有 `MonthlySeries`、`Decomposition`、月尺度統計及預設事件維持原介面。
+
+事件選取一個曆月時，`DailyDetail` 自動按三天分批讀取目前產品的每日原始值；長區間、未來月份與未支援產品不請求。當月只查已結束的 UTC 日期。結果先於月尺度分析成功／失敗狀態呈現，月基準不足不會阻止獨立的日資料查詢。
+
+API 使用伺服器端 Earthdata token，原始格網不落盤，聚合結果快取有容量、有效期與併發限制。每日原生格網的多邊形平均不同於既有月資料 0.5° 重採樣，來源明示方法，圖表不拼接或混算 z 值。單位、完整日覆蓋及缺值規則見 [`daily-data.md`](daily-data.md)。
+
+檢查指令：
+
+```sh
+cd web
+npx tsx --test lib/detective/*.test.ts lib/detective/daily-server/*.test.ts components/detective/*.test.ts app/api/select-variables/*.test.ts app/api/daily-series/*.test.ts
+npm run typecheck
+DAILY_TEST_URL=http://localhost:4319 node scripts/daily-detail.test.mjs
+```
+
+瀏覽器檢查使用明示的測試資料與 mock API，不消耗 NASA 額度；真實 API 的小範圍實測另記於 `daily-data.md`。公開部署與選用憑證掛載見 [`../deploy/README.md`](../deploy/README.md#optional-daily-data)。
+
+本次整合驗收：227 項 TypeScript 測試、型別檢查、production Docker build 通過。瀏覽器涵蓋短期分批載入、部分失敗與重試、切換條件的舊回應、閏日／未來日期、月資料失敗、空資料、鍵盤操作及手機版。正式容器透過唯讀 secret 掛載完成真實 Earthdata 查詢；未替換既有 8080 服務，也未發布到外部主機。

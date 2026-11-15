@@ -1,0 +1,59 @@
+# 按需日資料
+
+月資料 bundle 繼續作為既有統計的輸入。使用者選擇一個曆月及支援的產品時，網站自動取得該流域的每日原始值；長期間不呼叫日資料 API。這項功能不建立完整日資料庫，也不修改既有月資料或預設事件。
+
+## 查詢流程
+
+1. 只對目前開啟的產品分頁查詢；日期、地點與產品確定後延遲 400 ms 發送，避免輸入過程反覆呼叫。
+2. 將所選月份切成最多 3 天的小區間，順序呼叫 `GET /api/daily-series/?region=…&layer=…&start=YYYY-MM-DD&end=YYYY-MM-DD`。日期包含首尾日，採 UTC。
+3. 後端驗證 region、產品與日期，只向固定 NASA HTTPS 來源取得小範圍文字格網：GLDAS 使用 DAP2 ASCII，IMERG 使用 DAP4 CSV，以讀取 DAP2 不支援的 Int8 完整度計數。原始內容在記憶體處理後釋放。
+4. 每完成一批，前端更新每日原始值與進度。尚未載入的日期和已載入但缺值的日期分別標示。切換條件會中止舊請求，舊回應不能覆寫新圖。
+5. 失敗時保留月資料與已完成的日資料，顯示錯誤和重試。只有完整月份會進入瀏覽器的完成結果快取；後端以有容量上限的快取重用已完成批次。
+
+當月查詢只取已結束的 UTC 日期，保留原選取月份並標示實際截止日；未來月份不發送日資料請求。
+
+長期趨勢、季節循環、z 值與歷史排名仍用月資料。日資料沒有另外計算日尺度 z 值，不能將這個功能描述成解決所有「資料不足」：原始觀測缺口、產品截止日期與月尺度基準不足仍然存在。
+
+## 來源與科學邊界
+
+- GLDAS Noah 2.1 0.25° 三小時產品：`GLDAS_NOAH025_3H` v2.1，CMR collection `C1342986035-GES_DISC`。每日瞬時量由當天 00、03、…、21 UTC 的八筆值聚合；前三小時平均／累積量由當天 03 UTC 到隔天 00 UTC 的八個區間聚合。
+- GPM IMERG Final Daily v07：`GPM_3IMERGDF`，collection `C2723754864-GES_DISC`。`precipitation` 已是 `mm/day`，不再乘以 24。它的維度順序是 time、longitude、latitude，與 GLDAS 的 time、latitude、longitude 不同。
+- [IMERG 日產品](https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary?keywords=imerg)可能將不足 48 筆的有效半小時平均換算成全天值。因此同時取得 `precipitation_cnt`，僅保留計數為 48 的格點，再檢查流域有效面積；不把未完整覆蓋的一天當成完整觀測。
+- 日資料只讀取目錄中既有 basin4 多邊形，以原生格網中心是否位於流域內建立遮罩，再依 `cos(latitude)` 加權。它與月資料的 0.5° 重採樣／遮罩算法不同；來源欄位須揭露差異，不把兩者拼接成同一條分析序列。
+- 缺測、填充值或當天不完整的三小時覆蓋不改成零；有效日值須符合空間覆蓋門檻。沒有可用原生格點的流域不以框平均或任意鄰近點代替。
+- 未完成日資料對應的產品維持月資料，例如 GRACE、MERRA-2 替代產品與年度 SO₂。產品集合以 `web/lib/detective/daily.ts` 為準；不因類別相同而偷偷替換來源。
+
+資料存取依 NASA 的 [Cloud OPeNDAP 教學](https://github.com/nasa/gesdisc-tutorials/blob/main/notebooks/How_to_Access_Cloud_OPeNDAP_Granules_Using_Python.ipynb)。舊 GDS／Hydrology Data Rods 已停用，見 [NASA 遷移說明](https://github.com/nasa/gesdisc-tutorials/blob/main/user-guidance/GES_DISC_Migration_to_Earthdata_Website_and_Earthdata_Cloud.md)。Giovanni 的框平均 CSV 不能當成 HydroBASINS 多邊形平均，因此這裡不使用框平均替代。
+
+## 門檻與實測
+
+2026-11-15，以 Earthdata token 對官方服務做小範圍測試：
+
+| 實際請求 | 結果 |
+| --- | --- |
+| GLDAS 單時刻、2×2 格點、ASCII | HTTP 200，約 1.74 秒、320 bytes |
+| GLDAS 完整一天、八個時刻、六個變數、2×2 格點、併發 3 | 八次皆 HTTP 200，共 7.19 秒、10,360 bytes |
+| IMERG 單日、5×5 格點、僅 precipitation 的 ASCII | HTTP 200，約 1.72 秒、592 bytes |
+
+這些是上游小範圍實測，不是完整網站負載或所有流域的效能保證。一次包含額外座標／time_bnds 的 IMERG 請求在 45 秒逾時；後續僅 precipitation 的請求成功，未據此認定逾時原因。
+
+以 GLDAS 一天 7.19 秒粗估，2020 年從 1 月起的區間如下；**下表耗時是推估，沒有逐一完成整段下載**：
+
+| 區間 | 三小時檔案數 | 依單日測試推估首次耗時 |
+| --- | ---: | ---: |
+| 1 個月 | 248 | 約 4 分鐘 |
+| 3 個月 | 728 | 約 11 分鐘 |
+| 6 個月 | 1,456 | 約 22 分鐘 |
+| 12 個月 | 2,928 | 約 44 分鐘 |
+
+因此先採一個曆月自動載入、每批最多 3 天；月資料立即可用，日資料逐批補上。這是請求量與等待時間的限制，並非磁碟容量不足。後續要提高門檻，應先測量完整流域、快取命中率與多人併發，不能直接把小格點測試當成服務保證。
+
+完成整合後，另以台灣 `b4-4040046370` 實際驗證整月瀏覽器流程：2021-02 的 GLDAS 氣溫 28 天分 10 批、約 131 秒完成；正式容器的 2021-03 IMERG 降雨 31 天分 11 批、約 31 秒完成，含每格 48 筆完整度檢查。兩次均取得所有日期的有限日值，瀏覽器無執行錯誤，月圖持續可用。測試有先前小批次快取及上游暖快取影響，且同時有其他測試請求，不能視為冷啟動 SLA。
+
+正式容器也通過非 root／唯讀檔案系統啟動、月資料讀取、三天日資料 API、超範圍拒絕及 secret 檔案掛載檢查。容器映像未包含本機 `.env.local` 或 Earthdata token；只在執行期掛載憑證。
+
+## 執行期設定
+
+使用 `EDL_TOKEN` 或 `EDL_TOKEN_FILE`，僅由伺服器讀取。容器 secret 掛載及本機設定見 [`deploy/README.md`](../deploy/README.md#optional-daily-data)。沒有 token 時仍可建置、部署與使用月資料。
+
+後端聚合結果快取最多 32 MiB／程序、24 小時到期；原始格網不寫入磁碟。瀏覽器只保留最多 20 個完整查詢結果。重啟或淘汰快取後重新取資料，不要求持久磁碟。

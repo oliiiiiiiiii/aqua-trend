@@ -24,7 +24,7 @@ For supported Earthdata products, inspect the downloader's product list first:
 pipeline/.venv/bin/python -I pipeline/fetch_earthdata.py --list
 ```
 
-The downloader discovers granules through NASA CMR and downloads through official DAAC HTTPS or cloud OPeNDAP endpoints. Set `EDL_TOKEN` or `EDL_TOKEN_FILE` in the maintainer's environment, or place the token in the ignored repository-root `.edl.token`. Approve the product's required Earthdata applications/EULAs. Tokens are never needed in the website container. Authorization is forwarded only to NASA HTTPS hosts, and HTTP redirects are refused.
+The downloader discovers granules through NASA CMR and downloads through official DAAC HTTPS or cloud OPeNDAP endpoints. Set `EDL_TOKEN` or `EDL_TOKEN_FILE` in the maintainer's environment, or place the token in the ignored repository-root `.edl.token`. Approve the product's required Earthdata applications/EULAs. The monthly website needs no token; its optional on-demand daily API uses a separate runtime credential configuration described in `deploy/README.md`. Authorization is forwarded only to NASA HTTPS hosts, and HTTP redirects are refused.
 
 The following is an optional, real download and processing workflow, not part of setup or tests:
 

@@ -8,40 +8,103 @@ NASA Space Apps Challenge 2026 —「Be An Earth System Trend Detective!」
 2. 它有**多不尋常**？（z 值、歷史名次）
 3. 背後的**長期趨勢**是什麼、**顯不顯著**？
 
-給高中、大學學生與有科學背景的大眾使用。統計分析在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API；本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
+給高中、大學學生與有科學背景的大眾使用。月資料統計在瀏覽器內完成，不需要 NASA 帳號。網站後端是 Next.js／Node.js，負責選變數 API 與選用的日資料查詢；啟用日資料時，由部署者提供 Earthdata token，網站使用者不必登入 NASA。本地模型可另行啟動 Python 選變數服務，沒有模型時自動使用關鍵字備案。
 
-目前主線已整合 A、B、C、D、E、F。從 [`/detective`](http://localhost:3000/detective/) 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
+目前主線已整合 A、B、C、D、E、F。啟動後從 `/detective/` 輸入事件或選擇預設事件，即可分析資料 bundle 中的真實月序列。事件、期間、子流域、變數、產品與目前分頁會保留在 URL，可重新整理或分享。`/dev/detective-chart` 仍是使用假資料的圖表開發頁。
 
 - 產品規格：[`SPEC.md`](SPEC.md)
+- 公開 repo 部署規格：[`SPEC.md` §7](SPEC.md#7-公開-repo-部署規格)
 - 分工與整合：[`docs/INTEGRATION.md`](docs/INTEGRATION.md)
 - 介面約定：[`web/lib/detective/contracts.ts`](web/lib/detective/contracts.ts)
 - 預設事件驗證：[`docs/presets-validation.md`](docs/presets-validation.md)
 
-## 如何執行
+## 公開 repo 部署（Docker）
 
-建議使用 Node.js 24，與容器建置版本一致。
+原始碼與網站資料 Release 都已公開。以下流程可在另一台機器自行建置與啟動，不需要 GitHub 登入、SSH key、NASA 帳號或模型 API key。
+
+先安裝 **Git、Node.js 24／npm、curl、tar、Docker 與 Docker Compose**，並啟動 Docker。以下指令適用 macOS、Linux 或 WSL。
+
+### 1. 取得原始碼
+
+```bash
+git clone https://github.com/oliiiiiiiiii/aqua-trend.git &&
+cd aqua-trend
+```
+
+正式發布時選定要部署的 commit，記錄其 SHA；後續資料版本由該 commit 的 [`web/data.lock.json`](web/data.lock.json) 決定。
+
+### 2. 下載並校驗網站資料
+
+資料（月序列、目錄、區域邊界與前處理輸入）放在公開 Release 附件，**不在 Git 內**。從 repo 根目錄執行：
+
+```bash
+cd web &&
+npm ci &&
+AQUA_DATA_URL="$(node -p "const d = require('./data.lock.json'); 'https://github.com/' + d.repo + '/releases/download/' + d.tag + '/' + d.asset")" &&
+AQUA_DATA_FILE="$(mktemp "${TMPDIR:-/tmp}/aqua-data.XXXXXX")" &&
+curl --fail --location --retry 3 "$AQUA_DATA_URL" --output "$AQUA_DATA_FILE" &&
+npm run setup -- --file "$AQUA_DATA_FILE" &&
+rm -f "$AQUA_DATA_FILE" &&
+cd ..
+```
+
+`setup --file` 先驗證 SHA-256，再解壓到 `web/public/data` 與 `web/data`。上面指令以 `&&` 串接，失敗時會停止；只有成功並回到 repo 根目錄後，才繼續下一步。失敗留下的暫存附件可供檢查，排除問題後再刪除。
+
+**目前請使用上面的公開下載流程。** 現行 `npm run setup` 的自動下載仍走 `gh`／token 路徑，自動匿名下載列為 spec 的待實作項目。直接在尚未準備資料的 checkout 執行 Docker build，也會因缺資料而失敗。
+
+已有 lockfile 對應附件時，可從 `web/` 執行 `npm run setup -- --file /absolute/path/to/archive.tar.gz`，省略下載。
+
+### 3. 建置並啟動容器
+
+在 repo 根目錄執行：
+
+```bash
+docker compose up --build -d
+```
+
+開啟 **[http://localhost:8080/detective/](http://localhost:8080/detective/)**。容器使用 Next.js／Node.js standalone，同時提供網站、靜態資料與選變數 API；預設直接使用關鍵字選變數，可在沒有模型服務時運作。
+
+更換主機連接埠可使用 `PORT=8090 docker compose up --build -d`，之後開啟 `http://localhost:8090/detective/`。對外部署時，在目標主機或雲端平台設定網域、HTTPS 與路由至容器內的 8080 port。
+
+### 4. 確認服務
+
+```bash
+docker compose ps
+curl --fail http://localhost:8080/healthz/
+curl --fail http://localhost:8080/data/catalog/variables.json -o /dev/null
+curl --fail http://localhost:8080/api/select-variables/ \
+  -H 'Content-Type: application/json' \
+  -d '{"event":"2022 Pakistan floods"}'
+```
+
+預期容器為 `healthy`，健康檢查回傳 `ok`，目錄可讀取；預設 API 回傳 17 類投票與 `source: "keyword-fallback"`。若改過主機連接埠，檢查網址也要一起調整。遇到問題可執行 `docker compose logs --tail=100 web`。
+
+### 更新、停止與搬移
+
+更新原始碼後，若 `web/data.lock.json` 改變，先重新執行步驟 2 取得新資料，再於 repo 根目錄執行 `docker compose up --build -d`。停止服務使用：
+
+```bash
+docker compose down
+```
+
+搬到其他主機時，可以重做步驟 1–4，或先將映像發布到 registry，再讓目標主機拉取。資料 `.tar.gz` 是建置輸入；Docker 映像則包含可執行的網站、API 與資料。映像發布、跨 CPU 架構及模型環境變數的設定見 [`deploy/README.md`](deploy/README.md)。
+
+目前已提供 Docker／Compose；自動匿名 setup、CI/CD、registry 映像發布與正式主機設定仍待完成。上述網址是本機服務，repo 公開不會自動產生正式網站網址。
+
+## 本機開發
+
+完成上方步驟 1–2 的原始碼與資料準備後，從 repo 根目錄執行：
 
 ```bash
 cd web
-npm i
 npm run dev        # http://localhost:3000/detective/
 ```
 
-網站資料（月時間序列、目錄、區域邊界）**不在 git 裡**，而是放在 GitHub Release 的附件。`npm run dev` 第一次執行時會自動呼叫 `npm run setup`，依 [`web/data.lock.json`](web/data.lock.json) 下載並驗證 sha256，解壓到 `web/public/data` 與 `web/data`。
-
-repo 是私有的，下載需要下列其中一種：
-
-- 已登入的 GitHub CLI：`gh auth login`
-- 環境變數 `GITHUB_TOKEN`（有讀取此 repo 權限的 token）
-- 手動下載 Release 附件後：`npm run setup -- --file <檔案路徑>`
-
-容器部署：先依上面方式取得資料，再回到 repo 根目錄執行 `docker compose up --build -d`，預設開啟 http://localhost:8080 。設定與更新方式見 [`deploy/README.md`](deploy/README.md)。
-
-其他指令：
+`npm run dev` 會檢查已安裝的資料版本並產生地球資源。以下 npm 指令都在 `web/` 執行；Python 指令在 repo 根目錄執行：
 
 | 指令 | 用途 |
 | --- | --- |
-| `npm run setup` | 重新下載網站資料 |
+| `npm run setup -- --file <檔案>` | 校驗並安裝預先下載的公開資料附件 |
 | `npm run typecheck` | TypeScript 型別檢查 |
 | `npm run build` | 建置 Next.js 網站與 API（含 standalone 伺服器） |
 | `npm run start` | 啟動已建置的 Next.js 正式伺服器 |
@@ -52,6 +115,20 @@ repo 是私有的，下載需要下列其中一種：
 1. **輸入**事件文字、期間（`YYYY-MM..YYYY-MM`）與 basin4 子流域（地球上點選或搜尋）；或按一個預設事件。
 2. **選變數**：本地開源模型對 17 個變數類別各投一票（「這個事件和〈淺白定義〉有關嗎？」），預先勾選，使用者再用 checkbox 修改。模型不可用時改用關鍵字表，畫面會標示；沒有可分析月資料的類別不能勾選。
 3. **分析**：每個變數一個分頁，有結論卡、可縮放的數線（原始／季節／趨勢／殘差）、選取區間統計，以及長期趨勢面板。
+
+### 短區間日資料
+
+月資料 bundle 持續保留。當所選事件期間是 **1 個曆月**，支援的產品會自動透過 `/api/daily-series/` 取得該流域的每日原始值；每次最多讀取 3 天，逐批顯示進度。較長期間不呼叫日資料 API。切換地點、產品或月份會中止舊請求，未啟用服務或 NASA 查詢失敗時仍保留月資料。
+
+日資料只補充短期細節；z 值、歷史排名及長期趨勢仍以月資料計算。日資料採原生格網的流域遮罩平均，與月資料的 0.5° 重採樣方法不同，兩者不拼成同一條分析序列。不支援的產品（例如 GRACE 月資料）維持月尺度。
+
+本機開發可將 Earthdata token 存入 repo 根目錄的 `.edl.token`，設定檔案權限為 `600`，再於 `web/.env.local` 加入：
+
+```dotenv
+EDL_TOKEN_FILE=../.edl.token
+```
+
+容器啟用方式見 [`deploy/README.md`](deploy/README.md#optional-daily-data)。token 僅供伺服器執行期使用，不進 Git、映像或前端。來源、門檻實測與限制見 [`docs/daily-data.md`](docs/daily-data.md)。
 
 開發模式的選變數 API 預設連線至本地模型服務，服務未啟動時會使用關鍵字表；Compose 預設直接使用關鍵字表，可透過環境變數啟用模型。模型安裝、評估與選用線上端點見 [`tools/selector/README.md`](tools/selector/README.md)；Docker 連線與環境變數設定見 [`deploy/README.md`](deploy/README.md)。模型權重不包含在網站容器內。
 
