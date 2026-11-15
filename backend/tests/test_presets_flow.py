@@ -589,3 +589,78 @@ def test_unbound_preset_engine_uses_the_same_analysis(tmp_path):
     alone = PresetEngine(rig.store, storage=ResearchStorage(tmp_path / "alone"))
     assert summary(alone.search(rig.plan, C.UserConstraints(phenomenon_query=ps.QUERY))) == summary(rig.search())
     assert preset_id_for(rig.plan, "reg-a", USER_PERIOD) != preset_id_for(rig.plan2, "reg-a", USER_PERIOD)
+
+
+# --------------------------------------------------------------------------- run integration: cancel, progress
+
+def test_T10_cancel_while_the_candidate_list_is_being_declared(rig):
+    seen = []
+
+    def cancel():
+        seen.append(1)
+        return len(seen) > 2                                     # after the first region was looked at
+
+    with pytest.raises(AquaError) as error:
+        rig.presets.search(rig.plan, C.UserConstraints(phenomenon_query=ps.QUERY), cancel=cancel)
+    assert error.value.code == "cancelled"
+    record = rig.storage.load_document("preset_searches", rig.presets.search_key(rig.plan, None, None))
+    assert record["complete"] is False and record["status"] == "cancelled" and record["candidates"] == []
+    assert rig.storage.list_presets() == []
+
+
+def test_T10_a_cancelled_research_run_stops_its_preset_search_and_publishes_nothing(rig):
+    event = threading.Event()
+    details = []
+
+    def on_stage(stage, completed, total, detail=None):
+        details.append((stage, detail))
+        if stage == "resolving_defaults" and detail and detail.startswith("preset search"):
+            event.set()                                          # the user cancels while the search runs
+
+    with pytest.raises(AquaError) as error:
+        rig.engine.run(C.ResearchRequest(phenomenon_query=ps.QUERY), on_stage=on_stage, cancel=event)
+    assert error.value.code == "cancelled"
+    assert ("resolving_defaults", "preset search: declaring candidates") in details
+    record = rig.storage.load_document("preset_searches", rig.presets.search_key(rig.plan, None, None))
+    assert record["complete"] is False and record["presets"] == []
+    assert rig.storage.list_presets() == [] and not (rig.var / "families").exists()
+
+
+def test_section7_a_research_run_reports_the_progress_of_its_preset_search(rig):
+    details = []
+    result = rig.engine.run(C.ResearchRequest(phenomenon_query=ps.QUERY),
+                            on_stage=lambda stage, done, total, detail=None: details.append((stage, detail)))
+    assert result.resolved.preset_status == "applied"
+    seen = [d for s, d in details if s == "resolving_defaults" and d]
+    assert "preset search: analysing candidates" in seen and seen[-1] == "preset search: complete"
+
+
+def test_P09_a_preset_record_without_a_search_is_opened_as_it_is_and_starts_no_search(rig, monkeypatch):
+    """A TEST preset written by hand (no family, no recorded search conditions)."""
+    v = rig.store.versions
+    hand = C.Preset(preset_id="test_hand_written", version="1", source="manual",
+                    selection_plan_id=rig.plan.selection_plan_id,
+                    variable_ids=[x.variable_id for x in rig.plan.variable_set], region_id="reg-a",
+                    period=USER_PERIOD, reasons=[C.PresetReason(text="TEST preset stored by hand.")],
+                    dataset_version=v["dataset_version"], method_policy_version=v["method_policy_version"],
+                    preset_policy_version=v["preset_policy_version"])
+    rig.storage.save_preset(hand)
+    monkeypatch.setattr(rig.presets, "search", lambda *a, **k: pytest.fail("a search was started"))
+    result = rig.run(context=C.RequestContext(preset_ref=C.PresetRef(id="test_hand_written", version="1")))
+    assert result.resolved.preset_status == "opened" and result.resolved.preset.preset_id == "test_hand_written"
+    assert (result.resolved.region.id, result.resolved.region.source) == ("reg-a", "preset")
+    assert (result.resolved.period.start, result.resolved.period.end) == (USER_PERIOD.start, USER_PERIOD.end)
+    assert all(f.scope == "query" for f in result.evidence_families)        # no search correction is invented
+    assert "no record of a preset search" in result.resolved.preset_reason
+
+
+def test_section7_searches_do_not_block_opening_a_stored_preset(rig):
+    """Opening reads stored records; it must not wait for a search that is running."""
+    preset = rig.run().resolved.preset
+    ref = C.PresetRef(id=preset.preset_id, version=preset.version)
+    opened = []
+    with rig.presets._search_lock:                                # a search is in progress elsewhere
+        worker = threading.Thread(target=lambda: opened.append(rig.presets.open(ref).family.family_id))
+        worker.start()
+        worker.join(timeout=10)
+    assert opened == [preset.family_id]

@@ -44,7 +44,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--no-save", action="store_true", help="do not store the result under backend/var")
     parser.add_argument("--var-dir", help="runtime directory (default backend/var or AQUA_VAR_DIR)")
     parser.add_argument("--with-presets", action="store_true",
-                        help="use aqua_trend.presets to fill a blank region / period (when that package exists)")
+                        help="let the preset engine fill a blank region / period (searches, or reuses the stored "
+                             "search under --var-dir); without it a blank field ends as no_matching_preset")
     parser.add_argument("--quiet", action="store_true", help="no stage progress on stderr")
     return parser.parse_args(argv)
 
@@ -118,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         selector = PhenomenonSelector(store)
         preset_engine = None
         if args.with_presets:
-            from aqua_trend.presets import PresetEngine          # provided by the preset work package
+            from aqua_trend.presets import PresetEngine
             preset_engine = PresetEngine(store, storage=storage)
         engine = ResearchEngine(store, selector, preset_engine=preset_engine, storage=storage)
         if preset_engine is not None and hasattr(preset_engine, "bind"):

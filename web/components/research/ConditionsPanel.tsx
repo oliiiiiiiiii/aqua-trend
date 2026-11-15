@@ -46,7 +46,10 @@ export function ConditionsPanel({
   const region = resolved.region;
   const period = resolved.period;
   const typeLabel = region ? (LAYER_LABEL as Record<string, string>)[region.type] ?? region.type : "";
-  const names = new Map(result.variables.map((v) => [v.variable_id, v.label]));
+  const names = new Map<string, string>([
+    ...result.variables.map((v) => [v.variable_id, v.label] as [string, string]),
+    ...result.indicators.map((i) => [i.indicator_id, i.label] as [string, string]),
+  ]);
   const nameOf = (id: string) => names.get(id) ?? id;
   const regionKept = !!region && formRegionId === region.id;
   const periodKept = !!period && formPeriod?.start === period.start && formPeriod?.end === period.end;

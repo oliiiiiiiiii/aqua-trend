@@ -170,8 +170,19 @@ async function main() {
   });
   const shot = async (page, name, fullPage = true) => {
     const file = path.join(SHOTS, name);
-    await page.screenshot({ path: file, fullPage });
-    return path.relative(path.resolve(here, ".."), file);
+    const rel = (f) => path.relative(path.resolve(here, ".."), f);
+    if (!fullPage) { await page.screenshot({ path: file }); return rel(file); }
+    // Firefox refuses images taller than 32767 px; a long result page is saved as consecutive parts
+    const TILE = 16000;
+    const size = await page.evaluate(() => ({ w: document.documentElement.scrollWidth, h: document.documentElement.scrollHeight }));
+    if (size.h <= TILE) { await page.screenshot({ path: file, fullPage: true }); return rel(file); }
+    const parts = [];
+    for (let y = 0, i = 1; y < size.h; y += TILE, i++) {
+      const part = file.replace(/\.png$/, `-part${i}.png`);
+      await page.screenshot({ path: part, fullPage: true, clip: { x: 0, y, width: size.w, height: Math.min(TILE, size.h - y) } });
+      parts.push(rel(part));
+    }
+    return parts.join(", ");
   };
   async function scenario(name, fn) {
     if (ONLY && !ONLY.has(name)) return;

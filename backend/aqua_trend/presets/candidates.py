@@ -21,7 +21,7 @@ slope, p-value or index value is read, so the candidate list cannot depend on a 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Optional, Sequence
+from typing import Any, Callable, Optional, Sequence
 
 from .. import contracts as C
 from ..resolve import period_bounds
@@ -179,11 +179,14 @@ def exclusion_reason(decisions: Sequence[C.ProductDecision], policy: PresetPolic
 
 def declare_candidates(store: Any, resolver: Any, plan: C.SelectionPlan, policy: PresetPolicy,
                        user_region_id: Optional[str], user_period: Optional[C.Period],
-                       manual_adds: Sequence[tuple[str, C.Period, str]] = ()) -> CandidateSet:
+                       manual_adds: Sequence[tuple[str, C.Period, str]] = (), *,
+                       check: Optional[Callable[[], None]] = None,
+                       progress: Optional[Callable[[int, int], None]] = None) -> CandidateSet:
     """Declare every candidate of a search with its product decisions (spec §6 steps 3–5, §8.1).
 
     ``manual_adds`` are (region_id, period, adjustment_id) entries of the manual settings that
     already passed the user-constraint check; they go through the same validity rule.
+    ``check`` may raise to cancel (called once per region); ``progress(done, total)`` counts regions.
     """
     regions, excluded_regions = candidate_regions(store, resolver, plan, policy, user_region_id)
     out = CandidateSet(regions_considered=list(regions), excluded_regions=excluded_regions)
@@ -206,7 +209,11 @@ def declare_candidates(store: Any, resolver: Any, plan: C.SelectionPlan, policy:
         seen[key] = cand
         out.candidates.append(cand)
 
-    for region_id in regions:
+    for number, region_id in enumerate(regions):
+        if check is not None:
+            check()
+        if progress is not None and (number % 20 == 0 or number + 1 == len(regions)):
+            progress(number, len(regions))
         if user_bounds is not None:
             add(region_id, Window(user_bounds[0], user_bounds[1], KIND_USER))
             continue

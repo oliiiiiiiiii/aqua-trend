@@ -122,7 +122,8 @@ class PresetEngine:
         self.store = store
         self.storage = storage
         self._engine = engine
-        self._lock = threading.RLock()
+        self._lock = threading.RLock()                        # guards the two memory caches only
+        self._search_lock = threading.Lock()                  # serialises search computation
         self._searches: OrderedDict[str, SearchOutcome] = OrderedDict()
         self._families: OrderedDict[str, C.EvidenceFamily] = OrderedDict()
 
@@ -178,13 +179,20 @@ class PresetEngine:
             self.store.region(region_id)
         period_bounds(period)
         key = self.search_key(plan, region_id, period)
-        with self._lock:
-            if use_cache:
+        if use_cache:
+            with self._lock:
                 cached = self._cached(key)
+            if cached is not None:
+                return cached
+        with self._search_lock:                               # one search at a time (2 shared cores)
+            if use_cache:
+                with self._lock:                              # another request may have finished it meanwhile
+                    cached = self._cached(key)
                 if cached is not None:
                     return cached
             outcome = self._compute(key, plan, region_id, period, cancel, on_progress)
-            self._remember(key, outcome)
+            with self._lock:
+                self._remember(key, outcome)
             return outcome
 
     def _cached(self, key: str) -> Optional[SearchOutcome]:
@@ -267,7 +275,9 @@ class PresetEngine:
         try:
             check()
             report("declaring_candidates", 0, 0)
-            candset = declare_candidates(self.store, engine.resolver, plan, policy, region_id, period, manual.adds())
+            candset = declare_candidates(
+                self.store, engine.resolver, plan, policy, region_id, period, manual.adds(), check=check,
+                progress=lambda done, total: report("declaring_candidates", done, total))
             timing["declare_candidates_s"] = time.perf_counter() - started
             mark = time.perf_counter()
             analyser = BatchAnalyser(engine, plan)
@@ -536,7 +546,7 @@ class PresetEngine:
     # ------------------------------------------------------------------ fill (engine protocol)
 
     def fill(self, plan: C.SelectionPlan, user_constraints: Any, context: Any = None, *,
-             cancel: Any = None) -> PresetFillResult:
+             cancel: Any = None, on_progress: Optional[ProgressCallback] = None) -> PresetFillResult:
         """Fill ONLY the blank fields of a request (spec §8.1; acceptance P01–P06).
 
         both blank -> one region + one period; region only -> a period for exactly that region;
@@ -549,7 +559,7 @@ class PresetEngine:
         if not missing:
             return PresetFillResult(region_id=region_id, period=period, preset=None, status="not_needed",
                                     reason="both fields were selected by the user; no preset is applied")
-        outcome = self.search(plan, user_constraints, cancel=cancel)
+        outcome = self.search(plan, user_constraints, cancel=cancel, on_progress=on_progress)
         if not outcome.presets:
             return PresetFillResult(region_id=region_id, period=period, preset=None, status="no_matching_preset",
                                     missing=missing, reason=outcome.no_match_reason or "no candidate qualified",
@@ -568,6 +578,12 @@ class PresetEngine:
                                 reason=reason, family=outcome.family, plan=plan, search_id=outcome.search_id,
                                 family_loader=lambda: self.family(outcome.family_id))
 
+    def fill_for_run(self, plan: C.SelectionPlan, user_constraints: Any, context: Any = None, *,
+                     cancel: Any = None, on_progress: Optional[ProgressCallback] = None) -> PresetFillResult:
+        """``fill`` inside a research run: the run's cancel signal stops the search (T10) and the
+        search reports its progress (``on_progress(stage, done, total)``)."""
+        return self.fill(plan, user_constraints, context, cancel=cancel, on_progress=on_progress)
+
     # ------------------------------------------------------------------ open
 
     def open(self, preset_ref: Any, user_constraints: Any = None) -> PresetFillResult:
@@ -583,7 +599,7 @@ class PresetEngine:
         self._check_conflict(preset, user_constraints)
         stale = self._stale(preset)
         reason = (preset.reasons[0].text if preset.reasons else "")
-        if stale:
+        if stale and preset.family_id:
             reason = self._stale_text(preset) + " " + reason
         return PresetFillResult(
             region_id=preset.region_id, period=preset.period, preset=preset, status="opened", reason=reason,
@@ -591,7 +607,8 @@ class PresetEngine:
             search_id=getattr(preset, "search_id", None),
             family_loader=None if stale else (lambda: self.family(preset.family_id)))
 
-    def open_for_run(self, preset_ref: Any, user_constraints: Any = None, *, cancel: Any = None) -> PresetFillResult:
+    def open_for_run(self, preset_ref: Any, user_constraints: Any = None, *, cancel: Any = None,
+                     on_progress: Optional[ProgressCallback] = None) -> PresetFillResult:
         """``open`` for an analysis run: a stale preset gets NEW evidence, the old stays as history (T16).
 
         The search is repeated for the same plan and the same original user constraints under the
@@ -604,6 +621,15 @@ class PresetEngine:
         if not opened.stale:
             return opened
         old = opened.preset
+        if not old.family_id or getattr(old, "search_constraints", None) is None:
+            # A preset record that was not produced by a stored search (e.g. written by hand) has no
+            # search correction to protect and no recorded search to repeat: it is opened as it is,
+            # without a preset-search family.  Guessing its search conditions would start a search
+            # the record never declared.
+            opened.reason = (f"Preset {old.preset_id} version {old.version} carries no record of a preset search; "
+                             "no preset-search correction is attached. "
+                             + (old.reasons[0].text if old.reasons else "")).strip()
+            return opened
         plan = self._plan_for(old.selection_plan_id, opened.plan)
         if plan is None:
             return opened                                      # the engine reports the missing plan
@@ -611,7 +637,7 @@ class PresetEngine:
         user = C.UserConstraints(
             phenomenon_query=plan.phenomenon_query, region_id=constraints.get("region_id"),
             period=C.Period(**constraints["period"]) if constraints.get("period") else None)
-        outcome = self.search(plan, user, cancel=cancel)
+        outcome = self.search(plan, user, cancel=cancel, on_progress=on_progress)
         family = self.family(outcome.family_id)
         supersedes = {"version": old.version, "family_id": old.family_id,
                       "snapshot_id": getattr(old, "snapshot_id", None),

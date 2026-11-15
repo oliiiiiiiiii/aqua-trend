@@ -89,7 +89,9 @@ class PresetEngineProtocol(Protocol):
              context: C.RequestContext) -> Any:
         """Return an object with the attributes of ``PresetFill``; never change a user field."""
 
-    # optional: ``open_for_run(preset_ref)`` or ``open(preset_ref)`` -> PresetFill-like (status
+    # optional: ``fill_for_run(plan, user_constraints, context, cancel=, on_progress=)`` -> as ``fill``, with
+    # the run's cancel signal and a progress callback ``on_progress(stage, done, total)`` (T10).
+    # optional: ``open_for_run(preset_ref, cancel=, on_progress=)`` or ``open(preset_ref)`` -> PresetFill-like (status
     # "opened"); ``open_for_run`` is preferred because it may rebuild the evidence of a preset whose
     # data / policy versions changed (T16).  Without either the engine loads the preset and its
     # family from storage.
@@ -216,6 +218,7 @@ class _Progress:
 
     def __init__(self, on_stage: Optional[StageCallback], cancel: Any):
         self._on_stage, self._cancel = on_stage, cancel
+        self.cancel = lambda: _is_cancelled(cancel)           # handed to a preset search
         self.stage = C.STAGES[0]
 
     def enter(self, stage: str, completed: int = 0, total: int = 0, detail: Optional[str] = None) -> None:
@@ -702,12 +705,23 @@ class ResearchEngine:
             plan = embedded
         return plan.model_copy(update={"reused": True, "reuse_reason": "replay_of_saved_plan"}) if plan else None
 
-    def _open_preset(self, ref: C.PresetRef) -> PresetFill:
+    @staticmethod
+    def _preset_hooks(progress: Optional["_Progress"]) -> dict[str, Any]:
+        """Cancel signal and progress callback handed to a preset search (it can take many seconds)."""
+        if progress is None:
+            return {}
+        return {"cancel": progress.cancel,
+                "on_progress": lambda stage, done, total: progress.report(
+                    done, total, f"preset search: {stage.replace('_', ' ')}")}
+
+    def _open_preset(self, ref: C.PresetRef, progress: Optional["_Progress"] = None) -> PresetFill:
         """Load a preset and its FULL search family from the backend's own records (contract §9.1)."""
         try:
-            opener = getattr(self.preset_engine, "open_for_run", None) or getattr(self.preset_engine, "open", None)
+            runner = getattr(self.preset_engine, "open_for_run", None)
+            opener = runner or getattr(self.preset_engine, "open", None)
             if callable(opener):
-                got = opener(ref)
+                # ``open_for_run`` may repeat a search (T16): it gets the run's cancel signal and progress
+                got = runner(ref, **self._preset_hooks(progress)) if callable(runner) and progress else opener(ref)
                 return PresetFill(region_id=got.region_id, period=got.period, preset=got.preset,
                                   family=got.family, status="opened", missing=[], reason=getattr(got, "reason", ""),
                                   plan=getattr(got, "plan", None))
@@ -724,8 +738,8 @@ class ResearchEngine:
         return PresetFill(region_id=preset.region_id, period=preset.period, preset=preset, family=family,
                           status="opened", reason="; ".join(r.text for r in preset.reasons))
 
-    def _select(self, request: C.ResearchRequest, user: C.UserConstraints,
-                warnings: list[C.Warning_]) -> tuple[C.SelectionPlan, Optional[PresetFill], Optional[C.ResearchResult]]:
+    def _select(self, request: C.ResearchRequest, user: C.UserConstraints, warnings: list[C.Warning_],
+                progress: Optional["_Progress"] = None) -> tuple[C.SelectionPlan, Optional[PresetFill], Optional[C.ResearchResult]]:
         """Selection plan of the run, plus an opened preset / parent research when the context names one."""
         ctx = request.context
         query = normalize_query(request.phenomenon_query or "")
@@ -741,7 +755,7 @@ class ResearchEngine:
                 raise AquaError("invalid_context", f"The parent research {ctx.parent_research_id} cannot be loaded: "
                                                    f"{exc.message}", fields=["context.parent_research_id"]) from exc
         if ctx.preset_ref is not None:
-            opened = self._open_preset(ctx.preset_ref)
+            opened = self._open_preset(ctx.preset_ref, progress)
             preset = opened.preset
             if user.region_id is not None and user.region_id != preset.region_id:
                 raise AquaError("invalid_context",
@@ -780,7 +794,8 @@ class ResearchEngine:
     # ------------------------------------------------------------------ run: defaults
 
     def _resolve_defaults(self, request: C.ResearchRequest, user: C.UserConstraints, plan: C.SelectionPlan,
-                          opened: Optional[PresetFill]) -> tuple[C.ResolvedBlock, Optional[PresetFill]]:
+                          opened: Optional[PresetFill], progress: Optional["_Progress"] = None,
+                          ) -> tuple[C.ResolvedBlock, Optional[PresetFill]]:
         """Keep every user field; let a preset fill only the blanks (spec §8.1; P02–P05)."""
         missing = [name for name, value in (("region_id", user.region_id), ("period", user.period)) if value is None]
         fill: Optional[PresetFill] = None
@@ -794,7 +809,10 @@ class ResearchEngine:
             if self.preset_engine is None:
                 status, reason, still_missing = "no_matching_preset", "preset engine not configured", missing
             else:
-                got = self.preset_engine.fill(plan, user, request.context)
+                # ``fill_for_run`` (optional) is ``fill`` with the run's cancel signal and progress
+                runner = getattr(self.preset_engine, "fill_for_run", None)
+                got = runner(plan, user, request.context, **self._preset_hooks(progress)) \
+                    if callable(runner) else self.preset_engine.fill(plan, user, request.context)
                 fill = PresetFill(region_id=got.region_id, period=got.period, preset=got.preset, family=got.family,
                                   status=got.status, missing=list(got.missing or []), reason=got.reason or "")
                 if fill.status == "applied":
@@ -1081,7 +1099,7 @@ class ResearchEngine:
         user = self._validate(request)
 
         progress.enter("selecting_variables")
-        plan, opened, parent = self._select(request, user, warnings)
+        plan, opened, parent = self._select(request, user, warnings, progress)
         cache_key = self.cache_key(request, plan)
         if use_cache and self.storage is not None and not request.options.reselect:
             cached_id = self.storage.cache_get(cache_key)
@@ -1112,7 +1130,7 @@ class ResearchEngine:
             return self._finish(result, progress)
 
         progress.enter("resolving_defaults")
-        resolved, fill = self._resolve_defaults(request, user, plan, opened)
+        resolved, fill = self._resolve_defaults(request, user, plan, opened, progress)
         region_id = resolved.region.id if resolved.region else None
         period = C.Period(start=resolved.period.start, end=resolved.period.end) if resolved.period else None
         if resolved.preset_status == "no_matching_preset":

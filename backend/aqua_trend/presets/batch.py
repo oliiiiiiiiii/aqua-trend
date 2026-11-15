@@ -267,7 +267,7 @@ class BatchAnalyser:
                 kind = "index" if index_scale else metric.data_kind
                 base = dict(kind="derived_indicator", item_id=rid, metric_id=metric.metric_id, unit=metric.unit,
                             cadence=metric.cadence, product_id=product_id)
-                self._queue(groups, ("recipe", metric.metric_id, product_id, a, b, window[0], window[1], kind,
+                self._queue(groups, ("recipe", f"{rid}/{metric.metric_id}", product_id, a, b, window[0], window[1], kind,
                                      index_scale),
                             _Row(index, self._slot(res), metric.t, metric.values, cand.region_id, delegate, base))
         for phenomenon_id in self._recorded:
