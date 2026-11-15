@@ -53,6 +53,7 @@
 | I49 | Amazon resilience: rolling AR1 of NDVI (critical slowing down) with surrogate test | MODIS NDVI | τ map + series | med | done (task 67: τ>0 on 59%, p=0.15 — not significant) |
 | I50 | Ice loss by region with acceleration (GRACE) | GRACE | curves + rates | low | done (task 68: glaciers & ASE accelerating, Greenland slowing) |
 | I51 | Repeat the resilience test with VOD (AMSR passive microwave, less saturation) or MODIS EVI | LPRM VOD / MOD13C2 EVI | τ map | med | todo |
+| I52 | Calibrate the trend tests on phase-randomised twins (false-alarm rates of naive / MK / AR(1) / FDR) | GRACE, GPCP, OISST, NDVI | grouped bars | low | done (task 69: naive 69% for TWS; AR(1)+FDR ≤5%) |
 
 ## Non-hydrology experiments (user request 2026-11-14: "run non-water data the same way, e.g. earthquakes")
 | id | idea | data | output | cost | status |

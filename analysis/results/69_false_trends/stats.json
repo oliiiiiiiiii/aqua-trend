@@ -1,0 +1,74 @@
+{
+  "tws": {
+    "label": "Water storage (GRACE)",
+    "n_pixels": 5000,
+    "n_months": 276,
+    "median_lag1": 0.9592504704212721,
+    "real": {
+      "naive": 0.9218,
+      "ar1": 0.6674,
+      "mk": 0.757,
+      "ar1_fdr": 0.6888
+    },
+    "surrogate": {
+      "naive": 0.6883600000000001,
+      "ar1": 0.13992000000000002,
+      "mk": 0.22479999999999997,
+      "ar1_fdr": 0.04708
+    }
+  },
+  "p_gpcp": {
+    "label": "Rainfall (GPCP)",
+    "n_pixels": 5000,
+    "n_months": 564,
+    "median_lag1": 0.12601374058736467,
+    "real": {
+      "naive": 0.5448,
+      "ar1": 0.5052,
+      "mk": 0.4614,
+      "ar1_fdr": 0.5052
+    },
+    "surrogate": {
+      "naive": 0.20764,
+      "ar1": 0.15775999999999998,
+      "mk": 0.12784,
+      "ar1_fdr": 0.0504
+    }
+  },
+  "sst": {
+    "label": "Sea temperature (OISST)",
+    "n_pixels": 5000,
+    "n_months": 528,
+    "median_lag1": 0.7203282749841526,
+    "real": {
+      "naive": 0.9094,
+      "ar1": 0.776,
+      "mk": 0.7796,
+      "ar1_fdr": 0.8002
+    },
+    "surrogate": {
+      "naive": 0.41112000000000004,
+      "ar1": 0.09064,
+      "mk": 0.09384,
+      "ar1_fdr": 0.00516
+    }
+  },
+  "ndvi": {
+    "label": "Greenness (MODIS NDVI)",
+    "n_pixels": 5000,
+    "n_months": 300,
+    "median_lag1": 0.6268207305179155,
+    "real": {
+      "naive": 0.7306,
+      "ar1": 0.477,
+      "mk": 0.4896,
+      "ar1_fdr": 0.4724
+    },
+    "surrogate": {
+      "naive": 0.34728,
+      "ar1": 0.08656,
+      "mk": 0.09312000000000001,
+      "ar1_fdr": 0.01036
+    }
+  }
+}

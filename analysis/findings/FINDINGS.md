@@ -264,6 +264,14 @@ Verdict scale: **Robust** = significant in both tests + physically consistent se
 - Total ≈ 35 mm of sea-level rise since 2002.
 - Visual: `results/68_ice_loss_acceleration/ice_loss_by_region.png`.
 
+## W30. How many "significant" trends does a naive test find in data that has none? For water storage: 69% — **Teaching result (calibration of our own tests)**
+- Trend-free twins: phase-randomised surrogates with each pixel's real spectrum, 5,000 pixels × 4 variables.
+- A naive t-test flags 69% (water storage), 41% (sea temperature), 35% (greenness) and 21% (rain) of the twins.
+- AR(1) correction alone still leaves 9–16%, because decadal swings aren't captured by one-month memory.
+- AR(1) + FDR across the map leaves ≤5%.
+- Real data pass 47–80% of the time, so the reported trends are not test artefacts.
+- Visual: `results/69_false_trends/false_trends.png`.
+
 ## W11. Null results worth showing (honesty = credibility)
 - **Amazon resilience loss (task 67):** NDVI lag-1 autocorrelation rose on 59% of forest pixels (forest-mean τ = +0.38), but the surrogate p = 0.15, and there is no link with dry-season drying. No robust early-warning signal yet.
 - **Hydroclimate whiplash (dry↔wet swings) is not robustly increasing at monthly scale over land (task 38).**

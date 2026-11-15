@@ -76,6 +76,7 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 | [N28](#n28) | When the sea warms, the clouds thin: low-cloud feedback +7 W/m² per K (CERES + OISST) | `results/66_cloud_sst_feedback/cloud_sst_feedback.png` |
 | [W44](#w44) | Ice loss by region: glaciers & Amundsen Sea speed up, Greenland slowed after 2012 | `results/68_ice_loss_acceleration/ice_loss_by_region.png` |
 | [W45](#w45) | Amazon resilience: early-warning signal edges up but is not yet significant | `results/67_amazon_resilience/amazon_resilience.png` |
+| [W46](#w46) | A naive test finds 'significant' trends in 69% of trend-free water-storage data | `results/69_false_trends/false_trends.png` |
 | [W22](#w22) | Water memory: months from rain to peak storage | `results/29_water_memory/map_water_memory_lag.png` |
 | [W23](#w23) | ET vs air dryness: opposite signs in wet vs dry lands | `results/20_et_correlations/corr_ET_vs_VPD.png` |
 | [W15](#w15) | One ocean signal, opposite water effects (ENSO) | `results/25_teleconnections/map_ENSO_water_storage.png` |
@@ -526,6 +527,12 @@ Ranked hero figures. W = water/hydrology pivot, G = earlier global trends. Each 
 <sub>source: `results/67_amazon_resilience/amazon_resilience.png`</sub>
 
 ![Amazon resilience: early-warning signal edges up but is not yet significant](figures/W45_amazon_resilience_null.png)
+
+### W46
+**A naive test finds 'significant' trends in 69% of trend-free water-storage data**  
+<sub>source: `results/69_false_trends/false_trends.png`</sub>
+
+![A naive test finds 'significant' trends in 69% of trend-free water-storage data](figures/W46_false_trends.png)
 
 ### W22
 **Water memory: months from rain to peak storage**  

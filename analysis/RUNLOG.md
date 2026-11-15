@@ -152,3 +152,7 @@
 | 2026-11-15 02:33 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |
 | 2026-11-15 02:34 | 67_amazon_resilience | done | tau>0 on 59% of forest; forest-mean tau +0.38 p=0.147 |
 | 2026-11-15 02:35 | 68_ice_loss_acceleration | done | Greenland -258 Gt/yr (accel p=0.00); Antarctica -126 (accel p=0.32); total 35 mm SLR |
+| 2026-11-15 02:37 | 69_false_trends | done | surrogate false-positive naive/AR1/FDR: tws 79/13/3.3%, p_gpcp 36/30/24.4%, sst 70/35/30.6%, ndvi 54/21/12.5% |
+| 2026-11-15 02:39 | 69_false_trends | done | surrogate false-positive naive/AR1/FDR: tws 69/14/4.7%, p_gpcp 21/16/5.0%, sst 41/9/0.5%, ndvi 35/9/1.0% |
+| 2026-11-15 09:34 | 69_false_trends | done | surrogate false-positive naive/AR1/FDR: tws 69/14/4.7%, p_gpcp 21/16/5.0%, sst 41/9/0.5%, ndvi 35/9/1.0% |
+| 2026-11-15 09:36 | 69_false_trends | done | surrogate false-positive naive/AR1/FDR: tws 69/14/4.7%, p_gpcp 21/16/5.0%, sst 41/9/0.5%, ndvi 35/9/1.0% |
