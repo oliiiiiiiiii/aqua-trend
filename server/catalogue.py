@@ -163,7 +163,7 @@ class Catalogue:
         if self.provider == "ollama":
             self.model_url = os.getenv("AQUA_LOCAL_SELECTOR_URL", "").strip() or local_selector.DEFAULT_URL
             self.model = os.getenv("AQUA_LOCAL_SELECTOR_MODEL", "").strip() or local_selector.DEFAULT_MODEL
-        self.prompt_version = local_selector.PROMPT_VERSION if self.provider == "ollama" else PROMPT_VERSION
+        self.prompt_version = local_selector.prompt_version(self.model) if self.provider == "ollama" else PROMPT_VERSION
         self.products = {}
         self.concepts = {}
         self.links = {}
@@ -465,7 +465,7 @@ class Catalogue:
             if self.provider == "ollama":
                 if response.get("done") is not True or response.get("done_reason") == "length":
                     raise ValueError("Incomplete model response.")
-                return local_selector.expand(json.loads(response["message"]["content"]), self.plans)
+                return local_selector.expand(json.loads(response["message"]["content"]), self.plans, self.model)
             return json.loads(response["choices"][0]["message"]["content"])
         except (ValueError,TypeError,IndexError,KeyError,AttributeError) as error:
             raise SelectorError("invalid_selector_output", "The language model returned an invalid selection document.", True) from error

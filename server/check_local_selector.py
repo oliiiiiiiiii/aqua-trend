@@ -1,6 +1,6 @@
 """Exercise the real local selector and research API with fresh, isolated studies.
 
-Run: python3 -m server.check_local_selector [--report /tmp/aqua-selector.json]
+Run: python3 -m server.check_local_selector [--suite everyday] [--report /tmp/aqua-selector.json]
 Requires a running local Ollama with the requested model already downloaded.
 Each case submits once; this check never retries or uses curated plans.
 """
@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from functools import partial
 import ipaddress
 import json
+import math
 import os
 from pathlib import Path
 import tempfile
@@ -36,6 +37,18 @@ CASES = (
      "比較降水、根層土壤水與氣溫。", {"precip", "soil_root", "tair"}),
     ("unsupported-topic", "How does a neutron star's pulsar period change?", set()),
     ("household-plumbing", "My kitchen sink drain is clogged; how do I repair the plumbing?", set()),
+)
+EVERYDAY_CASES = (
+    ("everyday-drought-en", "Study drought conditions here.", {"precip", "soil_root", "tws"},
+     {"phenomenon_id": "drought", "indicator_recipe_ids": ["spi-3", "spi-6", "spi-12", "recorded-drought"]}),
+    ("everyday-flood-en", "Investigate flooding in this region.", {"precip", "runoff"},
+     {"phenomenon_id": "flood", "indicator_recipe_ids": ["recorded-flood"]}),
+    ("everyday-precipitation-en", "Show the rainfall trend.", {"precip"}, {"indicator_recipe_ids": []}),
+    ("everyday-air-temperature-en", "Track near-surface air temperature.", {"tair"}, {"indicator_recipe_ids": []}),
+    ("everyday-multiple-en", "Compare rainfall with air temperature.", {"precip", "tair"}, {"indicator_recipe_ids": []}),
+    ("everyday-flood-zh", "分析這個地區的洪水情況。", {"precip", "runoff"},
+     {"phenomenon_id": "flood", "indicator_recipe_ids": ["recorded-flood"]}),
+    ("everyday-air-temperature-zh", "查看近地面氣溫的變化。", {"tair"}, {"indicator_recipe_ids": []}),
 )
 
 
@@ -89,10 +102,13 @@ def verify_plan(plan, catalogue, model):
 
 
 def run_case(case, base, service, timeout, model):
-    name, query, expected = case
+    name, query, expected = case[:3]
+    contract = case[3] if len(case) > 3 else {}
     allowed = expected | ({"tws"} if name == "dry-english" else set())
     row = {"case": name, "query": query, "expected_variables": sorted(expected),
            "allowed_variables": sorted(allowed), "passed": False}
+    if contract:
+        row["expected_selection"] = contract
     started = time.monotonic()
     try:
         before = revisions(service.store)
@@ -110,11 +126,17 @@ def run_case(case, base, service, timeout, model):
         row.update(selection_plan_id=plan["selection_plan_id"], selection_source=plan["selection_source"],
                    model=plan["model_version"], model_digest=plan.get("model_digest"),
                    selector_provider=plan.get("selector_provider"), selection_status=plan["status"],
+                   phenomenon_id=plan["phenomenon_id"], indicator_recipe_ids=plan["indicator_recipe_ids"],
                    variables=[{"id": v["variable_id"], "catalogue_ref": v["catalogue_ref"], "role": v["role"]}
                               for v in plan["variable_set"]])
         verify_plan(plan, service.engine.catalogue, model)
         actual = {v["variable_id"] for v in plan["variable_set"]}
         check(actual <= allowed, f"Unrelated concepts selected: {sorted(actual - allowed)}.")
+        if "phenomenon_id" in contract:
+            check(plan["phenomenon_id"] == contract["phenomenon_id"], "The requested phenomenon was not recognized.")
+        if "indicator_recipe_ids" in contract:
+            check(set(plan["indicator_recipe_ids"]) == set(contract["indicator_recipe_ids"]),
+                  "The selection did not preserve the reviewed indicator recipes.")
         if not expected:
             check(plan["status"] == "unsupported" and not actual and not plan["indicator_recipe_ids"],
                   "Unsupported topic was mapped to an approximate substitute.")
@@ -149,6 +171,15 @@ def run_case(case, base, service, timeout, model):
                                           "slope_per_decade": variable["trend"]["slope_per_decade"],
                                           "p_adjusted": variable["trend"].get("p_adjusted")})
             check(row["trend_count"] > 0 and result["evidence_families"], "No actual analysis evidence was produced.")
+            if contract:
+                check(row["trend_count"] == len(expected) and
+                      all(math.isfinite(trend["slope_per_decade"]) for trend in row["trends"]),
+                      "Some requested measurements produced no finite trend.")
+                check(result["user_constraints"]["region_id"] == REGION and result["user_constraints"]["period"] == PERIOD,
+                      "The result did not retain the user's constraints.")
+                check({indicator["indicator_id"] for indicator in result["indicators"]
+                       if "indicator_id" in indicator} == set(contract["indicator_recipe_ids"]),
+                      "The analysis did not include the reviewed indicator recipes.")
             exported = read_json(base + "/api/research/" + job["id"] + "/export?format=json")
             check(exported == result, "Export did not preserve the actual study.")
         row["passed"] = True
@@ -163,6 +194,8 @@ def main():
     parser.add_argument("--selector-url", type=local_url,
                         default=os.getenv("AQUA_LOCAL_SELECTOR_URL", DEFAULT_URL))
     parser.add_argument("--model", default=os.getenv("AQUA_LOCAL_SELECTOR_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--suite", choices=("standard", "everyday"), default="standard",
+                        help="Use the original six cases or short everyday queries (default: standard).")
     parser.add_argument("--timeout", type=float, default=120, help="Maximum seconds per study (default: 120).")
     parser.add_argument("--report", type=Path, help="Also write the JSON report to this path.")
     args = parser.parse_args()
@@ -173,7 +206,7 @@ def main():
     for key in ("AQUA_SELECTOR_URL", "AQUA_SELECTOR_MODEL", "AQUA_SELECTOR_API_KEY"):
         os.environ.pop(key, None)
     report = {"started_at": datetime.now(timezone.utc).isoformat(), "model": args.model,
-              "selector_url": args.selector_url, "isolated_state": True, "reselect": True, "cases": []}
+              "selector_url": args.selector_url, "suite": args.suite, "isolated_state": True, "reselect": True, "cases": []}
     with tempfile.TemporaryDirectory(prefix="aqua-selector-check-") as temp:
         service = ResearchService(ResearchEngine(Catalogue(), Store(Path(temp) / "jobs.sqlite")), workers=1)
         with ResearchHTTPServer(("127.0.0.1", 0), partial(QuietHandler, service=service)) as http:
@@ -181,7 +214,8 @@ def main():
             thread.start()
             base = f"http://127.0.0.1:{http.server_port}"
             try:
-                report["cases"] = [run_case(case, base, service, args.timeout, args.model) for case in CASES]
+                cases = EVERYDAY_CASES if args.suite == "everyday" else CASES
+                report["cases"] = [run_case(case, base, service, args.timeout, args.model) for case in cases]
             finally:
                 http.shutdown()
                 thread.join()

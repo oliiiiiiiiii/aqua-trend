@@ -251,7 +251,7 @@ export default function ResearchWorkspace() {
                 id="phenomenon"
                 rows={2}
                 value={phenomenon}
-                placeholder="For example, drought or a change in seasonal snow cover"
+                placeholder="How has rainfall changed?"
                 onChange={(e) => {
                   fieldChanged();
                   setPhenomenon(e.target.value);
@@ -259,9 +259,9 @@ export default function ResearchWorkspace() {
                 aria-describedby="phenomenon-note"
               />
               <p id="phenomenon-note" className="form-hint">
-                {catalogue?.selector?.mode === "ollama" && catalogue.selector.custom_queries_available
-                  ? "Describe the phenomenon in English or Chinese. A local model selects relevant variables."
-                  : "Write in English or Chinese."} Choose the location and dates below.
+                Ask in English. Chinese is also supported.
+                {catalogue?.selector?.mode === "ollama" && catalogue.selector.custom_queries_available &&
+                  " A local model selects relevant variables."} Choose the location and dates below.
               </p>
               {catalogue?.curated_phenomena?.length ? (
                 <details className="mt-2 text-sm">

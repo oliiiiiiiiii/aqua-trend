@@ -98,7 +98,10 @@ class SelectionTests(unittest.TestCase):
         cat = self.cat
         query = "How do flood conditions and air temperature compare?"
         matches = ["Flooding", "Runoff", "Near-surface air temperature"]
-        body = {"done":True, "message":{"content":json.dumps({"matches":matches})}}
+        answer = {"matches":matches}
+        if cat.model == local_selector.INTENT_MODEL:
+            answer["domain"] = local_selector.PHENOMENON
+        body = {"done":True, "message":{"content":json.dumps(answer)}}
         with patch("server.catalogue.urlopen", return_value=io.BytesIO(json.dumps(body).encode())) as send:
             plan = cat.select(query)
         request = json.loads(send.call_args.args[0].data)
@@ -108,6 +111,7 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(request["messages"][-1]["content"], query)
         self.assertEqual(request["format"]["additionalProperties"], False)
         self.assertEqual(plan["selector_provider"], "ollama")
+        self.assertEqual(plan["prompt_version"], local_selector.prompt_version(cat.model))
         self.assertEqual(plan["model_digest"], "a" * 64)
         self.assertEqual(plan["indicator_recipe_ids"], ["recorded-flood"])
         self.assertEqual([v["catalogue_ref"] for v in plan["variable_set"]],
@@ -141,6 +145,32 @@ class SelectionTests(unittest.TestCase):
             self.cat.select("Natural drainage")
         self.assertEqual(error.exception.code, "selector_unavailable")
         self.assertTrue(error.exception.retryable)
+
+    def test_small_selector_classifies_intent_before_expanding_reviewed_matches(self):
+        plans = self.cat.plans
+        model = local_selector.INTENT_MODEL
+        body = local_selector.request_body(model, "Compare two quantities", plans)
+        self.assertEqual(body["format"]["required"], ["domain", "matches"])
+        self.assertEqual(body["format"]["properties"]["domain"]["enum"], list(local_selector.INTENTS))
+        self.assertEqual(local_selector.prompt_version(model), local_selector.INTENT_PROMPT_VERSION)
+        previous_model = "qwen3.5:0.8b-q8_0"
+        self.assertEqual(local_selector.request_body(previous_model, "Runoff", plans)["format"]["required"], ["matches"])
+        self.assertEqual(local_selector.prompt_version(previous_model), local_selector.PROMPT_VERSION)
+
+        def expand(domain, matches):
+            selection = local_selector.expand({"domain":domain, "matches":matches}, plans, model)
+            return self.cat.validate_selection(selection)
+
+        for excluded in (local_selector.PRACTICAL, local_selector.OTHER):
+            self.assertEqual(expand(excluded, ["Runoff"])["status"], "unsupported")
+        mixed = expand(local_selector.MEASUREMENT, ["Runoff", local_selector.UNAVAILABLE])
+        self.assertEqual(mixed["status"], "partial")
+        self.assertEqual([v["catalogue_ref"] for v in mixed["variable_set"]], ["concept:runoff"])
+        self.assertEqual(mixed["limitation_refs"], ["missing-observation"])
+        for invalid in ({"matches":["Runoff"]}, {"domain":"invented", "matches":["Runoff"]},
+                        {"domain":local_selector.OTHER, "matches":["Invented measurement"]}):
+            with self.subTest(answer=invalid), self.assertRaises(ValueError):
+                local_selector.expand(invalid, plans, model)
 
 
 class RealReleaseTests(unittest.TestCase):
