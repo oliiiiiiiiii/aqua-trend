@@ -22,6 +22,7 @@ import {
   categoryAvailability, loadCountryNames, loadSeries, loadSeriesIndex, loadVariableCatalog, type VariableCatalog,
 } from "@/lib/detective/series";
 import { RetryButton, StatusCard } from "@/components/ui/StatusCard";
+import { StartProgress } from "./StartProgress";
 import { InputPanel } from "./InputPanel";
 import { CATEGORIES, PRESETS, requestVotes } from "./wiring";
 import AnalysisView from "./AnalysisView";
@@ -337,6 +338,16 @@ function InputStage({
   const showPicker = draft !== null || finding || !!vote;
   return (
     <div data-stage-area data-stage-through data-stage-pass className="on-stage stage-sky">
+      {starting && <StartProgress
+        context={{
+          basin: regionOk?.name ?? q.region ?? "the basin",
+          variables: startable.length,
+          period: q.time ? formatRange(q.time) : "the event",
+          firstYear: startable.map((c) => { const layer = q.layers?.[c] ?? vc?.defaults[c]; return layer ? vc?.layers[layer]?.start : undefined; }).filter((s): s is NonNullable<typeof s> => !!s).sort()[0]?.slice(0, 4),
+        }}
+        onDone={startNow}
+        onCancel={() => setStarting(false)}
+      />}
       <InputPanel
         event={eventText}
         onEventChange={onEventChange}
@@ -358,7 +369,6 @@ function InputStage({
         finding={finding}
         hasPicker={showPicker}
         starting={starting}
-        onStartDone={startNow}
         picker={showPicker ? {
           categories: CATEGORIES,
           response: vote?.event === eventText.trim() ? vote.response : null,

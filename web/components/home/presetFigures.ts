@@ -10,6 +10,7 @@ import { intervalDetail, type Verdict } from "@/lib/detective/intervalDetail";
 import { addMonths, ymIndex } from "@/lib/detective/url";
 
 export interface PresetFigure {
+  firstYear: string;
   category: CategoryId;
   layer: string;
   /** months shown: event start − pad … event end + pad */
@@ -49,6 +50,7 @@ export async function presetFigure(p: PresetEvent): Promise<PresetFigure | null>
     const months: YearMonth[] = Array.from({ length: count }, (_, i) => addMonths(first, i));
     const at = new Map(d.months.map((m, i) => [m, d.z[i]]));
     return {
+      firstYear: raw.start.slice(0, 4),
       category,
       layer,
       months,

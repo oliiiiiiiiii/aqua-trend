@@ -5,27 +5,24 @@ import { COPY } from "@/components/detective/copy/input";
 import { encodeState } from "@/lib/detective/url";
 
 /**
- * Home: centred copy and event question, the whole planet below, the solved
+ * Home: centred copy and event question, a half-visible rising planet, the solved
  * cases (`children`) right under them. The layout-owned planet and the headline are painted by the shared stage; the
  * anchors here are empty. Submitting the question hands the planet over to /detective?e=<text>.
  */
 export function InvestigationHero({ children }: { children?: ReactNode }) {
   return (
     <>
-      <div
-        data-stage-pass
-        className="mx-auto flex max-w-[90rem] flex-col items-center gap-4 px-4 pt-8 sm:px-6 lg:px-8"
-      >
-        <div data-stage-pass className="w-full max-w-[42rem] min-w-0 text-center">
-          <div data-stage-copy data-stage-pass className="h-16 sm:h-20" />
-          <EventForm />
-        </div>
+      <div data-stage-clip className="relative min-h-[calc(100svh-var(--stage-offset,4rem))] overflow-hidden">
         <div
           data-stage-pass
-          className="mx-auto w-full max-w-[min(100%,26rem)]"
+          className="relative z-10 mx-auto flex max-w-[90rem] flex-col items-center gap-4 px-4 pt-10 sm:px-6 sm:pt-12 lg:px-8"
         >
-          <div data-stage-globe data-stage-pass className="aspect-square w-full" />
+          <div data-stage-pass className="w-full max-w-[42rem] min-w-0 text-center">
+            <div data-stage-copy data-stage-pass className="h-16 sm:h-20" />
+            <EventForm />
+          </div>
         </div>
+        <div data-stage-globe data-stage-pass className="absolute top-full left-1/2 aspect-square w-[min(116vw,calc(100svh-2rem),68rem)] -translate-x-1/2 -translate-y-1/2" />
       </div>
       {children}
     </>

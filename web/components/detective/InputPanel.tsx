@@ -9,7 +9,6 @@ import { formatRange, ymIndex } from "@/lib/detective/url";
 import { COPY } from "./copy/input";
 import { useSharedStage } from "@/components/shell/HeroGlobe";
 import { Timeline } from "./Timeline";
-import { StartProgress } from "./StartProgress";
 import { AnalyseButton, VariablePicker, type VariablePickerProps } from "./VariablePicker";
 
 export interface InputPanelProps {
@@ -48,9 +47,8 @@ export interface InputPanelProps {
   hasPicker: boolean;
   /** variable suggestions: an overlay on the globe from 1024 px up, inline under the form below that */
   picker?: VariablePickerProps | null;
-  /** Analyse was pressed: show the progress in place of the honeycomb until onStartDone */
+  /** Analyse was pressed: hide the picker while the shared progress overlay runs. */
   starting?: boolean;
-  onStartDone?: () => void;
 }
 
 const WIDE = "(min-width: 1024px)";
@@ -159,7 +157,7 @@ export function InputPanel(p: InputPanelProps) {
                 open || p.starting ? "pointer-events-auto visible scale-100 opacity-100" : "pointer-events-none invisible scale-[0.97] opacity-0"
               }`}
             >
-              {p.starting ? <StartProgress onDone={p.onStartDone ?? (() => {})} /> : open ? <VariablePicker {...p.picker} layout="overlay" onClose={close} /> : null}
+              {p.starting ? null : open ? <VariablePicker {...p.picker} layout="overlay" onClose={close} /> : null}
             </div>
           )}
         </div>
@@ -209,7 +207,7 @@ export function InputPanel(p: InputPanelProps) {
             )}
             {!wide && (open || p.starting) && (
               <div ref={overlayEl} id={overlayId} role="region" aria-label={COPY.picker.heading} onKeyDown={onOverlayKey} className="relative mt-6">
-                {p.starting ? <StartProgress onDone={p.onStartDone ?? (() => {})} /> : <VariablePicker {...p.picker} layout="overlay" onClose={close} />}
+                {p.starting ? null : <VariablePicker {...p.picker} layout="overlay" onClose={close} />}
               </div>
             )}
           </>

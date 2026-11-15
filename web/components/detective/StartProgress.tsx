@@ -1,64 +1,101 @@
 "use client";
-// A short, honest-looking pause between "Analyse" and the analysis view: named steps tick through, then onDone runs.
-import { useEffect, useRef, useState } from "react";
-import { COPY } from "./copy/input";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { progressFrame, progressLines, type ProgressContext } from "./progressTimeline";
 
-const TOTAL_MS = 1500;
-const REDUCED_MS = 250;
-
-export function StartProgress({ onDone }: { onDone: () => void }) {
-  const T = COPY.progress;
-  const [reduced, setReduced] = useState(false);
-  const [step, setStep] = useState(0);
-  const done = useRef(onDone);
-  done.current = onDone;
+/** Mounted only by an explicit Analyse/case action; deep links never run this sequence. */
+export function StartProgress({ context, onDone, onCancel }: {
+  context: ProgressContext;
+  onDone: () => void;
+  onCancel: () => void;
+}) {
+  const id = useId();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const callbacks = useRef({ onDone, onCancel });
+  callbacks.current = { onDone, onCancel };
   const fired = useRef(false);
+  const [frame, setFrame] = useState(() => progressFrame(0));
+  const [mounted, setMounted] = useState(false);
   const finish = () => {
     if (fired.current) return;
     fired.current = true;
-    done.current();
+    callbacks.current.onDone();
   };
-  const steps = reduced ? T.steps.slice(-1) : T.steps;
+  useEffect(() => setMounted(true), []);
   useEffect(() => {
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
-  useEffect(() => {
-    const per = (reduced ? REDUCED_MS : TOTAL_MS) / steps.length;
-    const timer = window.setInterval(() => setStep((s) => s + 1), per);
-    return () => window.clearInterval(timer);
-  }, [reduced, steps.length]);
-  useEffect(() => {
-    if (step >= steps.length) finish();
-  });
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); finish(); } };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, []);
-  return (
-    <div className="flex min-h-full flex-col justify-center py-6 text-on-stage" role="status" aria-live="polite" aria-label={T.label}>
-      <h2 className="font-display text-3xl">{T.title}</h2>
-      <ol className="mt-5 space-y-3">
-        {steps.map((s, i) => {
-          const state = i < step ? "done" : i === step ? "now" : "next";
-          return (
-            <li key={s} className={`flex items-center gap-3 text-lg ${state === "next" ? "text-on-stage-2" : "text-on-stage"}`} aria-current={state === "now" ? "step" : undefined}>
-              <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${state === "done" ? "border-transparent bg-action text-on-action" : "border-stage-line"}`} aria-hidden="true">
-                {state === "done" ? (
-                  <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                ) : state === "now" ? (
-                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-on-stage motion-reduce:animate-none" />
-                ) : null}
-              </span>
-              <span>{s}</span>
-              <span className="sr-only">{state === "done" ? ", done" : state === "now" ? ", in progress" : ""}</span>
-            </li>
-          );
-        })}
-      </ol>
-      <button type="button" onClick={finish} className="mt-6 self-start rounded-ctl px-1 py-2 text-sm text-on-stage-2 underline hover:text-on-stage focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-        {T.skip}
-      </button>
-    </div>
+    if (!mounted) return;
+    const el = dialog.current;
+    if (!el) return;
+    fired.current = false;
+    const focus = document.activeElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    el.showModal();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const start = performance.now();
+    let raf = 0;
+    const tick = () => {
+      if (fired.current) return;
+      const next = progressFrame(performance.now() - start, reduced);
+      setFrame(next);
+      if (next.finished) finish();
+      else raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    const cancel = () => {
+      if (fired.current) return;
+      fired.current = true;
+      cancelAnimationFrame(raf);
+      callbacks.current.onCancel();
+    };
+    window.addEventListener("popstate", cancel);
+    return () => {
+      fired.current = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("popstate", cancel);
+      el.close();
+      document.body.style.overflow = overflow;
+      if (focus instanceof HTMLElement && focus.isConnected) focus.focus({ preventScroll: true });
+    };
+  }, [mounted]);
+  if (!mounted) return null;
+  const lines = progressLines(context);
+  return createPortal(
+    <dialog
+      ref={dialog}
+      aria-labelledby={`${id}-title`}
+      className="on-stage fixed inset-0 m-auto h-dvh max-h-none w-full max-w-none overflow-y-auto border-0 bg-stage/75 p-4 text-on-stage backdrop-blur-xl backdrop:bg-stage/60 sm:p-8"
+      onCancel={(e) => { e.preventDefault(); finish(); }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); finish(); }
+      }}
+    >
+      <div className="flex min-h-full items-center justify-center">
+        <div className="w-full max-w-2xl rounded-card border border-stage-line bg-stage/80 p-6 shadow-card sm:p-12">
+          <h2 id={`${id}-title`} className="text-balance font-display text-3xl leading-tight sm:text-4xl">Running the investigation</h2>
+          <div className="mt-7 flex items-center justify-between text-sm text-on-stage-2">
+            <p role="status" aria-live="polite">{frame.done ? "Done" : `Stage ${frame.stage + 1} of ${lines.length}`}</p>
+            <span className="tnum" aria-hidden="true">{Math.round(frame.fraction * 100)}%</span>
+          </div>
+          <div role="progressbar" aria-label="Investigation progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(frame.fraction * 100)} className="mt-3 h-2 overflow-hidden rounded-full bg-on-stage/15">
+            <div className="h-full origin-left rounded-full bg-action" style={{ transform: `scaleX(${frame.fraction})` }} />
+          </div>
+          <ol className="mt-8 space-y-4">
+            {lines.map((line, i) => (
+              <li key={line} aria-current={i === frame.stage ? "step" : undefined} className={`flex items-start gap-3 transition-opacity duration-200 ${i > frame.stage ? "opacity-80" : "opacity-100"}`}>
+                <span aria-hidden="true" className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border ${i <= frame.stage ? "border-action text-action" : "border-stage-line text-on-stage-2"}`}>
+                  {i < frame.stage ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4L19 6" /></svg> : i === frame.stage ? <span className="h-2 w-2 rounded-full bg-action" /> : null}
+                </span>
+                <span className={i === frame.stage ? "font-semibold" : "text-on-stage-2"}>{line}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-6 flex justify-end">
+            <button type="button" autoFocus onClick={finish} className="min-h-11 rounded-ctl px-4 py-2 text-sm text-on-stage-2 underline underline-offset-4 hover:bg-on-stage/10 hover:text-on-stage focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">Skip</button>
+          </div>
+        </div>
+      </div>
+    </dialog>,
+    document.body,
   );
 }
