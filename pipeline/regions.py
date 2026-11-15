@@ -63,7 +63,7 @@ def to_half_degree(field, lat, lon):
     """Put a regular lat/lon grid onto the 0.5 deg mask grid.
 
     finer grid with integer ratio (0.25, 0.1, 0.05 deg) -> NaN-aware block mean;
-    anything else (1 deg, MERRA-2 0.5x0.625 with pole points) -> nearest neighbour.
+    anything else (1 deg, MERRA-2 0.5x0.625 with pole points) -> NaN-aware bilinear.
     lat may be descending; lon may be 0..360."""
     f = np.asarray(field, np.float64); lat = np.asarray(lat, np.float64); lon = np.asarray(lon, np.float64)
     if lat[0] > lat[-1]:
@@ -79,13 +79,24 @@ def to_half_degree(field, lat, lon):
         ok = np.isfinite(b)
         cnt = ok.sum((1, 3)); tot = np.where(ok, b, 0.0).sum((1, 3))
         return np.where(cnt > 0, tot / np.maximum(cnt, 1), np.nan)
-    iy = np.clip(np.searchsorted(lat, LAT), 1, lat.size - 1)
-    iy = np.where(np.abs(lat[iy - 1] - LAT) <= np.abs(lat[iy] - LAT), iy - 1, iy)
-    lon_ext = np.concatenate([lon[-1:] - 360, lon, lon[:1] + 360])
-    ix = np.clip(np.searchsorted(lon_ext, LON), 1, lon_ext.size - 1)
-    ix = np.where(np.abs(lon_ext[ix - 1] - LON) <= np.abs(lon_ext[ix] - LON), ix - 1, ix)
-    ix = (ix - 1) % lon.size
-    return f[np.ix_(iy, ix)]
+    return _bilinear_nan(f, lat, lon)
+
+
+def _bilinear_nan(f, lat, lon):
+    """NaN-aware bilinear interpolation onto the 0.5 deg grid (lon periodic). Missing source cells
+    (e.g. ocean in land-only fields) get zero weight; the target is NaN only if all 4 neighbours are."""
+    lon_e = np.concatenate([lon[-1:] - 360, lon, lon[:1] + 360])
+    f_e = np.concatenate([f[:, -1:], f, f[:, :1]], 1)
+    jx = np.clip(np.searchsorted(lon_e, LON) - 1, 0, lon_e.size - 2)
+    tx = (LON - lon_e[jx]) / (lon_e[jx + 1] - lon_e[jx])
+    jy = np.clip(np.searchsorted(lat, LAT) - 1, 0, lat.size - 2)
+    ty = np.clip((LAT - lat[jy]) / (lat[jy + 1] - lat[jy]), 0, 1)
+    num = np.zeros((360, 720)); den = np.zeros((360, 720))
+    for dy, wy in ((0, 1 - ty), (1, ty)):
+        for dx, wx in ((0, 1 - tx), (1, tx)):
+            v = f_e[np.ix_(jy + dy, jx + dx)]; w = wy[:, None] * wx[None, :]
+            ok = np.isfinite(v); num += np.where(ok, v, 0) * w; den += ok * w
+    return np.where(den > 1e-9, num / np.maximum(den, 1e-9), np.nan)
 
 
 def month_index(start, ym):

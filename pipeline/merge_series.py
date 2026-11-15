@@ -35,7 +35,7 @@ def load_layer(name):
     return [str(x) for x in z["ids"]], str(z["start"]), z["series"], json.loads(str(z["meta"]))
 
 
-def main(names):
+def main(names, only_existing=False):
     vpath = os.path.join(DATA, "catalog", "variables.json"); ipath = os.path.join(DATA, "catalog", "series_index.json")
     var = json.load(open(vpath)); idx = json.load(open(ipath))
     per_region = {}  # rid -> {layer: {start, values} or None}
@@ -49,6 +49,8 @@ def main(names):
         for r, rid in enumerate(ids):
             if rid.startswith("hex-"):
                 continue
+            if only_existing and name not in idx["regions"].get(rid, []):
+                continue  # extending an existing layer: keep its original region set / QC
             row = np.where(finite[r])[0]
             if row.size == 0:
                 per_region.setdefault(rid, {})[name] = None
@@ -93,8 +95,10 @@ def main(names):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("layers", nargs="*"); ap.add_argument("--all", action="store_true")
+    ap.add_argument("--only-existing", action="store_true",
+                    help="update only regions that already have the layer (re-builds / extensions)")
     a = ap.parse_args()
     names = sorted(os.path.basename(p)[:-4] for p in glob.glob(os.path.join(LAYER_DIR, "*.npz"))) if a.all else a.layers
     if not names:
         sys.exit("no layers given")
-    main(names)
+    main(names, a.only_existing)

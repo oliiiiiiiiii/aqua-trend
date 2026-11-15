@@ -77,10 +77,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "mm/day",
-   "start": "2000-01",
-   "end": "2026-09",
    "visual": "向下雨滴粒子的密度",
-   "caveat": null
+   "caveat": null,
+   "start": "1980-01",
+   "end": "2026-09",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "et_m2": {
    "name": "蒸發",
@@ -101,10 +105,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "mm/day",
-   "start": "2000-01",
+   "visual": "向上飄散的水氣粒子",
+   "caveat": null,
+   "start": "1980-01",
    "end": "2026-09",
-   "visual": "向上水氣粒子的數量",
-   "caveat": null
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "sm_m2": {
    "name": "根層土壤濕度（0–1）",
@@ -113,10 +121,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "fraction",
-   "start": "2000-01",
+   "visual": "土壤顏色深淺",
+   "caveat": null,
+   "start": "1980-01",
    "end": "2026-09",
-   "visual": "根層濕度色階（0–1）",
-   "caveat": null
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "ro_m2": {
    "name": "逕流",
@@ -125,10 +137,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "mm/day",
-   "start": "2000-01",
+   "visual": "河道水流",
+   "caveat": null,
+   "start": "1980-01",
    "end": "2026-09",
-   "visual": "側向產流箭頭",
-   "caveat": null
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "rn_m2": {
    "name": "淨輻射",
@@ -137,10 +153,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "W/m2",
-   "start": "2000-01",
+   "visual": "地表吸收的能量",
+   "caveat": null,
+   "start": "1980-01",
    "end": "2026-09",
-   "visual": "淨能量箭頭",
-   "caveat": null
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "tsurf_m2": {
    "name": "地表溫度",
@@ -149,10 +169,14 @@
    "nasa": true,
    "family": "MERRA-2",
    "unit": "°C",
-   "start": "2000-01",
+   "visual": "地表冷暖",
+   "caveat": null,
+   "start": "1980-01",
    "end": "2026-09",
-   "visual": "地表溫度色階",
-   "caveat": null
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "gesdisc/m2lnd/*.subset.nc4",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   },
   "et_gldas": {
    "name": "蒸散",

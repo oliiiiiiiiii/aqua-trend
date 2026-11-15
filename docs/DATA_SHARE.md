@@ -106,6 +106,9 @@ https://harmony.earthdata.nasa.gov/<collection concept id>/ogc-api-coverages/1.0
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-14 | 現有 26 層 | GES DISC 等（舊管線） | 各層不同 | basin4 1,313 | 見 `web/public/data/README.md` |
 | 2026-11-15 | `aod` | Earthdata：MERRA-2 M2TMNXAER TOTEXTTAU（`fetch_earthdata.py m2aer` → `earthdata_layers.py aod`） | 1980-01 – 2026-09 | 全部區域 1,664／basin4 有格點者皆有 | 新類別 `aod` |
+| 2026-11-15 | `to3_m2`、`tqv` | Earthdata：MERRA-2 M2TMNXSLV TO3、TQV | 1980-01 – 2026-09 | 1,664 | 新類別 `ozone`、`vapor` |
+| 2026-11-15 | `p_m2land`、`et_m2land`、`sm_m2`、`ro_m2`、`rn_m2`、`tsurf_m2`（延長） | Earthdata：MERRA-2 M2TMNXLND | **1980-01** – 2026-09（原本 2000 起） | 1,566（與原本相同） | 2000 後與舊值比對：r 中位數 1.0000、偏差中位數 0.00%；`merge_series.py --only-existing` |
+| 2026-11-15 | `p_imerg`（只驗證，不替換） | Earthdata：GPM IMERG V07 | 1998-01 – 2025-09 | — | 與既有 `p_imerg` r ≥ 0.999，確認新管線與舊管線一致 |
 | 2026-11-15 | `fire_count` | 分享站 `firms/`（`share_firms.py`） | 2000-11 – 2025-12 | 1,664 | 新類別 `fire`；只計 Terra、植被火；無偵測＝0，區域沒有格點＝null |
 | 2026-11-15 | `snow_cover` | 分享站 `mod10cm/`（`share_mod10cm.py`） | 2000-03 – 2026-10 | 1,589 | 類別 `snow`；缺 6 個月 |
 | 2026-11-15 | `so2_emis` | 分享站 `so2/`（`share_so2.py`） | 2005 – 2025（年值） | 441 | 新類別 `so2`；點源年排放，不是濃度 |

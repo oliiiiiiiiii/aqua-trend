@@ -57,6 +57,16 @@ def merra_layer(folder, var, offset=0.0):
     return gen
 
 
+def merra_sum(folder, varnames, scale=1.0, offset=0.0):
+    """sum of several MERRA-2 variables, then * scale + offset (e.g. kg m-2 s-1 -> mm/day: 86400)"""
+    def gen():
+        for ym, f in monthly_files(folder, "*.subset.nc4", ym_merra):
+            with netCDF4.Dataset(f) as d:
+                a = sum(read(d, v) for v in varnames) * scale + offset
+                yield ym, R.to_half_degree(a, d["lat"][:], d["lon"][:])
+    return gen
+
+
 def modis_layer(folder, var, offset=0.0):
     def gen():
         for ym, f in monthly_files(folder, "*.nc4", ym_modis):
@@ -109,6 +119,25 @@ LAYERS = {
     "tqv": dict(gen=merra_layer("gesdisc/m2slv", "TQV"), meta=dict(
         name="大氣可降水量", category="vapor", product="MERRA-2 M2TMNXSLV TQV", nasa=True,
         family=M2, unit="mm", visual="空氣中的水氣量", source_files="gesdisc/m2slv/*.subset.nc4", caveat=None)),
+    # existing MERRA-2 land layers (2000-) extended back to 1980 from the raw M2TMNXLND files
+    "p_m2land": dict(gen=merra_sum("gesdisc/m2lnd", ["PRECTOTLAND"], 86400), meta=dict(
+        name="陸地降水", category="precip", product="MERRA-2 M2TMNXLND PRECTOTLAND", nasa=True, family=M2,
+        unit="mm/day", visual="向下雨滴粒子的密度", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "et_m2land": dict(gen=merra_sum("gesdisc/m2lnd", ["EVLAND"], 86400), meta=dict(
+        name="陸地蒸發", category="et", product="MERRA-2 M2TMNXLND EVLAND", nasa=True, family=M2,
+        unit="mm/day", visual="向上飄散的水氣粒子", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "sm_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["GWETROOT"]), meta=dict(
+        name="根層土壤濕度（0–1）", category="soil", product="MERRA-2 M2TMNXLND GWETROOT", nasa=True,
+        family=M2, unit="fraction", visual="土壤顏色深淺", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "ro_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["RUNOFF", "BASEFLOW"], 86400), meta=dict(
+        name="逕流", category="runoff", product="MERRA-2 M2TMNXLND RUNOFF+BASEFLOW", nasa=True, family=M2,
+        unit="mm/day", visual="河道水流", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "rn_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["SWLAND", "LWLAND"]), meta=dict(
+        name="淨輻射", category="energy", product="MERRA-2 M2TMNXLND SWLAND+LWLAND", nasa=True, family=M2,
+        unit="W/m2", visual="地表吸收的能量", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "tsurf_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["TSURF"], 1.0, -273.15), meta=dict(
+        name="地表溫度", category="tair", product="MERRA-2 M2TMNXLND TSURF", nasa=True, family=M2,
+        unit="°C", visual="地表冷暖", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
     # same product as the existing p_imerg layer: built only to validate this pipeline against it
     "p_imerg_check": dict(gen=imerg_layer(), meta=dict(
         name="降水", category="precip", product="GPM IMERG V07 月資料", nasa=True, family="IMERG",
