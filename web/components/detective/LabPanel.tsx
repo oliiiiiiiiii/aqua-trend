@@ -2,13 +2,15 @@
 // Analysis lab: a row of icon buttons, one per test. Each runs on the residual series
 // (raw − seasonal cycle − long-term trend) over the chosen range and shows the numbers,
 // a one-line verdict, and (on the residual layer) a fit line on the chart.
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { TimeRange } from "@/lib/detective/contracts";
 import {
-  LAB_TOOLS, type AcfResult, type BootstrapResult, type HistBin, type LabOutcome, type LabStats, type LabToolId, type NormalityResult,
+  LAB_GROUPS, type AcfResult, type BootstrapResult, type HistBin, type LabOutcome, type LabStats, type LabToolId, type NormalityResult,
 } from "@/lib/detective/lab";
 import { Segmented } from "@/components/explore/Segmented";
 import { num, pValue, rangeLabel } from "./format";
+import { Histogram, I, Rows, Sig, Verdict, ci, corrected, dot, slopeUnit, type ToolInfo } from "./LabParts";
+import { MoreResult, MORE_TOOL_INFO } from "./LabMore";
 
 export type LabRangeSource = "selection" | "event" | "all";
 
@@ -29,16 +31,15 @@ export interface LabPanelProps {
   baselineWarning: boolean;
   /** the fit line exists but the chart is not on the residual layer */
   onShowResidual?: () => void;
+  /** every test run on this range so far, with its p-value and whether it survives Holm's correction */
+  log: LabLogEntry[];
 }
 
-interface ToolInfo { label: string; title: string; about: string; icon: ReactNode }
+export interface LabLogEntry { tool: LabToolId; p: number | null; holm: boolean }
 
-const I = (children: ReactNode) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
-);
-const dot = (cx: number, cy: number) => <circle cx={cx} cy={cy} r={1.4} fill="currentColor" stroke="none" />;
 
 export const TOOL_INFO: Record<LabToolId, ToolInfo> = {
+  ...MORE_TOOL_INFO,
   ols: {
     label: "迴歸", title: "線性迴歸＋t 檢定",
     about: "用最小平方法畫一條直線，斜率代表這段期間異常的變化速率；t 檢定判斷斜率是否可能只是 0 加上隨機起伏。",
@@ -107,18 +108,25 @@ export default function LabPanel(p: LabPanelProps) {
         />
       </div>
 
-      <div role="toolbar" aria-label="選擇分析" className="mt-2.5 flex flex-wrap gap-1.5">
-        {LAB_TOOLS.map((t) => {
-          const info = TOOL_INFO[t];
-          const active = p.tool === t;
-          return (
-            <button key={t} type="button" className={active ? on : off} aria-pressed={active} title={info.title}
-              onClick={() => p.onToolChange(active ? null : t)}>
-              {info.icon}
-              <span className="leading-tight">{info.label}</span>
-            </button>
-          );
-        })}
+      <div role="toolbar" aria-label="選擇分析" className="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
+        {LAB_GROUPS.map((g) => (
+          <div key={g.label} role="group" aria-label={g.label} className="min-w-0">
+            <div className="mb-1 text-xs text-ink-2">{g.label}</div>
+            <div className="flex flex-wrap gap-1.5">
+              {g.tools.map((t) => {
+                const info = TOOL_INFO[t];
+                const active = p.tool === t;
+                return (
+                  <button key={t} type="button" className={active ? on : off} aria-pressed={active} title={info.title}
+                    onClick={() => p.onToolChange(active ? null : t)}>
+                    {info.icon}
+                    <span className="leading-tight">{info.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {p.tool == null ? (
@@ -155,36 +163,13 @@ export default function LabPanel(p: LabPanelProps) {
           )}
         </div>
       )}
+
+      <TestLog log={p.log} />
     </section>
   );
 }
 
 /* ------------------------------------------------------------------ result blocks */
-
-/** Slope per month → per decade for ranges ≥ 10 years, else per year. */
-function slopeUnit(spanMonths: number): { k: number; label: string } {
-  return spanMonths >= 120 ? { k: 120, label: "／十年" } : { k: 12, label: "／年" };
-}
-
-const Sig = ({ p }: { p: number }) => {
-  const s = p < 0.05;
-  return <span className={`inline-block rounded-ctl px-2 py-0.5 text-xs font-semibold ${s ? "bg-real-bg text-real" : "bg-well text-ink-2"}`}>{s ? "顯著" : "不顯著"}（α = 0.05）</span>;
-};
-
-function Rows({ rows }: { rows: [string, ReactNode][] }) {
-  return (
-    <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 tnum">
-      {rows.map(([k, v]) => (<Fragment key={k}><dt className="text-ink-2">{k}</dt><dd>{v}</dd></Fragment>))}
-    </dl>
-  );
-}
-
-const Verdict = ({ children }: { children: ReactNode }) => <p className="mt-2">{children}</p>;
-const ci = (c: [number, number], k = 1) => `[${num(c[0] * k, 2, true)}, ${num(c[1] * k, 2, true)}]`;
-const corrected = (nEff: number, n: number, lag1: number | null) =>
-  lag1 != null && lag1 > 0 && nEff < n
-    ? <span className="text-ink-2">（月資料彼此相關，lag-1 r = {num(lag1, 2)}，已用有效樣本 {Math.round(nEff)}／{n} 修正）</span>
-    : <span className="text-ink-2">（{n} 個月，未偵測到正自相關，不需修正）</span>;
 
 function Result({ s, unit, spanMonths, months }: { s: LabStats; unit: string; spanMonths: number; months: readonly string[] }) {
   const su = slopeUnit(spanMonths);
@@ -293,6 +278,7 @@ function Result({ s, unit, spanMonths, months }: { s: LabStats; unit: string; sp
     case "acf": return <AcfBlock s={s} />;
     case "normality": return <NormalityBlock s={s} unit={unit} />;
     case "bootstrap": return <BootstrapBlock s={s} unit={unit} su={su} />;
+    default: return <MoreResult s={s} unit={unit} spanMonths={spanMonths} months={months} />;
   }
 }
 
@@ -321,36 +307,6 @@ function AcfBlock({ s }: { s: AcfResult }) {
           : "看不出明顯的延續，每個月的異常大致互相獨立。"}
       </Verdict>
     </>
-  );
-}
-
-function Histogram({ bins, marks, curve, label }: {
-  bins: HistBin[];
-  marks: { at: number; dashed?: boolean; color: string }[];
-  curve?: (x: number) => number;
-  label: string;
-}) {
-  const W = 320, H = 90;
-  if (!bins.length) return null;
-  const lo = Math.min(bins[0].x0, ...marks.map((m) => m.at)), hi = Math.max(bins[bins.length - 1].x1, ...marks.map((m) => m.at));
-  const sx = (v: number) => ((v - lo) / (hi - lo || 1)) * W;
-  const top = Math.max(...bins.map((b) => b.count), 1);
-  const total = bins.reduce((a, b) => a + b.count, 0);
-  const w = bins[0].x1 - bins[0].x0;
-  const curveTop = curve ? Math.max(top, ...bins.map((b) => curve((b.x0 + b.x1) / 2) * total * w)) : top;
-  const sy = (c: number) => H - (c / curveTop) * (H - 4);
-  let path = "";
-  if (curve) for (let k = 0; k <= 60; k++) { const v = lo + ((hi - lo) * k) / 60; path += `${k ? "L" : "M"}${sx(v)},${sy(curve(v) * total * w)}`; }
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 block h-24 w-full max-w-md" preserveAspectRatio="none" aria-label={label}>
-      {bins.map((b, k) => (
-        <rect key={k} x={sx(b.x0) + 0.5} width={Math.max(0.5, sx(b.x1) - sx(b.x0) - 1)} y={sy(b.count)} height={H - sy(b.count)} style={{ fill: "var(--viz-blue)", opacity: 0.55 }} />
-      ))}
-      {curve && <path d={path} fill="none" strokeWidth={2} vectorEffect="non-scaling-stroke" style={{ stroke: "var(--ink)" }} />}
-      {marks.map((m, k) => (
-        <line key={k} x1={sx(m.at)} x2={sx(m.at)} y1={0} y2={H} strokeWidth={2} strokeDasharray={m.dashed ? "4 3" : undefined} vectorEffect="non-scaling-stroke" style={{ stroke: m.color }} />
-      ))}
-    </svg>
   );
 }
 
@@ -397,5 +353,32 @@ function BootstrapBlock({ s, unit, su }: { s: BootstrapResult; unit: string; su:
         {s.slope.ci95[0] > 0 || s.slope.ci95[1] < 0 ? "斜率的區間不含 0：有可靠的趨勢。" : "斜率的區間包含 0：看不出可靠的趨勢。"}
       </Verdict>
     </>
+  );
+}
+
+/** "You ran k tests on this range": the multiple-testing reminder, with Holm's correction. */
+function TestLog({ log }: { log: LabLogEntry[] }) {
+  const tested = log.filter((e): e is LabLogEntry & { p: number } => e.p != null && Number.isFinite(e.p));
+  if (tested.length < 2) return null;
+  const hits = tested.filter((e) => e.p < 0.05).length;
+  const kept = tested.filter((e) => e.holm).length;
+  return (
+    <div className="mt-3 border-t border-line pt-2.5 text-sm">
+      <p className="text-ink">
+        這段範圍已做 <b>{tested.length}</b> 個檢定，其中 <b>{hits}</b> 個 p &lt; 0.05。
+        <span className="text-ink-2">就算資料完全隨機，平均也會有約 {num(tested.length * 0.05, 1)} 個「顯著」。多試幾個再挑顯著的來報告，很容易誤判。</span>
+      </p>
+      <ul className="mt-1.5 flex flex-wrap gap-1.5 tnum">
+        {tested.map((e) => (
+          <li key={e.tool} title={TOOL_INFO[e.tool].title}
+            className={`rounded-ctl px-2 py-0.5 text-xs ${e.holm ? "bg-real-bg font-semibold text-real" : e.p < 0.05 ? "bg-synthetic-bg text-synthetic" : "bg-well text-ink-2"}`}>
+            {TOOL_INFO[e.tool].label} p {pValue(e.p)}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1 text-xs text-ink-2">
+        綠色：經 Holm 多重比較修正後仍顯著（{kept} 個）；橘色：單看顯著，但修正後不顯著；灰色：不顯著。不同檢定問的問題不一樣，修正只是提醒，不是唯一標準。
+      </p>
+    </div>
   );
 }

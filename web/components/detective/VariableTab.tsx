@@ -8,7 +8,7 @@ import SeriesChart, { clampView, zoomView, type ChartLayer, type MonthSelection,
 import ConclusionCard from "./ConclusionCard";
 import TrendPanel from "./TrendPanel";
 import LabPanel, { type LabRangeSource } from "./LabPanel";
-import { BASELINE_SENSITIVE, baselineShare, runLabTool, type LabToolId } from "@/lib/detective/lab";
+import { BASELINE_SENSITIVE, baselineShare, holm, primaryP, runLabTool, type LabOutcome, type LabToolId } from "@/lib/detective/lab";
 import { num, pct, rangeLabel, ymIndex } from "./format";
 
 /** Display metadata for one variable (built by the page from categories.ts + variables.json). */
@@ -68,6 +68,8 @@ export default function VariableTab(p: VariableTabProps) {
   const [selectMode, setSelectMode] = useState(false);
   const [labTool, setLabTool] = useState<LabToolId | null>(null);
   const [labSource, setLabSource] = useState<LabRangeSource>("all");
+  // tools pressed on the current range, for the multiple-testing log (reset when the range changes)
+  const [labUsed, setLabUsed] = useState<{ key: string; tools: LabToolId[] }>({ key: "", tools: [] });
   const onSelectionChange = useCallback((s: MonthSelection | null) => {
     setSelection(s);
     if (s) setLabSource("selection");
@@ -84,10 +86,30 @@ export default function VariableTab(p: VariableTabProps) {
     : source === "event"
       ? [Math.max(0, ymIndex(event.start) - base), Math.min(n - 1, ymIndex(event.end) - base)]
       : [0, n - 1];
-  const labOutcome = useMemo(
-    () => (labTool && n ? runLabTool(labTool, d, labStart, labEnd) : null),
-    [labTool, d, labStart, labEnd, n],
-  );
+  const labKey = `${labStart}..${labEnd}`;
+  const usedTools = useMemo(() => {
+    const prior = labUsed.key === labKey ? labUsed.tools : [];
+    return labTool && !prior.includes(labTool) ? [...prior, labTool] : prior;
+  }, [labUsed, labKey, labTool]);
+  const labOutcomes = useMemo(() => {
+    const out = new Map<LabToolId, LabOutcome>();
+    if (n) for (const t of usedTools) out.set(t, runLabTool(t, d, labStart, labEnd));
+    return out;
+  }, [usedTools, d, labStart, labEnd, n]);
+  const labOutcome = labTool ? labOutcomes.get(labTool) ?? null : null;
+  const labLog = useMemo(() => {
+    const entries = usedTools.map((tool) => {
+      const o = labOutcomes.get(tool);
+      return { tool, p: o?.kind === "ok" ? primaryP(o.stats) : null };
+    });
+    const withP = entries.filter((e) => e.p != null && Number.isFinite(e.p));
+    const keep = holm(withP.map((e) => e.p as number));
+    return entries.map((e) => ({ ...e, holm: keep[withP.indexOf(e)] ?? false }));
+  }, [usedTools, labOutcomes]);
+  const pickLabTool = (t: LabToolId | null) => {
+    setLabTool(t);
+    if (t) setLabUsed({ key: labKey, tools: usedTools.includes(t) ? usedTools : [...usedTools, t] });
+  };
   const labBaseline = useMemo(() => baselineShare(d, labStart, labEnd), [d, labStart, labEnd]);
   const overlay = labOutcome?.kind === "ok" ? labOutcome.segments : undefined;
 
@@ -156,7 +178,7 @@ export default function VariableTab(p: VariableTabProps) {
       </div>
 
       <LabPanel
-        tool={labTool} onToolChange={setLabTool}
+        tool={labTool} onToolChange={pickLabTool}
         source={source} onSourceChange={setLabSource}
         hasSelection={selection != null}
         range={n && labEnd >= labStart ? { start: d.months[labStart], end: d.months[labEnd] } : null}
@@ -166,6 +188,7 @@ export default function VariableTab(p: VariableTabProps) {
         spanMonths={labEnd - labStart}
         baselineWarning={labTool != null && BASELINE_SENSITIVE.has(labTool) && labBaseline >= 0.8}
         onShowResidual={layer !== "residual" ? () => setLayer("residual") : undefined}
+        log={labLog}
       />
 
       <TrendPanel stats={p.trend} unit={meta.unit} record={record} />

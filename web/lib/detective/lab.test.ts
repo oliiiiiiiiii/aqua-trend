@@ -4,10 +4,11 @@
 // the autocorrelation correction is inactive: the results must match the textbook tests exactly.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { chiSquareSf } from "../stats";
+import { binomialTest, chiSquareSf, fSf } from "../stats";
 import {
-  acfTest, bootstrapTest, compareTest, effectiveN, labSample, lagCorrelation, meanTest, mkTest,
-  normalityTest, olsTest, pettittTest, runLabTool, wilcoxonTest,
+  acfTest, bootstrapTest, compareTest, cusumTest, effectiveN, extremesTest, holm, labSample, lagCorrelation, meanTest, mkTest,
+  monthlyTest, normalityTest, olsTest, permutationTest, pettittTest, piecewiseTest, runLabTool, runsTest, spectrumTest,
+  varianceTest, wilcoxonTest,
 } from "./lab";
 import type { Decomposition } from "./contracts";
 
@@ -150,5 +151,81 @@ describe("runLabTool", () => {
     const r = runLabTool("compare", d, 0, 11);
     assert.equal(r.kind, "ok");
     if (r.kind === "ok" && r.stats.tool === "compare") { assert.equal(r.stats.a.n, 11); assert.equal(r.stats.b.n, 36); }
+  });
+});
+
+describe("distribution helpers", () => {
+  it("F tail and exact binomial match scipy", () => {
+    close(fSf(3.2, 2, 40), 0.051385456071628095);
+    close(fSf(0.5, 1, 10), 0.4956475043831199);
+    close(binomialTest(7, 40, 0.05).pTwoSided, 0.0033918975779359773);
+    close(binomialTest(7, 40, 0.05).pUpper, 0.0033918975779359773);
+    close(binomialTest(0, 60, 0.05).pTwoSided, 0.07576390094183538);
+  });
+  it("Holm keeps only what survives the step-down", () => {
+    assert.deepEqual(holm([0.01, 0.04, 0.03, 0.2]), [true, false, false, false]);
+    assert.deepEqual(holm([0.001, 0.012, 0.03]), [true, true, true]);
+  });
+});
+
+describe("more tools", () => {
+  const months = Array.from({ length: 40 }, (_, i) => `${2000 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}`);
+  it("Kruskal–Wallis across calendar months matches scipy", () => {
+    const r = monthlyTest(ys, months);
+    close(r.H, 9.510975609756088);
+    close(r.p, 0.574835314272611);
+    assert.equal(r.byMonth[0].n, 4);
+  });
+  it("cumulative anomaly finds the deficit", () => {
+    const y = [1, 1, -2, -3, -1, 0.5, 2];
+    const r = cusumTest(sample(y));
+    close(r.total, -1.5);
+    assert.deepEqual(r.deficit, { from: 2, to: 4, amount: 6 });
+    assert.equal(r.surplus!.amount, 2.5);
+  });
+  it("finds the longest streak; persistence makes it less surprising", () => {
+    const y = Array.from({ length: 60 }, (_, i) => (i >= 20 && i < 34 ? -1 - (i % 3) * 0.1 : (i % 2 ? 1 : -1) * 0.5));
+    const r = runsTest(sample(y), 0.6);
+    assert.equal(r.longest.length, 15);
+    assert.equal(r.longest.sign, -1);
+    assert.ok(r.pIndependent < 0.05);
+    assert.ok(r.pPersistent > r.pIndependent);
+  });
+  it("counts extreme months against the baseline rate", () => {
+    const z = [3, -2.5, 0, 0.1, 2.1, ...new Array(35).fill(0.2)];
+    const r = extremesTest(sample(z), 0.05);
+    assert.equal(r.high, 2);
+    assert.equal(r.low, 1);
+    close(r.expected, 2);
+  });
+  it("detects higher variability", () => {
+    const calm = Array.from({ length: 60 }, (_, i) => 0.2 * Math.sin(i * 2.1));
+    const wild = Array.from({ length: 24 }, (_, i) => 2 * Math.sin(i * 2.1));
+    const r = varianceTest(sample(wild, 100), sample(calm));
+    assert.ok(r.ratio > 5);
+    assert.ok(r.p < 0.001);
+  });
+  it("Lomb–Scargle finds a 40-month cycle through missing months", () => {
+    const y: (number | null)[] = Array.from({ length: 240 }, (_, i) => (i % 17 === 3 ? null : Math.sin((2 * Math.PI * i) / 40) + 0.3 * Math.sin(i * 1.3)));
+    const r = spectrumTest(labSample(y, 0, 239));
+    assert.ok(Math.abs(r.peaks[0].period - 40) < 2, `peak at ${r.peaks[0].period}`);
+    assert.ok(r.peaks[0].significant);
+  });
+  it("hinge regression finds the break and both slopes", () => {
+    const y = Array.from({ length: 80 }, (_, i) => (i < 50 ? 0.0 : 0.1 * (i - 50)) + 0.05 * Math.sin(i * 2.3));
+    const r = piecewiseTest(sample(y))!;
+    assert.ok(Math.abs(r.breakAt - 50) <= 1);
+    assert.ok(Math.abs(r.slopeBefore) < 0.01);
+    close(r.slopeAfter, 0.1, 0.05);
+    assert.ok(r.p < 0.001);
+  });
+  it("permutation: block shuffling is more cautious than single-month shuffling", () => {
+    const ar: number[] = [];
+    let v = 0, seed = 3;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) - 0.5;
+    for (let i = 0; i < 120; i++) { v = 0.85 * v + rnd(); ar.push(v + 0.004 * i); }
+    const r = permutationTest(sample(ar));
+    assert.ok(r.p >= r.pNaive);
+    assert.equal(permutationTest(sample(ar)).p, r.p);
   });
 });
