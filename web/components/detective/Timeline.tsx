@@ -5,7 +5,7 @@
 //   overview bar below            drag its window to pan      keys: arrows move the range, + - zoom, Shift+arrows resize the end
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { TimeRange } from "@/lib/detective/contracts";
-import { addMonths, ymFromIndex, ymIndex } from "@/lib/detective/url";
+import { ymFromIndex, ymIndex } from "@/lib/detective/url";
 import { useElementWidth } from "@/components/charts/useElementWidth";
 import { COPY } from "./copy/input";
 
@@ -20,7 +20,7 @@ interface View { lo: number; span: number }
 type Mode = "new" | "move" | "start" | "end";
 interface Session { mode: Mode; x0: number; view: View; s: number; e: number; moved: boolean; px: number }
 
-export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRange; time: TimeRange | null; padMonths: number; onChange: (r: TimeRange) => void }) {
+export function Timeline({ bounds, time, onChange, onPreviewChange }: { bounds: TimeRange; time: TimeRange | null; onChange: (r: TimeRange) => void; onPreviewChange: (r: TimeRange | null) => void }) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const a = ymIndex(bounds.start), b = ymIndex(bounds.end);
   const full = Math.max(1, b - a + 1);
@@ -110,7 +110,11 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     return "new";
   };
   const local = (e: PointerEvent<SVGSVGElement>) => e.clientX - e.currentTarget.getBoundingClientRect().left;
-  const begin = (s: Session) => { sessRef.current = s; setSess(s); };
+  const begin = (s: Session) => {
+    sessRef.current = s;
+    setSess(s);
+    onPreviewChange({ start: ymFromIndex(s.s), end: ymFromIndex(s.e) });
+  };
   const down = (e: PointerEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -145,17 +149,19 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
     }
     sessRef.current = next;
     setSess(next);
+    onPreviewChange({ start: ymFromIndex(next.s), end: ymFromIndex(next.e) });
   };
   const up = () => {
     const cur = sessRef.current;
     sessRef.current = null;
     setSess(null);
+    onPreviewChange(null);
     if (!cur) return;
     if (cur.mode === "new" || cur.moved) {
       onChange({ start: ymFromIndex(cur.s), end: ymFromIndex(cur.e) });
     }
   };
-  const cancel = () => { sessRef.current = null; setSess(null); };
+  const cancel = () => { sessRef.current = null; setSess(null); onPreviewChange(null); };
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
@@ -248,19 +254,7 @@ export function Timeline({ bounds, time, padMonths, onChange }: { bounds: TimeRa
           onPointerCancel={cancel}
         >
           <rect x={PAD_X} y={14} width={inner} height={14} rx={7} fill="var(--well)" stroke="var(--line)" />
-          {shown && (
-            <>
-              <rect
-                x={x(Math.max(a, ymIndex(addMonths(ymFromIndex(shown.s), -padMonths))))}
-                y={14}
-                width={Math.max(2, x(Math.min(b, ymIndex(addMonths(ymFromIndex(shown.e), padMonths))) + 1) - x(Math.max(a, ymIndex(addMonths(ymFromIndex(shown.s), -padMonths)))))}
-                height={14}
-                fill="var(--water)"
-                opacity={0.3}
-              />
-              <rect x={sxs} y={11} width={barW} height={20} rx={3} fill="var(--viz-orange)" />
-            </>
-          )}
+          {shown && <rect x={sxs} y={11} width={barW} height={20} rx={3} fill="var(--viz-orange)" />}
           {ticks.map((t) => (
             <g key={t.key}>
               <line x1={x(t.i)} x2={x(t.i)} y1={t.year ? 28 : 28} y2={t.year ? 40 : 34} stroke="var(--on-stage-2)" strokeOpacity={t.year ? 0.9 : 0.55} />

@@ -21,7 +21,6 @@ export const COPY = {
   formLabel: "Event, period and sub-basin",
   steps: { what: "Event", when: "When", where: "Where", variables: "Variables" },
   what: {
-    placeholder: "e.g. Pakistan floods, July–September 2022",
     edit: "Edit event",
     label: "What event do you want to investigate?",
   },

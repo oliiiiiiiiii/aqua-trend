@@ -95,10 +95,10 @@ export default async function Home() {
                         {PLACE[p.id] ?? p.region} · <span className="tnum">{formatRange(p.time)}</span>
                       </span>
                       <span className="mt-4 block max-w-[56ch] text-base leading-relaxed text-on-stage-2 sm:text-lg">{p.blurb}</span>
-                      <span className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-sm sm:text-base">
+                      <span className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:text-base">
                         {p.categories.map((c) => {
                           const colour = categoryStyle(c).color;
-                          return <span key={c} className="inline-flex items-center gap-1.5">
+                          return <span key={c} className="flex items-center gap-2">
                             <span
                               className="grid h-7 w-7 shrink-0 place-items-center rounded-ctl"
                               style={{ background: `color-mix(in srgb, ${colour} 26%, transparent)`, color: `color-mix(in srgb, ${colour} 70%, var(--on-stage))` }}

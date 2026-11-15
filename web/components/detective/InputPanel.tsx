@@ -31,51 +31,50 @@ export interface InputPanelProps {
 
 export function InputPanel(p: InputPanelProps) {
   const { setInput, formHidden } = useSharedStage();
-  const form = useRef<HTMLDivElement>(null);
+  const [highlighted, setHighlighted] = useState({ event: false, where: false, when: false, variables: false });
   const missing = {
     event: !!p.picker.blocked && !p.event.trim(),
     where: !!p.picker.blocked && !p.region,
     when: !!p.picker.blocked && !p.time,
     variables: !!p.picker.blocked && startableCount(p.picker) === 0,
   };
-  const pulseMissing = () => {
-    form.current?.querySelectorAll<HTMLElement>('[data-needed="true"]').forEach((el) => {
-      el.getAnimations().forEach((animation) => animation.cancel());
-      el.animate([
-        { boxShadow: "0 0 0 0 transparent" },
-        { boxShadow: "0 0 0 5px color-mix(in srgb, var(--action) 60%, transparent)", offset: 0.3 },
-        { boxShadow: "0 0 0 0 transparent" },
-      ], { duration: 750, iterations: 2 });
-    });
-  };
+  // A blocked attempt highlights only missing sections, until each one is completed.
+  useEffect(() => {
+    setHighlighted((previous) => ({
+      event: previous.event && missing.event,
+      where: previous.where && missing.where,
+      when: previous.when && missing.when,
+      variables: previous.variables && missing.variables,
+    }));
+  }, [missing.event, missing.where, missing.when, missing.variables]);
   useEffect(() => {
     setInput({ catalog: p.catalog, region: p.region, onRegion: p.onRegion });
   }, [setInput, p.catalog, p.region, p.onRegion]);
   useEffect(() => () => setInput(null), [setInput]);
   const reveal = `transition-[opacity,transform] duration-300 ${formHidden ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"}`;
   return (
-    <div ref={form} data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-x-20 px-5 pt-8 pb-16 sm:px-8 lg:min-h-[calc(100svh-var(--stage-offset,4rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[auto_1fr] lg:px-16 lg:pt-14">
+    <div data-stage-pass className="mx-auto grid max-w-[90rem] items-start gap-x-20 px-5 pt-8 pb-16 sm:px-8 lg:min-h-[calc(100svh-var(--stage-offset,4rem))] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[auto_1fr] lg:px-16 lg:pt-14">
       <section className={`pointer-events-auto min-w-0 text-on-stage lg:col-start-2 ${reveal}`} aria-label={COPY.steps.what}>
-        <h2 data-needed={missing.event} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.what}{missing.event && <NeededMarker />}</h2>
+        <h2 data-needed={missing.event} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.what}{missing.event && <NeededMarker filled={highlighted.event} />}</h2>
         <EventField event={p.event} onEventChange={p.onEventChange} onEventCommit={p.onEventCommit} />
       </section>
       <div data-stage-pass className={`relative my-8 grid min-w-0 grid-cols-1 grid-rows-[3.5rem_auto] gap-y-4 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:my-0 ${reveal}`}>
         <div data-stage-pass className="z-10 col-start-1 row-start-1 row-span-2 mx-auto w-full max-w-[35rem] self-start">
-          <VariablePicker {...p.picker} needed={missing.variables} />
+          <VariablePicker {...p.picker} needed={missing.variables} neededFilled={highlighted.variables} />
         </div>
         <div data-stage-globe data-stage-pass className="col-start-1 row-start-2 mx-auto aspect-square w-full max-w-[min(100%,calc(100dvh-14rem))] self-start max-lg:max-w-[24rem]" />
       </div>
       <div className={`pointer-events-auto min-w-0 text-on-stage lg:col-start-2 lg:row-start-2 ${reveal}`}>
         <section className="border-t border-stage-line py-8 max-lg:border-t-0 lg:mt-10 lg:py-10" aria-label={COPY.steps.where}>
-          <h2 data-needed={missing.where} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.where}{missing.where && <NeededMarker />}</h2>
+          <h2 data-needed={missing.where} className="mb-3 flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.where}{missing.where && <NeededMarker filled={highlighted.where} />}</h2>
           <RegionField {...p} />
         </section>
         <section className="border-t border-stage-line py-8 lg:py-10" aria-label={COPY.steps.when}>
-          <h2 data-needed={missing.when} className="flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.when}{missing.when && <NeededMarker />}</h2>
+          <h2 data-needed={missing.when} className="flex items-center gap-3 rounded-ctl text-sm font-semibold">{COPY.steps.when}{missing.when && <NeededMarker filled={highlighted.when} />}</h2>
           <TimeField {...p} />
         </section>
         <div className="border-t border-stage-line pt-8 lg:pt-10">
-          <AnalyseButton picker={p.picker} onBlocked={pulseMissing} className="w-full" />
+          <AnalyseButton picker={p.picker} onBlocked={() => setHighlighted(missing)} className="w-full" />
         </div>
       </div>
     </div>
@@ -113,7 +112,6 @@ function EventField({ event, onEventChange, onEventCommit }: Pick<InputPanelProp
         }}
         maxLength={300}
         autoComplete="off"
-        placeholder={COPY.what.placeholder}
         className="block min-h-14 max-h-20 w-full resize-none rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-3 font-display text-[1.3rem] leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       />
     </>
@@ -122,8 +120,10 @@ function EventField({ event, onEventChange, onEventCommit }: Pick<InputPanelProp
 
 /* ------------------------------------------------------------------ When */
 
-function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: InputPanelProps) {
+function TimeField({ time, onTimeChange, timeSuggestion, bounds }: InputPanelProps) {
   const id = useId();
+  const [preview, setPreview] = useState<TimeRange | null>(null);
+  const shownTime = preview ?? time;
   // offer the text's period only when the chosen one is not already inside it (Jul–Sep 2022 is inside "2022")
   const inside = !!time && !!timeSuggestion && ymIndex(time.start) >= ymIndex(timeSuggestion.start) && ymIndex(time.end) <= ymIndex(timeSuggestion.end);
   const offer = timeSuggestion && !inside ? timeSuggestion : null;
@@ -132,7 +132,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
     <div role="group" aria-labelledby={`${id}-t`}>
       <p id={`${id}-t`} className="sr-only">{COPY.steps.when}</p>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <p role="status" className="text-base text-on-stage tnum">{time ? formatRange(time) : COPY.when.choose}</p>
+        <p role="status" className="text-base text-on-stage tnum">{shownTime ? formatRange(shownTime) : COPY.when.choose}</p>
         {offer && (
           <button
             type="button"
@@ -144,7 +144,7 @@ function TimeField({ time, onTimeChange, timeSuggestion, bounds, padMonths }: In
           </button>
         )}
       </div>
-      <Timeline bounds={bounds} time={time} padMonths={padMonths} onChange={onTimeChange} />
+      <Timeline bounds={bounds} time={time} onChange={onTimeChange} onPreviewChange={setPreview} />
     </div>
   );
 }

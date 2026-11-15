@@ -42,8 +42,8 @@ export function AnalyseButton({ picker, onBlocked, className = "" }: { picker: V
   );
 }
 
-export function NeededMarker() {
-  return <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--viz-yellow)] px-2 py-0.5 text-xs font-semibold text-[#1b1b1b]"><span className="h-1.5 w-1.5 rounded-full bg-current" />{COPY.needed}</span>;
+export function NeededMarker({ filled = false }: { filled?: boolean }) {
+  return <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${filled ? "border-[var(--status-critical)] bg-[var(--status-critical)] text-white" : "border-[var(--viz-red)] bg-transparent text-[var(--viz-red)]"}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{COPY.needed}</span>;
 }
 
 // Frosted tiles share the stage tokens in every look.
@@ -80,7 +80,7 @@ function useHoneycomb() {
   return { ref, k, width };
 }
 
-export function VariablePicker(props: VariablePickerProps & { needed?: boolean }) {
+export function VariablePicker(props: VariablePickerProps & { needed?: boolean; neededFilled?: boolean }) {
   const { categories, response, loading, checked, onChange, available, unavailableReason } = props;
   const id = useId();
   const [expanded, setExpanded] = useState(false);
@@ -168,17 +168,12 @@ export function VariablePicker(props: VariablePickerProps & { needed?: boolean }
             <span className="min-w-0 max-w-full text-[10px] leading-tight [overflow-wrap:anywhere] min-[420px]:text-[11px]">{VARIABLE_LABELS[c] ?? info.name.en}</span>
           </span>
           {vote?.selected && (
-            <span title={T.suggested} className="absolute text-on-stage-2" style={{ left: "22%", top: "12%" }} aria-hidden="true">
+            <span title={T.suggested} className="absolute text-on-stage-2" style={{ right: "25%", top: "19%" }} aria-hidden="true">
               <svg width="9" height="9" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0 7.5 4.5 12 6 7.5 7.5 6 12 4.5 7.5 0 6 4.5 4.5Z" /></svg>
             </span>
           )}
-          {checkedNow && (
-            <span className="absolute grid h-4 w-4 place-items-center rounded-full text-paper" style={{ background: fam, right: "21%", top: "10%" }} aria-hidden="true">
-              <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-            </span>
-          )}
           <span className="sr-only">
-            {`. ${info.name.en}. `}{!ok ? reason : `${info.definition.en}${pct !== null && !keyword ? ` Probability ${pct}%.` : ""}${keyword && vote && vote.p >= 0.5 ? ` ${T.keyword}.` : ""}`}
+            {`. ${info.name.en}. `}{!ok ? reason : `${info.definition.en}${pct !== null && !keyword ? ` Probability ${pct}%.` : ""}`}
           </span>
         </label>
       </li>
@@ -190,7 +185,6 @@ export function VariablePicker(props: VariablePickerProps & { needed?: boolean }
       {items.map((c, i) => chip(c, quiet, { ...geometry.tiles[i], w: geometry.w, h: geometry.h }))}
     </ul>;
   };
-  const sourceLine = response ? T.source[response.source] : null;
   return (
     <section
       data-variable-panel
@@ -210,7 +204,7 @@ export function VariablePicker(props: VariablePickerProps & { needed?: boolean }
         >
           <span className="flex shrink-0 items-baseline gap-2">
             <span className="text-sm font-semibold">{T.heading}</span>
-            {props.needed && <NeededMarker />}
+            {props.needed && <NeededMarker filled={props.neededFilled} />}
           </span>
           <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden" aria-hidden="true">
             {!expanded && byFamily.filter((c) => on.has(c)).map((c) => (
@@ -228,7 +222,7 @@ export function VariablePicker(props: VariablePickerProps & { needed?: boolean }
           <legend className="sr-only">{T.group}</legend>
           <div ref={hc.ref} className="w-full min-w-0">
             {response && <>
-              <p className="mb-3 flex items-baseline gap-2 px-1 text-xs font-semibold">{T.suggested}<span className="text-[10px] font-normal text-on-stage-2">{sourceLine}</span></p>
+              <p className="mb-3 px-1 text-xs font-semibold">{T.suggested}</p>
               {cluster(suggested, false, "Suggested variables")}
             </>}
             <p className={`${response ? "mt-5" : ""} mb-3 px-1 text-xs text-on-stage-2`}>{response ? T.others : loading ? T.asking : T.all}</p>

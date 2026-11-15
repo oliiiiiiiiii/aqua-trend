@@ -61,25 +61,26 @@ function EventForm() {
       onSubmit={(e) => { e.preventDefault(); submit(); }}
     >
       <label htmlFor={`${id}-e`} className="block font-display text-xl leading-snug text-on-stage sm:text-2xl">{COPY.what.label}</label>
-      <textarea
-        id={`${id}-e`}
-        ref={area}
-        rows={1}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={onKeyDown}
-        maxLength={300}
-        autoComplete="off"
-        placeholder={COPY.what.placeholder}
-        className="mt-3 min-h-14 max-h-20 w-full resize-none rounded-ctl border border-stage-line bg-on-stage/5 px-4 py-3 font-display text-[1.3rem] leading-snug text-on-stage placeholder:text-on-stage-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-      />
-      <div className="mt-3 flex justify-center">
+      <div className="relative mt-3">
+        <textarea
+          id={`${id}-e`}
+          ref={area}
+          rows={1}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={onKeyDown}
+          maxLength={300}
+          autoComplete="off"
+          className="block min-h-14 max-h-20 w-full resize-none rounded-ctl border border-stage-line bg-on-stage/5 py-3 pr-16 pl-4 font-display text-[1.3rem] leading-snug text-on-stage focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        />
         <button
           type="submit"
           disabled={empty || entering}
-          className="inline-flex min-h-11 items-center gap-4 rounded-ctl bg-action px-5 py-2 font-semibold text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label="Investigate"
+          title="Investigate"
+          className="absolute right-2 bottom-2 grid h-10 w-10 place-items-center rounded-ctl bg-action text-on-action hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Investigate<span aria-hidden="true">→</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" /></svg>
         </button>
       </div>
     </form>
