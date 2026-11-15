@@ -80,6 +80,19 @@ def gldas_sum(varnames, scale=1.0, offset=0.0, folder="gesdisc/gldas"):
     return gen
 
 
+def ceres_layer(var):
+    """CERES EBAF: one file, (time, lat, lon) monthly means, time = days since 2000-03-01"""
+    def gen():
+        f = sorted(glob.glob(os.path.join(SHARE, "ceres", "CERES_EBAF_*.nc")))[-1]
+        with netCDF4.Dataset(f) as d:
+            t = netCDF4.num2date(d["time"][:], d["time"].units)
+            lat = d["lat"][:]; lon = d["lon"][:]; v = d[var]
+            for k, tk in enumerate(t):
+                a = np.ma.filled(np.ma.asarray(v[k], dtype="f8"), np.nan)
+                yield f"{tk.year:04d}-{tk.month:02d}", R.to_half_degree(a, lat, lon)
+    return gen
+
+
 def modis_layer(folder, var, offset=0.0):
     def gen():
         for ym, f in monthly_files(folder, "*.nc4", ym_modis):
@@ -151,6 +164,10 @@ LAYERS = {
     "tsurf_m2": dict(gen=merra_sum("gesdisc/m2lnd", ["TSURF"], 1.0, -273.15), meta=dict(
         name="地表溫度", category="tair", product="MERRA-2 M2TMNXLND TSURF", nasa=True, family=M2,
         unit="°C", visual="地表冷暖", source_files="gesdisc/m2lnd/*.subset.nc4", caveat=None)),
+    "rn_ceres": dict(gen=ceres_layer("sfc_net_tot_all_mon"), meta=dict(
+        name="地表淨輻射（衛星）", category="energy", product="CERES EBAF Ed4.2.1 sfc_net_tot_all_mon", nasa=True,
+        family="CERES", unit="W/m2", visual="地表吸收的能量", source_files="ceres/CERES_EBAF_Edition4.2.1_*.nc",
+        caveat="地表通量由衛星觀測的大氣頂輻射配合輻射傳輸模型推算，1° 格網，小區域代表性較差")),
     # GLDAS Noah 0.25 deg: same product as existing layers, rebuilt only to validate the pipeline
     "et_gldas_check": dict(gen=gldas_sum(["Evap_tavg"], 86400), meta=dict(name="check", unit="mm/day")),
     "sm_root_check": dict(gen=gldas_sum(["RootMoist_inst"]), meta=dict(name="check", unit="mm")),

@@ -810,6 +810,22 @@
    "processed": "2026-11-15",
    "source_files": "modis/lst/*.nc4",
    "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
+  },
+  "rn_ceres": {
+   "name": "地表淨輻射（衛星）",
+   "category": "energy",
+   "product": "CERES EBAF Ed4.2.1 sfc_net_tot_all_mon",
+   "nasa": true,
+   "family": "CERES",
+   "unit": "W/m2",
+   "visual": "地表吸收的能量",
+   "caveat": "地表通量由衛星觀測的大氣頂輻射配合輻射傳輸模型推算，1° 格網，小區域代表性較差",
+   "start": "2000-03",
+   "end": "2026-07",
+   "source": "earthdata",
+   "processed": "2026-11-15",
+   "source_files": "ceres/CERES_EBAF_Edition4.2.1_*.nc",
+   "method": "0.5° regrid → cos-lat area mean per region, ≥30% valid coverage"
   }
  },
  "trend_method": "去季節月距平 OLS（AR(1) 有效樣本數修正 95% CI）；年平均 Mann-Kendall＋Sen；各層用自己的完整年份（GRACE 從 2003 起）；同一區域所有層一起做 Benjamini–Yekutieli"
